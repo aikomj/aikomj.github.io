@@ -17,7 +17,7 @@ favicon: favicon.ico
 
 repository: aikomj/aikomj.github.io
 github_url: https://github.com/aikomj
-url: https://aikomj.github.io
+url: http://139.199.13.139/blog
 #enforce_ssl: aikomj.com
 
 ## Gem
@@ -37,7 +37,7 @@ excerpt_separator: "\n\n"
 source:      .
 destination: ./_site
 
-quiet:    false
+quiet: false
 defaults: []
 
 kramdown:
@@ -49,7 +49,7 @@ syntax_highlighter_opts:
    coderay_line_numbers:  nil
 
 # Pagination
-paginate: 12
+paginate: 10
 paginate_path: 'page:num'
 
 # Navigation. top menu list
@@ -212,14 +212,14 @@ comments_provider: gitalk
 # !!!Important!!! Please modify infos below to yours
 # https://disqus.com
 disqus:
-    username: aikomj
+    username: 
 # https://imsun.net/posts/gitment-introduction/
 gitment:
     owner: aikomj
     repo: blog-comments
     oauth:
-        client_id: 6cd8ad4d1cf1d1e6ad95
-        client_secret: c4ce22a25efe50bfd60da67c990b534bc99a6424
+      client_id: 6cd8ad4d1cf1d1e6ad95
+      client_secret: c4ce22a25efe50bfd60da67c990b534bc99a6424
 # https://github.com/gitalk/gitalk#install
 gitalk:
     owner: aikomj
@@ -227,4 +227,15 @@ gitalk:
     clientID: 6cd8ad4d1cf1d1e6ad95
     clientSecret: c4ce22a25efe50bfd60da67c990b534bc99a6424
 # 在使用其它评论组件时可点击显示 Disqus
-lazy_load_disqus : true
+lazy_load_disqus : false
+
+# ---------------- #
+#      Search      #
+# ---------------- #
+simple_jekyll_search:
+    # 是否支持全文搜索
+    fulltext: false
+    # 最多显示多少条搜索结果
+    limit: 10
+
+port: 4001

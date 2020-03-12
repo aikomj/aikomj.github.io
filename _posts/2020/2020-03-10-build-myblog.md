@@ -36,6 +36,7 @@ mkdir -p /usr/local/ruby
 cd ruby-2.6.5
  ./configure --prefix=/usr/local/ruby
  make && make install
+ ruby -v
 ```
 
 环境变量设置：
@@ -50,6 +51,10 @@ export PATH
 ```
 
 使环境变量生效：source .bash_profile
+
+> 建议用rvm安装ruby，
+
+
 
 **安装gcc**
 
@@ -66,11 +71,6 @@ yum -y install gcc+ gcc-c++
 gem install jekyll
 # 可以通过jekyll –version查看版本来验证是否安装成功，如果安装成功，则会显示正确的版本号。
 jekyll -version
-# 安装bundler插件
-gem install bundler
-# 安装sitemap和paginate插件
-gem install jekyll-sitemap
-gem install jekyll-paginate
 ```
 
 ### 编译博客
@@ -79,14 +79,27 @@ gem install jekyll-paginate
 # 下载github上的博客源码
 git clone https://github.com/aikomj/aikomj.github.io
 cd aikomj.github.io
-jekyll serve
+gem install bundle
+#bundle install
+# 启动博客
+jekyll serve --port 80
 ```
+
+> Jekyll serve执行完后老报各种gem缺失，安装多个gem包之后发现是git上多了个Gemfile.lock害的，这个文件是用bundle根据gemfile 的插件依赖生成的。
+>
+> 第一次运行 `bundle install` 时自动生成 Gemfile.lock 文件。
+>  以后每次运行 `bundle install` 时,如果 Gemfile 中的条目不变 bundle 就不会再次计算 gem 依赖版本号，直接根据 Gemfile.lock 检查和安装 gem。
+>  如果出现依赖冲突时可以通过 bundle update 更新 Gemfile.lock。
+>
+> gemfile.lock已有的情况，应该用bundle update更新，Jekyll serve 启动时就不会老报gem包缺失了
+
+
 
 ### 部署到nginx服务器上
 
 通过Jekyll编译后的静态文件需要挂载到Nginx服务器，需要安装Nginx服务器。 安装过程参考了http://nginx.org/en/linux_packages.html#mainline
 
-按照文档，新建文件/etc/yum.repos.d/nginx.repo，在文件中编辑以下内容并保存：
+按照文档，新建文件/etc/yum.repos.d/nginx.repo，在文件中添加以下内容并保存：
 
 ```shell
 [nginx]
@@ -102,18 +115,168 @@ enabled=1
 yum install nginx
 ```
 
+配置nginx，文件路径为/etc/nginx/conf.d/default.conf，配置的内容如下：
 
+```shell
+server {
+    listen       80;
+    server_name  localhost;
 
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
 
+    error_page  404              /404.html;
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+   
+   }
+```
+
+将Jekyll编译的博客静态html文件输出到Nginx服务器上
+
+```shell
+cd aikomj.github.io
+jekyll build --destination=/usr/share/nginx/html
+```
+
+启动Nginx服务器
+
+```shell
+service nginx start
+```
+
+就可以正常的博客网页了，如果需要在浏览器上访问，需要在阿里云ECS控制台的安全组件暴露80端口。如果想通过域名访问，需要将域名解析设置指向你的服务器。
+
+**非www域名的重定向到www**
+
+比如我想访问http://fangzhipeng.com重定向到http://www.fangzhipeng.com上，需要在Nginx的配置文件/etc/nginx/conf.d/default.conf，修改配置以下内容：
+
+```shell
+listen  80;
+    server_name  fangzhipeng.com www.fangzhipeng.com;
+
+    if ( $host != 'www.fangzhipeng.com' ) {
+    	rewrite "^/(.*)$" http://www.fangzhipeng.com/$1 permanent;
+    }
+```
 
 ### 自动化部署
 
-​		我们通过设置github的webhook来实现自动化构建和部署。原理过程是这样的：提交博文或者配置到github仓库，仓库会触发你设置的webhook，会向你设置的webhook地址发送一个post请求，比如我设置的请求是在服务器上跑的一个Nodejs程序，监听gitub webhook的请求，接受到请求后，会执行shell命令重新构建博客。
-
-
-
 #### 配置webhook
+
+​		webhook，是一种通过通常的 callback，去增加或者改变 Web page或者 Web app 行为的方法。这些 Callback 可以由第三方用户和开发者维持当前，修改，管理，而这些使用者与网站或者应用的原始开发没有关联。
+
+​		我们的自动部署博客也是利用了这个机制，github 自带了webhook 功能。原理过程是这样的：提交博文或者配置到github仓库，仓库会触发你设置的webhook，向你设置的webhook地址发送一个post请求，比如我设置的请求是在服务器上跑的一个nodejs程序，监听gitub webhook的请求，接受到请求后，会执行shell命令重新构建博客。
+
+​		在 Github 仓库的项目界面，比如本博客项目https://github.com/aikomj/aikomj.github.io，点击 Setting->Webhooks->Add Webhook，添加 Webhook 的配置信息：
+
+```shell
+Payload URL: http://139.199.13.139/deploy  #没有域名，先使用ip
+Content type: application/json
+Secret: a123456
+```
 
 
 
 #### 服务器接受推送
+
+​		我们需要在博客的服务器上面建立一个服务，来接收 Github 提交代码后的推送，从而来触发部署的脚本。 Github 上有一个开源项目可以做这个事情 [github-webhook-handler](https://github.com/rvagg/github-webhook-handler)，他是使用 nodeJs 来开发。
+
+```shell
+# 安装 github-webhook-handler
+npm install -g github-webhook-handler
+#如果没有安装成功，可以选择法2来安装
+npm install -g cnpm --registry=http://r.cnpmjs.org
+cnpm install -g github-webhook-handler
+```
+
+添加部署脚本
+
+```shell
+cd /root/node-12.16.1/lib/node_modules/github-webhook-handler
+vi deploy.js
+# 添加下面的内容
+var http = require('http')
+var createHandler = require('github-webhook-handler')
+var handler = createHandler({ path: '/deploy', secret: 'a123456' }) //监听请求路径，和Github 配置的密码
+ 
+function run_cmd(cmd, args, callback) {
+  var spawn = require('child_process').spawn;
+  var child = spawn(cmd, args);
+  var resp = "";
+ 
+  child.stdout.on('data', function(buffer) { resp += buffer.toString(); });
+  child.stdout.on('end', function() { callback (resp) });
+}
+ 
+http.createServer(function (req, res) {
+  handler(req, res, function (err) {
+    res.statusCode = 404
+    res.end('no such location')
+  })
+}).listen(3001)//监听的端口
+ 
+handler.on('error', function (err) {
+  console.error('Error:', err.message)
+})
+ 
+handler.on('push', function (event) {
+  console.log('Received a push event for %s to %s',
+    event.payload.repository.name,
+    event.payload.ref);
+  run_cmd('sh', ['./deploy.sh'], function(text){ console.log(text) });//成功后，执行的脚本。
+})
+```
+
+相同目录下新建deploy.sh
+
+```shell
+# 新建部署博客的脚本
+vi deploy.sh
+# 脚本内容
+echo `date`
+cd /root/aikomj.github.io
+echo start pull from github 
+git pull https://github.com/aikomj/aikomj.github.io.git
+echo start build..
+jekyll build --destination=/usr/share/nginx/html
+```
+
+这个脚本的启动需要借助 Node 中的一个管理 forever 。forever 可以看做是一个 nodejs 的守护进程，能够启动，停止，重启我们的 app 应用。
+
+不过我们先安装 forever，然后需要使用 forever 来启动 deploy.js 的服务。
+
+```shell
+# 安装forever
+npm install forever -g
+# 建立软链接
+ln -s /root/node-12.16.1/lib/node_modules/forever/bin/forever /usr/bin/forever
+forever start deploy.js          #启动
+forever stop deploy.js           #关闭
+cd /root/node-12.16.1/lib/node_modules/github-webhook-handler
+forever start -l forever.log -o out.log -e err.log deploy.js   #输出日志和错误
+
+如果报错：
+
+```
+
+最后一步，需要在nginx服务器的配置文件，需要将监听的/deploy请求转发到nodejs服务上。
+
+```nginx
+vi /etc/nginx/conf.d/default.conf
+# 添加转发
+location = /deploy {
+     proxy_pass http://127.0.0.1:3001/deploy;
+}
+```
+
+这样自动化部署就完了，每次提交代码时，Github 会发送 Webhook 给地址`http://139.199.13.139/deploy`，Nginx 将 `/deploy` 地址转发给 Nodejs 端口为 3301 的服务，最后通过 github-webhook-handler 来执行部署脚本。
+
+
+
+​		
