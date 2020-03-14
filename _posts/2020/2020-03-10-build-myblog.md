@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 搭建自己的个人博客
-category: java
+category: life
 tags: [java]
-keywords: java
+keywords: blog
 excerpt: Jekyll静态博客
 lock: noneed
 ---
@@ -229,7 +229,7 @@ handler.on('push', function (event) {
   console.log('Received a push event for %s to %s',
     event.payload.repository.name,
     event.payload.ref);
-  run_cmd('sh', ['./deploy.sh'], function(text){ console.log(text) });//成功后，执行的脚本。
+  run_cmd('sh', ['/root/node-12.16.1/lib/node_modules/github-webhook-handler/deploy.sh'], function(text){ console.log(text) });//成功后，执行的脚本。
 })
 ```
 
@@ -242,7 +242,7 @@ vi deploy.sh
 echo `date`
 cd /root/aikomj.github.io
 echo start pull from github 
-git pull https://github.com/aikomj/aikomj.github.io.git
+git pull http://github.com/aikomj/aikomj.github.io.git
 echo start build..
 jekyll build --destination=/usr/share/nginx/html
 ```
@@ -260,8 +260,8 @@ forever start deploy.js          #启动
 forever stop deploy.js           #关闭
 cd /root/node-12.16.1/lib/node_modules/github-webhook-handler
 forever start -l forever.log -o out.log -e err.log deploy.js   #输出日志和错误
-
 如果报错：
+forever start -a -l forever.log -o out.log -e err.log deploy.js
 
 ```
 

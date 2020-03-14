@@ -102,19 +102,19 @@ navs:
       -
         subHref: /java-base.html
         subLabel: Java基础
-        target: _blank
+        target: _self
       -
         subHref: /java-concurrent.html
         subLabel: Java并发
-        target: _blank
+        target: _self
       -
         subHref: /java-design.html
         subLabel: 设计模式
-        target: _blank
+        target: _self
       -
         subHref: /mysql.html
         subLabel: mysql
-        target: _blank 
+        target: _self
       # -
       #   subHref: /algorithm.html
       #   subLabel: 算法
@@ -128,7 +128,6 @@ navs:
     href: /archives.html
     label: Archives
     target: _self
-
 
 # labels. my blog key words
 labels:
@@ -156,12 +155,6 @@ labels:
   #   href: /drools.html
   #   label: Drools  
   #   target: _blank
-
-  # -
-  #   href: /gitchat.html
-  #   label: Chat
-  #   target: _blank
-
 
 # selected articles
 classes:
@@ -216,14 +209,14 @@ disqus:
 # https://imsun.net/posts/gitment-introduction/
 gitment:
     owner: aikomj
-    repo: blog-comments
+    repo: aikomj.github.io
     oauth:
       client_id: 6cd8ad4d1cf1d1e6ad95
       client_secret: c4ce22a25efe50bfd60da67c990b534bc99a6424
 # https://github.com/gitalk/gitalk#install
 gitalk:
     owner: aikomj
-    repo: blog-comments
+    repo: aikomj.github.io
     clientID: 6cd8ad4d1cf1d1e6ad95
     clientSecret: c4ce22a25efe50bfd60da67c990b534bc99a6424
 # 在使用其它评论组件时可点击显示 Disqus

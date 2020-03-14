@@ -1,20 +1,20 @@
 ---
 layout: page
-title: 艾编程Java架构师课程笔记
-titlebar: icoding-edu
-subtitle: <span class="mega-octicon octicon-globe"></span>&nbsp;&nbsp;日均亿级访问系统架构设计训练营，<a href="https://www.icodingedu.com/" target="_blank">更多精选课程 ，<font color="#EB9439">点我</font>查看！</a>
-menu: icoding-edu
+title: 设计模式系列文章
+titlebar: java
+subtitle: <span class="mega-octicon octicon-globe"></span> &nbsp;&nbsp; 修炼java内功，23种设计模式
+menu: java-design
 css: ['blog-page.css']
-permalink: /icoding-edu
-keywords: icoding
+permalink: /java-design
 ---
+
 <div class="row">
 
     <div class="col-md-12">
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='icoding-edu' %}
+                {% if post.category=='java-design' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

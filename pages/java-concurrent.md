@@ -2,7 +2,7 @@
 layout: page
 title: Java并发系列文章
 titlebar: java
-subtitle: <span class="mega-octicon octicon-clippy"></span> &nbsp;&nbsp; 工欲善其事必先利其器
+subtitle: <span class="mega-octicon octicon-keyboard"></span> &nbsp;&nbsp; 工欲善其事必先利其器
 menu: java-concurrent
 css: ['blog-page.css']
 permalink: /java-concurrent
@@ -14,7 +14,7 @@ permalink: /java-concurrent
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='java-concurrent' %}
+                {% if post.category=='java-concurrent' or post.keywords=='juc' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

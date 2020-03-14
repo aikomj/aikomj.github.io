@@ -16,12 +16,9 @@ css: ['index.css', 'sidebar-popular-repo.css']
     </div>
 </section>
 <section class="content container">
-
     <div class="row">
-
         <!-- Post List -->
         <div class="col-md-8">
-
             <ol class="post-list">
                 {% for post in paginator.posts %}
                  {% if  post.category != 'gitchat' and post.category != 'geektime' %}
@@ -42,14 +39,11 @@ css: ['index.css', 'sidebar-popular-repo.css']
 
             <!-- Pagination -->
             {% include pagination.html %}
-
         </div>
 
         <div class="col-md-4">
             {% include sidebar-popular-repo.html %}
         </div>
-
     </div>
-
 </section>
 

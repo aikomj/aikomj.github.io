@@ -2,7 +2,7 @@
 layout: page
 title: Spring Boot 系列文章
 titlebar: spring-boot
-subtitle: <span class="mega-octicon octicon-clippy"></span> &nbsp;&nbsp; 工欲善其事必先利其器
+subtitle: <span class="mega-octicon octicon-package"></span> &nbsp;&nbsp; 工欲善其事必先利其器
 menu: spring-boot
 css: ['blog-page.css']
 permalink: /spring-boot
