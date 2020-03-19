@@ -229,7 +229,7 @@ handler.on('push', function (event) {
   console.log('Received a push event for %s to %s',
     event.payload.repository.name,
     event.payload.ref);
-  run_cmd('sh', ['/root/node-12.16.1/lib/node_modules/github-webhook-handler/deploy.sh'], function(text){ console.log(text) });//成功后，执行的脚本。
+  run_cmd('sh', [',/deploy.sh'], function(text){ console.log(text) });//成功后，执行的脚本。
 })
 ```
 
@@ -275,7 +275,7 @@ location = /deploy {
 }
 ```
 
-这样自动化部署就完了，每次提交代码时，Github 会发送 Webhook 给地址`http://139.199.13.139/deploy`，Nginx 将 `/deploy` 地址转发给 Nodejs 端口为 3301 的服务，最后通过 github-webhook-handler 来执行部署脚本。
+这样自动化部署就完了，每次提交代码时，Github 会发送 Webhook 给地址`http://139.199.13.139/deploy`，Nginx 将 `/deploy` 地址转发给 Nodejs 端口为 3001 的服务，最后通过 github-webhook-handler 来执行部署脚本。
 
 
 
