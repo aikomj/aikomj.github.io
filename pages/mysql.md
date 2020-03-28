@@ -2,7 +2,7 @@
 layout: page
 title: Mysql 系列文章
 titlebar: mysql
-subtitle: <span class="mega-octicon octicon-database"></span> &nbsp;&nbsp; 必学数据库
+subtitle: <span class="mega-octicon octicon-database"></span> &nbsp;&nbsp; 必须掌握的数据库
 menu: mysql
 css: ['blog-page.css']
 permalink: /mysql
@@ -14,7 +14,7 @@ permalink: /mysql
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='mysql' %}
+                {% if post.category=='mysql' or post.keywords contains 'mysql' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
