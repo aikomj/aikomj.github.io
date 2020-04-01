@@ -20,6 +20,7 @@ permalink: /link
 - [rickiyeat的博客](http://blog.csdn.net/rickiyeat) - hadoop、spring boot/cloud技术博客   
 - [小柒博客](https://blog.52itstyle.vip) - 小柒博客，一个主JAVA，次架构，偶尔聊聊生活的地方。
 - [Java极客技术](http://www.justdojava.com) - Java 技术人的一片天地
+- [姜戈看世界](https://www.jianshu.com/u/85c6c3dcbb4f) - 开源爱好者，互联网IT专栏作者
 
 ## 推荐网站
 

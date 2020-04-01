@@ -20,7 +20,7 @@ github_url: https://github.com/aikomj
 url: http://139.199.13.139/blog
 #enforce_ssl: aikomj.com
 
-## Gem
+## Gem 插件
 plugins:
   - jekyll-paginate
   - jekyll-geo-pattern
@@ -28,28 +28,40 @@ plugins:
   - kramdown
   - jekyll-github-metadata
 
-# Build settings
+# 目录结构
+source: .
+destination: ./_site
+
+# Build settings 转换
 markdown: kramdown
 highlighter: rouge
 lsi: false
 excerpt_separator: "\n\n"
+incremental: false
 
-source: .
-destination: ./_site
+# 服务器选项
+port:    4001
+
+# Markdown 处理器
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
+  
+
+# Pagination 分页
+paginate: 10
+paginate_path: 'page:num'
 
 quiet: false
 defaults: []
 
-kramdown:
-  input: GFM
-  enable_coderay: true
-  syntax_highlighter: rouge
-
-# Pagination
-paginate: 10
-paginate_path: 'page:num'
-
-# Navigation. top menu list
+# Navigation. top menu list 导航顶部菜单
 menus:
   -
     href: /life.html
@@ -227,5 +239,3 @@ simple_jekyll_search:
     fulltext: false
     # 最多显示多少条搜索结果
     limit: 10
-
-port: 4001

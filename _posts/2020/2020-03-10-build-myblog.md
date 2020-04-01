@@ -279,4 +279,58 @@ location = /deploy {
 
 
 
-​		
+## Jekyll的目录结构
+
+Jekyll 官网地址：[http://jekyllcn.com/docs/home/，通过
+
+jekyll目录结构主要包含如下目录：
+
+```shell
+_posts 博客内容
+_pages 其他需要生成的网页，如About页
+_layouts 网页排版模板
+_includes 被模板包含的HTML片段，可在_config.yml中修改位置
+assets 辅助资源 css布局 js脚本 图片等
+_data 动态数据
+_sites 最终生成的静态网页
+_config.yml 网站的一些配置信息
+index.html 网站的入口
+```
+
+那么这些目录是如何运作的呢？
+
+1.我们打开根目录下的index.html可以看到：
+
+```shell
+—
+layout: default
+—
+html代码段
+```
+
+2.上面的home-page我们到_layouts目录下可以找到：
+
+```html
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+    <body>
+    {% include header.html %}
+        <div class="content">
+            {{ content }}
+        </div>
+    {% include footer.html %}
+    </body>
+</html>
+```
+
+{{content}} 将由index.html中的html代码填充。
+
+> 扩展阅读：[http://jmcglone.com/guides/github-pages/](http://jmcglone.com/guides/github-pages/)
+
+## Jekyll常用语法
+
+![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/jekyll-language.gif)
+
+
+

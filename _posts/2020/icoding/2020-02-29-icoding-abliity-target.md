@@ -16,8 +16,10 @@ lock: noneed
 |          | JVM                   | 了解 | 掌握 |
 |          | SpringBoot            | 熟悉 | 掌握 |
 |          | MybatisPlus           | 掌握 | 精通 |
+|          | Swagger2              | 掌握 | 精通 |
 |          | 23种设计模式          | 了解 | 掌握 |
 | 前端     | Vue2.x                | 熟悉 | 掌握 |
+|          | Editormd富文本编辑    | 熟悉 | 熟悉 |
 |          | Thymeleaf【taɪm lif】 | 了解 | 熟悉 |
 |          | Element-ui            | 熟悉 | 熟悉 |
 |          | Vue-element-admin     | 了解 | 熟悉 |
@@ -40,4 +42,4 @@ lock: noneed
 | 文件存储 | FastDFS               | 了解 | 掌握 |
 
 > 工作结果 = 思维方式x热情x能力  
-> 更新日期 2020-03-07
+> 更新日期 2020-03-25

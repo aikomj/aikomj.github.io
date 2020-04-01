@@ -428,9 +428,10 @@
 }
 
 .markdown-body blockquote {
-  padding: 0 1em;
+  padding: 10px;
   color: #6a737d;
-  border-left: 0.25em solid #67c23a;
+  border-left: 4px solid #67c23a;
+  background-color: #f0f0f0;
 }
 
 .markdown-body blockquote>:first-child {
@@ -1179,5 +1180,11 @@
             transform: rotate(360deg);
   }
 }
-
+mark{
+  color: #fff;
+  background-color: #FF5722;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 2px;  
+}
 /*# sourceMappingURL=gitalk.css.map*/
