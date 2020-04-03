@@ -20,6 +20,7 @@ keywords: Spring Boot 教程,Spring Boot 示例,Spring Boot 学习,Spring Boot �
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
                         <a class="posts-list-name bubble-float-left" href="{{ site.url }}{{ post.url }}" target="_blank">{{ post.title }}</a>
+                        <p style="color:#666">{{ post.excerpt }}</p>
                         <span class='circle'></span>
                     </div>
                 </li>

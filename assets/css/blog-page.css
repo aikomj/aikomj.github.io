@@ -7,7 +7,7 @@
 .icon-logo{fill: #000;}
 
 #posts-list li {
-    margin: 40px 0;
+    margin: 30px 0;
     position: relative;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .circle {
-    margin-top: -10px;
+    margin-top: -20px;
     top: 50%;
     left: -44px;
     width: 20px;
@@ -29,7 +29,7 @@
 }
 
 .posts-list-meta {
-    margin-top: -10px;
+    margin-top: -20px;
     top: 50%;
     left: -158px;
     font-size: 0.95em;

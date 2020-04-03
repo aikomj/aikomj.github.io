@@ -308,29 +308,12 @@ layout: default
 html代码段
 ```
 
-2.上面的home-page我们到_layouts目录下可以找到：
-
-```html
-<!DOCTYPE html>
-<html>
-{% include head.html %}
-    <body>
-    {% include header.html %}
-        <div class="content">
-            {{ content }}
-        </div>
-    {% include footer.html %}
-    </body>
-</html>
-```
-
-{{content}} 将由index.html中的html代码填充。
+2.上面的default我们可以在_layouts目录下找到：
+![](/assets/images/2020/icoding/jekyll-layout.gif)
+上面的content 将由index.html中的html代码填充。
 
 > 扩展阅读：[http://jmcglone.com/guides/github-pages/](http://jmcglone.com/guides/github-pages/)
 
 ## Jekyll常用语法
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/jekyll-language.gif)
-
-
-
+![](/assets/images/2020/icoding/jekyll-language.gif)
