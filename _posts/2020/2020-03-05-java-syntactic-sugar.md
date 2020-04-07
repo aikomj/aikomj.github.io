@@ -545,7 +545,7 @@ public static transient void main(String args[])
 
 ### 糖块11.Lambda表达式
 
-这个应该要经常使用熟悉，作为java程序员标配要懂的知识。lambda表达式是依赖JVM底层提供的api实现的。
+这个应该要熟悉使用，作为java程序员标配要懂的知识。lambda表达式是依赖JVM底层提供的api实现的。
 
 ```java
 public static void main(String... args) {
@@ -569,6 +569,79 @@ private static /* synthetic */ void lambda$main$0(String s) {
 ```
 
 可以看出forEach方法中，调用了java.lang.invoke.LambdaMetafactory.metafactory方法，该方法的第五个参数调用了lambda$main$0方法进行了输出。
+
+使用lambda表达式的例子代码：
+
+```java
+// 1、创建一个线程使用lambda表达式
+new Thread(()->{for (int i = 1; i <= 40 ; i++) ticket.saleTicket();},"A").start();
+
+// 2、线程池使用lambda表达式
+ExecutorService threadPool = new ThreadPoolExecutor(
+  2,
+  5,
+  3L,
+  TimeUnit.SECONDS,
+  new LinkedBlockingDeque<>(3),
+  Executors.defaultThreadFactory(),
+  new ThreadPoolExecutor.CallerRunsPolicy());
+try {
+  // 线程池的使用方式！
+  for (int i = 0; i < 100; i++) {
+    threadPool.execute(()->{
+      System.out.println(Thread.currentThread().getName() + " ok");
+    });
+  }
+} catch (Exception e) {
+  e.printStackTrace();
+} finally {
+  // 使用完毕后需要关闭！
+  threadPool.shutdown();
+}
+
+// 3、函数式接口使用lambda表达式
+/**
+ * 函数式接口是我们现在必须要要掌握且精通的
+ * 4个！
+ * Java 8
+ *
+ * Function ： 有一个输入参数有一个输出参数
+ * Consumer：有一个输入参数，没有输出参数
+ * Supplier：没有输入参数，只有输出参数
+ * Predicate：有一个输入参数，判断是否正确！
+ */
+Function<String,Integer> function = (str)->{return str.length();};
+System.out.println(function.apply("a45645646"));
+
+Predicate<String> predicate = str->{return str.isEmpty();};
+System.out.println(predicate.test("456"));
+
+Supplier<String> supplier = ()->{return "《hello，spring》";};
+Consumer<String> consumer = s->{ System.out.println(s);};
+
+consumer.accept(supplier.get());
+
+// 4、Stream流式计算使用lambda表达式
+List<User> users = Arrays.asList(u1, u2, u3, u4, u5);
+// 计算等操作交给流
+// forEach(消费者类型接口)
+users.stream()
+  .filter(u->{return u.getId()%2==0;})
+  .filter(u->{return u.getAge()>24;})
+  .map(u->{return u.getName().toUpperCase();})
+  .sorted((o1,o2)->{return o2.compareTo(o1);})
+  .limit(1)
+  .forEach(System.out::println);
+
+// 5、mybatis-plus中使用lambda表达式
+ UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        // 在一些新的框架中，链式编程，lambda表达式，函数式接口十分常用！
+        updateWrapper
+                .like("name","k")
+                .or(wrapper->wrapper.eq("name","Coding2").eq("age",0));
+```
+
+
 
 
 
