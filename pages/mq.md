@@ -1,11 +1,11 @@
 ---
 layout: page
-title: FastDFS系列文章
-titlebar: FastDFS
-subtitle: <span class="mega-octicon oction-server"></span>&nbsp;&nbsp; 相信坚持的力量
-menu: fastdfs
+title: 消息队列系列文章
+titlebar: MessageQueue
+subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; 相信学习的力量
+menu: MessageQueue
 css: ['blog-page.css']
-permalink: /fastdfs
+permalink: /mq
 ---
 
 <div class="row">
@@ -14,7 +14,7 @@ permalink: /fastdfs
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='FastDFS' or post.keywords contains 'FastDFS' %}
+                {% if post.category=='MessageQueue' or post.keywords contains 'MessageQueue' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

@@ -7,7 +7,7 @@
 
 # Site settings
 title:  大伟,专注Spring Boot,Spring Cloud,Java后端技术
-subtitle: 工作结果 = 思维方式x热情x能力
+subtitle: 人生工作结果 = 思维方式x热情x能力
 name: 大伟的博客 
 email: 747463168@qq.com
 description: 本站是大伟的技术分享博客，参考自纯洁的微笑《技术人如何搭建自己的技术博客》。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、微服务架构相关的研究与知识分享。
@@ -140,25 +140,25 @@ navs:
 
 # labels. my blog key words
 labels:
-  # -
-  #   href: /payment.html
-  #   label: Pay     
-  #   target: _self
+  -
+    href: /mq.html
+    label: MQ    
+    target: _blank
 
-  # -
-  #   href: /fastdfs.html
-  #   label: FastDFS
-  #   target: _blank
+  -
+    href: /fastdfs.html
+    label: FastDFS
+    target: _blank
 
-  # -
-  #   href: /mongodb.html
-  #   label: MongoDB
-  #   target: _blank
+  -
+    href: /redis.html
+    label: Redis
+    target: _blank
 
-  # -
-  #   href: /docker.html
-  #   label: Docker
-  #   target: _blank
+  -
+    href: /docker.html
+    label: Docker
+    target: _blank
 
   # -
   #   href: /drools.html

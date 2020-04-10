@@ -20,12 +20,13 @@ lock: noneed
 |          | 23种设计模式          | 了解 | 掌握 |
 | 前端     | Vue2.x                | 熟悉 | 掌握 |
 |          | Editormd富文本编辑    | 熟悉 | 熟悉 |
-|          | Thymeleaf【taɪm lif】 | 了解 | 熟悉 |
+|          | Thymeleaf【taɪm lif】 | 熟悉 | 熟悉 |
 |          | Element-ui            | 熟悉 | 熟悉 |
 |          | Vue-element-admin     | 了解 | 熟悉 |
 |          | 微信小程序开发        | 了解 | 掌握 |
 | 数据库   | Mysql                 | 熟悉 | 掌握 |
-| 权限管理 | Shiro                 | 熟悉 | 熟悉 |
+| 安全框架 | Shiro                 | 熟悉 | 熟悉 |
+|          | Spring Security       | 掌握 | 掌握 |
 | 缓存     | Redis                 | 掌握 | 精通 |
 | 搜索引擎 | ElasticSearch         | 熟悉 | 掌握 |
 | 消息队列 | ActiveMQ              | 了解 | 熟悉 |

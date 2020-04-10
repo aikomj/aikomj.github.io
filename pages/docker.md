@@ -1,8 +1,8 @@
 ---
 layout: page
 title: Docker 系列文章
-titlebar: docker
-subtitle: <span class="mega-octicon octicon-flame"></span>&nbsp;&nbsp; Docker 系列教程
+titlebar: Docker
+subtitle: <span class="mega-octicon octicon-flame"></span>&nbsp;&nbsp; 相信付出的力量
 menu: docker
 css: ['blog-page.css']
 permalink: /docker

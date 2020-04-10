@@ -1,11 +1,11 @@
 ---
 layout: page
-title: FastDFS系列文章
-titlebar: FastDFS
-subtitle: <span class="mega-octicon oction-server"></span>&nbsp;&nbsp; 相信坚持的力量
-menu: fastdfs
+title: Redis系列文章
+titlebar: Redis
+subtitle: <span class="mega-octicon octicon-database"></span>&nbsp;&nbsp; 守 - 破 - 离
+menu: redis
 css: ['blog-page.css']
-permalink: /fastdfs
+permalink: /redis
 ---
 
 <div class="row">
@@ -14,7 +14,7 @@ permalink: /fastdfs
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='FastDFS' or post.keywords contains 'FastDFS' %}
+                {% if post.category=='Redis' or post.keywords contains 'Redis' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
