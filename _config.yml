@@ -64,6 +64,9 @@ defaults: []
 # Navigation. top menu list 导航顶部菜单
 menus:
   -
+    href: /gitee.html
+    label: 开源项目推荐
+  -
     href: /life.html
     label: 生活
     target: _self
