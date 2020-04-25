@@ -37,7 +37,6 @@ markdown: kramdown
 highlighter: rouge
 lsi: false
 excerpt_separator: "\n\n"
-incremental: false
 
 # 服务器选项
 port:    4001
@@ -46,13 +45,11 @@ port:    4001
 kramdown:
   input: GFM
   syntax_highlighter: rouge
-  auto_ids: true
-  footnote_nr: 1
   entity_output: as_char
-  toc_levels: 1..6
-  smart_quotes: lsquo,rsquo,ldquo,rdquo
-  enable_coderay: false
-  
+  enable_coderay: true
+
+syntax_highlighter_opts:
+   coderay_line_numbers:  nil  
 
 # Pagination 分页
 paginate: 10
