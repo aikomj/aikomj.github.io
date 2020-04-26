@@ -336,8 +336,46 @@ public @interface Transactional {
 
 
 
-Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，然后在访问数据库的Service方法上添加注解 @Transactional 便可， @Transactional放在Service类上，代表每一方法都是一个事务。例如使用mybatis，那么在mybatis的配置类上添加@EnableTransactionManagement注解
+Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，然后在访问数据库的Service方法上添加注解 @Transactional 便可， @Transactional放在Service类上，代表每一方法都是一个事务。例如使用mybatis，在mybatis的配置类上添加@EnableTransactionManagement注解
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/enable-transaction-management.gif)
+![](/assets/images/2020/enable-transaction-management.gif)
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/transaction-on-servicer.gif)
+![](/assets/images/2020/transaction-on-servicer.gif)
+
+
+
+## 6、@Autowired与@Resource的区别
+
+如UserService、UserService2是UserService的两个实现类
+
+```java
+@Service("userService1")
+public class UserService  implements UserService {}
+
+@Service("userService2")
+public class UserService2 implements UserService {}
+```
+
+那么在方法中使用接口UserService，使用@Autowired来标注时，需要加上@Qualifier区分注入具体的实现类。
+
+```java
+@Autowired
+@Qualifier("userService2")
+private IuserService userService;
+
+@Resource(name="loginService") 
+private LoginService loginService;
+
+@Autowired(required=false)@Qualifier("loginService") 
+private LoginService loginService;
+```
+
+1. @Autowired 与@Resource都可以用来装配bean，写在字段上或者setter方法上;
+
+2. <font color=red>@Autowired 默认按类型装配</font>，默认情况下依赖对象必须存在，如果要允许null值，可以设置它的required属性为false
+
+   ```java
+   @Autowired(required=false)
+   ```
+
+3. <font color=red>@Resource(这个注解属于J2EE的)默认按名称装配</font>，通过name属性指定，如果没有指定name属性，就字段名装配；如果注解写在setter方法上，默认按属性名进行装配，当找不到匹配的bean时才按照类型进行装配。注意：如果name属性一旦指定，就只会按照名称进行装配。

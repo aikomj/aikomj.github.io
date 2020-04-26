@@ -61,6 +61,9 @@ defaults: []
 # Navigation. top menu list 导航顶部菜单
 menus:
   -
+    href: /arch.html
+    label: 架构
+  -
     href: /gitee.html
     label: 开源项目推荐
   -
