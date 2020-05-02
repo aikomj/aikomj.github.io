@@ -7,7 +7,7 @@ keywords: springcloud
 excerpt: 支持分布式管理服务与配置，提供了完整的服务网格解决方案
 lock: noneed
 ---
-## 什么是Consul
+## 1、什么是Consul
 Consul是HashiCorp公司推出的开源软件，使用GO语言编写，提供了分布式系统的服务注册和发现、配置等功能，这些功能中的每一个都可以根据需要单独使用，也可以一起使用以构建全方位的服务网格。Consul不仅具有服务治理的功能，而且使用分布式一致协议RAFT算法实现，有多数据中心的高可用方案，并且很容易和Spring Cloud等微服务框架集成，使用起来非常的简单，具有简单、易用、可插排等特点，Consul提供了一种完整的服务网格解决方案。
 
 ### Consul的特点和功能
@@ -31,6 +31,7 @@ Consul是HashiCorp公司推出的开源软件，使用GO语言编写，提供了
 - WAN Gossip 它只包含Server。这些server主要分布在不同的数据中心并且通常通过因特网或者广域网通信。
 - RPC 远程过程调用。这是一个允许client请求server的请求/响应机制。
   
+
 **架构图**
 ![](/assets/images/2019/springcloud/consul-arch.png)
 
@@ -68,7 +69,7 @@ Consul提供了支持面向服务的体系结构所需的功能工具包。 这�
 
 Eureka Server端采用的是P2P的复制模式，但是它不保证复制操作一定能成功，因此它提供的是一个最终一致性的服务实例视图；Client端在Server端的注册信息有一个带期限的租约，一旦Server端在指定期间没有收到Client端发送的心跳，则Server端会认定为Client端注册的服务是不健康的，定时任务将会将其从注册表中删除。Consul与Eureka不同，Consul采用Raft算法，可以提供强一致性的保证，Consul的agent相当于Netflix Ribbon + Netflix Eureka Client，而且对应用来说相对透明，同时相对于Eureka这种集中式的心跳检测机制，Consul的agent可以参与到基于goosip协议的健康检查，分散了server端的心跳检测压力。除此之外，Consul为多数据中心提供了开箱即用的原生支持等。
 
-## Consul下载和安装
+## 2、Consul下载和安装
 Consul采用Go语言编写，支持Linux、Mac、Windows等各大操作系统，本文使用windows操作系统，下载地址：https://www.consul.io/downloads.html，下完成后解压到计算机目录下，解压成功后，只有一个可执行的consul.exe可执行文件。打开cmd终端，切换到目录，执行以下命令：
 ```
 ./consul version
@@ -96,8 +97,8 @@ consul agent -dev   # -dev表示开发模式运行，另外还有-server表示�
 ### spring cloud consul
 该项目通过自动配置并绑定到Spring环境和其他Spring编程模型成语，为Spring Boot应用程序提供Consul集成。通过几个简单的注释，您可以快速启用和配置应用程序中的常见模式，并使用基于Consul的组件构建大型分布式系统。提供的模式包括服务发现，控制总线和配置。智能路由（Zuul）和客户端负载平衡（Ribbon），断路器（Hystrix）通过与Spring Cloud Netflix的集成提供。
 
-## 使用spring cloud consul来服务注册与发现
-本小节以案例的形式来讲解如何使用Spring Cloud Consul来进行服务注册和发现的，并且使用Feign来消费服务。再讲解之前，已经启动consul的agent，并且在浏览器上http://localhost:8500能够显示正确的页面。本案例一共有2个工程，分别如下：
+## 3、服务注册与发现
+本小节以案例的形式来讲解如何使用Spring Cloud Consul来进行服务注册和发现的，并且使用Feign来消费服务。在讲解之前，已经启动consul的agent，并且在浏览器上http://localhost:8500能够显示正确的页面。本案例一共有2个工程，分别如下：
 | **工程名** | **端口** | **描述** |
 | :-------- |:-------- |:-------- |
 | consul-provider | 8763 | 服务提供者 |
@@ -199,7 +200,7 @@ public class ConsumerController {
 这说明consul-consumer已经成功调用了consul-provider的服务。这说明consul-provider的服务已经注册到了consul的注册中心上面去了。consul-consumer能够获取注册中心的注册列表来获来消费服务。
 ![](/assets/images/2019/springcloud/consul-services.png)
 
-## 使用Spring Cloud Consul Config来做服务配置中心
+## 4、服务配置中心
 Spring Cloud 提供了Spring Cloud Consul Config依赖去和Consul相集成，用来做配置中心。 现在以案例的形式来讲解如何使用Consul作为配置中心，本案例在上一个案例的consul-provider基础上进行改造。首先在工程的pom文件加上consul-config的起步依赖，代码如下：
 ```
 <dependency>
@@ -235,6 +236,7 @@ spring:
 - profileSeparator profiles配置分隔符,默认为‘,’
 - date-key为应用配置的key名字，值为整个应用配置的字符串。
   
+
 网页上访问consul的KV存储的管理界面，即http://localhost:8500/ui/dc1/kv，创建一条记录
 key值为：config/consul-provider:dev/data value值如下:
 ```
@@ -284,6 +286,8 @@ foo:
 ### 注意事项
 - consul支持的KV存储的Value值不能超过512KB
 - Consul的dev模式，所有数据都存储在内存中，重启Consul的时候会导致所有数据丢失，在正式的环境中，Consul的数据会持久化，数据不会丢失
+
+
 
 > 本文为转载文章  
 > 原文链接：https://www.fangzhipeng.com/springcloud/2019/02/14/sc-consul-g.html

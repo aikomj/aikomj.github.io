@@ -1,12 +1,11 @@
 ---
 layout: page
-title: Spring Boot 系列文章
-titlebar: spring-boot
-subtitle: <span class="mega-octicon octicon-package"></span> &nbsp;&nbsp; 锲而不舍的干到底，结果只能是成功
-menu: spring-boot
+title: Dubbo+zookeeper系列文章
+titlebar: Dubbo
+subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; 不能改变自己，和咸鱼有什么区别
+menu: Dubbo
 css: ['blog-page.css']
-permalink: /spring-boot
-keywords: Spring Boot 教程,Spring Boot 示例,Spring Boot 学习,Spring Boot 资源,Spring Boot 2.0
+permalink: /dubbo
 ---
 
 <div class="row">
@@ -15,12 +14,11 @@ keywords: Spring Boot 教程,Spring Boot 示例,Spring Boot 学习,Spring Boot �
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category =='springboot' or post.keywords contains 'springboot'%}
+                {% if post.category=='dubbo' or post.keywords contains 'dubbo' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
-                        <a class="posts-list-name bubble-float-left" href="{{ site.url }}{{ post.url }}" target="_blank">{{ post.title }}</a>
-                        <p style="color:#666">{{ post.excerpt }}</p>
+                        <a class="posts-list-name bubble-float-left" href="{{ site.url }}{{ post.url }}">{{ post.title }}</a>
                         <span class='circle'></span>
                     </div>
                 </li>

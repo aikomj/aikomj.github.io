@@ -6,11 +6,12 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title:  大伟,专注Spring Boot,Spring Cloud,Java后端技术
+title:  大伟,专注Spring Boot,Spring Cloud,Dubbo,Java后端技术
 subtitle: 人生工作结果 = 思维方式x热情x能力
 name: 大伟的博客 
 email: 747463168@qq.com
-description: 本站是大伟的技术分享博客，参考自纯洁的微笑《技术人如何搭建自己的技术博客》。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、微服务架构相关的研究与知识分享。
+description: 本站是大伟的技术分享博客，参考自纯洁的微笑《技术人如何搭建自己的技术博客》。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、
+Dubbo、微服务架构相关的研究与知识分享。
 keywords: aikomj,大伟的博客,Spring,Spring Boot,Spring Cloud,Jvm,Docker,FastDFS,Java,MQ,Redis
 encoding: "utf-8"
 favicon: favicon.ico
@@ -61,6 +62,25 @@ defaults: []
 # Navigation. top menu list 导航顶部菜单
 menus:
   -
+    href: /mq.html
+    label: MQ    
+    target: _self
+
+  -
+    href: /fastdfs.html
+    label: FastDFS
+    target: _self
+
+  -
+    href: /redis.html
+    label: Redis
+    target: _self
+
+  -
+    href: /docker.html
+    label: Docker
+    target: _self
+  -
     href: /arch.html
     label: 架构
   -
@@ -107,6 +127,10 @@ navs:
     href: /spring-cloud.html
     label: Spring Cloud
     target: _self
+  -
+    href: /dubbo.html
+    label: Dubbo    
+    target: _self
 
   -
     label: Java
@@ -143,29 +167,24 @@ navs:
 
 # labels. my blog key words
 labels:
-  -
-    href: /mq.html
-    label: MQ    
-    target: _blank
-
-  -
-    href: /fastdfs.html
-    label: FastDFS
-    target: _blank
-
-  -
-    href: /redis.html
-    label: Redis
-    target: _blank
-
-  -
-    href: /docker.html
-    label: Docker
-    target: _blank
+  # -
+  #   href: /mq.html
+  #   label: MQ    
+  #   target: _blank
 
   # -
-  #   href: /drools.html
-  #   label: Drools  
+  #   href: /fastdfs.html
+  #   label: FastDFS
+  #   target: _blank
+
+  # -
+  #   href: /redis.html
+  #   label: Redis
+  #   target: _blank
+
+  # -
+  #   href: /docker.html
+  #   label: Docker
   #   target: _blank
 
 # selected articles

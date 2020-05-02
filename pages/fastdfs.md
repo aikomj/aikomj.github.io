@@ -2,7 +2,7 @@
 layout: page
 title: FastDFS系列文章
 titlebar: FastDFS
-subtitle: <span class="mega-octicon oction-server"></span>&nbsp;&nbsp; 相信坚持的力量
+subtitle: <span class="mega-octicon oction-clippy"></span>&nbsp;&nbsp; 相信坚持的力量
 menu: fastdfs
 css: ['blog-page.css']
 permalink: /fastdfs
