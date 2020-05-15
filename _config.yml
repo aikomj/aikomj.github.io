@@ -60,6 +60,11 @@ defaults: []
 
 # Navigation. top menu list 导航顶部菜单
 menus:
+  - 
+    href: /linux.html
+    label: Linux
+    target: _self
+    
   -
     href: /mq.html
     label: MQ    
