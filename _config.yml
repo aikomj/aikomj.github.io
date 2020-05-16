@@ -6,12 +6,13 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title:  大伟,专注Spring Boot,Spring Cloud,Dubbo,Java后端技术
+title: 大伟,专注Spring Boot,Spring Cloud,Dubbo,Java后端技术
 subtitle: 人生工作结果 = 思维方式x热情x能力
-name: 大伟的博客 
+mood: 人生如程序，不是选择就是循环，时常的自我总结十分重要！
+name: 大伟的博客
 email: 747463168@qq.com
 description: 本站是大伟的技术分享博客，参考自纯洁的微笑《技术人如何搭建自己的技术博客》。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、Dubbo、微服务架构相关的研究与知识分享。
-keywords: aikomj,大伟的博客,Spring,Spring Boot,Spring Cloud,Jvm,Docker,FastDFS,Java,MQ,Redis
+keywords: Spring,Spring Boot,Spring Cloud,Jvm,Docker,FastDFS,Java,MQ,Redis
 encoding: "utf-8"
 favicon: favicon.ico
 
@@ -115,8 +116,12 @@ navs:
     subnav:
       -
         subHref: /icoding-edu.html
-        subLabel: 课程笔记
+        subLabel: 飞天班笔记
         target: _self
+      -
+        subHref: /icoding-gavin.html
+        subLabel: 黄埔班笔记
+        target: _self  
       -
         subHref: https://www.icodingedu.com/
         subLabel: 艾编程官网
