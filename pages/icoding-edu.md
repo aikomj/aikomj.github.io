@@ -2,7 +2,7 @@
 layout: page
 title: 艾编程Java架构师课程笔记
 titlebar: icoding-edu
-subtitle: <span class="mega-octicon octicon-globe"></span>&nbsp;&nbsp;日均亿级访问系统架构设计训练营，<a href="https://www.icodingedu.com/" target="_blank">更多精选课程 ，<font color="#EB9439">点我</font>查看！</a>
+subtitle: <span class="mega-octicon octicon-globe"></span>&nbsp;&nbsp;日均亿级访问系统架构设计训练营，<a href="https://www.icodingedu.com/" target="_blank">更多精选课程 ，<font color="#EB9439">点我</font>查看！</a> 有道无术，术尚可求，有术无道，止于术！
 menu: icoding-edu
 css: ['blog-page.css']
 permalink: /icoding-edu
