@@ -3,7 +3,7 @@ layout: post
 title: 一个事务必须满足ACID
 category: java
 tags: [java]
-keywords: java
+keywords: mysql
 excerpt: 原子性(Atomicity)、一致性（Consistency）、隔离性（Isolation）、持久性（Durability）
 lock: noneed
 ---

@@ -5,7 +5,7 @@ titlebar: MessageQueue
 subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; 如果你愿意改变和坚持学习，你就能脱胎换骨
 menu: MessageQueue
 css: ['blog-page.css']
-permalink: /mq
+permalink: /linux
 ---
 
 <div class="row">

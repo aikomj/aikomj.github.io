@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 观察者模式
+title: 23种设计模式之观察者模式
 category: java-design
 tags: [java-design]
 keywords: java

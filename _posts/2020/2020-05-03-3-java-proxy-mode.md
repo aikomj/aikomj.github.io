@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 代理模式
+title: 23种设计模式之代理模式
 category: java-design
 tags: [java-design]
 keywords: java

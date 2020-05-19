@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 工厂模式
+title: 23种设计模式之工厂模式
 category: java-design
 tags: [java-design]
 keywords: java

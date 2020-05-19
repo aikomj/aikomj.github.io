@@ -18,8 +18,8 @@
   font-style: italic;
 }
 .highlight .c, .highlight .cd {
-  color: #999988;
-  font-style: italic;
+  color: #a50;
+  /* font-style: italic; */
 }
 .highlight .err {
   color: #a61717;

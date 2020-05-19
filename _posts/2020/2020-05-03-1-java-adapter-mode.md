@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 适配器模式
+title: 23种设计模式之适配器模式
 category: java-design
 tags: [java-design]
 keywords: java
