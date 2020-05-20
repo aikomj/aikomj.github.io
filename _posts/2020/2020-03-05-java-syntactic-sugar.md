@@ -17,7 +17,7 @@ lock: noneed
 
 ​	java虚拟机其实并不支持语法糖的，所以在编译阶段语法糖会被还原成简单的集成语法结构，这个过程就是解语法糖。如果你去看com.sun.tools.javac.main.JavaCompiler的源码，就会发现在compile()中有一个步骤是调用desugar()，这个方法就是负责解语法糖的。
 
-![image-20200305140952384](/assets/images/2020/java-compile-desugar.png)
+![image-20200305140952384](/assets/images/2020/java/java-compile-desugar.png)
 
 ### 糖块1. switch 支持 String 与枚举
 

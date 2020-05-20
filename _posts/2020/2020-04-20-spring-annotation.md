@@ -10,7 +10,7 @@ lock: noneed
 
 ## 1、lombok的@Accessors支持链式编程
 
-```
+```java
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -338,9 +338,9 @@ public @interface Transactional {
 
 Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，然后在访问数据库的Service方法上添加注解 @Transactional 便可， @Transactional放在Service类上，代表每一方法都是一个事务。例如使用mybatis，在mybatis的配置类上添加@EnableTransactionManagement注解
 
-![](/assets/images/2020/enable-transaction-management.gif)
+![](/assets/images/2020/annotation/enable-transaction-management.gif)
 
-![](/assets/images/2020/transaction-on-servicer.gif)
+![](/assets/images/2020/annotation/transaction-on-service.gif)
 
 
 
@@ -372,10 +372,14 @@ private LoginService loginService;
 
 1. @Autowired 与@Resource都可以用来装配bean，写在字段上或者setter方法上;
 
-2. <font color=red>@Autowired 默认按类型装配</font>，默认情况下依赖对象必须存在，如果要允许null值，可以设置它的required属性为false
+2. <font color=red>@Autowired 默认按类型装配</font>
+   
+	 默认情况下依赖对象必须存在，如果要允许null值，可以设置它的required属性为false
 
    ```java
    @Autowired(required=false)
    ```
 
-3. <font color=red>@Resource(这个注解属于J2EE的)默认按名称装配</font>，通过name属性指定，如果没有指定name属性，就字段名装配；如果注解写在setter方法上，默认按属性名进行装配，当找不到匹配的bean时才按照类型进行装配。注意：如果name属性一旦指定，就只会按照名称进行装配。
+3. <font color=red>@Resource(这个注解属于J2EE的)默认按名称装配</font>
+   
+	 通过name属性指定，如果没有指定name属性，就字段名装配；如果注解写在setter方法上，默认按属性名进行装配，当找不到匹配的bean时才按照类型进行装配。注意：如果name属性一旦指定，就只会按照名称进行装配。
