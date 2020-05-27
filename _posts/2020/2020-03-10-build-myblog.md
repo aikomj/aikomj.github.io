@@ -85,7 +85,7 @@ jekyll -version
 ```sh
 # 下载github上的博客源码
 git clone https://github.com/aikomj/aikomj.github.io
-cd aikomj.github.io
+cd /www/aikomj.github.io
 gem install bundle
 #bundle install
 # 启动博客
@@ -130,7 +130,7 @@ server {
     server_name  localhost;
 
     location / {
-        root   /usr/share/nginx/html;
+        root   /www/jekyll-blog;
         index  index.html index.htm;
     }
 
@@ -138,7 +138,7 @@ server {
 
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
-        root   /usr/share/nginx/html;
+        root  /www/jekyll-blog;
     }
    
    }
@@ -147,8 +147,8 @@ server {
 将Jekyll编译的博客静态html文件输出到Nginx服务器上
 
 ```shell
-cd aikomj.github.io
-jekyll build --destination=/usr/share/nginx/html
+cd /www/aikomj.github.io
+jekyll build --destination=/www/jekyll-blog
 ```
 
 启动Nginx服务器
@@ -247,11 +247,11 @@ handler.on('push', function (event) {
 vi deploy.sh
 # 脚本内容
 echo `date`
-cd /root/aikomj.github.io
+cd /www/aikomj.github.io
 echo start pull from github 
 git pull http://github.com/aikomj/aikomj.github.io.git
 echo start build..
-jekyll build --destination=/usr/share/nginx/html
+jekyll build --destination=/www/jekyll-blog
 ```
 
 这个脚本的启动需要借助 Node 中的一个管理 forever 。forever 可以看做是一个 nodejs 的守护进程，能够启动，停止，重启我们的 app 应用。
