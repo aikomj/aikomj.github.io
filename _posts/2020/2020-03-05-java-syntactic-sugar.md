@@ -550,8 +550,9 @@ public static transient void main(String args[])
 ```java
 public static void main(String... args) {
     List<String> strList = ImmutableList.of("dalbll", "公众号：dalbll", "博客：www.dalbll.com");
-
     strList.forEach( s -> { System.out.println(s); } );
+  	// 或者
+  	strList.forEach(System.out::println);
 }
 ```
 
@@ -641,8 +642,15 @@ users.stream()
                 .or(wrapper->wrapper.eq("name","Coding2").eq("age",0));
 ```
 
+:: 双冒号 运算符，是jdk8中引入方法的lamba语法之一，作用是调用类或实例中的方法。
 
+以下是Java 8中方法引用的一些语法：
 
+    静态方法引用（static method）语法：classname::methodname 例如：Person::getAge
+    对象的实例方法引用语法：instancename::methodname 例如：System.out::println
+    对象的超类方法引用语法： super::methodname
+    类构造器引用语法： classname::new 例如：ArrayList::new
+    数组构造器引用语法： typename[]::new 例如： String[]:new
 
 
 ### 总结

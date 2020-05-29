@@ -2,7 +2,7 @@
 layout: page
 title: Python 系列文章
 titlebar: python
-subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; Python 学习教程系列文章
+subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; 
 menu: python
 css: ['blog-page.css']
 permalink: /python
@@ -19,6 +19,7 @@ permalink: /python
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
                         <a class="posts-list-name bubble-float-left" href="{{ site.url }}{{ post.url }}" target="_blank">{{ post.title }}</a>
+                        <p style="color:#666">{{ post.excerpt }}</p>
                         <p style="color:#666">{{ post.excerpt }}</p>
                         <span class='circle'></span>
                     </div>
