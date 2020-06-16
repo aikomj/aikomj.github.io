@@ -383,3 +383,42 @@ private LoginService loginService;
 3. <font color=red>@Resource(这个注解属于J2EE的)默认按名称装配</font>
    
 	 通过name属性指定，如果没有指定name属性，就字段名装配；如果注解写在setter方法上，默认按属性名进行装配，当找不到匹配的bean时才按照类型进行装配。注意：如果name属性一旦指定，就只会按照名称进行装配。
+
+## 7、@Slf4j
+
+是lombok的扩展注解，import lombok.extern.slf4j.Slf4j;
+
+如果每次不想写上
+
+```java
+private  final Logger logger = LoggerFactory.getLogger(当前类名.class);
+```
+
+可以用注解@Slf4j 来打印日志。
+
+1、首先idea需要安装lombok插件
+
+2、你的springboot项目引入依赖
+
+```xml
+<dependency>
+  <groupId>org.projectlombok</groupId>
+  <artifactId>lombok</artifactId>
+  <optional>true</optional>  可选依赖，如果间接依赖要显示声明该依赖
+</dependency>
+```
+
+3、在任意类上添加注解@Slf4j，就可以在本类中任意方法内打印日志了
+
+```java
+@Slf4j
+@RestController(value = "/test")
+public class TestController {
+    @RequestMapping(value = "/testPrint",method = RequestMethod.GET)
+    public String testPrint(){
+        log.debug("可以直接调用log打印日志了");
+        return "testPrint";
+    }   
+}
+```
+
