@@ -61,6 +61,10 @@ defaults: []
 
 # Navigation. top menu list 导航顶部菜单
 menus:
+  -
+    href: /mysql.html
+    label: mysql
+    target: _self
   - 
     href: /linux.html
     label: Linux
@@ -155,10 +159,6 @@ navs:
       -
         subHref: /java-design.html
         subLabel: 设计模式
-        target: _self
-      -
-        subHref: /mysql.html
-        subLabel: mysql
         target: _self
       # -
       #   subHref: /algorithm.html
