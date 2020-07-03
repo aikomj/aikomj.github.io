@@ -31,7 +31,7 @@ InnoDB引擎是一个索引组织表（数据和索引放在同一个文件）�
 
 
 
-### 2.1. 在sharding-jdbc中使用UUID进行ç分库
+### 2.1. 在sharding-jdbc中使用UUID进行分库
 
 第一步：分别在两个数据库db213和db214的schema shard_order下创建表
 
