@@ -53,7 +53,7 @@ public class IterateHashMapExample {
 
 Output:
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/iterate-hashmap-example.jpg)
+![](/assets/images/2020/java/iterate-hashmap-example.jpg)
 
 ## 2. 使用 Iterator 遍历 HashMap KeySet
 
@@ -80,7 +80,7 @@ public class IterateHashMapExample {
 
 Output:
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/iterate-hashmap-example.jpg)
+![](/assets/images/2020/java/iterate-hashmap-example.jpg)
 
 ## 3、使用 For-each 循环遍历 HashMap
 
@@ -105,7 +105,7 @@ public class IterateHashMapExample {
 
 Output:
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/iterate-hashmap-example.jpg)
+![](/assets/images/2020/java/iterate-hashmap-example.jpg)
 
 ## 4、使用Lambda表达式遍历HashMap
 
@@ -130,7 +130,7 @@ public class IterateHashMapExample {
 
 Output:
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/iterate-hashmap-example.jpg)
+![](/assets/images/2020/java/iterate-hashmap-example.jpg)
 
 ## 5、使用Stream API 遍历HashMap
 
@@ -155,4 +155,4 @@ public class IterateHashMapExample {
 
 Output:
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/iterate-hashmap-example.jpg)
+![](/assets/images/2020/java/iterate-hashmap-example.jpg)

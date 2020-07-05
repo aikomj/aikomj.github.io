@@ -63,7 +63,7 @@ defaults: []
 menus:
   -
     href: /mysql.html
-    label: mysql
+    label: Mysql
     target: _self
   - 
     href: /linux.html
@@ -86,15 +86,24 @@ menus:
     target: _self
 
   -
-    href: /docker.html
+    href: /elasticsearch.html
+    label: ES
+    target: _self
+
+  - href: /docker.html
     label: Docker
     target: _self
+
   -
     href: /arch.html
     label: 架构
   -
     href: /gitee.html
     label: 开源项目推荐
+
+  - href: /tool.html
+    label: 工具
+    target: _self
   -
     href: /life.html
     label: 生活

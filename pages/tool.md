@@ -1,11 +1,20 @@
+---
+layout: page
+title: 工作中用到的工具
+titlebar: life
+subtitle: <span class="mega-octicon octicon-organization"></span>&nbsp;&nbsp; 盘点下我用的顺手的那些工具！
+menu: life
+css: ['blog-page.css']
+permalink: /tool
+---
+
 <div class="row">
 
     <div class="col-md-12">
 
-        <!-- Blog list -->
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='springcloud' or post.tag=='springcloud' or post.keywords contains 'springcloud' %}
+                {% if post.category=='tool' or post.tag == 'tool' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
@@ -16,7 +25,7 @@
                 </li>
                 {% endif %}
             {% endfor %}
-        </ul>
+        </ul> 
 
         <!-- Pagination -->
         {% include pagination.html %}
@@ -25,7 +34,6 @@
        <div class="comment">
          {% include comments.html %}
        </div>
-
     </div>
 
 </div>
