@@ -15,7 +15,7 @@ keywords: Spring Boot 教程,Spring Boot 示例,Spring Boot 学习,Spring Boot �
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category =='springboot' or post.keywords contains 'springboot'%}
+                {% if post.category =='springboot' or post.tags == 'springboot' or post.keywords contains 'springboot'%}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
