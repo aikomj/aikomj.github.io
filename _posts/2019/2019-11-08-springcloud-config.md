@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringCloud教程第8篇：config（F版本）
+title: SpringCloud教程第8篇：SpringCloud Config（F版本）
 category: springcloud
 tags: [springcloud]
 keywords: springcloud
