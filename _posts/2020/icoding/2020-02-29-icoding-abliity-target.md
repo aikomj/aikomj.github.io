@@ -4,7 +4,7 @@ title: 个人技术栈表规划
 category: icoding-edu
 tags: [icoding-edu]
 keywords: icoding
-excerpt: 努力，前进
+excerpt: 百折不挠，死磕到底
 lock: noneed
 ---
 
@@ -13,7 +13,7 @@ lock: noneed
 | 分类     | 技术栈                | 程度 | 目标 |
 | -------- | --------------------- | ---- | ---- |
 | Java     | JUC                   | 熟悉 | 掌握 |
-|          | JVM                   | 了解 | 掌握 |
+|          | JVM                   | 熟悉 | 掌握 |
 |          | SpringBoot            | 熟悉 | 掌握 |
 |          | MybatisPlus           | 掌握 | 精通 |
 |          | Swagger2              | 掌握 | 精通 |
@@ -23,26 +23,28 @@ lock: noneed
 |          | Thymeleaf【taɪm lif】 | 熟悉 | 熟悉 |
 |          | Element-ui            | 熟悉 | 熟悉 |
 |          | Vue-element-admin     | 熟悉 | 熟悉 |
-|          | 微信小程序开发        | 了解 | 掌握 |
 | 数据库   | Mysql                 | 熟悉 | 掌握 |
+|          | Mycat                 | 掌握 | 掌握 |
+|          | ShardingJdbc          | 掌握 | 掌握 |
+|          | Seata分布式事务框架   | 掌握 | 掌握 |
 | 安全框架 | Shiro                 | 熟悉 | 熟悉 |
-|          | Spring Security       | 掌握 | 掌握 |
+|          | SpringSecurity        | 掌握 | 掌握 |
 | 缓存     | Redis                 | 掌握 | 精通 |
 | 搜索引擎 | ElasticSearch         | 熟悉 | 掌握 |
-| 消息队列 | ActiveMQ              | 了解 | 熟悉 |
-|          | RabbitMQ              | 熟悉 | 掌握 |
-|          | Kafka                 | 了解 | 掌握 |
+| 消息队列 | ActiveMQ              | 熟悉 | 熟悉 |
+|          | RabbitMQ              | 掌握 | 掌握 |
+|          | Kafka                 | 掌握 | 掌握 |
 | 部署     | Maven                 | 了解 | 熟悉 |
 |          | Nginx                 | 熟悉 | 熟悉 |
-|          | Docker                | 了解 | 掌握 |
+|          | Haproxy               | 熟悉 | 熟悉 |
+|          | Docker                | 熟悉 | 掌握 |
+|          | Jenkins               | 熟悉 | 掌握 |
 | 微服务   | Dubbo                 | 了解 | 掌握 |
-|          | ZooKeeper             | 了解 | 掌握 |
+|          | ZooKeeper             | 熟悉 | 掌握 |
 |          | SpringCloud           | 熟悉 | 掌握 |
 |          | Nacos(阿里)           | 熟悉 | 熟悉 |
 |          | Sentinel(阿里)        | 熟悉 | 熟悉 |
 | 文件存储 | FastDFS               | 了解 | 掌握 |
-
-
 
 > 关于就业
 
@@ -65,5 +67,8 @@ lock: noneed
 
 
 > 工作结果 = 思维方式 x 热情 x 能力  
-> 更新日期 2020-05-21
+> 更新日期 2020-07-17
 
+
+
+进程和线程的比喻：一个火锅一个人吃，就是单进程单线程，一个火锅多个人吃，就是单进程多线程，多个火锅多个人吃，就是多进程多线程
