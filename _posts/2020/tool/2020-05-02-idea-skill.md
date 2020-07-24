@@ -30,7 +30,7 @@ lock: noneed
 
 
 
-## 2、 快捷键
+## 2、快捷键
 
 - 查询引用（类，方法在哪里被使用了）
 
@@ -49,8 +49,12 @@ lock: noneed
 - 自动补全变量返回值,
 
   ![](/assets/images/tools/idea-extract-variabl.gif)
-  
-  
+
+- 快速生成环绕代码
+
+  ![](/assets/images/tools/idea-try.jpg)
+
+
 
 ## 3、常见报错
 
@@ -76,3 +80,14 @@ lock: noneed
 
 配置source和target都为1.8（根据自己的需求设置）。正是因为pom中没有设置jdk版本，所以每次修改pom后重新运行，都会恢复默认版本1.5。
 
+4、本地maven仓库
+
+像aliyun-java-vod-upload-1.4.12.jar依赖还没有开源，所以maven都不会有这个依赖，maven打包的时候是没有这个jar包的，导致程序启动失败，解决办法就是把它添加到本地Maven仓库：
+
+执行下面的maven命令
+
+```shell
+mvn install:install-file -DgroupId=com.aliyun -DartifactId=aliyun-java-vod-upload -Dversion=1.4.12 -Dpackaging=jar -Dfile=/Users/xjw/Downloads/VODUploadDemo-java-1.4.12/lib/aliyun-java-vod-upload-1.4.12.jar
+```
+
+![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/maven-local-jar.jpg)
