@@ -8,7 +8,7 @@ excerpt: Jekyll静态博客
 lock: noneed
 ---
 
-## 使用自己的服务器部署博客
+## 1、使用自己的服务器部署博客
 
 前段时间，阅读了纯洁的微笑的博文[技术人如何搭建自己的博客](http://www.ityouknow.com/other/2018/09/16/create-blog.html)这篇文章在github搭建了个人博客，但是github在国外，网络极其不稳定，让人抓狂，于是又阅读了方志朋的[程序员如果搭建自己的个人博客](https://www.fangzhipeng.com/life/2018/10/14/how-to-build-blog.html)把博客迁移到腾讯云服务器上，下面是搭建过程。
 
@@ -104,6 +104,8 @@ jekyll serve --port 80
 
 ### 部署到nginx服务器上
 
+> Yum 安装nginx
+
 通过Jekyll编译后的静态文件需要挂载到Nginx服务器，需要安装Nginx服务器。 安装过程参考了http://nginx.org/en/linux_packages.html#mainline
 
 按照文档，新建文件/etc/yum.repos.d/nginx.repo，在文件中添加以下内容并保存：
@@ -172,7 +174,104 @@ listen  80;
     }
 ```
 
-### 自动化部署
+> docker安装nginx
+
+```sh
+docker pull nginx:1.10
+
+# 先运行，获取配置文件
+docker run -p 80:80 --name nginx \
+-v /mydata/nginx/html:/usr/share/nginx/html \
+-v /mydata/nginx/logs:/var/log/nginx  \
+-d nginx:1.10
+# 将容器内的配置文件拷贝到指定目录：
+docker container cp nginx:/etc/nginx /mydata/nginx/
+# 修改文件名称：
+mv nginx conf
+# 终止并删除容器：
+docker stop nginx
+docker rm nginx
+
+# 重新创建容器，并指定挂载目录
+docker run -p 80:80 --name nginx \
+-v /mydata/nginx/html:/usr/share/nginx/html \
+-v /mydata/nginx/logs:/var/log/nginx  \
+-v /mydata/nginx/conf:/etc/nginx \
+-d nginx:1.10
+```
+
+> 直接下载解压安装tar包
+
+```sh
+# 1 nginx必备软件，已安装忽略
+# GCC编译工具 PCRE库 支持正则 zlib库 gzip格式的压缩
+# openssl开发库,支持https协议以及md5 和 sha1等散列函数
+yum install -y gcc gcc-c++ pcre pcre-devel zlib zlib-devel
+
+yum install -y openssl openssl-devel
+
+wget http://nginx.org/download/nginx-1.18.0.tar.gz
+# 1、解压
+[root@helloworld opt]# tar -zxvf nginx-1.18.0.tar.gz
+# 2、配置
+[root@helloworld opt] cd nginx-1.18.0
+[root@helloworld nginx-1.18.0]# ./configure 
+...
+  nginx path prefix: "/usr/local/nginx"
+  nginx binary file: "/usr/local/nginx/sbin/nginx"
+  nginx modules path: "/usr/local/nginx/modules"
+  nginx configuration prefix: "/usr/local/nginx/conf"
+  nginx configuration file: "/usr/local/nginx/conf/nginx.conf"
+  nginx pid file: "/usr/local/nginx/logs/nginx.pid"
+  nginx error log file: "/usr/local/nginx/logs/error.log"
+  nginx http access log file: "/usr/local/nginx/logs/access.log"
+  nginx http client request body temporary files: "client_body_temp"
+  nginx http proxy temporary files: "proxy_temp"
+  nginx http fastcgi temporary files: "fastcgi_temp"
+  nginx http uwsgi temporary files: "uwsgi_temp"
+  nginx http scgi temporary files: "scgi_temp"
+
+# 如果报错了是不是上面的gcc环境是不是没安装好
+# 3、安装
+[root@helloworld nginx-1.18.0]# make && make install
+# 4、安装成功，到nginx的目录 /usr/local/nginx
+cd /usr/local/nginx
+[root@helloworld nginx]# ls
+conf  html  logs  sbin
+# 启动
+[root@helloworld nginx]# ./sbin/nginx
+# 查看nginx是否启动
+ps -ef | grep nginx
+# 设置全局的nginx命令
+cp /usr/local/nginx/sbin/nginx /bin/
+# 设置开机启动
+
+# 5、设置开机启动
+cd /lib/systemd/system/
+vi nginx.service
+# 编辑nginx.service内容如下
+[Unit]
+Description=nginx service
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/nginx/sbin/nginx
+ExecReload=/usr/local/nginx/sbin/nginx -s reload
+ExecStop=/usr/local/nginx/sbin/nginx -s quit
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+# 开启ngin开机启动
+systemctl enable nginx
+# 关闭开机启动
+systemctl disable nginx
+
+```
+
+## 2、自动化部署
 
 #### 配置webhook
 
@@ -286,7 +385,7 @@ location = /deploy {
 
 
 
-## Jekyll的目录结构
+## 3、Jekyll的目录结构
 
 Jekyll 官网地址：[http://jekyllcn.com/docs/home/，通过
 
@@ -321,6 +420,132 @@ html代码段
 
 > 扩展阅读：[http://jmcglone.com/guides/github-pages/](http://jmcglone.com/guides/github-pages/)
 
-## Jekyll常用语法
+## 4、Jekyll常用语法
 
 ![](/assets/images/2020/icoding/jekyll-language.gif)
+
+
+
+## 5、博客迁移到gitee码云上
+
+下面记录于2020-08-06
+
+博客代码放到github上，云服务器放在国内，使用了webhook功能自动化部署，但有时侯也会因为网络的原因，没有通知到国内的服务器进行下拉代码自动部署，考虑到这个问题，尝试把博客代码迁移到gitee上。
+
+### 同步github仓库
+
+这里我使用从github导入仓库gitee的方式
+
+参考 [https://gitee.com/help/articles/4284#article-header0](https://gitee.com/help/articles/4284#article-header0)
+
+![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee.jpg)
+
+文章内介绍了gitee 和github同步更新的3种方式，我选择了方式1
+
+首先通过 git remote -v 查看您要同步的仓库的远程库列表，如果在列表中没有您码云的远程库地址，您需要新增一个地址
+
+```sh
+git remote add 远程库名 远程库地址
+eg: git remote add gitee git@github.com:xxx/xxx.git
+```
+
+![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-2.jpg)
+
+修改提交到远程仓库的名字
+
+```sh
+# 查看项目里的.git文件配置的远程仓库地址，任何时候都不要忘记使用-help命令查看帮助命令
+xjwdeMacBook:aikomj.github.io xjw$ git remote -v
+git remote rename  origin github
+git remote rename aikomj.github.io gitee
+```
+
+![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-3.jpg)
+
+注意：这里同步的意思是push代码到远程仓库时，分别选择gitee和github各自push
+
+![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-4.jpg)
+
+由于我是新增的gitee远程仓库地址，所以本地git并没有它的提交记录，所以会显示之前全部的github记录给你，让你提交，但没必要提交历史的push，只提交最新的push，因为gitee上的仓库初始化已与github上的仓库一致，所以只需提交最新的。
+
+
+
+还有另外一种方式，在gitee上的仓库点击“强制“同步gitee和github上的代码
+
+![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-5.jpg)
+
+
+
+### 自动部署
+
+前面使用github-webhook-handler来触发构建脚本的方式已不适用于码云上的仓库，需要使用这个开源项目
+
+[https://gitee.com/GLUESTICK/auto-deployment](https://gitee.com/GLUESTICK/auto-deployment)
+
+![](/assets/images/2020/blog/auto-deployment.jpg)
+
+它也是运行在nodejs环境下的自动化部署插件，在gitee配置webhook后，push项目即可自动部署至服务器。
+
+```sh
+# 创建一个目录
+[root@helloworld local]# mkdir jekyll-blog-auto-deploy
+cd jekyll-blog-auto-deploy
+# 执行,初始化一个npm项目，只有一个package.json文件
+[root@helloworld jekyll-blog-auto-deploy]# npm init
+[root@helloworld jekyll-blog-auto-deploy]# npm install auto-deployment
+# 创建一个js文件
+[root@helloworld jekyll-blog-auto-deploy]# vi deploy.js
+const deployment = require('auto-deployment');
+deployment({
+    port:7777,
+    method:'POST',
+    url:'/jkwebhook',		# 这里我使用nginx代理路由
+    acceptToken:'1qaz2wsx3edc', # 配置仓库的webhook时填写的密码
+    userAgnet:"git-oschina-hook",
+    cmd:[											
+        'sh ./deploy.sh'
+    ]
+});
+
+# 3、运行这个js
+node deploy.js
+# 使用nohup 后台运行
+nohup node deploy.js > out.log 2>&1 &
+# 如果运行成功，控制台将会打印出成功的结果
+
+# 4、同目录下创建deploy.sh
+vi deploy.sh
+cd /www/aikomj.github.io
+echo start pull from github 
+git pull http://github.com/aikomj/aikomj.github.io.git
+echo start build..
+jekyll build --destination=/www/jekyll-blog
+```
+
+**参数说明**
+
+| 属性名      | 说明         | 类型   | 必填 | 可选值   |
+| ----------- | ------------ | ------ | ---- | -------- |
+| port        | 端口         | Number | 是   | -        |
+| method      | 请求方法     | string | 是   | POST/GET |
+| url         | 链接         | string | 是   | '/'      |
+| acceptToken | 认证         | string | 是   | -        |
+| userAgnet   | ua           | string | 是   | -        |
+| cmd         | 要执行的命令 | arr    | 是   | -        |
+
+2、gitee仓库配置webhook
+
+![](/assets/images/2020/blog/webhook.jpg)
+
+3、nginx添加路由
+
+```sh
+location = /jkwebhook {
+          proxy_pass http://127.0.0.1:7777/jkwebhook;
+       }
+       
+# 重启nginx
+[root@helloworld conf]# nginx -s reload
+```
+
+完成。
