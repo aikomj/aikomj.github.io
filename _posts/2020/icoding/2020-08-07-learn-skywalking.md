@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 测试测试体验分布式系统的监控工具Skywalking
+title: 体验分布式系统的监控工具Skywalking
 category: springcloud
 tags: [springcloud]
 keywords: skywalking
@@ -29,7 +29,7 @@ Skywalking是一个分布式系统的应用程序性能监视工具，专为微�
 
 ## 3、skywalking安全漏洞
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/springcloud/skywalking-sql-bug.jpg)
+![](/assets/images/2020/springcloud/skywalking-sql-bug.jpg)
 
 > 本文为转载文章  
 > 原文链接：https://www.fangzhipeng.com/architecture/2020/06/12/skywalking-test.html
