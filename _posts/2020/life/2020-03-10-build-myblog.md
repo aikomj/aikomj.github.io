@@ -554,3 +554,97 @@ location = /jkwebhook {
 ```
 
 完成。
+
+> 发现webhook的请求经常超时
+
+查看上面开源的auto-deplyment的源码，webhook触发后它执行的是模块auto-deployment里面的index.js文件，
+
+我把它修改了一下，就是不用等待它把命令都执行完才返回
+
+```js
+let init = function(option){
+    http.createServer(function(req, res){
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('X-Foo', 'bar');
+       // console.log(req.method);
+       // console.log(req.url);
+        if(req.headers['x-gitee-token']===option.acceptToken && req.method===option.method && req.url === option.url && req.headers['user-agent']==='git-oschina-hook') {
+            // 验证成功
+            let loop = function loop(i){
+               run().execute(option.cmd[i],(success)=>{
+                    if(i<option.cmd.length-1) {
+                        if(success===true) {
+                            i++;
+                            loop(i);
+                        } else {
+                        /*
+                            console.log('fail-500');
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('fail');
+                            return false;*/
+                        }
+                    } else {
+                       /* console.log('success');
+                        res.writeHead(200, { 'Content-Type': 'text/plain' });
+                        res.end('success');*/
+                    }
+                });
+                // run_cmd(option.cmd[0],option.cmd[1], function(text){ console.log(text) });
+            };
+            loop(0);
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end('success');
+        } else {
+            console.log('fail-402')
+            res.writeHead(402, { 'Content-Type': 'text/plain' });
+            res.end('fail');
+        }
+
+    }).listen(option.port);
+    console.log('自动部署服务启动于：' + system + '操作系统，端口号：' + option.port);
+};
+```
+
+### 开机启动脚本
+
+参考博客：[https://www.cnblogs.com/liujunjun/p/11849907.html](https://www.cnblogs.com/liujunjun/p/11849907.html)
+
+在centos7中增加脚本有两种常用的方法，以脚本autostart.sh为例：
+
+```sh
+#!/bin/bash
+#description:开机自启脚本
+/usr/local/tomcat/bin/startup.sh  #启动tomcat
+nohup node /usr/local/jekyll-blog-auto-deploy/deploy.js > out.log 2>&1 &  # 后台执行
+```
+
+> 方法一
+
+```sh
+# 1、赋予脚本可执行权限（/opt/script/autostart.sh是你的脚本路径）
+chmod +x /opt/script/autostart.sh 
+
+# 2、打开/etc/rc.d/rc.local文件，在末尾增加如下内容
+/opt/script/autostart.sh 
+
+# 3、在centos7中，/etc/rc.d/rc.local的权限被降低了，所以需要执行如下命令赋予其可执行权限
+chmod +x /etc/rc.d/rc.local
+```
+
+> 方法二
+
+service httpd start 其实是启动了存放在/etc/init.d目录下的脚本。
+
+```sh
+# 1、将脚本移动到/etc/rc.d/init.d目录下
+mv  /opt/script/autostart.sh /etc/rc.d/init.d
+
+# 2、增加脚本的可执行权限
+chmod +x  /etc/rc.d/init.d/autostart.sh
+
+# 3、添加脚本到开机自动启动项目中
+cd /etc/rc.d/init.d
+chkconfig --add autostart.sh
+chkconfig autostart.sh on
+```
+
