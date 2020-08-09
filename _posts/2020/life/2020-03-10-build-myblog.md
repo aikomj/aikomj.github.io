@@ -264,11 +264,16 @@ PrivateTmp=true
 [Install]
 WantedBy=multi-user.target
 
-# 开启ngin开机启动
+# 开启nginx开机启动
 systemctl enable nginx
-# 关闭开机启动
+# 关闭nginx开机启动
 systemctl disable nginx
-
+# 查看 所有服务,enable表示开机启动，disabled 表示不开机启动
+systemctl list-unit-files
+# 查看 所有开机启动的服务，centos7已不使用chkconfig --list查看
+systemctl list-unit-files |grep enable
+# 查看nginx是否已开机启动
+systemctl list-unit-files |grep nginx
 ```
 
 ## 2、自动化部署
