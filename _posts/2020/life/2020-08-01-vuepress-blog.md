@@ -148,7 +148,7 @@ npm run build
 # 2、提交public目录下更新的文章
 ```
 
-发现这样提交，每次public都是全新的，感觉浪费流量，资源什么的，不爽，如果我仅需提交docs的更新，自动拉取代码，
+发现这样提交，每次public都是全新的，浪费流量，资源什么的，不爽，如果我仅需提交docs的更新，自动拉取代码，
 
 执行npm run build，自动部署就不用搞这些了，应该要放到自己的服务器上才行
 
@@ -156,7 +156,7 @@ npm run build
 
 
 
-参考：
+> 参考：
 
 vuepress的官方文档：[https://vuepress.vuejs.org/zh/guide/getting-started.html](https://vuepress.vuejs.org/zh/guide/getting-started.html)
 
@@ -166,5 +166,185 @@ vuepress-theme-reco的主题文档: [https://vuepress-theme-reco.recoluan.com/vi
 
 
 
+## 5、云服务器自动部署
 
+1、git安装
 
+```sh
+# 安装git
+yum install -y git
+# 查看版本
+git --version
+git version 1.8.3.1
+```
+
+2、clone代码到/www目录下
+
+```sh
+[root@aliserver www]# git clone https://gitee.com/jacobmj/vuepress-blog.git
+```
+
+3、docker 安装nginx
+
+```sh
+docker pull nginx:1.10
+
+# 先运行，获取配置文件
+docker run -p 80:80 --name nginx \
+-v /mydata/nginx/html:/usr/share/nginx/html \
+-v /mydata/nginx/logs:/var/log/nginx  \
+-d nginx:1.10
+# 将容器内的配置文件拷贝到指定目录：
+docker container cp nginx:/etc/nginx /mydata/nginx/
+# /mydata/nginx下修改文件名称：
+mv nginx conf
+# 终止并删除容器：
+docker stop nginx
+docker rm nginx
+
+# 重新创建容器，并指定挂载目录
+docker run -p 80:80 --name nginx \
+-v /mydata/nginx/html:/usr/share/nginx/html \
+-v /mydata/nginx/logs:/var/log/nginx  \
+-v /mydata/nginx/conf:/etc/nginx \
+-d nginx:1.10
+```
+
+4、/mydata/nginx/conf 下配置路由
+
+```sh
+[root@aliserver conf.d]# ls
+default.conf
+# 修改default.conf,添加路由
+location /vuepress-blog {
+	alias   /www/vuepress-blog/public;
+	index  index.html index.htm;
+}
+```
+
+![](/assets/images/2020/vuepress/nginx-location.jpg)
+
+5、自动构建
+
+使用开源项目[https://gitee.com/GLUESTICK/auto-deployment](https://gitee.com/GLUESTICK/auto-deployment)
+
+它是运行在nodejs环境下的自动化部署插件，所以要先安装nodejs，gitee配置webhook后，push代码触发自动部署至服务器。
+
+**安装node**
+
+```sh
+wget https://nodejs.org/dist/v12.18.3/node-v12.18.3-linux-x64.tar.gz
+tar -zxvf node-v12.18.3-linux-x64.tar.gz
+# 创建软链接
+ln -s ~/node-12.18.3/bin/node /usr/bin/node
+ln -s ~/node-12.18.3/bin/npm /usr/bin/npm
+# 查看node 版本
+node -v
+```
+
+**创建自动部署的vue项目**
+
+```sh
+# 1、创建目录，npm 初始化项目
+[root@aliserver local]# mkdir vpblog-deploy
+[root@aliserver local]# cd vpblog-deploy/
+[root@aliserver local]# npm init
+# 安装模块
+[root@aliserver local]# npm install auto-deployment
+
+# 2、创建deploy.js
+[root@aliserver vpblog-deploy]# vi deploy.js
+const deployment = require('auto-deployment');
+deployment({
+    port:7777,
+    method:'POST',
+    url:'/vpwebhook',		  # 访问的路由
+    acceptToken:'jacob1qaz2wsx3edc', # 配置仓库的webhooks时填写的密码，它是明文发送的	
+    userAgnet:"git-oschina-hook",
+    cmd:[											
+        'sh /usr/local/vpblog-deploy/deploy.sh'  # 执行的构建脚本
+    ]
+});
+
+# 3、创建deploy.sh
+[root@aliserver vpblog-deploy]# vi deploy.sh
+cd /www/vuepress-blog
+echo start pull from gitee
+git pull https://gitee.com/jacobmj/vuepress-blog.git
+echo start build..
+npm run build
+
+# 4、修改自动部署模块内index.js，不用等待所有命令执行完毕
+[root@aliserver vpblog-deploy]# cd node_modules/auto-deployment/
+[root@aliserver auto-deployment]# vi index.js 
+let init = function(option){
+    http.createServer(function(req, res){
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('X-Foo', 'bar');
+        console.log(req.method);
+        console.log(req.url);
+        if(req.headers['x-gitee-token']===option.acceptToken && req.method===option.method && req.url === option.url && req.headers['user-agent']==='git-oschina-hook') {
+            // 验证成功
+            let loop = function loop(i){
+                run().execute(option.cmd[i],(success)=>{
+                    if(i<option.cmd.length-1) {
+                        if(success===true) {
+                            i++;
+                            loop(i);
+                        } else {
+                           /* console.log('fail');
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('fail');
+                            return false;*/
+                        }
+                    } else {
+                      /*  console.log('success');
+                        res.writeHead(200, { 'Content-Type': 'text/plain' });
+                        res.end('success');
+                     */
+                     }
+                });
+            };
+            loop(0);
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end('success');            
+        } else {
+            res.writeHead(402, { 'Content-Type': 'text/plain' });
+            res.end('fail');
+        }
+
+    }).listen(option.port);
+    console.log('自动部署服务启动于：' + system + '操作系统，端口号：' + option.port);
+};
+
+# 5、运行deploy.js
+node deploy.js
+# 使用nohup 后台运行
+nohup node deploy.js > out.log 2>&1 &
+```
+
+6、nginx配置路由反向代理
+
+```sh
+# 上面使用docker安装nginx，挂载的配置文件目录在/mydata/nginx/conf
+location = /vpwebhook {
+	proxy_pass http://172.18.196.184:7777/vpwebhook;  # 注意使用docker安装nginx,这里要使用宿主机的内网ip
+}
+
+# 重启nginx
+[root@aliserver ~]# docker restart nginx
+```
+
+7、配置项目仓库的webhook
+
+![](/assets/images/2020/vuepress/vpblog-webhook.jpg)
+
+> 测试
+
+![](/assets/images/2020/vuepress/vpblog-webhook-2.jpg)
+
+访问博客 [http://47.113.95.179/vuepress-blog/](http://47.113.95.179/vuepress-blog/)
+
+![](/assets/images/2020/vuepress/vuepress-blog-1.jpg)
+
+到此，自动部署实现完成，其实是可以使用jenkins实现的，只是在普通博客上使用就太重了

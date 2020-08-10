@@ -132,7 +132,7 @@ server {
     server_name  localhost;
 
     location / {
-        root   /www/jekyll-blog;
+        alias   /www/jekyll-blog;
         index  index.html index.htm;
     }
 
@@ -141,9 +141,8 @@ server {
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
         root  /www/jekyll-blog;
-    }
-   
-   }
+    }   
+}
 ```
 
 将Jekyll编译的博客静态html文件输出到Nginx服务器上
@@ -508,7 +507,7 @@ deployment({
     acceptToken:'1qaz2wsx3edc', # 配置仓库的webhook时填写的密码
     userAgnet:"git-oschina-hook",
     cmd:[											
-        'sh ./deploy.sh'
+        'sh /usr/local/jekyll-blog-auto-deploy/deploy.sh'
     ]
 });
 
@@ -521,8 +520,8 @@ nohup node deploy.js > out.log 2>&1 &
 # 4、同目录下创建deploy.sh
 vi deploy.sh
 cd /www/aikomj.github.io
-echo start pull from github 
-git pull http://github.com/aikomj/aikomj.github.io.git
+echo start pull from gitee
+git pull http://gitee.com/jacobmj/aikomj.github.io.git
 echo start build..
 jekyll build --destination=/www/jekyll-blog
 ```
