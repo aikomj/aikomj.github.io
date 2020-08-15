@@ -211,6 +211,16 @@ springboot工程启动会建立es的索引映射
 
 
 
+### 关闭
+
+```sh
+# 查看java进程
+[esuser@helloworld ~]$ jps
+kill 进程ID
+```
+
+![](/assets/images/2020/springcloud/skywalking/skywalking-jps.jpg)
+
 
 
 ## 3、skywalking安全漏洞
