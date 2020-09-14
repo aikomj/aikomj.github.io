@@ -3,14 +3,14 @@ layout: post
 title: oracle的sql优化策略，快速插入大量数量
 category: mysql
 tags: [mysql]
-keywords:oracle
+keywords: oracle
 excerpt: 基本的sql优化策略，insert append解析，分清redo与undo,如何开始插入大量数据
 lock: noneed
 ---
 
 ## 1、sql优化策略
 
-要会看执行计划
+要会看执行计划，看io的耗费，cpu的耗费，表的索引扫描还是全表扫描
 
 > 1、尽量使用SELECT EXISTS 替代SELECT IN
 
@@ -81,10 +81,8 @@ insert /*+ APPEND */  into test1 select * from dba_objects;
 ```sql
 insert into tab1 select * from tab2; 
 commit;
--- 千万级别的数据插入产生arch归档会比较快
+-- 千万级别的数据插入产生arch归档日志文件会比较快
 ```
-
-
 
 ### 分清redo与undo
 
@@ -150,6 +148,225 @@ alter session enable parallel dml;
 insert /*+ parallel */ into tab1 select * from tab2; 
 commit;
 -- 与上面的直接插入相反（单线程与多线程）
+```
+
+## 4、DML与锁
+
+### delete与truncate的区别
+
+- delete会锁定行，truncate会锁定整张表
+
+- delete不影响表所占用的extent,HWM高水位线保持不变，
+
+  truncate默认会将占用空间会释放到minextents（除非使用reuse storage），truncate会将高水线复位回到最开始。
+
+### 锁类型
+
+- 排他锁，只有一个事务在某个时间点持有某个资源
+
+- 共享锁 ，多个事务同时持有某个资源
+
+### 行锁原理
+
+行级锁的信息是置于数据块block中的，如果要修改某一条记录的值，就会访问相应的block块，并且分配一个ITL，然后通过rowid访问rowpiece header 行头信息，如果第二个字节lock byte 为0，则将其改为分配的ITL slot number 槽号码，lock  byte只占用1个字节，最大值为255，这也是为什么maxtrans最大为255。另外一个事务如果也想要修改数据，就会发现lock  byte不为0，如果第一个事务还没有结束，则第二个事务进入enqueue（入队列相对就是dequeue出队列）等待，也就是transaction enqueue。
+
+当一行被修改时，oracle通过回滚段undo空间提供数据的一致性读。一个DML操作，会对表和行加锁，也就是v$lock中的TM锁（表锁）和TX锁（行锁）,
+
+- TM锁，也就是 row-X (SX)锁，保证在事务结束之前，表的结构不会被更改。多个事务可以同时持有相同表的sx锁。
+- TX锁，行排他锁。
+
+v$lock.LMODE字段中的数字对应的锁类型
+
+0 -none
+
+1 -null (NULL)
+
+2 -row-S (SS)
+
+3 -row-X (SX)
+
+4 -share (S)
+
+5 -S/Row-X (SSX)
+
+6 -exclusive (X)
+
+## 5、阻塞
+
+### insert阻塞
+
+> 普通 insert
+
+insert操作会对表加3级rx锁，和行排他锁，但是一般不会发生阻塞，因为读一致性的关系，在没提交之前只有当前session才可以操作新插入的行，对于其他事务来说 新增的记录是不可见的。
+
+> append insert 直接路径加载
+
+通过v$lock 可用看到它会给表和行都会加6级的排他锁，从而阻塞该表除了select外的所有DML操作，直到insert commit。例子：
+
+```sql
+-- append插入
+insert /*+ append_values */ into tun2_tab values (1) ;
+-- 查看锁情况
+select sid , type , lmode , request , block from v$lock where sid = (select sidfrom v$mystat where rownum<2) 
+SID  TYPE  LMODE   REQUEST    BLOCK
+-------------- ---------- ---------- ----------
+  22 AE            4          0          0
+  22 TM            6          0          0
+  22 TX            6          0         0
+
+-- 另一个session会话 
+update tun2_tab set id=3 ;
+waiting...
+-- 查看锁情况
+select sid , type , id1 , lmode , request , block
+from v$lock l
+where sid in (select session_id from v$locked_object)
+and type in ('TM', 'TX')
+order by 1 ;
+
+SID   TYPE        ID1     LMODE    REQUEST      BLOCK
+-------------- ---------- ---------- ---------- ----------
+22 TM        82618          6          0          1        --session1 包含了表6级锁，它正在阻塞其他的事务
+22 TX       524296          6          0          0
+24 TM        82618          0          3          0        --session2 它正在请求表的3级锁。
+```
+
+### 主键和唯一键引发的阻塞
+
+```sql
+-- 添加主键
+alter table tun2_tab add primary key (id) ;
+
+-- session1 session_id=22: 插入数据
+insert into tun2_tab values (1) ;
+1 rowcreated
+ 
+-- session1 session_id=24: 插入数据, 同一个主键值会发生阻塞，不同主键值不会
+insert into tun2_tab values (1) ;
+waiting...
+
+-- 查看锁情况
+select sid , type , id1 , lmode , request , block
+from v$lock l
+where sid in (select session_id from v$locked_object)
+and type in ('TM', 'TX')
+order by 1 ;
+
+SID TYPE        ID1     LMODE    REQUEST      BLOCK
+  22 TM        82618          3          0          0
+  22 TX       196635          6          0          1        
+  24 TX        65548          6          0          0
+  24 TM        82618          3          0          0
+  24 TX       196635          0          4          0
+
+select sid,seq#,event from v$session_wait where sid= 24 ;
+SID  SEQ# EVENT
+24   104 enq: TX - row lock contention
+
+-- 因为在拥有primary key列上插入了相同的值，第二个session除了持有自己本事务的6级排他锁之外，还在请求一个4级行的共享锁。这里发生了阻塞。如果第一个session 提交 。第二个session会报错。
+```
+
+### update/delete阻塞
+
+对表加3级的共享锁TM，对修改/删除的行加6级的排他锁TX，delete\update相同的行，都会发生阻塞
+
+```sql
+-- session1 session_id=22
+delete from tun2_tab where id =2 ;
+1 rowdeleted
+
+-- session2 session_id=18,
+update tun2_tab set name ='dexter' where id>1 ;
+waiting...
+
+-- session3 session_id=9
+delete tun2_tab where id = 3 ; 
+1 rowdeleted
+
+-- 查看锁情况
+SID TYPE    ID1     LMODE    REQUEST      BLOCK
+9 TX       393228          6          0          0
+9 TM        82618          3         0          0
+18 TX       131089          0          6          0
+18 TM        82618          3          0          0
+22 TX       131089          6          0          1
+22 TM        82618          3          0         0
+-- 发现 session2在请求6级排他锁，它还没来得及对任何记录加锁，就已经进入了等待中。所以session3能成功执行，并对id=3的行加了排他锁。即使session1提交了，session2会仍然等待session3的提交
+```
+
+稍微修改以下删除的id的顺序，就
+
+```sql
+-- session1session_id=144：
+delete from tun2_tab where id =3 ;
+1 rowdeleted.
+
+-- session2session_id=18：
+update tun2_tab set name ='dexter' whereid>1 ;
+waiting..
+
+-- session3session_id=9：
+delete tun2_tab where id = 2 ;
+waiting..
+
+-- 查看锁的情况
+SID TYPE        ID1     LMODE    REQUEST      BLOCK
+9 TX       196635          0          6          0
+9 TM        82618          3          0          0
+18 TX       196635          6          0          1
+18 TM        82618          3          0         0
+18 TX       458767          0          6          0
+144 TM        82618          3          0          0
+144 TX       458767          6          0          1
+-- 可以发现session2 先获取了ID=2的行锁，然后等待ID=3的行锁，所以造成了session3的阻塞等待
+```
+
+### ITL引起的阻塞
+
+当block中没有多余的空间来添加ITL entry的时候，就会发生阻塞。通常情况下不会发生这种情况。
+
+解决办法：设置表的inittrans 参数为合理值。 
+
+### bitmap index引起的阻塞
+
+```sql
+-- 创建表
+create table tb_bitmap_test (id number , gender varchar2(1)) 
+
+-- 插入数据
+insert into tb_bitmap_test select level , 'F'from dual connect by level <= 3;
+3 rowscreated.
+
+insert into tb_bitmap_test select level , 'M'from dual connect by level <= 2;
+2 rowscreated.
+
+-- 创建位图index
+create bitmap index tb_bitmap_test_btidx1 on tb_bitmap_test(gender) ;
+
+-- session1 session_id=144:
+update tb_bitmap_test set gender='M' where id=1 and gender='F' ;
+1 rowupdated.
+-- 因为有了Bitmap索引，所以这个操作会索引表中所有gender=’M’和‘F’的记录，并且会阻塞相关的DML操作-- session2 session_id=18:
+delete tb_bitmap_test where gender='M' and id = 1;
+waiting...
+-- 发生阻塞
+
+-- session3 session_id=9 :
+insert into tb_bitmap_test values (1,'S') ;
+1 rowcreated.
+-- 只要gender的值不等于M或者F即可顺利执行
+-- 查看锁的情况
+SID TYPE        ID1     LMODE    REQUEST      BLOCK
+   9 TM        82847          3          0          0
+   9 TX       196626          6          0         0
+   18 TX       327710          6          0          0
+   18 TM        82847          3          0          0
+   18 TX       589854          0          4          0
+ 144 TX       589854          6          0          1
+ 144 TM        82847          3          0          0
+ 
+-- 发现不管gender是M 还是F，只要是涉及到这两个值的dml操作都会进入等待，因为session1  锁住了整个bitmap segment，
+-- 但是只要gender的值不是M或者F就可以顺利执行，所以session3 没有被阻塞。
 ```
 
 
