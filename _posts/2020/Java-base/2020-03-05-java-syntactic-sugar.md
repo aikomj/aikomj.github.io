@@ -7,7 +7,7 @@ keywords: java
 excerpt: 专为开发者设计，提高开发效率，代码更优雅易读
 lock: noneed
 ---
-## 什么是语法糖
+## 1、什么是语法糖
 
 ​	语法糖（Syntactic Sugar），也称糖衣语法，是由英国计算机学家 Peter.J.Landin 发明的一个术语，指在计算机语言中添加的某种语法，这种语法对语言的功能并没有影响，更方便程序员使用。<font color="red">简而言之，语法糖让程序更加简洁，有更高的可读性</font>。
 
@@ -642,15 +642,164 @@ users.stream()
                 .or(wrapper->wrapper.eq("name","Coding2").eq("age",0));
 ```
 
-:: 双冒号 运算符，是jdk8中引入方法的lamba语法之一，作用是调用类或实例中的方法。
+###  双冒号运算符
 
-以下是Java 8中方法引用的一些语法：
+::是jdk8中引入方法的lamba语法之一，作用是调用类或实例中的方法。
 
-    静态方法引用（static method）语法：classname::methodname 例如：Person::getAge
-    对象的实例方法引用语法：instancename::methodname 例如：System.out::println
-    对象的超类方法引用语法： super::methodname
-    类构造器引用语法： classname::new 例如：ArrayList::new
-    数组构造器引用语法： typename[]::new 例如： String[]:new
+```java
+静态方法引用（static method）语法：classname::methodname 例如：Person::getAge
+对象的实例方法引用语法：instancename::methodname 例如：System.out::println
+对象的超类方法引用语法： super::methodname
+类构造器引用语法： classname::new 例如：ArrayList::new
+数组构造器引用语法： typename[]::new 例如： String[]:new
+
+// 例子代码
+public static void main(String[] args) {
+    // 使用双冒号::来构造静态函数引用，结合函数式接口使用
+    Function<String, Integer> fun = Integer::parseInt;
+    Integer value = fun.apply("123");
+    System.out.println(value);
+
+    // 使用双冒号::来构造非静态函数引用
+    String content = "Hello JDK8";
+    Function<Integer, String> func = content::substring;
+    String result = func.apply(1);
+    System.out.println(result);
+
+    // 构造函数引用
+    BiFunction<String, Integer, User> biFunction = User::new;
+    User user = biFunction.apply("mengday", 28);
+    System.out.println(user.toString());
+
+    // 函数引用也是一种函数式接口，所以也可以将函数引用作为方法的参数
+    sayHello(String::toUpperCase, "hello");
+}    
+```
+
+### Optional 可选值
+
+```java
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+/**
+ * @since 1.8
+ */
+public final class Optional<T> {
+    private static final Optional<?> EMPTY = new Optional<>();
+
+    private final T value;
+
+    private Optional() {
+        this.value = null;
+    }
+
+    // 返回一个空的 Optional实例
+    public static<T> Optional<T> empty() {
+        @SuppressWarnings("unchecked")
+        Optional<T> t = (Optional<T>) EMPTY;
+        return t;
+    }
+
+    private Optional(T value) {
+        this.value = Objects.requireNonNull(value);
+    }
+
+    // 返回具有 Optional的当前非空值的Optional
+    public static <T> Optional<T> of(T value) {
+        return new Optional<>(value);
+    }
+
+    // 返回一个 Optional指定值的Optional，如果非空，则返回一个空的 Optional
+    public static <T> Optional<T> ofNullable(T value) {
+        return value == null ? empty() : of(value);
+    }
+
+    // 如果Optional中有一个值，返回值，否则抛出 NoSuchElementException 。
+    public T get() {
+        if (value == null) {
+            throw new NoSuchElementException("No value present");
+        }
+        return value;
+    }
+
+    // 如果存在值返回true，否则为 false
+    public boolean isPresent() {
+        return value != null;
+    }
+
+    // 如果存在值，则使用该值调用指定的消费者，否则不执行任何操作。
+    public void ifPresent(Consumer<? super T> consumer) {
+        if (value != null)
+            consumer.accept(value);
+    }
+
+    // 如果一个值存在，并且该值给定的谓词相匹配时，返回一个 Optional描述的值，否则返回一个空的 Optional
+    public Optional<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        if (!isPresent())
+            return this;
+        else
+            return predicate.test(value) ? this : empty();
+    }
+
+    // 如果存在一个值，则应用提供的映射函数，如果结果不为空，则返回一个 Optional结果的 Optional 。
+    public<U> Optional<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper);
+        if (!isPresent())
+            return empty();
+        else {
+            return Optional.ofNullable(mapper.apply(value));
+        }
+    }
+
+    // 如果一个值存在，应用提供的 Optional映射函数给它，返回该结果，否则返回一个空的 Optional 。
+    public<U> Optional<U> flatMap(Function<? super T, Optional<U>> mapper) {
+        Objects.requireNonNull(mapper);
+        if (!isPresent())
+            return empty();
+        else {
+            return Objects.requireNonNull(mapper.apply(value));
+        }
+    }
+
+    // 如果值存在，就返回值，不存在就返回指定的其他值
+    public T orElse(T other) {
+        return value != null ? value : other;
+    }
+
+
+    public T orElseGet(Supplier<? extends T> other) {
+        return value != null ? value : other.get();
+    }
+
+    public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+        if (value != null) {
+            return value;
+        } else {
+            throw exceptionSupplier.get();
+        }
+    }
+}
+
+public static void main(String[] args) {
+    // Optional类已经成为Java 8类库的一部分，在Guava中早就有了，可能Oracle是直接拿来使用了
+    // Optional用来解决空指针异常，使代码更加严谨，防止因为空指针NullPointerException对代码造成影响
+    String msg = "hello";
+    Optional<String> optional = Optional.of(msg);
+    // 判断是否有值，不为空
+    boolean present = optional.isPresent();
+    // 如果有值，则返回值，如果等于空则抛异常
+    String value = optional.get();
+    // 如果为空，返回else指定的值
+    String hi = optional.orElse("hi");
+    // 如果值不为空，就执行Lambda表达式
+    optional.ifPresent(opt -> System.out.println(opt));
+}
+```
+
 
 
 ### 总结
