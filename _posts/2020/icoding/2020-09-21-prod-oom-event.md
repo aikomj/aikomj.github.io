@@ -4,8 +4,7 @@ title: 生产环境JVM内存溢出案例分析
 category: java
 tags: [java]
 keywords: jvm
-excerpt: 公司的业务量比较大，在生产环境经常会出现JVM内存溢出的现象,如何快速响应，快速定位，
-快速恢复业务
+excerpt: 公司的业务量比较大，在生产环境经常会出现JVM内存溢出的现象,如何快速响应，快速定位，快速恢复业务
 lock: noneed
 ---
 
