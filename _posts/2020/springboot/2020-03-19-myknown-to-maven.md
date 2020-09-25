@@ -3,12 +3,10 @@ layout: post
 title: 对maven的笔记
 category: springboot
 tags: [java]
-keywords: 
+keywords: maven
 excerpt: 记录maven引入依赖包时不懂的点
 lock: noneed
 ---
-
-
 
 ## 1、pom依赖包
 
@@ -56,6 +54,39 @@ scope的默认值是compile,表示当前依赖参与项目的编译、测试、�
 - Provided,表示当前依赖参与项目的编译、测试、运行阶段,不会打到包里
 - System,紧从本地取依赖，不从maven取依赖，会打到包里
 - Runtime,跳过编译阶段，会打到包里
+
+### includes与excludes
+
+```xml
+<resources>
+  <!-- Filter jdbc.properties & mail.properties. NOTE: We don't filter applicationContext-infrastructure.xml, 
+            let it go with spring's resource process mechanism. -->
+  <resource>
+    <directory>src/main/resources</directory>
+    <filtering>true</filtering>
+    <includes>
+      <include>jdbc.properties</include>
+      <include>mail.properties</include>
+    </includes>
+  </resource>
+  <!-- Include other files as resources files. -->
+  <resource>
+    <directory>src/main/resources</directory>
+    <filtering>false</filtering>
+    <excludes>
+      <exclude>jdbc.properties</exclude>
+      <exclude>mail.properties</exclude>
+    </excludes>
+  </resource>
+</resources>
+```
+
+<include>与<exclude>是用来圈定和排除某一文件目录下的文件是否是工程资源的。工程中src/main/resources目录下都是资源文件，并不需要<include>和<exclude>再进行划定。
+
+大多数情况下，使用<include>和<exclude>是为了配合<filtering>实现过滤特定文件的需要，如上面：
+
+- 第一段<resource>配置声明：在src/main/resources目录下，仅jdbc.properties和mail.properties两个文件是资源文件，然后，这两个文件需要被过滤。
+- 第二段<resource>配置声明：在src/main/resources目录下，除jdbc.properties和mail.properties两个文件外的其他文件也是资源文件，但是它们不会被过滤。
 
 
 
