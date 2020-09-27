@@ -91,3 +91,11 @@ mvn install:install-file -DgroupId=com.aliyun -DartifactId=aliyun-java-vod-uploa
 ```
 
 ![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/java/maven-local-jar.jpg)
+
+### 不识别maven项目的处理
+
+![](\assets\images\tools\idea-no-maven.jpg)
+
+添加为maven项目
+
+![](\assets\images\tools\idea-no-maven-2.jpg)

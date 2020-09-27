@@ -12,13 +12,71 @@ lock: noneed
 
 spring boot微服务里经常用到 oauth2 和 jwt整合，做用户鉴权，难点在于token的刷新和注销。
 
+### 区别
+
+- spring security
+
+  用户认证（账号密码）与 授权验证（url请求接口权限）的 安全框架，基于RBAC(角色的权限控制)对用户的访问权限进行控制，核心思想是通过一系列的filter chain 来进行拦截过滤的。使用起来就是继承WebSecurityConfigurerAdapter进行权限配置
+
+- oauth2
+
+  一个关于授权token的开放标准，核心思路是通过各类认证手段（shiro、security）认证用户身份，并颁发token令牌，使得第三方应用可以使用该令牌在**限定时间**、**限定范围**访问指定资源。主要涉及的RFC规范有
+
+  1. `RFC6749`（整体授权框架）、
+
+  2. `RFC6750`（令牌使用）、
+
+  3. `RFC6819`（威胁模型）
+
+  一般我们需要了解的就是**`RFC6749`**整体授权框架
+
+  获取令牌的方式主要有四种：授权码模式、简单模式、密码模式、客户端模式
+
+  想了解具体的oauth2授权步骤可以移步阮一峰老师的[理解OAuth 2.0](http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html)，里面有非常详细的说明。
+
+  oauth2 要明确的几个角色概念
+
+  1. 客户应用
+  2. 授权服务器，用来进行用户认证并颁发token
+  3. 资源服务器，拥有被访问资源的服务器，需要通过token来确定是否有权限访问
+
+- jwt
+
+  json web token 一种token格式，与普通token的区别是它携带了用户信息（状态化的东西），由三部分组成
+
+  1. 头部header
+  2. 载体部分payload
+  3. 签名signature（自定义一段secret 字符串，指定加密算法生成的签名字符串）
+
+  jwt可以实现分布式的token验证功能，即资源服务器通过事先维护好的对称或者非对称密钥（非对称的话就是认证服务器提供的公钥），直接在本地验证token，去中心化的验证机制正适合分布式架构，它解决了两大痛点：
+
+  1. 通过验证签名，token的验证可以直接在本地完成，不需要连接认证服务器
+  2. 在payload中可以定义用户相关信息，轻松实现了token和用户信息的绑定
+
+### JWT的应用场景
+
+就像布鲁克斯在《人月神话》中所说的名言一样：“没有银弹”，jwt不能解决所有的认证问题。
+
+适用场景：充分发挥jwt无状态以及分布式验证的优势
+
+- 一次性的身份认证
+- api的鉴权
+
+不适用的场景：单机应用没必要搞jwt
+
+- 传统的基于session的用户会话保持
+
+**不要试图用jwt去代替session。**
+
+这种模式下其实传统的session+cookie机制工作的更好，jwt因为其无状态和分布式，事实上只要在有效期内，是无法作废的，用户的签退更多是一个客户端的签退，服务端token仍然有效，你只要使用这个token，仍然可以登陆系统。另外一个问题是续签问题，使用token，无疑令续签变得十分麻烦，当然你也可以通过redis去记录token状态，并在用户访问后更新这个状态，但这就是硬生生把jwt的无状态搞成有状态了，而这些在传统的session+cookie机制中都是不需要去考虑的。这种场景下，考虑高可用，我更加推荐采用分布式的session机制，现在已经有很多的成熟框架可供选择了（比如spring session）。
+
 
 
 ## 2、JWT 注销
 
 百度的一些注销方案，个人觉得还是可行的
 
-- **将JWT存储在数据库中**。您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的。用过的renren_fast 框架的确是这么做的，用来对接APP端，一个注销把jwt token 从数据库删除
+- **将JWT存储在数据库中**。您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的（把JWT 变成有状态的，中心化）。用过的renren_fast 框架的确是这么做的，用来对接APP端，一个注销把jwt token 从数据库删除
 - **从客户端删除令牌**（前端把token从cookie中删除），这将阻止客户端进行经过身份验证的请求，但如果令牌仍然有效且其他人可以访问它，则仍可以使用该令牌。这引出了我的下一点。
 
 - **刷新令牌**。当用户登录时，为他们提供JWT和刷新令牌ref_token。将刷新令牌存储在数据库中。对于经过身份验证的请求，客户端可以使用JWT，但是当令牌过期（或即将过期）时，让客户端使用刷新令牌发出请求以换取新的JWT。这样，您只需在用户登录或要求新的JWT时访问数据库。当用户注销时，您需要使存储的刷新令牌无效。否则，即使用户已经注销，有人在监听连接时仍然可以获得新的JWT。但注销到JWT过期仍然有一个时间窗口，JWT是依然可用的。这里只是解决了用户无感刷新JWT的问题，客户端携带刷新令牌获取新的JWT。
@@ -36,11 +94,36 @@ jwt token刷新方案可以分为两种：一种是校验token前刷新，第二
 
 其他的类似memory token、redis token可以延期的，更新策略就没这么复杂：直接延长过期时间并且不需要更新token。
 
-
-
 ### 方案一校验token前刷新
 
 兼容其他token刷新方案，如memory token
+
+springboot 版本是2.2.x
+
+0、pom.xml导入依赖
+
+```xml
+<!-- spring security + OAuth2 + JWT    start  -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-jwt</artifactId>
+    <version>1.0.9.RELEASE</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.security.oauth</groupId>
+    <artifactId>spring-security-oauth2</artifactId>
+    <version>2.2.1.RELEASE</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt</artifactId>
+    <version>0.9.1</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
 
 1、重写JwtAccessTokenConverter的enhance方法，把refresh_token、client_id、client_secret放入到access_token中，以便刷新
 
@@ -370,7 +453,7 @@ service.interceptors.response.use(res => {
 
   
 
-- https://blog.csdn.net/m0_37834471/article/details/83213002
+- [https://blog.csdn.net/m0_37834471/article/details/83213002](https://blog.csdn.net/m0_37834471/article/details/83213002)
 
 
 
