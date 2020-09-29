@@ -192,14 +192,14 @@ lock: noneed
     5）在括号前不要换行，见反例。 
 
    ```java
-   正例： 
+   正例:
    StringBuilder sb = new StringBuilder(); 
    // 超过120个字符的情况下，换行缩进4个空格，并且方法前的点号一起换行  
    sb.append("zi").append("xin")... 
            .append("huang")... 
            .append("huang")... 
            .append("huang"); 
-   反例： 
+   反例:
    StringBuilder sb = new StringBuilder(); 
    // 超过120个字符的情况下，不要在括号前换行  
    sb.append("you").append("are")...append 
@@ -217,9 +217,64 @@ lock: noneed
 
 ### （4）OOP规约
 
+1. <font color=red>【强制】</font>所有的覆写方法，必须加@Override注解。 
+   说明：getObject()与get0bject()的问题。一个是字母的O，一个是数字的0，加@Override可以准确判断是否覆盖成功。另外，如果在抽象类中对方法签名进行修改，其实现类会马上编译报错。 
 
+2. <font color=red>【强制】</font>外部正在调用或者二方库依赖的接口，不允许修改方法签名，避免对接口调用方产生影响。接口过时必须加@Deprecated注解，并清晰地说明采用的新接口或者新服务是什么。尽量不使用过时方法
 
+3. <font color=red>【强制】</font>所有整型包装类对象之间值的比较，全部使用equals方法比较。 
+   说明：对于Integer var = ? 在-128至127之间的赋值，Integer对象是在 IntegerCache.cache产生，会复用已有对象，这个区间内的Integer值可以直接使用==进行判断，但是这个区间之外的所有数据，都会在堆上产生，并不会复用已有对象，这是一个大坑，推荐使用equals方法进行判断
 
+4. <font color=red>【强制】</font>浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。
+
+   ```java
+   说明：浮点数采用“尾数+阶码”的编码方式，类似于科学计数法的“有效数字+指数”的表示方式。二进
+   制无法精确表示大部分的十进制小数，具体原理参考《码出高效》。 
+   反例： 
+   float a = 1.0f - 0.9f; 
+   float b = 0.9f - 0.8f; 
+   if (a == b) { 
+       // 预期进入此代码快，执行其它业务逻辑 
+       // 但事实上a==b的结果为false 
+   } 
+   Float x = Float.valueOf(a); 
+   Float y = Float.valueOf(b); 
+   if (x.equals(y)) { 
+       // 预期进入此代码快，执行其它业务逻辑 
+       // 但事实上equals的结果为false 
+   } 
+   正例： 
+   (1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。 
+   float a = 1.0f - 0.9f; 
+   float b = 0.9f - 0.8f; 
+   float diff = 1e-6f; 
+   if (Math.abs(a - b) < diff) { 
+       System.out.println("true"); 
+   } 
+    (2) 使用BigDecimal来定义值，再进行浮点数的运算操作。 
+   BigDecimal a = new BigDecimal("1.0"); 
+   BigDecimal b = new BigDecimal("0.9"); 
+   BigDecimal c = new BigDecimal("0.8"); 
+   BigDecimal x = a.subtract(b); 
+   BigDecimal y = b.subtract(c); 
+   if (x.equals(y)) { 
+       System.out.println("true"); 
+   } 
+   ```
+
+5.  <font color=red>【强制】</font>禁止使用构造方法BigDecimal(double)的方式把double值转化为BigDecimal对象。 
+
+   ```java
+   说明：BigDecimal(double)存在精度损失风险，在精确计算或值比较的场景中可能会导致业务逻辑异常。
+   如：BigDecimal g = new BigDecimal(0.1f); 实际的存储值为：0.10000000149 
+   正例：优先推荐入参为String的构造方法，或使用BigDecimal的valueOf方法，此方法内部其实执行了
+   Double的toString，而Double的toString按double的实际能表达的精度对尾数进行了截断。 
+       
+   BigDecimal recommend1 = new BigDecimal("0.1"); 
+   BigDecimal recommend2 = BigDecimal.valueOf(0.1);
+   ```
+
+   
 
 ### （5）日期时间
 
