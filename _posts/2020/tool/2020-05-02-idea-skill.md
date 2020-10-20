@@ -54,6 +54,10 @@ lock: noneed
 
   ![](/assets/images/tools/idea-try.jpg)
 
+- 快速跳到service实现类
+
+  Ctrl+Alt+鼠标左键或者Ctrl+Alt+B
+
 
 
 ## 3、常见报错

@@ -509,33 +509,355 @@ lock: noneed
    4） 大于size，空间浪费，且在size处插入null值，存在NPE隐患。 
    ```
 
-   
+7.  <font color=red>【强制】</font>使用工具类Arrays.asList()把数组转换成集合时，不能使用其修改集合相关的方法，
+   它的add/remove/clear方法会抛出UnsupportedOperationException异常。 
+   说明：asList的返回对象是一个Arrays内部类，并没有实现集合的修改方法。
+
+   ```java
+   Arrays.asList体现的是适配器模式，只是转换接口，后台的数据仍是数组。 
+       String[] str = new String[] { "yang", "hao" }; 
+       List list = Arrays.asList(str); 
+   第一种情况：list.add("yangguanbao"); 运行时异常。 
+   第二种情况：str[0] = "changed"; 也会随之修改，反之亦然
+   ```
+
+8.  <font color=red>【强制】</font>要在foreach循环里进行元素的remove/add操作。remove元素请使用Iterator
+   方式，如果并发操作，需要对Iterator对象加锁。 
+
+   ```java
+   正例： 
+   List<String> list = new ArrayList<>(); 
+   list.add("1"); 
+   list.add("2"); 
+   Iterator<String> iterator = list.iterator(); 
+   while (iterator.hasNext()) { 
+       String item = iterator.next(); 
+       if (删除元素的条件) { 
+           iterator.remove(); 
+       } 
+   } 
+   反例： 
+   for (String item : list) { 
+       if ("1".equals(item)) { 
+           list.remove(item); 
+       } 
+   } 
+   说明：以上代码的执行结果肯定会出乎大家的意料，那么试一下把“1”换成“2”，会是同样的结果吗
+   ```
+
+9.  <font color=red>【强制】</font>集合初始化时，指定集合初始值大小。 
+   说明：HashMap使用HashMap(int initialCapacity) 初始化，如果暂时无法确定集合大小，那么指定默认值（16）即可。 
+   正例：initialCapacity = (需要存储的元素个数 / 负载因子) + 1。注意负载因子（即loader factor）默认为0.75，如果暂时无法确定初始值大小，请设置为16（即默认值）
+
+10. <font color=red>【强制】</font>高度注意Map类集合K/V能不能存储null值的情况，如下表格：
+
+    
 
 ### （7）并发处理
 
+1. <font color=red>【强制】</font>创建线程或线程池时请指定有意义的线程名称，方便出错时回溯。 
+   正例：自定义线程工厂，并且根据外部特征进行分组，比如，来自同一机房的调用，把机房编号赋值给whatFeaturOfGroup
 
+   ```java
+   public class UserThreadFactory implements ThreadFactory { 
+       private final String namePrefix; 
+       private final AtomicInteger nextId = new AtomicInteger(1); 
+    
+       // 定义线程组名称，在jstack问题排查时，非常有帮助 
+       UserThreadFactory(String whatFeaturOfGroup) { 
+           namePrefix = "From UserThreadFactory's " + whatFeaturOfGroup + "-Worker-"; 
+       } 
+    
+       @Override 
+       public Thread newThread(Runnable task) { 
+           String name = namePrefix + nextId.getAndIncrement(); 
+           Thread thread = new Thread(null, task, name, 0, false); 
+           System.out.println(thread.getName()); 
+           return thread; 
+       } 
+   }
+   ```
+
+2. <font color=red>【强制】</font>线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式，这
+   样的处理方式让写的同学更加明确线程池的运行规则，规避资源耗尽的风险。
+
+   ```java
+   说明：Executors返回的线程池对象的弊端如下： 
+   1） FixedThreadPool和SingleThreadPool： 
+     允许的请求队列长度为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM。 
+   2） CachedThreadPool： 
+     允许的创建线程数量为Integer.MAX_VALUE，可能会创建大量的线程，从而导致OOM
+   ```
+
+3. <font color=red>【强制】</font>SimpleDateFormat 是线程不安全的类，一般不要定义为static变量，如果定义为static必须加锁，或者使用DateUtils工具类。 
+
+4. <font color=red>【强制】</font>必须回收自定义的ThreadLocal变量，尤其在线程池场景下，线程经常会被复用，
+   如果不清理自定义的 ThreadLocal变量，可能会影响后续业务逻辑和造成内存泄露等问题。
+   尽量在代理中使用try-finally块进行回收。 因为ThreadLocal的key是弱引用，只能生存到下次GC.
+
+5. <font color=red>【强制】</font>对多个资源、数据库表、对象同时加锁时，需要保持一致的加锁顺序，否则可能会造成死锁。 
+
+   ```java
+   说明：线程一需要对表A、B、C依次全部加锁后才可以进行更新操作，那么线程二的加锁顺序也必须是A、
+   B、C，否则可能出现死锁。 
+   ```
+
+6. <font color=red>【强制】</font>在使用阻塞等待获取锁的方式中，必须在try代码块之外，并且在加锁方法与try代
+   码块之间没有任何可能抛出异常的方法调用，避免加锁成功后，在finally中无法解锁。 
+
+   ```java
+   说明一：如果在lock方法与try代码块之间的方法调用抛出异常，那么无法解锁，造成其它线程无法成功
+   获取锁。 
+   说明二：如果lock方法在try代码块之内，可能由于其它方法抛出异常，导致在finally代码块中，unlock
+   对未加锁的对象解锁，它会调用AQS的tryRelease方法（取决于具体实现类），抛出
+   IllegalMonitorStateException异常。 
+   说明三：在Lock对象的lock方法实现中可能抛出unchecked异常，产生的后果与说明二相同。 
+   正例： 
+   Lock lock = new XxxLock(); 
+   // ... 
+   lock.lock(); 
+   try { 
+       doSomething(); 
+       doOthers(); 
+   } finally { 
+       lock.unlock(); 
+   } 
+   反例： 
+   Lock lock = new XxxLock(); 
+   try { 
+       // 如果此处抛出异常，则直接执行finally代码块 
+       doSomething(); 
+       // 无论加锁是否成功，finally代码块都会执行 
+       lock.lock(); 
+       doOthers(); 
+   } finally { 
+       lock.unlock(); 
+   } 
+   ```
+
+7. <font color=red>【强制】</font>并发修改同一记录时，避免更新丢失，需要加锁。要么在应用层加锁，要么在缓存加锁，要么在数据库层使用乐观锁，使用version作为更新依据。 
+   说明：如果每次访问冲突概率小于20%，推荐使用乐观锁，否则使用悲观锁。乐观锁的重试次数不得小于3次。 
+
+8. <font color="FFB800">【推荐】</font>资金相关的金融敏感信息，使用悲观锁策略。 
+   说明：乐观锁在获得锁的同时已经完成了更新操作，校验逻辑容易出现漏洞，另外，乐观锁对冲突的解决策略有较复杂的要求，处理不当容易造成系统压力或数据异常，所以资金相关的金融敏感信息不建议使用乐观锁更新。
+
+   ```java
+   正例：悲观锁遵循一锁二判三更新四释放的原则 
+   ```
+
+9. <font color="FFB800">【推荐】</font>volatile解决多线程内存不可见问题。对于一写多读，是可以解决变量同步问题，但
+   是如果多写，同样无法解决线程安全问题。 
+
+   ```java
+   说明：如果是count++操作，使用如下类实现：
+     AtomicInteger count = new AtomicInteger(); 
+   	count.addAndGet(1); 
+   如果是JDK8，推荐使用LongAdder对象，比AtomicLong性能更好（减少乐观锁的重试次数）。
+   ```
+
+10. <font color=red>【参考】</font>HashMap在容量不够进行resize时由于高并发可能出现死链，导致CPU飙升，在
+    开发过程中注意规避此风险。
+
+11.  <font color=red>【参考】</font>ThreadLocal对象使用static修饰，ThreadLocal无法解决共享对象的更新问题。 
+    说明：这个变量是针对一个线程内所有操作共享的，所以设置为静态变量，所有此类实例共享此静态变量，也就是说在类第一次被使用时装载，只分配一块存储空间，所有此类的对象(只要是这个线程内定义的)都可以操控这个变量。
 
 ### （8）控制语句
 
+1. <font color=red>【强制】</font>在一个switch块内，每个case要么通过continue/break/return等来终止，要么
+   注释说明程序将继续执行到哪一个case为止；在一个switch块内，都必须包含一个default语句并且放在最后，即使它什么代码也没有。 
 
+   当switch括号内的变量类型为String并且此变量为外部参数时，必须先进行null
+   判断。
+
+   ```java
+   public class SwitchString { 
+       public static void main(String[] args) { 
+           method(null); 
+       } 
+    
+       public static void method(String param) { 
+           switch (param) { 
+               // 肯定不是进入这里 
+               case "sth": 
+                   System.out.println("it's sth"); 
+                   break; 
+               // 也不是进入这里 
+               case "null": 
+                   System.out.println("it's null"); 
+                   break; 
+               // 也不是进入这里 
+               default: 
+                   System.out.println("default"); 
+           } 
+       } 
+   } 
+   ```
+
+2. <font color=red>【强制】</font>在高并发场景中，避免使用”等于”判断作为中断或退出的条件。 
+   说明：如果并发控制没有处理好，容易产生等值判断被“击穿”的情况，<font color=red>使用大于或小于的区间判断条件来代替。</font>
+
+   ```java
+   反例：判断剩余奖品数量等于0时，终止发放奖品，但因为并发处理错误导致奖品数量瞬间变成了负数，
+   这样的话，活动无法终止。
+   ```
+
+3. <font color="FFB800">【推荐】</font>表达异常的分支时，少用if-else方式，这种方式可以改写成：
+
+   ```java
+   if (condition) {     
+       ... 
+       return obj; 
+   } 
+   // 接着写else的业务逻辑代码 
+   ```
+
+4. <font color="FFB800">【推荐】</font> 循环体中的语句要考量性能，以下操作尽量移至循环体外处理，如定义对象、变量、获取数据库连接，进行不必要的try-catch操作（这个try-catch是否可以移至循环体外）
+
+5. <font color="FFB800">【推荐】</font> 接口入参保护，这种场景常见的是用作批量操作的接口。 
+   反例：某业务系统，提供一个用户批量查询的接口，API文档上有说最多查多少个，但接口实现上没做任何保护，导致调用方传了一个1000的用户id数组过来后，查询信息后，内存爆了。
 
 ### （9）注释规约
 
+1. <font color=red>【强制】</font>类、类属性、类方法的注释必须使用Javadoc规范，使用/**内容*/格式，不得使用
+   // xxx方式。 
 
+   ```java
+   说明：在IDE编辑窗口中，Javadoc方式会提示相关注释，生成Javadoc可以正确输出相应注释；在IDE
+   中，工程调用方法时，不进入方法即可悬浮提示方法、参数、返回值的意义，提高阅读效率。 
+   ```
+
+2. <font color=red>【强制】</font>所有的抽象方法（包括接口中的方法）必须要用Javadoc注释、除了返回值、参数、
+   异常说明外，还必须指出该方法做什么事情，实现什么功能。 
+   说明：对子类的实现要求，或者调用注意事项，请一并说明。 
+
+3. <font color=red>【强制】</font>所有的类都必须添加创建者和创建日期。
+
+   ```java
+   /** 
+    * @author yangguanbao 
+    * @date 2016/10/31 
+    */ 
+   ```
+
+4. <font color="red">【参考】</font>谨慎注释掉代码。在上方详细说明，而不是简单地注释掉。如果无用，则删除。 
+   说明：代码被注释掉有两种可能性：1）后续会恢复此段代码逻辑。2）永久不用。前者如果没有备注信息，
+   难以知晓注释动机。后者建议直接删掉即可，假如需要查阅历史代码，登录代码仓库即可。
+
+5. <font color="red">【参考】</font>特殊注释标记，请注明标记人与标记时间。注意及时处理这些标记，通过标记扫描，经常清理此类标记。线上故障有时候就是来源于这些标记处的代码
+
+   ```java
+   1） 待办事宜（TODO）:（标记人，标记时间，[预计处理时间]） 
+      表示需要实现，但目前还未实现的功能。这实际上是一个Javadoc的标签，目前的Javadoc还没 
+      有实现，但已经被广泛使用。只能应用于类，接口和方法（因为它是一个Javadoc标签）。 
+    2） 错误，不能工作（FIXME）:（标记人，标记时间，[预计处理时间]） 
+      在注释中用FIXME标记某代码是错误的，而且不能工作，需要及时纠正的情况。 
+   ```
+
+6. <font color=red>【强制】</font>避免用Apache Beanutils进行属性的copy。 
+   说明：Apache BeanUtils性能较差，可以使用其他方案比如Spring BeanUtils, Cglib BeanCopier，注意均是浅拷贝
+
+7. <font color=red>【强制】</font>如果想获取整数类型的随机数，直接使用Random对象的nextInt或者nextLong方法。 
+
+8. <font color="FFB800">【推荐】</font>任何数据结构的构造或初始化，都应指定大小，避免数据结构无限增长吃光内存。
+
+9. <font color="FFB800">【推荐】</font>及时清理不再使用的代码段或配置信息。
+
+   ```java
+   正例：对于暂时被注释掉，后续可能恢复使用的代码片断，在注释代码上方，统一规定使用三个斜杠(///)
+   来说明注释掉代码的理由。如： 
+      public static void hello() { 
+       /// 业务方通知活动暂停 
+       // Business business = new Business(); 
+       // business.active(); 
+       System.out.println("it's finished"); 
+   } 
+   ```
+
+   
 
 ## 2、异常日志
 
 ### （1）错误码
 
+1. 正例：错误码回答的问题是谁的错？错在哪？1）错误码必须能够快速知晓错误来源，可快速判断是谁的问题。2）错误码易于记忆和比对（代码中容易equals）。3）错误码能够脱离文档和系统平台达到线下轻量化地自由沟通的目的
 
+2. <font color=red>【强制】</font>全部正常，但不得不填充错误码时返回五个零：00000。 
+
+3. <font color=red>【强制】</font>错误码为字符串类型，共5位，分成两个部分：错误产生来源+四位数字编号。 
+
+   ```java
+   说明：错误产生来源分为A/B/C，A表示错误来源于用户，比如参数错误，用户安装版本过低，用户支付
+   超时等问题；B表示错误来源于当前系统，往往是业务逻辑出错，或程序健壮性差等问题；C表示错误来源
+   于第三方服务，比如CDN服务出错，消息投递超时等问题；四位数字编号从0001到9999，大类之间的
+   步长间距预留100
+   ```
+
+4. <font color=red>【强制】</font>错误码不能直接输出给用户作为提示信息使用。 
+   说明：堆栈（stack_trace）、错误信息(error_message)、错误码（error_code）、提示信息（user_tip）是一个有效关联并互相转义的和谐整体，但是请勿互相越俎代庖
+
+5. <font color="FFB800">【推荐】</font>错误码之外的业务独特信息由error_message来承载，而不是让错误码本身涵盖过
+   多具体业务属性。
+
+6. <font color=red>【参考】</font>错误码分为一级宏观错误码、二级宏观错误码、三级宏观错误码。 
+
+   ```java
+   说明：在无法更加具体确定的错误场景中，可以直接使用一级宏观错误码，分别是：A0001（用户端错误）、
+   B0001（系统执行出错）、C0001（调用第三方服务出错）。   
+   ```
 
 ### （2）异常处理
 
-
+1. <font color=red>【强制】</font>finally块必须对资源对象、流对象进行关闭，有异常也要做try-catch。 
+   说明：如果JDK7及以上，可以使用try-with-resources方式
+2. <font color=red>【强制】</font>在调用RPC、二方包、或动态生成类的相关方法时，捕捉异常必须使用Throwable
+   类来进行拦截。 
+3. <font color="FFB800">【推荐】</font>防止NPE，是程序员的基本修养，注意NPE产生的场景： 
+    1） 返回类型为基本数据类型，return包装数据类型的对象时，自动拆箱有可能产生NPE。 
+       反例：public int f() { return Integer对象}， 如果为null，自动解箱抛NPE。 
+    2） 数据库的查询结果可能为null。 
+    3） 集合里的元素即使isNotEmpty，取出的数据元素也可能为null。 
+    4） 远程调用返回对象时，一律要求进行空指针判断，防止NPE。 
+    5） 对于Session中获取的数据，建议进行NPE检查，避免空指针。 
+    6） 级联调用obj.getA().getB().getC()；一连串调用，易产生NPE。 
+   正例：使用JDK8的Optional类来防止NPE问题
 
 ### （3）日志规约
 
+1. <font color="FFB800">【推荐】</font> 使用日志框架
 
+   ```java
+   slf4j:
+   import org.slf4j.Logger; 
+   import org.slf4j.LoggerFactory; 
+   private static final Logger logger = LoggerFactory.getLogger(Test.class); 
+   
+   jcl:
+   import org.apache.commons.logging.Log; 
+   import org.apache.commons.logging.LogFactory; 
+   private static final Log log = LogFactory.getLog(Test.class); 
+   ```
+
+2. <font color=red>【强制】</font>在日志输出时，字符串变量之间的拼接使用占位符的方式。 
+   说明：因为String字符串的拼接会使用StringBuilder的append()方式，有一定的性能损耗。使用占位符仅是替换动作，可以有效提升性能。 
+
+   ```java
+   正例：logger.debug("Processing trade with id: {} and symbol: {}", id, symbol); 
+   ```
+
+3. <font color=red>【强制】</font>应用中的扩展日志（如打点、临时监控、访问日志等）命名方式：
+   appName_logType_logName.log。logType:日志类型，如stats/monitor/access等；logName:日志描述。这种命名的好处：通过文件名就可知道日志文件属于什么应用，什么类型，什么目的，也有利于归类查找。 
+   说明：推荐对日志进行分类，如将错误日志和业务日志分开存放，便于开发人员查看，也便于通过日志对系统进行及时监控
+
+4. <font color=red>【强制】</font>异常信息应该包括两类信息：案发现场信息和异常堆栈信息。如果不处理，那么通过关键字throws往上抛出。 
+
+   ```java
+   // 正例：
+   logger.error(各类参数或者对象toString() + "_" + e.getMessage(), e); 
+   ```
+
+5. <font color="FFB800">【推荐】</font>可以使用warn日志级别来记录用户输入参数错误的情况，避免用户投诉时，无所适
+   从。如非必要，请不要在此场景打出error级别，避免频繁报警。  
+   说明：注意日志输出的级别，error级别只记录系统逻辑出错、异常或者重要的错误信息。 
 
 ## 3、单元测试
 
