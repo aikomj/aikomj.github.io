@@ -308,15 +308,27 @@ lock: noneed
     说明：在方法执行抛出异常时，可以直接调用POJO的toString()方法打印其属性值，便于排查问题。 
     ```
 
-     使用lombok插件的@Data注解会包含toString方法，使用IDEA对class文件反编译得到最终的类，注意使用@Data的POJO类有继承父类的话，要加上
+    使用lombok可以简化我们的代码，它提供了下面的一些注解
 
+    |          注解名称          | 功能                                                         |
+    | :------------------------: | :----------------------------------------------------------- |
+    |         `@Setter`          | 自动添加类中所有属性相关的 set 方法                          |
+    |         `@Getter`          | 自动添加类中所有属性相关的 get 方法                          |
+|         `@Builder`         | 使得该类可以通过 builder (建造者模式)构建对象                |
+    | `@RequiredArgsConstructor` | 生成一个该类的构造方法，禁止无参构造                         |
+|        `@ToString`         | 重写该类的`toString()`方法                                   |
+    |    `@EqualsAndHashCode`    | 重写该类的`equals()`和`hashCode()`方法                       |
+    |          `@Data`           | 等价于上面的`@Setter`、`@Getter`、`@RequiredArgsConstructor`、`@ToString`、`@EqualsAndHashCode` |
+    
+    使用lombok插件的@Data注解会包含toString方法，使用IDEA对class文件反编译得到最终的类，注意使用@Data的POJO类有继承父类的话，要加上
+    
     ```
-    @EqualsAndHashCode(callSuper = true)
+    @EqualsAndHashCode(callSuper = true)  // 调用父类的
     @ToString(callSuper = true)
     ```
-
-    lombok生成子类的equals和toString方法都会去调用父类的equals和toString方法，默认是不会去调用的，可以通过IDEA反编译class文件看最终源码知道。
-
+    
+    lombok生成子类的equals和toString方法默认是不会去调用父类的equals和toString方法，可以通过IDEA反编译class文件看最终源码知道。
+    
     ```java
     @Data
     public class TestA {
@@ -340,21 +352,24 @@ lock: noneed
       t2.setOldName("123");
     
       String name = "1";
-      t1.setName(name);
+  t1.setName(name);
       t2.setName(name);
-    
+
       int age = 1;
       t1.setAge(age);
       t2.setAge(age);
       System.out.println(t1);
       System.out.println(t2);
-      System.out.println(t1==t2);
-      System.out.println(t1.equals(t2));
+      System.out.println(t1==t2); // 判断对象的地址是否相等
+      System.out.println(t1.equals(t2)); // 判断对象内的属性是否相等，编译class的时候
+      // lombok 会重写equals方法
     }
     ```
-
+    
     ![](\assets\images\2020\java\lombok-data-equal-tostring.jpg)
-
+    
+    
+    
 11. <font color="#FFB800">【推荐】</font> 使用索引访问用String的split方法得到的数组时，需做最后一个分隔符后有无内容
     的检查，否则会有抛IndexOutOfBoundsException的风险。 
 
@@ -809,17 +824,24 @@ lock: noneed
 
 1. <font color=red>【强制】</font>finally块必须对资源对象、流对象进行关闭，有异常也要做try-catch。 
    说明：如果JDK7及以上，可以使用try-with-resources方式
+   
 2. <font color=red>【强制】</font>在调用RPC、二方包、或动态生成类的相关方法时，捕捉异常必须使用Throwable
    类来进行拦截。 
+   
 3. <font color="FFB800">【推荐】</font>防止NPE，是程序员的基本修养，注意NPE产生的场景： 
+   
     1） 返回类型为基本数据类型，return包装数据类型的对象时，自动拆箱有可能产生NPE。 
        反例：public int f() { return Integer对象}， 如果为null，自动解箱抛NPE。 
+    
     2） 数据库的查询结果可能为null。 
+    
     3） 集合里的元素即使isNotEmpty，取出的数据元素也可能为null。 
-    4） 远程调用返回对象时，一律要求进行空指针判断，防止NPE。 
-    5） 对于Session中获取的数据，建议进行NPE检查，避免空指针。 
-    6） 级联调用obj.getA().getB().getC()；一连串调用，易产生NPE。 
-   正例：使用JDK8的Optional类来防止NPE问题
+   
+   4） 远程调用返回对象时，一律要求进行空指针判断，防止NPE。 
+   
+   5） 对于Session中获取的数据，建议进行NPE检查，避免空指针。 
+   
+   6） 级联调用obj.getA().getB().getC()；一连串调用，易产生NPE。 正例：使用JDK8的Optional类来防止NPE问题
 
 ### （3）日志规约
 
