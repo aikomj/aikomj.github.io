@@ -20,7 +20,7 @@ Scrum就是敏捷具体落地实现的框架，相当于spring落地实现的一
 
 > 两种项目的解决方法
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/two-ways-to-resolve-problems.jpg)
+![](/assets/images/2020/icoding/scrum/two-ways-to-resolve-problems.jpg)
 
 - 预定义，好比甲方项目，按照要求实现
 - 实验性过程，好比互联网项目
@@ -59,7 +59,7 @@ Keywords：20世纪末，互联网，精益生产
 
   需求在变化，方向错了，你就要变化
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/agile-value.jpg)
+![](/assets/images/2020/icoding/scrum/agile-value.jpg)
 
 
 
@@ -136,7 +136,7 @@ agile is a state
 
 起源于橄榄球运动
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/refence-1.jpg)
+![](/assets/images/2020/icoding/scrum/refence-1.jpg)
 
 
 
@@ -144,7 +144,7 @@ agile is a state
 
 <mark>scrum作为一种敏捷过程让我们关注于在最短时间内交付最高价值，它是迭代和增量式的</mark>
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/scrum-is-a-framework.jpg)
+![](/assets/images/2020/icoding/scrum/scrum-is-a-framework.jpg)
 
 
 
@@ -184,7 +184,7 @@ agile is a state
 
 <mark>Scrum 的迭代流转图</mark>
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/sprint-cycle.jpg)
+![](/assets/images/2020/icoding/scrum/sprint-cycle.jpg)
 
 1、产品拥有者对产品进行概要设计（功能的描述与优先级）Product Backlog，与开发人员一起规划产品的迭代计划Sprint Planning，进而拆分出迭代待办事项的具体任务Sprint Backlog(给到前端、后端、美工等开发人员的参与)，一个一个水平面上的细项给到对应的开放人员。
 
@@ -307,7 +307,7 @@ agile is a state
 
 Different Scrum roles in one team
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/sailongzhou.jpg)
+![](/assets/images/2020/icoding/scrum/sailongzhou.jpg)
 
 
 
@@ -344,7 +344,7 @@ Different Scrum roles in one team
 
 **1. 例子：任务泳道图**
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/product-backlog-example.jpg)
+![](/assets/images/2020/icoding/scrum/product-backlog-example.jpg)
 
 
 
@@ -359,7 +359,7 @@ Different Scrum roles in one team
 - 足够小 <strong style="color:blue">S</strong>mall
 - 可测试 <strong style="color:blue">T</strong>estable
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/horizontal-vertical.jpg)
+![](/assets/images/2020/icoding/scrum/horizontal-vertical.jpg)
 
 
 
@@ -367,7 +367,7 @@ Different Scrum roles in one team
 
 就是用户“为什么”要提出这个需求，卡片格式如下：
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/user-stories.jpg)
+![](/assets/images/2020/icoding/scrum/user-stories.jpg)
 
 
 
@@ -377,11 +377,11 @@ Different Scrum roles in one team
 
 - 粒度（需求）
 
-  ![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/granularity.jpg)
+  ![](/assets/images/2020/icoding/scrum/granularity.jpg)
 
 - 验收标准
 
-  ![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/acceptance-criteria.jpg)
+  ![](/assets/images/2020/icoding/scrum/acceptance-criteria.jpg)
 
 **4. DoR 准备就绪**
 
@@ -437,7 +437,7 @@ Different Scrum roles in one team
 
   Task board is a common visible tool to manage spring backlog
 
-  ![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/task-board.jpg)
+  ![](/assets/images/2020/icoding/scrum/task-board.jpg)
 
 - 自组织：团队成员或小分队自己领取工作(蜂拥而至的概念)
 
@@ -527,7 +527,7 @@ List at least 8 DoD for your current project,you may cover quality, process,feat
 
 燃尽图一般是向下收敛 的曲线趋势，如果是水平的行线状态，说明我们的任务一直处在没有完成的状态，没有更 新，就会使我们的项目风险越来越大，要集中加班快速的解决任务;如果是向上陡的话，那说明任务规划出现问题，也有可能是临时加的任务
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/sprint-burndown-charts.jpg)
+![](/assets/images/2020/icoding/scrum/sprint-burndown-charts.jpg)
 
 如果以周为单位，燃尽图其实没有必要画了，因为迭代周版本是非常细的了，也不会有多复杂的任务。
 
@@ -538,7 +538,7 @@ List at least 8 DoD for your current project,you may cover quality, process,feat
 - 直观展示Sprint目标完成的进展 Represents the current progress toward the Sprint Goal
 - 团队工作可视化管理的工具 Work visibility management tool for the team
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/task-board2.jpg)
+![](/assets/images/2020/icoding/scrum/task-board2.jpg)
 
 **4. 发布计划 Release Planning**
 
@@ -561,7 +561,7 @@ How many Sprints will be needed to deliver all User Stories?
 
 ### 5个事件 Scrum Events
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/scrum-events.jpg)
+![](/assets/images/2020/icoding/scrum/scrum-events.jpg)
 
 > 1、Sprint 迭代本身
 
@@ -809,7 +809,7 @@ Velocity = how many Story Points team can deliver in one sprint
 
 ### 计划扑克 Planning Poker
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/planning-poker.jpg)
+![](/assets/images/2020/icoding/scrum/planning-poker.jpg)
 
 是一种评估完成开发任务需要工作量的方式。
 
@@ -839,7 +839,7 @@ Velocity = how many Story Points team can deliver in one sprint
 
   Just in time 刚刚好
 
-  ![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/scrum/planning-onion.jpg)
+  ![](/assets/images/2020/icoding/scrum/planning-onion.jpg)
 
 ## 5、敏捷质量Quality
 
