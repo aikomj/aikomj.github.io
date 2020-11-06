@@ -158,3 +158,60 @@ select * from orders_history where type=8 limit 100000,100;
 
 先使用**范围查询**定位 id （或者索引），然后再使用索引进行定位数据，能够提高好几倍查询速度。即先 select id，然后再 select * where id>= ，限定id的范围，innodb引擎的表数据是按照id 排序存储，所以使用id来限定范围查询，能提高好几倍的查询速度，所以id不要使用uuid，它是无序的，而使用自增或者雪花id
 
+## 6、关联更新、删除
+
+update 语句
+
+```sql
+UPDATE operation o 
+SET    status = 'applying' 
+WHERE  o.id IN (SELECT id 
+                FROM   (SELECT o.id, 
+                               o.status 
+                        FROM   operation o 
+                        WHERE  o.group = 123 
+                               AND o.status NOT IN ( 'done' ) 
+                        ORDER  BY o.parent, 
+                                  o.id 
+                        LIMIT  1) t);
+```
+
+MySQL 实际执行的是循环/嵌套子查询（DEPENDENT SUBQUERY)，其执行时间可想而知。
+
+```sh
++----+--------------------+-------+-------+---------------+---------+---------+-------+------+-----------------------------------------------------+
+| id | select_type        | table | type  | possible_keys | key     | key_len | ref   | rows | Extra                                               |
++----+--------------------+-------+-------+---------------+---------+---------+-------+------+-----------------------------------------------------+
+| 1  | PRIMARY            | o     | index |               | PRIMARY | 8       |       | 24   | Using where; Using temporary                        |
+| 2  | DEPENDENT SUBQUERY |       |       |               |         |         |       |      | Impossible WHERE noticed after reading const tables |
+| 3  | DERIVED            | o     | ref   | idx_2,idx_5   | idx_5   | 8       | const | 1    | Using where; Using filesort                         |
++----+--------------------+-------+-------+---------------+---------+---------+-------+------+-----------------------------------------------------+
+```
+
+重写为 JOIN 之后，子查询的选择模式从 DEPENDENT SUBQUERY 变成 DERIVED，执行速度大大加快，从7秒降低到2毫秒。
+
+```sql
+UPDATE operation o 
+       JOIN  (SELECT o.id, 
+                            o.status 
+                     FROM   operation o 
+                     WHERE  o.group = 123 
+                            AND o.status NOT IN ( 'done' ) 
+                     ORDER  BY o.parent, 
+                               o.id 
+                     LIMIT  1) t
+         ON o.id = t.id 
+SET  status = 'applying' 
+```
+
+```sh
++----+-------------+-------+------+---------------+-------+---------+-------+------+-----------------------------------------------------+
+| id | select_type | table | type | possible_keys | key   | key_len | ref   | rows | Extra                                               |
++----+-------------+-------+------+---------------+-------+---------+-------+------+-----------------------------------------------------+
+| 1  | PRIMARY     |       |      |               |       |         |       |      | Impossible WHERE noticed after reading const tables |
+| 2  | DERIVED     | o     | ref  | idx_2,idx_5   | idx_5 | 8       | const | 1    | Using where; Using filesort                         |
++----+-------------+-------+------+---------------+-------+---------+-------+
+```
+
+## 7、混合排序
+
