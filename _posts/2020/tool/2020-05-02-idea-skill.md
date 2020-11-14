@@ -57,6 +57,12 @@ lock: noneed
 - 快速跳到service实现类
 
   Ctrl+Alt+鼠标左键或者Ctrl+Alt+B
+  
+- 接口/类 Generate 方法, 按 Alt + Insert
+
+  ![](\assets\images\tools\idea-generate.jpg)
+
+  重写方法Ctrl+O, 实现方法Ctrl+I
 
 
 

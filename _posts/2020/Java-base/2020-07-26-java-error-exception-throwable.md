@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Error 和 Exception,抽象类
+title: Error和Exception,抽象类,post,get,put,delete
 category: java
 tags: [java]
 keywords: java
@@ -21,6 +21,8 @@ Exception 是指程序中可以遇见性的异常，如RuntimeException,IOExcept
 - runtime 运行时异常
 
   不需要显示声明抛出，如果程序需要捕获Runtime异常，可以用try catch 实现。
+
+Error与Exception是平级的，共同父类是Throwable
 
 ## 抽象类
 
@@ -113,3 +115,58 @@ public class Testab {
   使用场景：
 
   抽象类包含了子类集合的常见共用方法，如果需要某个特别方法由子类具体实现，可以定义为抽象方法。
+
+## 请求方法
+
+**组合注解(RequestMapping的变形)**
+
+- @GetMapping = @RequestMapping(method = RequestMethod.GET)
+- @PostMapping = @RequestMapping(method = RequestMethod.POST)
+- @PutMapping = @RequestMapping(method = RequestMethod.PUT)
+- @DeleteMapping = @RequestMapping(method = RequestMethod.DELETE
+
+谈区别：
+
+1. 语义上的不同，Get 是获取数据，把参数放在url中，Post 是提交数据，把参数放在request body中，所以Get就会暴露参数，相对不安全，而且url 传送参数长度是有限制的；
+
+2. Get 在浏览器回退时是无害的，Post 会再次提交请求，会造成重复提交；
+
+3. Get 的url地址可以被浏览器历史记录记住，Post 不会；
+
+4. Get 请求会被浏览器主动cache，而Post 不会，除非手动设置；
+
+5. Put 更新数据
+
+   ```java
+   @ApiOperation(value = "根据id更新章节")
+   @PutMapping("{id}")
+   public R updateById(@ApiParam(name = "id",value = "章节id",required = true) @PathVariable String id,
+                       @ApiParam(name = "chapter",value = "章节对象",required = true) @RequestBody Chapter chapter){
+     chapterService.updateById(chapter);
+     return R.ok();
+   }
+   ```
+
+   Put与Post 都是向服务端发送数据，区别在于Post主要作用一个集合资源上(url)，而Put主要作用在一个具体资源上(url/xxx)，通俗一下讲就是，如URL可以在客户端确定，那么可使用PUT，否则用POST
+
+6. Delete 请求顾名思义，就是用来删除某一个资源的，该请求就像数据库的delete操作。
+
+   ```java
+   @ApiOperation(value = "根据id删除章节")
+   @DeleteMapping("{id}")
+   public R removeById(@ApiParam(name = "id",value = "章节id",required = true) @PathVariable String id){
+     chapterService.removeChapterById(id);
+     return R.ok();
+   }
+   ```
+
+总结，我们可以理解为以下
+
+```sh
+POST    /url      创建  
+DELETE  /url/{id}  删除  
+PUT     /url/{id}  更新
+GET     /url/{courseId}  查看
+GET     /url/{page}/{limit}  查看
+```
+
