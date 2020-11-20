@@ -170,3 +170,76 @@ GET     /url/{courseId}  查看
 GET     /url/{page}/{limit}  查看
 ```
 
+## Premature EOF
+
+eof = end of file 文件的结束符
+
+测试环境调第三方系统接口返回的一次报错
+
+![](\assets\images\2020\java\premature-eof.jpg)
+
+百度了解下这个错误，刚好有篇文章出现过同样的错误，出现原因：
+
+- 第三方没有发送http协议需要的结束行 
+- 请求超过了http抓包大小
+
+它是在读取返回的输入stream流时每行读取时，但是在最后一行缺少一个标识文件的结束，原文如下：
+
+> This may be because you are reading the content line by line and for the last line the file may be missing a return, to signal the end of line. 
+
+读取stream流的方法源码
+
+```java
+public static String getPage(String urlString) throws Exception {
+    URL url = new URL(urlString);
+    URLConnection conn = url.openConnection();
+    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    StringBuffer sb = new StringBuffer();
+    String line;
+    while ((line = rd.readLine()) != null) {  // LINE 24
+        sb.append(line);
+    }
+    return sb.toString();
+}
+```
+
+EOF错误
+
+```java
+java.io.IOException: Premature EOF
+    at sun.net.www.http.ChunkedInputStream.readAheadBlocking(ChunkedInputStream.java:556)
+    at sun.net.www.http.ChunkedInputStream.readAhead(ChunkedInputStream.java:600)
+    at sun.net.www.http.ChunkedInputStream.read(ChunkedInputStream.java:687)
+    at java.io.FilterInputStream.read(FilterInputStream.java:133)
+    at sun.net.www.protocol.http.HttpURLConnection$HttpInputStream.read(HttpURLConnection.java:2968)
+    at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:283)
+    at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:325)
+    at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:177)
+    at java.io.InputStreamReader.read(InputStreamReader.java:184)
+    at java.io.BufferedReader.fill(BufferedReader.java:154)
+    at java.io.BufferedReader.readLine(BufferedReader.java:317)
+    at java.io.BufferedReader.readLine(BufferedReader.java:382)
+    at Utilities.getPage(Utilities.java:24)  while ((line = rd.readLine()) != null) {
+    at TalkPage.<init>(TalkPage.java:15)
+    at Updater.run(Updater.java:65)
+```
+
+修改读取行的代码
+
+```java
+public static String getPage(String urlString) throws Exception {
+    URL url = new URL(urlString);
+    URLConnection conn = url.openConnection();
+    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    StringBuffer sb = new StringBuffer();
+    int bufferSize = 1024;
+    char[] buffer = new char[bufferSize];
+    int charsRead = 0;
+    while((charsRead  = rd.read(buffer, 0, BUFFER_SIZE)) != -1){
+       sb.append(buffer, 0, charsRead);
+    }
+    conn.close();
+    return sb.toString();
+}
+```
+

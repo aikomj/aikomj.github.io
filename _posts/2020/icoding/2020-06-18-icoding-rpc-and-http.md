@@ -18,7 +18,7 @@ lock: noneed
 - 第六层：链路层。将上面的网络层的数据包封装成数据帧，便于物理层传输；
 - 第七层：物理层。这一层主要就是传输这些二进制数据。
 
-
+![](\assets\images\2020\springcloud\osi-seven-layer.gif)
 
 <strong style="color:red">常见的远程调用方式有以下2种：</strong>
 

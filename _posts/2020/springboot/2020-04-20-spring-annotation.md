@@ -234,7 +234,7 @@ public class SerialNumberServiceImpl implements SerialNumberService {
 
 ## 5、@EnableTransactionManagement和@Transactional事务管理
 
-点进@Transcactional的源码
+@EnableTransactionManagement开启事务管理，点进@Transcactional的源码
 
 ```java
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -334,13 +334,20 @@ public @interface Transactional {
   }
   ```
 
-
-
 Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，然后在访问数据库的Service方法上添加注解 @Transactional 便可， @Transactional放在Service类上，代表每一方法都是一个事务。例如使用mybatis，在mybatis的配置类上添加@EnableTransactionManagement注解
 
 ![](/assets/images/2020/annotation/enable-transaction-management.gif)
 
 ![](/assets/images/2020/annotation/transaction-on-service.gif)
+
+### 事务失效的场景
+
+- 只在public方法上生效
+
+- 数据库引擎本身不支持事务，比如说MySQL数据库中的**myisam**，本身就不支持事务
+- Spring只会对**unchecked**异常进行事务回滚；如果是**checked**异常则不回滚
+  - unchecked异常：派生于Error或者RuntimeException的异常
+  - checked异常：所有其他的异常
 
 
 
