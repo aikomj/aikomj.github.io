@@ -1266,49 +1266,47 @@ lock: noneed
 
 1.  <font color="red">【强制】</font>定义GAV遵从以下规则： 
 
-   - <font color="#1E9FFF">G</font>roupID格式：com.{公司/BU }.业务线 [.子业务线]，最多4级。 
+   - <font color="#1E9FFF">G</font>(GroupID)格式：com.{公司/BU }.业务线 [.子业务线]，最多4级。 
        说明：{公司/BU} 例如：alibaba/taobao/tmall/aliexpress等BU一级；子业务线可选。 
        正例：com.taobao.jstorm 或 com.alibaba.dubbo.register  
 
-   - <font color="#1E9FFF">A</font>rtifactID格式：产品线名-模块名。语义不重复不遗漏，先到中央仓库去查证一下。 
+   - <font color="#1E9FFF">A</font>(ArtifactID)格式：产品线名-模块名。语义不重复不遗漏，先到中央仓库去查证一下。 
        正例：dubbo-client / fastjson-api / jstorm-tool 
 
-   - <font color="#1E9FFF">V</font>ersion
-
-     命名方式：主版本号.次版本号.修订号
+   - <font color="#1E9FFF">V</font>(Version)  命名方式：主版本号.次版本号.修订号
 
      1）主版本号：产品方向改变，或者大规模API不兼容，或者架构不兼容升级。  
-      2） 次版本号：保持相对兼容性，增加主要功能特性，影响范围极小的API不兼容修改。 
+ 2） 次版本号：保持相对兼容性，增加主要功能特性，影响范围极小的API不兼容修改。 
       3） 修订号：保持完全兼容性，修复BUG、新增次要功能特性等
-
+     
      ```sh
-     说明：注意起始版本号必须为：1.0.0，而不是0.0.1。
+说明：注意起始版本号必须为：1.0.0，而不是0.0.1。
      ```
-
+   
    2.  <font color="red">【强制】</font>线上应用不要依赖SNAPSHOT版本（安全包除外）；正式发布的类库必须先去中央仓库进行查证，使RELEASE版本号有延续性，且版本号不允许覆盖升级。  
 
       ```sh
-      说明：不依赖SNAPSHOT版本是保证应用发布的幂等性。另外，也可以加快编译时的打包构建。
+   说明：不依赖SNAPSHOT版本是保证应用发布的幂等性。另外，也可以加快编译时的打包构建。
       ```
-
+   
    3. <font color="red">【强制】</font>二方库里可以定义枚举类型，参数可以使用枚举类型，但是接口返回值不允许使用枚举类型或者包含枚举类型的POJO对象。
 
    4. <font color="red">【强制】</font>依赖于一个二方库群时，必须定义一个统一的版本变量，避免版本号不一致。 
 
       ```sh
-      说明：依赖springframework-core,-context,-beans，它们都是同一个版本，可以定义一个变量来保存版本：${spring.version}，定义依赖的时候，引用该版本
+   说明：依赖springframework-core,-context,-beans，它们都是同一个版本，可以定义一个变量来保存版本：${spring.version}，定义依赖的时候，引用该版本
       ```
-
+   
    5. <font color="red">【强制】</font>禁止在子项目的pom依赖中出现相同的GroupId，相同的ArtifactId，但是不同的Version。 
 
       ```sh
-      说明：在本地调试时会使用各子项目指定的版本号，但是合并成一个war，只能有一个版本号出现在最后的lib目录中。曾经出现过线下调试是正确的，发布到线上却出故障的先例。
+   说明：在本地调试时会使用各子项目指定的版本号，但是合并成一个war，只能有一个版本号出现在最后的lib目录中。曾经出现过线下调试是正确的，发布到线上却出故障的先例。
       ```
-
+   
    6. <font color="FFB800">【推荐】</font>所有pom文件中的依赖声明放在\<dependencies>语句块中，所有版本仲裁放在\<dependencyManagement>语句块中。 
 
       ```sh
-      说明：<dependencyManagement>里只是声明版本，并不实现引入，因此子项目需要显式的声明依赖，version和
+   说明：<dependencyManagement>里只是声明版本，并不实现引入，因此子项目需要显式的声明依赖，version和
       scope都读取自父pom。而<dependencies>所有声明在主pom的<dependencies>里的依赖都会自动引入，并默认被
    所有的子项目继承。
       ```
@@ -1453,11 +1451,46 @@ lock: noneed
     力： 表达规则和表达工具的熟练性。抽象思维和总结能力的局限性。基础知识体系的完备性。深入浅出的
     生动表达力。 
 
-## 附3 错误码列表
+15. <font color="FFB800">【参考】</font>代码即文档的观点是错误的，清晰的代码只是文档的某个片断，而不是全部。 
+    说明：代码的深度调用，模块层面上的依赖关系网，业务场景逻辑，非功能性需求等问题是需要相应的文
+    档来完整地呈现的。 
 
+## 
 
+## 专有名词解释
 
+1. **CAS**（Compare And Swap）: 阿里巴巴专指数据库表一一对应的POJO类。解决多线程并行情况下使用锁造成性能损耗的一种机制，这是硬件实现的原子操作。CAS操作包含三个操作数：内存位置、预期原值和新值。如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值。否则，处理器不做任何操作。
 
+2. **DO**（Data Object）: 阿里巴巴专指数据库表一一对应的POJO类。 
+3. **GAV**（GroupId、ArtifactId、Version）: Maven坐标，是用来唯一标识jar包。 
+4. **OOP**（Object Oriented Programming）: 本文泛指类、对象的编程处理方式。
+5. **AQS**（AbstractQueuedSynchronizer）: 利用先进先出队列实现的底层同步工具类，它是很多上
+   层同步实现类的基础，比如：ReentrantLock、CountDownLatch、Semaphore等，它们通
+   过继承AQS实现其模版方法，然后将AQS子类作为同步组件的内部类，通常命名为Sync
+6. **ORM**（Object Relation Mapping）: 对象关系映射，对象领域模型与底层数据之间的转换，本
+   文泛指iBATIS, mybatis等框架。
+7. **POJO**（Plain Ordinary Java Object）: 在本规约中，POJO专指只有setter/getter/toString的
+   简单类，包括DO/DTO/BO/VO等
+8. **NPE**（java.lang.NullPointerException）: 空指针异常。 
+9. **OOM**（Out Of Memory）: 源于 java.lang.OutOfMemoryError，当 JVM 没有足够的内存
+   来为对象分配空间并且垃圾回收器也无法回收空间时，系统出现的严重状况
+10.  **一方库**: 本工程内部子项目模块依赖的库（jar 包）。
+11.  **二方库**: 公司内部发布到中央仓库，可供公司内部其它应用依赖的库（jar 包）。
+12. **三方库**: 公司之外的开源库（jar 包）。
 
+### 错误码列表
 
+取常用的几个，详细参考阿里开发手册
+
+| 错误码 | 中文描述           | 说明                       |
+| ------ | ------------------ | -------------------------- |
+| 00000  | 一切ok             | 正确执行后的返回           |
+| A0001  | 用户端错误         | 一级宏观错误码(相当于大类) |
+| A0100  | 用户注册错误       | 二级宏观错误码(相当于小类) |
+| A0101  | 用户未同意隐私协议 | 具体的错误描述             |
+| A0110  | 用户名校验失败     |                            |
+| A0200  | 用户登陆异常       | 二级宏观错误码             |
+| B0001  | 系统执行出错       | 一级宏观错误码             |
+| C0001  | 调用第三方服务出错 | 一级宏观错误码             |
+| C0100  | 中间件服务出错     | 二级宏观错误码             |
 
