@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 一次接口报错java.io.EOFException: Premature EOF的排查
+title: 一次接口报错Premature EOF的排查
 category: tool
 tags: [tool]
 keywords: nginx
-excerpt: nginx做web服务的路由或者软负载均衡，response大小超过了proxy_temp_file_write_size参数设定大小，nginx返回被截断的reponse报EOF异常
+excerpt: nginx做web服务的路由或者软负载均衡，response大小超过了proxyTempFileWriteSize参数设定大小，nginx返回被截断的reponse报EOF异常
 lock: noneed
 ---
 
