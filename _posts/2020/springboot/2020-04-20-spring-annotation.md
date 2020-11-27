@@ -429,3 +429,67 @@ public class TestController {
 }
 ```
 
+## 8、@Aspect 切面编程
+
+spring简化开发的4大核心思想：
+
+1. Spring Bean，生命周期由spring 容器管理的ava对象
+2. IOC，控制反转的思想，所有的对象都去Spring容器getbean
+3. AOP，切面编程降低侵入。
+4. xxxTemplate模版技术，如RestTemplate,RedisTemplate  
+
+AOP是Spring框架面向切面的编程思想，它将涉及多业务流程的**通用功能抽取**并单独封装，形成独立的切面，在合适的时机将这些切面横向切入到业务流程指定的位置中，从而让业务层只关注业务本身，降低程序的耦合度，是函数式编程的一种衍生。
+
+通用功能：非业务逻辑功能，如日志记录（renren-fast有实现），权限验证（renren-fast有实现），事务处理，异常处理等
+
+![](\assets\images\2020\java\spring-aop.png)
+
+AOP 领域中的特性术语：
+
+- 切面（Aspect）: 切面是通知和切点的结合。
+- 切点（PointCut）: 可以插入增强处理的连接点。
+- 通知（Advice）: AOP 框架中的增强处理。
+- 连接点（join point）: 连接点表示应用执行过程中能够插入切面的一个点，这个点可以是方法的调用、异常的抛出。在 Spring AOP 中，连接点总是方法的调用。
+- 引入（Introduction）：引入允许我们向现有的类添加新的方法或者属性。
+- 织入（Weaving）: 将增强处理添加到目标对象中，并创建一个被增强的对象，这个过程就是织入
+
+> 切面
+
+定义一个切面类
+
+```java
+@Component
+@Aspect
+public class LogAspect {
+    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+}
+```
+
+
+
+> 切点
+
+加入切点的声明
+
+```java
+@Component
+@Aspect
+public class LogAspect {
+    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+}
+```
+
+
+
+> 通知增强
+
+
+
+https://recomm.cnblogs.com/blogpost/12851620
+
+https://www.cnblogs.com/suphowe/p/12098042.html
+
+https://www.cnblogs.com/dd1992dd/p/12851620.html
+
