@@ -65,6 +65,10 @@ menus:
     href: /mysql.html
     label: Mysql
     target: _self
+  -
+    href: /mongodb.html
+    label: MongoDB
+    target: _self
   - 
     href: /linux.html
     label: Linux

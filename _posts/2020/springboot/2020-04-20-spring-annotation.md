@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 常用注解
+title: spring web开发常用到的注解，你都知道了吗
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 记录springboot项目中经常用到的一些注解
+excerpt: spring boot项目中常用到的一些注解使用，别弄丢了
 lock: noneed
 ---
 
@@ -67,25 +67,29 @@ public class CorsConfig implements WebMvcConfigurer {
 
 @Mapper和@Repository是常用的两个注解，**两者都是用在dao上**，两者功能差不多
 
-## 区别
+> 区别
 
-**@Repository**需要在Spring中配置扫描地址，然后生成Dao层的Bean才能被注入到Service层中：如下，在启动类中配置扫描地址：
+- @Repository<font color=red>需要在Spring中配置扫描地址</font>，然后生成Dao层的Bean才能被注入到Service层中。
 
-```java
-@SpringBootApplication   //添加启动类注解
-@MapperScan("com.anson.dao")  //配置mapper扫描地址
-public class application
-{
-    public static   void main(String[] args)
-    {
-        SpringApplication.run(application.class,args);
-    }
-}
-```
+  在启动类中配置扫描地址：
 
-**@Mapper**不需要配置扫描地址，通过xml里面的namespace里面的接口地址，生成了Bean后注入到Service层中。
+  ```java
+  @SpringBootApplication   //添加启动类注解
+  @MapperScan("com.anson.dao")  //配置mapper扫描地址
+  public class application
+  {
+      public static   void main(String[] args)
+      {
+          SpringApplication.run(application.class,args);
+      }
+  }
+  ```
 
-结合mybatis-plus,在dao类只需加上@mapper注解就可以了。
+  
+
+- @Mapper <font color=red>不需要配置扫描地址</font>，通过xml里面的namespace里面的接口地址，生成了Bean后注入到Service层中。
+
+  结合Mybatis-Plus,在dao类只需加上@mapper注解就可以了。
 
 
 
@@ -93,15 +97,17 @@ public class application
 
 从JDK5开始，servlet增加了两个影响生命周期的注解
 
-- @PostConstruct
+- <mark>@PostConstruct</mark>
 
   被@PostConstruct修饰的方法会在服务器加载Servlet的时候运行，并且只会被服务器调用一次，类似于Servlet的inti()方法。被@PostConstruct修饰的方法会在构造函数之后，init()方法之前运行。
 
-- @PreDestroy
+- <mark>@PreDestroy</mark>
 
   被@PreDestroy修饰的方法会在服务器卸载Servlet的时候运行，并且只会被服务器调用一次，类似于Servlet的destroy()方法。被@PreDestroy修饰的方法会在destroy()方法之后运行，在Servlet被彻底卸载之前
 
-renren-fast的框架就用到@PostConstruct注解在项目启动时加载定时任务的，
+> 项目经历
+
+renren-fast的框架就用到@PostConstruct注解在项目启动时加载定时任务，放在业务层实现类，代码如下：
 
 ```java
 /**
@@ -123,7 +129,7 @@ renren-fast的框架就用到@PostConstruct注解在项目启动时加载定时�
 	}
 ```
 
-同理我就在框架中加了分布式流水号的初始化
+照猫画虎，我就在框架中加了分布式流水号的初始化
 
 ```java
 @Service("serialNumberService")
@@ -232,9 +238,9 @@ public class SerialNumberServiceImpl implements SerialNumberService {
 
 
 
-## 5、@EnableTransactionManagement和@Transactional事务管理
+## 5、事务管理
 
-@EnableTransactionManagement开启事务管理，点进@Transcactional的源码
+Spring 使用 @Transcactional注解管理事务，我们一起来看看它的源码：
 
 ```java
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -242,97 +248,100 @@ public class SerialNumberServiceImpl implements SerialNumberService {
 @Inherited
 @Documented
 public @interface Transactional {
-    @AliasFor("transactionManager")
-    String value() default "";
+  @AliasFor("transactionManager")
+  String value() default "";
 
-    @AliasFor("value")
-    String transactionManager() default "";
+  @AliasFor("value")
+  String transactionManager() default "";
 
-    Propagation propagation() default Propagation.REQUIRED;
+  // 事务传播
+  Propagation propagation() default Propagation.REQUIRED;
 
-    Isolation isolation() default Isolation.DEFAULT;
+  // 隔离
+  Isolation isolation() default Isolation.DEFAULT;
 
-  	// 事物的超时时间，设置事务在强制回滚之前可以占用的时间，默认为-1，不超时，单位为s（测试为单位s）
-    int timeout() default -1;
+  // 事务的超时时间，设置事务在强制回滚之前可以占用的时间，默认为-1，不超时，单位为s（测试为单位s）
+  int timeout() default -1;
 
-  // true:  只读 ；代表着只会对数据库进行读取操作， 不会有修改的操作，如果确保当前的事务只有读取操作，就有必要设置为只读，可以帮助数据库，引擎优化事务
-  // false: 非只读   不仅会读取数据还会有修改操作
-    boolean readOnly() default false;
+  /* 
+  true: 只读，只能对数据库进行读取操作，不能有修改的操作，如果需要确保当前事务只有读取操作，就有必要设置为只读，可以帮助数据库，	引擎优化事务；
+  false: 非只读，不仅会读取数据还会有修改操作*/
+  boolean readOnly() default false;
 
   // 剩下的四个属性：事务的回滚与不回滚   默认情况下， Spring会对所有的运行时异常进行事务回滚，指定异常的类名，或者类型
-    Class<? extends Throwable>[] rollbackFor() default {};
+  Class<? extends Throwable>[] rollbackFor() default {};
 
-    String[] rollbackForClassName() default {};
+  String[] rollbackForClassName() default {};
 
-    Class<? extends Throwable>[] noRollbackFor() default {};
+  Class<? extends Throwable>[] noRollbackFor() default {};
 
-    String[] noRollbackForClassName() default {};
+  String[] noRollbackForClassName() default {};
 }
 ```
 
-- propagation 属性如何处理事务，点进Propagation的源码
+1、propagation 属性如何处理事务，点进Propagation的源码
 
-  ```java
-  public enum Propagation {
-      /**支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择，也是 Spring 默认的事务的传播。*/
-      REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED),
-      /**支持当前事务，如果当前没有事务，就以非事务方式执行*/
-      SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
-      /**支持当前事务，如果当前没有事务，就抛出异常*/
-      MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
-      /**新建事务，如果当前存在事务，把当前事务挂起*/
-      REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
-      /**-以非事务方式执行操作，如果当前存在事务，就把当前事务挂起*/
-      NOT_SUPPORTED(TransactionDefinition.PROPAGATION_NOT_SUPPORTED),
-      /**以非事务方式执行，如果当前存在事务，则抛出异常*/
-      NEVER(TransactionDefinition.PROPAGATION_NEVER),
-      /**如果一个活动的事务存在，则运行在一个嵌套的事务中。如果没有活动事务，则按REQUIRED属性执行。
-       * 它使用了一个单独的事务，这个事务拥有多个可以回滚的保存点。
-       * 内部事务的回滚不会对外部事务造成影响。
-       * 它只对DataSourceTransactionManager事务管理器起效
-      */
-      NESTED(TransactionDefinition.PROPAGATION_NESTED);
-   
-      private final int value;
-   
-      Propagation(int value) {
-          this.value = value;
-      }
-   
-      public int value() {
-          return this.value;
-      }
+```java
+public enum Propagation {
+  /**支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择，也是 Spring 默认的事务的传播。*/
+  REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED),
+  /**支持当前事务，如果当前没有事务，就以非事务方式执行*/
+  SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
+  /**支持当前事务，如果当前没有事务，就抛出异常*/
+  MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
+  /**新建事务，如果当前存在事务，把当前事务挂起*/
+  REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
+  /**-以非事务方式执行操作，如果当前存在事务，就把当前事务挂起*/
+  NOT_SUPPORTED(TransactionDefinition.PROPAGATION_NOT_SUPPORTED),
+  /**以非事务方式执行，如果当前存在事务，则抛出异常*/
+  NEVER(TransactionDefinition.PROPAGATION_NEVER),
+  /**如果一个活动的事务存在，则运行在一个嵌套的事务中。如果没有活动事务，则按REQUIRED属性执行。
+     * 它使用了一个单独的事务，这个事务拥有多个可以回滚的保存点。
+     * 内部事务的回滚不会对外部事务造成影响。
+     * 它只对DataSourceTransactionManager事务管理器起效
+    */
+  NESTED(TransactionDefinition.PROPAGATION_NESTED);
+
+  private final int value;
+
+  Propagation(int value) {
+    this.value = value;
   }
-  ```
 
-- isolation 属性，事务的隔离级别，点进Isolation的源码
-
-  ```java
-  public enum Isolation {
-   
-  	/**数据库的默认级别*/
-  	DEFAULT(TransactionDefinition.ISOLATION_DEFAULT),
-   
-  	/**读未提交      脏读*/
-  	READ_UNCOMMITTED(TransactionDefinition.ISOLATION_READ_UNCOMMITTED),
-   
-  	/**读已提交  不可重复读（update）*/
-  	READ_COMMITTED(TransactionDefinition.ISOLATION_READ_COMMITTED),
-   
-  	/**可重复读      幻读（插入操作）*/
-  	REPEATABLE_READ(TransactionDefinition.ISOLATION_REPEATABLE_READ),
-   
-  	/** 串行化         效率低*/
-  	SERIALIZABLE(TransactionDefinition.ISOLATION_SERIALIZABLE);
-   
-  	private final int value;
-   
-  	Isolation(int value) { this.value = value; }
-   
-  	public int value() { return this.value; }
-  
+  public int value() {
+    return this.value;
   }
-  ```
+}
+```
+
+2、isolation 属性，事务的隔离级别，点进Isolation的源码
+
+```java
+public enum Isolation {
+ 
+	/**数据库的默认级别*/
+	DEFAULT(TransactionDefinition.ISOLATION_DEFAULT),
+ 
+	/**读未提交      脏读*/
+	READ_UNCOMMITTED(TransactionDefinition.ISOLATION_READ_UNCOMMITTED),
+ 
+	/**读已提交  不可重复读（update）*/
+	READ_COMMITTED(TransactionDefinition.ISOLATION_READ_COMMITTED),
+ 
+	/**可重复读      幻读（插入操作）*/
+	REPEATABLE_READ(TransactionDefinition.ISOLATION_REPEATABLE_READ),
+ 
+	/** 串行化         效率低*/
+	SERIALIZABLE(TransactionDefinition.ISOLATION_SERIALIZABLE);
+ 
+	private final int value;
+ 
+	Isolation(int value) { this.value = value; }
+ 
+	public int value() { return this.value; }
+
+}
+```
 
 Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，然后在访问数据库的Service方法上添加注解 @Transactional 便可， @Transactional放在Service类上，代表每一方法都是一个事务。例如使用mybatis，在mybatis的配置类上添加@EnableTransactionManagement注解
 
@@ -340,14 +349,16 @@ Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，�
 
 ![](/assets/images/2020/annotation/transaction-on-service.gif)
 
-### 事务失效的场景
+> 事务失效的场景
 
-- 只在public方法上生效
+1、只在public方法上生效
 
-- 数据库引擎本身不支持事务，比如说MySQL数据库中的**myisam**，本身就不支持事务
-- Spring只会对**unchecked**异常进行事务回滚；如果是**checked**异常则不回滚
-  - unchecked异常：派生于Error或者RuntimeException的异常
-  - checked异常：所有其他的异常
+2、数据库引擎本身不支持事务，比如说MySQL数据库中的**myisam**，本身就不支持事务
+
+3、Spring只会对**unchecked**异常进行事务回滚；如果是**checked**异常则不回滚
+
+- unchecked异常：派生于Error或者RuntimeException的异常
+- checked异常：所有其他的异常
 
 
 
@@ -393,7 +404,7 @@ private LoginService loginService;
 
 ## 7、@Slf4j
 
-是lombok的扩展注解，import lombok.extern.slf4j.Slf4j;
+这个是lombok的扩展注解，import lombok.extern.slf4j.Slf4j;
 
 如果每次不想写上
 
@@ -429,7 +440,61 @@ public class TestController {
 }
 ```
 
-## 8、@Aspect 切面编程
+## 8、@RequestMapping的4大请求方法
+
+- @GetMapping = @RequestMapping(method = RequestMethod.GET)
+- @PostMapping = @RequestMapping(method = RequestMethod.POST)
+- @PutMapping = @RequestMapping(method = RequestMethod.PUT)
+- @DeleteMapping = @RequestMapping(method = RequestMethod.DELETE
+
+> 区别
+
+1. 语义上的不同，Get 是获取数据，把参数放在url中，Post 是提交数据，把参数放在request body中，所以Get就会暴露参数，相对不安全，而且url 传送参数长度是有限制的；
+
+2. Get 在浏览器回退时是无害的，Post 会再次提交请求，会造成重复提交；
+
+3. Get 的url地址可以被浏览器历史记录记住，Post 不会；
+
+4. Get 请求会被浏览器主动cache，而Post 不会，除非手动设置；
+
+5. Put 更新单个对象数据
+
+   ```java
+   @ApiOperation(value = "根据id更新章节")
+   @PutMapping("{id}")
+   public R updateById(@ApiParam(name = "id",value = "章节id",required = true) @PathVariable String id,
+                       @ApiParam(name = "chapter",value = "章节对象",required = true) @RequestBody Chapter chapter){
+     chapterService.updateById(chapter);
+     return R.ok();
+   }
+   ```
+
+   Put与Post 都是向服务端发送数据，区别在于Post主要作用一个集合资源上(url)，而Put主要作用在一个具体资源上(url/xxx)，如果URL可以在客户端确定，那么可使用PUT，否则用POST
+
+6. Delete 请求顾名思义，就是用来删除某一个资源的，该请求就像数据库的delete操作。
+
+   ```java
+   @ApiOperation(value = "根据id删除章节")
+   @DeleteMapping("{id}")
+   public R removeById(@ApiParam(name = "id",value = "章节id",required = true) @PathVariable String id){
+     chapterService.removeChapterById(id);
+     return R.ok();
+   }
+   ```
+
+> 总结
+
+```sh
+POST    /url      创建  
+DELETE  /url/{id}  删除  
+PUT     /url/{id}  更新
+GET     /url/{courseId}  查看
+GET     /url/{page}/{limit}  查看
+```
+
+
+
+## 9、@Aspect 切面编程
 
 spring简化开发的4大核心思想：
 
@@ -444,52 +509,5 @@ AOP是Spring框架面向切面的编程思想，它将涉及多业务流程的**
 
 ![](\assets\images\2020\java\spring-aop.png)
 
-AOP 领域中的特性术语：
-
-- 切面（Aspect）: 切面是通知和切点的结合。
-- 切点（PointCut）: 可以插入增强处理的连接点。
-- 通知（Advice）: AOP 框架中的增强处理。
-- 连接点（join point）: 连接点表示应用执行过程中能够插入切面的一个点，这个点可以是方法的调用、异常的抛出。在 Spring AOP 中，连接点总是方法的调用。
-- 引入（Introduction）：引入允许我们向现有的类添加新的方法或者属性。
-- 织入（Weaving）: 将增强处理添加到目标对象中，并创建一个被增强的对象，这个过程就是织入
-
-> 切面
-
-定义一个切面类
-
-```java
-@Component
-@Aspect
-public class LogAspect {
-    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-}
-```
-
-
-
-> 切点
-
-加入切点的声明
-
-```java
-@Component
-@Aspect
-public class LogAspect {
-    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-}
-```
-
-
-
-> 通知增强
-
-
-
-https://recomm.cnblogs.com/blogpost/12851620
-
-https://www.cnblogs.com/suphowe/p/12098042.html
-
-https://www.cnblogs.com/dd1992dd/p/12851620.html
+具体看我的另外一篇文章：Spring AOP 切面编程
 

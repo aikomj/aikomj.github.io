@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Error和Exception,抽象类,post,get,put,delete
+title: Error和Exception,抽象类,EOF错误
 category: java
 tags: [java]
 keywords: java
@@ -8,7 +8,7 @@ excerpt: error 一般指与JVM相关的问题如OOM就是error，exception是指
 lock: noneed
 ---
 
-## Throwable
+## 1、Throwable
 
 Error 一般指与JVM相关的问题，如OOM就是error，如系统崩溃，JVM错误等，error无法恢复或不可能被捕获，将导致程序中断；
 
@@ -24,7 +24,7 @@ Exception 是指程序中可以遇见性的异常，如RuntimeException,IOExcept
 
 Error与Exception是平级的，共同父类是Throwable
 
-## 抽象类
+## 2、抽象类
 
 在面向对象的概念中，所有的对象都是通过类来描绘的。自己好少用抽象类(abtract class)，用接口多，现在算是明白抽象类的使用场景了，抽象类里的抽象方法与接口里的方法一样是没有方法体的，它的具体实现由它的子类确定，跟普通类一样，抽象类也拥有成员变量、构造方法、成员方法，但是它不能直接实例化对象，必须通过子类继承抽象类，实例化子类，那么抽象类里的成员变量、成员方法被子类继承了，才可以被调用。Java里类是单继承的extend，但是可以实现implement多个接口 (interface)
 
@@ -112,65 +112,12 @@ public class Testab {
 
   ![](\assets\images\2020\java\abstract-class-2.jpg)
 
-  使用场景：
+  使用场景：抽象类包含了子类集合的常见共用方法，如果需要某个特别方法由子类具体实现，可以定义为抽象方法。
 
-  抽象类包含了子类集合的常见共用方法，如果需要某个特别方法由子类具体实现，可以定义为抽象方法。
 
-## 请求方法
 
-**组合注解(RequestMapping的变形)**
 
-- @GetMapping = @RequestMapping(method = RequestMethod.GET)
-- @PostMapping = @RequestMapping(method = RequestMethod.POST)
-- @PutMapping = @RequestMapping(method = RequestMethod.PUT)
-- @DeleteMapping = @RequestMapping(method = RequestMethod.DELETE
-
-谈区别：
-
-1. 语义上的不同，Get 是获取数据，把参数放在url中，Post 是提交数据，把参数放在request body中，所以Get就会暴露参数，相对不安全，而且url 传送参数长度是有限制的；
-
-2. Get 在浏览器回退时是无害的，Post 会再次提交请求，会造成重复提交；
-
-3. Get 的url地址可以被浏览器历史记录记住，Post 不会；
-
-4. Get 请求会被浏览器主动cache，而Post 不会，除非手动设置；
-
-5. Put 更新数据
-
-   ```java
-   @ApiOperation(value = "根据id更新章节")
-   @PutMapping("{id}")
-   public R updateById(@ApiParam(name = "id",value = "章节id",required = true) @PathVariable String id,
-                       @ApiParam(name = "chapter",value = "章节对象",required = true) @RequestBody Chapter chapter){
-     chapterService.updateById(chapter);
-     return R.ok();
-   }
-   ```
-
-   Put与Post 都是向服务端发送数据，区别在于Post主要作用一个集合资源上(url)，而Put主要作用在一个具体资源上(url/xxx)，通俗一下讲就是，如URL可以在客户端确定，那么可使用PUT，否则用POST
-
-6. Delete 请求顾名思义，就是用来删除某一个资源的，该请求就像数据库的delete操作。
-
-   ```java
-   @ApiOperation(value = "根据id删除章节")
-   @DeleteMapping("{id}")
-   public R removeById(@ApiParam(name = "id",value = "章节id",required = true) @PathVariable String id){
-     chapterService.removeChapterById(id);
-     return R.ok();
-   }
-   ```
-
-总结，我们可以理解为以下
-
-```sh
-POST    /url      创建  
-DELETE  /url/{id}  删除  
-PUT     /url/{id}  更新
-GET     /url/{courseId}  查看
-GET     /url/{page}/{limit}  查看
-```
-
-## Premature EOF
+## 3、Premature EOF
 
 eof = end of file 文件的结束符
 
@@ -243,3 +190,6 @@ public static String getPage(String urlString) throws Exception {
 }
 ```
 
+> 使用nginx做软负载产生的EOF
+
+由于应用的请求返回都会经过nginx处理，当response的数据超出nginx参数proxy_temp_file_write_size的限定，那么nginx会把一些临时内容写入proxy_temp目录，如果这个目录没有权限就会报错。nginx强行断开跟tomcat的连接，同时nginx把已经接收的数据返回给客户端，客户端解析不完整的response就会报EOF异常。这个错误在ccs调用cims的接口出现过。
