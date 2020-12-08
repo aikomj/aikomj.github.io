@@ -509,5 +509,5 @@ AOP是Spring框架面向切面的编程思想，它将涉及多业务流程的**
 
 ![](\assets\images\2020\java\spring-aop.png)
 
-具体看我的另外一篇文章：Spring AOP 切面编程
+具体看我的另外一篇文章：[Spring AOP 切面编程](http://139.199.13.139/blog/java/2020/11/27/spring-aop.html)
 

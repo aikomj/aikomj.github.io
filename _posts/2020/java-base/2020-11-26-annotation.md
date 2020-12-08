@@ -24,12 +24,25 @@ lock: noneed
 
 Java 自带的常用的元注解有`@Target`，`@Retention`，`@Documented`，`@Inherited` 分别有如下含义
 
-1. `@Target`：标记这个注解使用的地方，取值范围在枚举 `java.lang.annotation.ElementType`：`TYPE,FIELD,METHOD,PARAMETER,CONSTRUCTOR,LOCAL_VARIABLE,ANNOTATION_TYPE,PACKAGE,TYPE_PARAMETER,TYPE_USE`。
-2. `@Retention` ：标识这个注解的生命周期，取值范围在枚举 `java.lang.annotation.RetentionPolicy `，`SOURCE,CLASS,RUNTIME`，一般定义的注解都是在运行时使用，所有要用 `@Retention(RetentionPolicy.RUNTIME)`;
-3. `@Documented`：表示注解是否包含到文档中。
-4. `@Inherited` ：使用`@Inherited`定义子类是否可继承父类定义的`Annotation`。`@Inherited`<mark>仅针对`@Target(ElementType.TYPE)`类型的`annotation`有效</mark>，并且仅针对`class`的继承，对`interface`的继承无效
+1. `@Target`：标记这个注解使用的地方，取值范围是一个枚举 java.lang.annotation.ElementType
 
-## 2、定义注解
+   ![](/assets/images/2020/java/annotation-element-type.jpg)
+
+2. `@Retention` ：标识这个注解的生命周期，取值范围在枚举 java.lang.annotation.RetentionPolicy 
+
+   ![](/assets/images/2020/java/annotation-retention-policy.jpg)
+
+   一般定义的注解都是在运行时使用，所有要用 
+
+   ```java
+   @Retention(RetentionPolicy.RUNTIME)
+   ```
+
+3. `@Documented`：表示注解是否包含到文档中。
+
+4. `@Inherited` ：使用@Inherited 定义子类是否可继承父类定义的注解`Annotation`。`@Inherited`仅针对`@Target(ElementType.TYPE)`类型的`annotation`有效，并且仅针对`class`的继承，对`interface`的继承无效
+
+## 2、自定义注解
 
 上面介绍了几个元注解，下面我们定义一个日志注解来演示一下，我们通过定义一个名为`OperationLog`  的注解来记录一些通用的操作日志，比如记录什么时候什么人查询的哪个表的数据或者新增了什么数据。编写注解我们用的是 `@interface` 关键字，相关代码如下：
 
@@ -103,7 +116,7 @@ public @interface OperationLog {
 ### 说明
 
 1. 上面的注解，我们增加了`@Target({ElementType.METHOD})` , `@Retention(RetentionPolicy.RUNTIME)`, `@Documented` 三个元注解，表示我们这个注解是使用在方法上的，并且生命周期是运行时，而且可以记录到文档中。
-2. 然后我们可以看到定义注解采用的u是`@interface`  关键字，并且我们给这个注解定义了几个属性，同时设置了默认值。
+2. 然后我们可以看到定义注解采用的是`@interface`  关键字，并且我们给这个注解定义了几个属性，同时设置了默认值。
 3. 平时我们编写的注解一般必须设置`@Target`和`@Retention`，而且 `@Retention`一般设置为`RUNTIME`，这是因为我们自定义的注解通常要求在运行期读取，另外一般情况下，不必写`@Inherited`。
 
 ### 使用
@@ -533,3 +546,4 @@ public interface OperationType {
 ```
 
 后续在使用的时候只需要在需要的方法上加上注解，填上相应的参数即可`@OperationLog(desc = "查询单条记录", path = "/data")`
+

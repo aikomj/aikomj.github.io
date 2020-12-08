@@ -8,7 +8,7 @@ excerpt: Jekyll静态博客
 lock: noneed
 ---
 
-## 1、使用自己的服务器部署博客
+## 前言
 
 前段时间，阅读了纯洁的微笑的博文[技术人如何搭建自己的博客](http://www.ityouknow.com/other/2018/09/16/create-blog.html)这篇文章在github搭建了个人博客，但是github在国外，网络极其不稳定，让人抓狂，于是又阅读了方志朋的[程序员如果搭建自己的个人博客](https://www.fangzhipeng.com/life/2018/10/14/how-to-build-blog.html)把博客迁移到腾讯云服务器上，下面是搭建过程。
 
@@ -18,6 +18,8 @@ lock: noneed
 - 其二是你的博客如同你的个人简历，记录了你的学习历程，通过写博客，可以让别人认识你，可以结交更多的行业朋友
 - 其三是博客起到了传播知识的作用，特别是技术类的博客能够帮助别人解决技术问题，帮助人是一件快乐的事，何乐而不为
 - 其四是写博客让你保持着强劲的学习动力，有合理的作息时间，有自己学习的方法论
+
+## 1、使用自己的服务器部署博客
 
 ### 搭建jekyll环境
 
@@ -389,9 +391,13 @@ location = /deploy {
 
 
 
-## 3、Jekyll的目录结构
+## 3、Jekyll
 
-Jekyll 官网地址：[http://jekyllcn.com/docs/home/，通过
+既然上面用到了Jekyll搭建博客，那就有必要解一下 Jekyll是什么？Jekyll 是一个简单的博客形态的静态站点生产机器。Jekyll 中文官网地址：[http://jekyllcn.com/docs/home/](http://jekyllcn.com/docs/home/)
+
+![](/assets/images/2020/blog/jekyll-1.jpg)
+
+### 目录结构
 
 jekyll目录结构主要包含如下目录：
 
@@ -424,13 +430,13 @@ html代码段
 
 > 扩展阅读：[http://jmcglone.com/guides/github-pages/](http://jmcglone.com/guides/github-pages/)
 
-## 4、Jekyll常用语法
+### 常用语法
 
 ![](/assets/images/2020/icoding/jekyll-language.gif)
 
 
 
-## 5、博客迁移到gitee码云上
+## 4、博客迁移到gitee码云上
 
 下面记录于2020-08-06
 
@@ -442,7 +448,7 @@ html代码段
 
 参考 [https://gitee.com/help/articles/4284#article-header0](https://gitee.com/help/articles/4284#article-header0)
 
-![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee.jpg)
+![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee.jpg)
 
 文章内介绍了gitee 和github同步更新的3种方式，我选择了方式1
 
@@ -453,7 +459,7 @@ git remote add 远程库名 远程库地址
 eg: git remote add gitee git@github.com:xxx/xxx.git
 ```
 
-![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-2.jpg)
+![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-2.jpg)
 
 修改提交到远程仓库的名字
 
@@ -464,11 +470,11 @@ git remote rename  origin github
 git remote rename aikomj.github.io gitee
 ```
 
-![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-3.jpg)
+![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-3.jpg)
 
 注意：这里同步的意思是push代码到远程仓库时，分别选择gitee和github各自push
 
-![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-4.jpg)
+![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-4.jpg)
 
 由于我是新增的gitee远程仓库地址，所以本地git并没有它的提交记录，所以会显示之前全部的github记录给你，让你提交，但没必要提交历史的push，只提交最新的push，因为gitee上的仓库初始化已与github上的仓库一致，所以只需提交最新的。
 
@@ -476,7 +482,7 @@ git remote rename aikomj.github.io gitee
 
 还有另外一种方式，在gitee上的仓库点击“强制“同步gitee和github上的代码
 
-![](/assets/images/2020/icoding/jekyll-blog-github-to-gitee-5.jpg)
+![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-5.jpg)
 
 
 

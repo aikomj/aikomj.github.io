@@ -59,7 +59,7 @@ CREATE TABLE order_record like order_today;
 
 今日订单表数据
 
-![](/assets/images/2020/order-today.jpg)
+![](/assets/images/2020/mysql/order-today.jpg)
 
 ###  模拟迁移
 
@@ -76,11 +76,11 @@ WHERE
 
 在navicat中运行迁移的sql,同时开另个一个窗口插入数据，模拟下单：
 
-![](/assets/images/2020/order-today-insert1.jpg)
+![](/assets/images/2020/mysql/order-today-insert1.jpg)
 
 继续
 
-![](/assets/images/2020/order-today-insert2.jpg)
+![](/assets/images/2020/mysql/order-today-insert2.jpg)
 
 从上面可以发现一开始能正常插入，但是后面突然就卡住了，并且耗费了23s才成功，然后才能继续插入。这个时候已经迁移成功了，所以能正常插入了。
 
@@ -90,7 +90,7 @@ WHERE
 
 分析执行过程。
 
-![](/assets/images/2020/order-today-explain.jpg)
+![](/assets/images/2020/mysql/order-today-explain.jpg)
 
 通过观察迁移sql的执行情况你会发现order_today是全表扫描，也就意味着在执行insert into select from 语句时，mysql会从上到下扫描order_today内的记录并且加锁，这样一来不就和直接锁表是一样了。
 
@@ -103,7 +103,7 @@ WHERE
 最终sql
 
 ```sql
-NSERT INTO order_record SELECT
+INSERT INTO order_record SELECT
     * 
 FROM
     order_today FORCE INDEX (idx_pay_suc_time)
@@ -113,7 +113,7 @@ WHERE
 
 执行过程
 
-![](/assets/images/2020/order-today-explain-idx.jpg)
+![](/assets/images/2020/mysql/order-today-explain-idx.jpg)
 
 <mark>总结</mark>
 
