@@ -21,6 +21,6 @@ permalink: /archives.html
       {% endif %}
     {% endunless %}
 
-    <li><span>{{ post.date | date:'%m-%d' }}</span> <a href="{{ post.url }}">{{ post.title }}</a></li>
+    <li><span>{{ post.date | date:'%m-%d' }}</span> <a href="{{ post.url }}" target="_blank">{{ post.title }}</a></li>
   {% endfor %}
 </ul>
