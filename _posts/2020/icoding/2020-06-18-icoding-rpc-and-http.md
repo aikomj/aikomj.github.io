@@ -3,7 +3,7 @@ layout: post
 title: SpringCloud远程服务调用的方式Rpc和Http
 category: icoding-edu
 tags: [icoding-edu]
-keywords: spring cloud
+keywords: springcloud
 excerpt: 微服务的两种远程调用方式rpc和http
 lock: noneed
 ---
