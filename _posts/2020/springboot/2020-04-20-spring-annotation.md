@@ -4,7 +4,7 @@ title: spring web开发常用到的注解，你都知道了吗
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: spring boot项目中常用到的一些注解使用，别弄丢了
+excerpt: spring boot项目中常用到的一些注解使用，别弄丢了，post-put-get-delete请求
 lock: noneed
 ---
 
@@ -492,7 +492,19 @@ GET     /url/{courseId}  查看
 GET     /url/{page}/{limit}  查看
 ```
 
+说到请求，就提一下请求时的contentType的值（提交数据的方式）
 
+- application/x-www-form-urlencoded
+
+  原生浏览器的form表单提交方式，默认的方式，键值对，action为get时会把参数拼接到url上，action为post时会把参数放入request body中，
+
+- multipart/form-data
+
+  使用表单上传文件时，必须设置form元素的enctyped 属性为该值
+
+- application/json
+
+  主流的json字符串提交方式，数据对象放入request body中，jquery时代的ajax和vue时代的axios异步一般都会使用该方式提交数据
 
 ## 9、@Aspect 切面编程
 
