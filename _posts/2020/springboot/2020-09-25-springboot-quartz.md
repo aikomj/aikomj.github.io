@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Spring boot整合Quartz实现Java定时任务的动态配置，集群环境配置
+title: 定时任务调度实战1
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: Java定时任务使用过的解决方案，Timer定时器，@Scheduled注解，Quartz框架
+excerpt: 在单体应用中使用Timer定时器，Spring Scheduled注解，Quartz框架
 lock: noneed
 ---
 
@@ -1913,7 +1913,7 @@ public class TestTaskConfig {
 
 
 
-> 使用示例
+> 使用示例renren_fast中集成quartz
 
 之前使用renren_fast框架中的定时器也是使用quartz框架，有界面可以动态启动、停止任务，任务被执行时用到了反射，下面是它的核心代码。
 
@@ -1968,10 +1968,6 @@ public class QuartzConfigration {
     }
 }
 ```
-
-
-
-### 集群环境
 
 
 
