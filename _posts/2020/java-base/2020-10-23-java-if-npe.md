@@ -8,7 +8,57 @@ excerpt: 不使用if null 逻辑，采用JDK8的Optional，自己设计工具类
 lock: noneed
 ---
 
-代码中写了大量的判空语句？可以使用JDK8提供的Optional来避免判空，自己封装一个工具，采用链式编程的方式，无需判空，更加优雅精准
+代码中写了大量的判空语句？可以使用JDK8提供的Optional来避免判空，点进Optional的源码
+
+![](\assets\images\2020\juc\optional.jpg)
+
+使用例子，都是基于函数式接口的编程
+
+```java
+private String[] getFulfillments(XxxOrder xxxOrder) {
+    return Optional.ofNullable(xxxOrder)
+            .map((o) -> o.getXxxShippingInfo())
+            .map((si) -> si.getXxxShipmentDetails())
+            .map((sd) -> sd.getXxxTrackingInfo())
+            .map((t) -> new String[]{t.getTrackingNumber(), t.getTrackingLink()})
+            .orElse(null);
+}
+```
+
+包装一个null的对象
+
+```java
+...
+private static final Optional<?> EMPTY = new Optional<>();
+
+private final T value;
+
+// 构造方法是私有的，构造一个空的对象
+private Optional() {
+  this.value = null;
+}
+// 构造一个非空对象
+private Optional(T value) {
+  this.value = Objects.requireNonNull(value);
+}
+
+...
+public static <T> Optional<T> ofNullable(T value) {
+  return value == null ? empty() : of(value);
+}
+
+public static<T> Optional<T> empty() {
+  @SuppressWarnings("unchecked")
+  Optional<T> t = (Optional<T>) EMPTY;
+  return t;
+}
+
+public static <T> Optional<T> of(T value) {
+  return new Optional<>(value);
+}
+```
+
+自己封装一个工具，采用链式编程的方式，无需判空，更加优雅精准
 
 ```java
 public class TestNPE {
@@ -39,7 +89,7 @@ class User {
 
 上面xjw的school变量为空，所以运行结果不会有任何输出
 
-工具类OptionalBean.java
+工具类OptionalBean.java，参考类Optional
 
 ```java
 final class OptionalBean<T> {
