@@ -157,14 +157,4 @@ Output:
 
 ![](/assets/images/2020/java/iterate-hashmap-example.jpg)
 
-## 初始化赋值
-
-```java
-List<Map<String,Object>> partsItemList = new ArrayList<>(3);
-partsItemList.add(new HashMap<String,Object>(){{
-					put("itemId",firstRela.get("partsItemId"));
-					put("itemName",firstRela.get("partsItemName"));
-					put("partsQty",firstRela.get("partsQty"));
-				}});
-```
 
