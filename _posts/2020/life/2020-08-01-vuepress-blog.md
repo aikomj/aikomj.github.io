@@ -1,6 +1,6 @@
 ---
 layout: post
-title: vuepress搭建个人博客
+title: vuepress搭建自己的个人博客
 category: life
 tags: [life]
 keywords: life

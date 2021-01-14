@@ -25,10 +25,11 @@ private String[] getFulfillments(XxxOrder xxxOrder) {
 }
 ```
 
-包装一个null的对象
+点进Optional的源码，代码片段如下
 
 ```java
 ...
+// 包装一个null的对象
 private static final Optional<?> EMPTY = new Optional<>();
 
 private final T value;

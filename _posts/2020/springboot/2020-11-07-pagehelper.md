@@ -4,7 +4,7 @@ title: Pagehelper的分页原理，你懂了吗
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 为啥PageHelper.startPage后执行mybatis的数据库查询就能分页了
+excerpt: 为啥PageHelper.startPage后执行mybatis的数据库查询就能分页了，底层使用了ThreadLocal变量
 lock: noneed
 ---
 
