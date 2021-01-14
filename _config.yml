@@ -139,7 +139,11 @@ navs:
       -
         subHref: /icoding-gavin.html
         subLabel: 黄埔班笔记
-        target: _self  
+        target: _self
+      -
+        subHref: /icoding-allen.html
+        subLabel: Spring源码
+        target: _self
       -
         subHref: https://www.icodingedu.com/
         subLabel: 艾编程官网
