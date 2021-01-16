@@ -1,10 +1,10 @@
 ---
 layout: post
-title: oracle的sql优化策略，快速插入大量数量
+title: Oracle的sql优化策略，快速插入大量数量
 category: mysql
 tags: [mysql]
 keywords: oracle
-excerpt: 基本的sql优化策略，insert append解析，分清redo与undo,如何开始插入大量数据
+excerpt: 基本的sql优化策略,insert append原理解析,归档模式，快速插入大量数据的4种方法，DML操作与锁，行锁原理，5个阻塞场景分析
 lock: noneed
 ---
 

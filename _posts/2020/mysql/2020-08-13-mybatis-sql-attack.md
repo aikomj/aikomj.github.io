@@ -1,10 +1,10 @@
 ---
 layout: post
-title: MyBatis 框架下 SQL 注入攻击的 3 种方式
+title: MyBatis框架下SQL注入攻击的3种方式，SQL注入例子演示
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: 真是防不胜防
+excerpt: 真是防不胜防，猜解数据库，绕过密码登录验证，判断可注入点
 lock: noneed
 ---
 

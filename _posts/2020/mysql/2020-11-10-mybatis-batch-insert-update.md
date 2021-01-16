@@ -1,6 +1,6 @@
 ---
 layout: post
-title: mybatis执行批量insert和update
+title: Mybatis执行批量insert和update
 category: mysql
 tags: [mysql]
 keywords: mysql

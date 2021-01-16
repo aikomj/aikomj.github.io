@@ -43,3 +43,7 @@ rm -rf ~/logs/arthas
 ![](\assets\images\tools\window-install-arthas.jpg)
 
 ![](\assets\images\tools\window-install-arthas-2.jpg)
+
+## Arthas的知识点总结
+
+![](\assets\images\2020\springcloud\ali-arthas.png)
