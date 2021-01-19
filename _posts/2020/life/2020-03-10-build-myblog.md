@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 搭建自己的个人博客
+title: Jekyll搭建自己的个人博客
 category: life
 tags: [java]
 keywords: blog

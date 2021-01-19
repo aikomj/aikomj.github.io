@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 数据量很大，分页查询很慢，有什么优化方案
+title: Mysql表数据量很大，分页查询很慢，有什么优化方案
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: 使用子查询优化，使用id限定优化，使用临时表优化
+excerpt: 使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化
 lock: noneed
 ---
 
