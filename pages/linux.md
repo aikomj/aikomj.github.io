@@ -1,9 +1,9 @@
 ---
 layout: page
 title: Linux系统系列文章
-titlebar: MessageQueue
+titlebar: Linux
 subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; 如果你愿意改变和坚持学习，你就能脱胎换骨
-menu: MessageQueue
+menu: Linux
 css: ['blog-page.css']
 permalink: /linux
 ---

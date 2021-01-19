@@ -168,6 +168,8 @@ vuepress-theme-reco的主题文档: [https://vuepress-theme-reco.recoluan.com/vi
 
 ## 5、云服务器自动部署
 
+### 环境准备
+
 1、git安装
 
 ```sh
@@ -224,13 +226,19 @@ location /vuepress-blog {
 
 ![](/assets/images/2020/vuepress/nginx-location.jpg)
 
+注意：实际的云服务器上，我使用的是直接下载nginx-1.18.tar.gz 解压安装的方式，安装成功，nginx的根目录是
+
+/usr/local/nginx
+
+### 创建自动部署的vue项目
+
 5、自动构建
 
 使用开源项目[https://gitee.com/GLUESTICK/auto-deployment](https://gitee.com/GLUESTICK/auto-deployment)
 
 它是运行在nodejs环境下的自动化部署插件，所以要先安装nodejs，gitee配置webhook后，push代码触发自动部署至服务器。
 
-**安装node**
+**安装nodejs**
 
 ```sh
 wget https://nodejs.org/dist/v12.18.3/node-v12.18.3-linux-x64.tar.gz
@@ -242,10 +250,10 @@ ln -s ~/node-12.18.3/bin/npm /usr/bin/npm
 node -v
 ```
 
-**创建自动部署的vue项目**
+**auto-deployment**
 
 ```sh
-# 1、创建目录，npm 初始化项目
+# 1、在/usr/local下创建目录，npm 初始化项目
 [root@aliserver local]# mkdir vpblog-deploy
 [root@aliserver local]# cd vpblog-deploy/
 [root@aliserver local]# npm init
@@ -328,7 +336,7 @@ nohup node deploy.js > out.log 2>&1 &
 ```sh
 # 上面使用docker安装nginx，挂载的配置文件目录在/mydata/nginx/conf
 location = /vpwebhook {
-	proxy_pass http://172.18.196.184:7777/vpwebhook;  # 注意使用docker安装nginx,这里要使用宿主机的内网ip
+	proxy_pass http://172.18.196.184:7777/vpwebhook;  # 注意使用docker安装nginx,这里要使用宿主机的内网ip,否则ip使用127.0.0.1
 }
 
 # 重启nginx

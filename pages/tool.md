@@ -1,9 +1,9 @@
 ---
 layout: page
 title: 工作中用到的工具
-titlebar: life
+titlebar: Tool
 subtitle: <span class="mega-octicon octicon-organization"></span>&nbsp;&nbsp; 盘点下我用的顺手的那些工具！
-menu: life
+menu: Tool
 css: ['blog-page.css']
 permalink: /tool
 ---
