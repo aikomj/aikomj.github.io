@@ -4,7 +4,7 @@ title: 定时任务调度实战2
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: springboot + quartz + mysql 实现持久化分布式调度
+excerpt: springboot + quartz + mysql 实现持久化分布式调度，springboot整合xxl-job分布式调度任务平台
 lock: noneed
 ---
 
@@ -1296,4 +1296,164 @@ QUARTZ集群模式调度依赖于各个服务实例的时钟，时钟不同步�
 - xxl-job
 
 - elastic-job
+
+### xxl-job
+
+一个开源的分布式任务调度框架
+
+- gitee地址：[https://gitee.com/xuxueli0323/xxl-job](https://gitee.com/xuxueli0323/xxl-job)
+
+- 官方API文档:[https://www.xuxueli.com/xxl-job/](https://www.xuxueli.com/xxl-job/)
+
+下面内容转载自 [https://www.fangzhipeng.com/architecture/2020/06/13/xxljob-test.html](https://www.fangzhipeng.com/architecture/2020/06/13/xxljob-test.html)，主要介绍springboot怎么快速的整合xxl-job，在xxl-job中，有2个角色：
+
+- xxl-job-admin，调度任务管理系统，官方代码已经写好，直接启动即可
+- xxl-job-excutor，通常是我们业务系统，比如本案例的springboot业务系统，需要配置xxl-job-admin的地址，主动向xxl-job-admin注册，并建立netty连接，然后admin就可以对excutor进行任务分发。在xxl-job-excutor中需要实现excutor的业务代码。
+
+![](\assets\images\2021\juc\xxljob01.png)
+
+> xxl-job-admin
+
+在官网中下载最新的release代码，比如本文中的v2.2.0版本，下载地址为https://github.com/xuxueli/xxl-job/releases。
+
+提前准备Mysql数据库，导入代码工程中的doc/db目录下的sql文件
+
+![](\assets\images\2021\juc\xxljob-2.jpg)
+
+修改xxl-job-admin工程中的resources中的application.properties的数据库配置，如下：
+
+```properties
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+spring.datasource.username=root
+spring.datasource.password=123456
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
+
+启动XxlJobAdminApplication的main函数，xxl-job-admin启动成功。在浏览器上访问http://localhost:8081/xxl-job-admin/ ，登陆用户名为admin，密码为123456。登陆成功后，显示的界面如下：
+
+![](\assets\images\2021\juc\xxljob-2.png)
+
+> xxl-job-excutor
+
+新建一个springboot工程，
+
+1、在pom.xml导入依赖
+
+```xml
+<dependency>
+    <groupId>com.xuxueli</groupId>
+    <artifactId>xxl-job-core</artifactId>
+    <version>2.2.0</version>
+</dependency>
+```
+
+2、application.properties中配置xxl.job.admin.addresses的地址，
+
+```properties
+# web port
+server.port=8082
+# no web
+#spring.main.web-environment=false
+
+# log config
+logging.config=classpath:logback.xml
+
+### xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
+xxl.job.admin.addresses=http://127.0.0.1:8081/xxl-job-admin
+
+### xxl-job, access token
+xxl.job.accessToken=
+
+### xxl-job executor appname
+xxl.job.executor.appname=xxl-job-executor-sample
+### xxl-job executor registry-address: default use address to registry , otherwise use ip:port if address is null
+xxl.job.executor.address=
+### xxl-job executor server-info
+xxl.job.executor.ip=
+xxl.job.executor.port=9999
+### xxl-job executor log-path
+xxl.job.executor.logpath=../applogs/xxl-job/jobhandler
+### xxl-job executor log-retention-days
+xxl.job.executor.logretentiondays=30
+```
+
+3、初始化一个XxlJobSpringExecutor，该类用于处理xxl-job-admin和xxl-job-excutor之间的通讯以及任务的处理
+
+```java
+@Configuration
+public class XxlJobConfig {
+    private Logger logger = LoggerFactory.getLogger(XxlJobConfig.class);
+
+    @Value("${xxl.job.admin.addresses}")
+    private String adminAddresses;
+  
+    @Value("${xxl.job.accessToken}")
+    private String accessToken;
+
+    @Value("${xxl.job.executor.appname}")
+    private String appname;
+
+    @Value("${xxl.job.executor.address}")
+    private String address;
+
+    @Value("${xxl.job.executor.ip}")
+    private String ip;
+
+    @Value("${xxl.job.executor.port}")
+    private int port;
+
+    @Value("${xxl.job.executor.logpath}")
+    private String logPath;
+
+    @Value("${xxl.job.executor.logretentiondays}")
+    private int logRetentionDays;
+
+    @Bean
+    public XxlJobSpringExecutor xxlJobExecutor() {
+        logger.info(">>>>>>>>>>> xxl-job config init.");
+        XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
+        xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
+        xxlJobSpringExecutor.setAppname(appname);
+        xxlJobSpringExecutor.setAddress(address);
+        xxlJobSpringExecutor.setIp(ip);
+        xxlJobSpringExecutor.setPort(port);
+        xxlJobSpringExecutor.setAccessToken(accessToken);
+        xxlJobSpringExecutor.setLogPath(logPath);
+        xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
+
+        return xxlJobSpringExecutor;
+    }
+}
+```
+
+4、注册一个任务，任务名为demoJobHandler。
+
+```java
+@Component
+public class SampleXxlJob {
+    private static Logger logger = LoggerFactory.getLogger(SampleXxlJob.class);
+
+    /**
+     * 1、简单任务示例（Bean模式）
+     */
+    @XxlJob("demoJobHandler")
+    public ReturnT<String> demoJobHandler(String param) throws Exception {
+        XxlJobLogger.log("XXL-JOB, Hello World.");
+        logger.info("XXL-JOB, Hello World. params:"+param);
+        for (int i = 0; i < 5; i++) {
+            XxlJobLogger.log("beat at:" + i);
+            TimeUnit.SECONDS.sleep(2);
+        }
+        return ReturnT.SUCCESS;
+    }
+ }
+```
+
+启动工程xxl-job-excutor，在xxl-job-admin中可以看到demoJobHandler的配置，在控制台启动任务。
+
+![img](\assets\images\2021\juc\xxljob-3.png)
+
+启动任务后，可以看到执行任务的日志。同时在xxl-job-excutor中可以看到任务执行的业务日志。
+
+![](\assets\images\2021\juc\xxljob-4.png)
 

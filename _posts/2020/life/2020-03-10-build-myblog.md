@@ -432,7 +432,7 @@ html代码段
 
 ### 常用语法
 
-![](/assets/images/2020/icoding/jekyll-language.gif)
+![](/assets/images/2020/blog/jekyll-language.gif)
 
 
 
