@@ -4,7 +4,7 @@ title: Mysql表数据量很大，分页查询很慢，有什么优化方案
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: 使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化
+excerpt: 使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化，多个慢场景分析
 lock: noneed
 ---
 
@@ -146,7 +146,7 @@ select * from orders_history where type=8 limit 100000,100;
 
 这种方式已经不属于查询优化，这儿附带提一下。
 
-对于使用 id 限定优化中的问题，需要 id 是连续递增的，但是在一些场景下，比如使用历史表的时候，或者出现过数据缺失问题时，可以考虑<font color=red>使用临时存储的表来记录分页的id，使用分页的id来进行 in 查询。</font>这样能够极大的提高传统的分页查询速度，尤其是数据量上千万的时候。
+对于使用 id 限定优化中的问题，需要 id 是连续递增的，但是在一些场景下，比如使用历史表的时候，或者出现过数据缺失问题时，可以考虑<font color=red>使用临时存储的表来记录分页的id，使用分页的id来进行 in 查询。</font>这样能够极大的提高传统的分页查询速度，尤其是数据量上千万的时候。如果有排序，可以使用上一分页的排序列最大值或者最小值做为参数来查询
 
 
 
@@ -158,60 +158,234 @@ select * from orders_history where type=8 limit 100000,100;
 
 先使用**范围查询**定位 id （或者索引），然后再使用索引进行定位数据，能够提高好几倍查询速度。即先 select id，然后再 select * where id>= ，限定id的范围，innodb引擎的表数据是按照id 排序存储，所以使用id来限定范围查询，能提高好几倍的查询速度，所以id不要使用uuid，它是无序的，而使用自增或者雪花id
 
-## 6、关联更新、删除
+## 7、慢场景
 
-update 语句
+### Limit语句
+
+```sql
+SELECT * 
+FROM   operation 
+WHERE  type = 'SQLStats'
+AND name = 'SlowLog'
+ORDER  BY create_time 
+LIMIT  1000, 10;
+```
+
+比如对于上面简单的语句，一般 DBA 想到的办法是在 type, name, create_time 字段上加组合索引。这样条件排序都能有效的利用到索引，性能迅速提升。
+
+但是偏移量达到“LIMIT 1000000,10” 时，程序员仍然会抱怨：我只取10条记录为什么还是慢？
+
+要知道数据库也并不知道第1000000条记录从什么地方开始，即使有索引也需要从头计算一次。出现这种性能问题，多数情形下是程序员偷懒了。既然是使用create_time做排序，那么可以使用上一页的最大值create_time当成参数作为查询条件，灵活的解决问题，SQL重新设计如下
+
+```sql
+SELECT * 
+FROM   operation 
+WHERE  type = 'SQLStats'
+AND name = 'SlowLog'
+AND  create_time > '2017-03-16 14:00:00'
+ORDER  BY create_time 
+LIMIT 10;
+```
+
+在新设计下查询时间基本固定，不会随着数据量的增长而发生变化。
+
+### 隐式转换
+
+SQL语句中查询变量和字段定义类型不匹配是另一个常见的错误，所以在写mybatis mapper.xml映射的sql时尽量匹配变量与字段的类型。比如下面的语句：
+
+```sql
+mysql> explain extended SELECT * 
+     > FROM   my_balance b 
+     > WHERE  b.bpn = 14000000123
+     >       AND b.isverified IS NULL ;
+mysql> show warnings;
+| Warning | 1739 | Cannot use ref access on index 'bpn' due to type or collation conversion on field 'bpn'
+```
+
+其中字段 bpn 的定义为 varchar(20)，MySQL 的策略是将字符串转换为数字之后再比较。函数作用于表字段，索引失效。上述情况可能是应用程序框架自动填入的参数，而不是程序员的原意。现在应用框架很多很繁杂，使用方便的同时也小心它可能给自己挖坑。
+
+### 关联更新、删除
 
 ```sql
 UPDATE operation o 
-SET    status = 'applying' 
-WHERE  o.id IN (SELECT id 
-                FROM   (SELECT o.id, 
-                               o.status 
-                        FROM   operation o 
-                        WHERE  o.group = 123 
-                               AND o.status NOT IN ( 'done' ) 
-                        ORDER  BY o.parent, 
-                                  o.id 
-                        LIMIT  1) t);
+SET  status = 'applying' 
+WHERE  o.id IN (
+  SELECT id 
+  FROM (SELECT o.id, 
+          o.status 
+          FROM   operation o 
+          WHERE  o.group = 123 
+          AND o.status NOT IN ( 'done' ) 
+          ORDER  BY o.parent, 
+          o.id 
+          LIMIT  1) t);
 ```
 
-MySQL 实际执行的是循环/嵌套子查询（DEPENDENT SUBQUERY)，其执行时间可想而知。
+MySQL 实际执行的是循环/嵌套子查询（DEPENDENT SUBQUERY)，其执行时间可想而知。执行计划如下图
 
-```sh
-+----+--------------------+-------+-------+---------------+---------+---------+-------+------+-----------------------------------------------------+
-| id | select_type        | table | type  | possible_keys | key     | key_len | ref   | rows | Extra                                               |
-+----+--------------------+-------+-------+---------------+---------+---------+-------+------+-----------------------------------------------------+
-| 1  | PRIMARY            | o     | index |               | PRIMARY | 8       |       | 24   | Using where; Using temporary                        |
-| 2  | DEPENDENT SUBQUERY |       |       |               |         |         |       |      | Impossible WHERE noticed after reading const tables |
-| 3  | DERIVED            | o     | ref   | idx_2,idx_5   | idx_5   | 8       | const | 1    | Using where; Using filesort                         |
-+----+--------------------+-------+-------+---------------+---------+---------+-------+------+-----------------------------------------------------+
-```
+![](\assets\images\2021\mysql\dependent-subquery.png)
 
 重写为 JOIN 之后，子查询的选择模式从 DEPENDENT SUBQUERY 变成 DERIVED，执行速度大大加快，从7秒降低到2毫秒。
 
 ```sql
 UPDATE operation o 
        JOIN  (SELECT o.id, 
-                            o.status 
-                     FROM   operation o 
-                     WHERE  o.group = 123 
-                            AND o.status NOT IN ( 'done' ) 
-                     ORDER  BY o.parent, 
-                               o.id 
-                     LIMIT  1) t
+              o.status 
+              FROM   operation o 
+              WHERE  o.group = 123 
+              AND o.status NOT IN ( 'done' ) 
+              ORDER  BY o.parent, 
+              o.id 
+              LIMIT  1) t
          ON o.id = t.id 
 SET  status = 'applying' 
 ```
 
-```sh
-+----+-------------+-------+------+---------------+-------+---------+-------+------+-----------------------------------------------------+
-| id | select_type | table | type | possible_keys | key   | key_len | ref   | rows | Extra                                               |
-+----+-------------+-------+------+---------------+-------+---------+-------+------+-----------------------------------------------------+
-| 1  | PRIMARY     |       |      |               |       |         |       |      | Impossible WHERE noticed after reading const tables |
-| 2  | DERIVED     | o     | ref  | idx_2,idx_5   | idx_5 | 8       | const | 1    | Using where; Using filesort                         |
-+----+-------------+-------+------+---------------+-------+---------+-------+
+执行计划简化为：
+
+![](\assets\images\2021\mysql\dependent-subquery-opt.png)
+
+想想merge into语句也是使用关联去插入、更新的
+
+### 混合排序
+
+```sql
+SELECT * 
+FROM   my_order o 
+INNER JOIN my_appraise a ON a.orderid = o.id 
+ORDER  BY a.is_reply ASC, 
+          a.appraise_time DESC
+LIMIT  0, 20
 ```
 
-## 7、混合排序
+执行计划显示为全表扫描
 
+![](\assets\images\2021\mysql\sort-asc-desc.png)
+
+MySQL 不能利用索引进行混合排序。但在某些场景，还是有机会使用特殊方法提升性能的。<font color=red>由于 is_reply 只有0和1两种状态</font>，我们使用 unit 的方法重写后，执行时间从1.58秒降低到2毫秒。
+
+<mark>发现SQL调优，需要挺灵活的思考角度，但是还是有常用方法可以总结的</mark>
+
+```sql
+SELECT * 
+FROM (
+  (SELECT * FROM  my_order o INNER JOIN my_appraise a ON a.orderid = o.id 
+   AND is_reply = 0
+   ORDER  BY appraise_time DESC
+   LIMIT  0, 20) 
+  UNION ALL
+  (SELECT * FROM  my_order o INNER JOIN my_appraise a ON a.orderid = o.id 
+   AND is_reply = 1
+   ORDER  BY appraise_time DESC
+   LIMIT  0, 20)) t 
+ORDER  BY  is_reply ASC,appraisetime DESC
+LIMIT  20;
+```
+
+### Exists语句
+
+MySQL 对待 EXISTS 子句时，仍然采用嵌套子查询的执行方式。如下面的 SQL 语句：
+
+```sql
+SELECT * FROM my_neighbor n 
+	LEFT JOIN my_neighbor_apply sra ON n.id = sra.neighbor_id AND sra.user_id = 'xxx'
+WHERE n.topic_status < 4
+AND EXISTS(SELECT 1 FROM  message_info m WHERE  n.id = m.neighbor_id 
+           AND m.inuser = 'xxx') 
+AND n.topic_type <> 5
+```
+
+查看执行计划
+
+![](\assets\images\2021\mysql\exists-dependent-subquery.png)
+
+使用了嵌套子查询，去掉exists 更改为 join，将执行时间从1.93秒降低为1毫秒
+
+```sql
+SELECT * FROM my_neighbor n 
+  INNER JOIN message_info ON n.id = m.neighbor_id and m.inuser='xxx'
+	LEFT JOIN my_neighbor_apply sra ON n.id = sra.neighbor_id AND sra.user_id = 'xxx'
+WHERE n.topic_status < 4
+AND n.topic_type <> 5
+```
+
+新的执行计划
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\mysql\exists-to-inner-join.png)
+
+看来 exists不一定是优化sql，有时候反而使sql变慢，看执行计划
+
+### 提前缩小范围
+
+```sql
+SELECT * 
+FROM my_order o 
+LEFT JOIN my_userinfo u 
+ON o.uid = u.uid
+LEFT JOIN my_productinfo p 
+ON o.pid = p.pid 
+WHERE o.display = 0 AND o.ostaus = 1 
+ORDER  BY o.selltime DESC
+LIMIT  0, 15
+```
+
+该SQL语句原意是：先做一系列的左连接，然后排序取前15条记录。从执行计划也可以看出，最后一步估算排序记录数为90万，时间消耗为12秒。
+
+我们可以先对my_order排序获取前15条记录，再做左连接，SQL重写如下
+
+```sql
+SELECT * FROM (
+  SELECT * 
+  FROM   my_order o 
+  WHERE  ( o.display = 0 ) 
+  AND ( o.ostaus = 1 ) 
+  ORDER  BY o.selltime DESC
+  LIMIT  0, 15
+) o 
+LEFT JOIN my_userinfo u ON o.uid = u.uid 
+LEFT JOIN my_productinfo p ON o.pid = p.pid 
+ORDER BY  o.selltime DESC limit 0, 15
+```
+
+再检查执行计划：子查询物化后（select_type=DERIVED)参与 JOIN。虽然估算行扫描仍然为90万，但是利用了索引以及 LIMIT 子句后，实际执行时间变得很小。
+
+### 中间结果集下推
+
+看下面这个已经初步优化过的例子
+
+```sql
+SELECT a.*,c.allocated 
+FROM ( 
+  SELECT   resourceid 
+  FROM     my_distribute d 
+  WHERE    isdelete = 0
+  AND      cusmanagercode = '1234567'
+  ORDER BY salecode limit 20) a 
+LEFT JOIN (
+  SELECT resourcesid,sum(ifnull(allocation, 0) * 12345) allocated 
+  FROM   my_resources 
+  GROUP BY resourcesid) c ON a.resourceid = c.resourcesid
+```
+
+发现 c 表是全表扫描查询的，如果数据量大就会导致整个语句性能下降，左连接最后结果集只关心能和主表 resourceid 能匹配的数据，这是一个优化点，提前缩小范围，过滤掉不匹配的数据，使用with语句重写如下：
+
+```sql
+with a as (
+  SELECT   resourceid 
+  FROM     my_distribute d 
+  WHERE    isdelete = 0
+  AND      cusmanagercode = '1234567'
+  ORDER BY salecode limit 20 
+)
+select a.*,c.allocated
+from a left join (
+  SELECT resourcesid,sum(ifnull(allocation, 0) * 12345) allocated 
+  FROM my_resources r,a
+  where a.resourceid = r.resourcesid
+  GROUP BY resourcesid
+) c on a.resourceid = c.resourcesid
+```
+
+数据库编译器产生执行计划，决定着SQL的实际执行方式。但是编译器只是尽力服务，所有数据库的编译器都不是尽善尽美的。
+
+程序员在设计数据模型以及编写SQL语句时，要把算法的思想或意识带进来。编写复杂SQL语句要养成使用 WITH 语句的习惯。简洁且思路清晰的SQL语句也能减小数据库的负担 。提前缩小数据查询的范围，避免不必要的数据扫描与转换操作，就好像多线程任务时如果是cpu型任务为减少线程切换的cpu时间耗损，核心线程数应该少于cpu核心数。

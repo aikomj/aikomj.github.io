@@ -148,7 +148,10 @@ navs:
         subHref: https://www.icodingedu.com/
         subLabel: 艾编程官网
         target: _blank
-       
+
+      - subHref: https://leetcode-cn.com/problemset/all/
+        subLabel: 力扣刷题
+        target: _blank
   -
     href: /spring-boot.html
     label: Spring Boot

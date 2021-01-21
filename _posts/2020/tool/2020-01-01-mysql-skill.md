@@ -53,6 +53,39 @@ ps -ef|grep mysqld
 [root@helloworld opt]# which mysql
 ```
 
+### 忘记密码
+
+**windows下mysql**
+
+版本为mysql8.0
+
+1、关闭运行的Mysql服务
+
+转到mysql的bin目录下按住shift+右键，点在此处运行命令窗口
+
+![](\assets\images\2021\mysql\forget-password-1.png)
+
+```sh
+D:\mysql-8.0.16-winx64\bin>net stop mysql
+发生系统错误 5。
+
+拒绝访问。
+```
+
+停止mysql服务被拒绝了，通过服务管理窗口把它关闭,Windows+R 调出运行窗口输入services.msc
+
+![](\assets\images\2021\mysql\services-msc.png)
+
+![](\assets\images\2021\mysql\services-msc-2.png)
+
+2、服务关闭后，使用不校验登录密码的方式启动mysql服务
+
+```sh
+D:\mysql-8.0.16-winx64\bin>mysqld --nt --skip-grant-tables
+```
+
+
+
 ## 2、mysql用户
 
 ```sh
@@ -121,7 +154,9 @@ ALTER TABLE penguins AUTO_INCREMENT=1001;
 | --------- | ------ | ------------------- |
 | timestamp | 4 字节 | yyyy-mm-dd hh:mm:ss |
 
- 2、时区
+从优化性能的角度，使用timestamp替代datetime会更好 
+
+2、时区
 
 `timestamp` 只占 4 个字节，而且是以`utc`的格式储存， 它会自动检索当前时区并进行转换。
 
