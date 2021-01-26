@@ -4,7 +4,7 @@ title: 23种设计模式之代理模式
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 静态代理和动态代理
+excerpt: 代理模式的概念,静态代理,JDK动态代理,CGLIB动态代理,Javassist动态代理,ASM动态代理
 lock: noneed
 ---
 
