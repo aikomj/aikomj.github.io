@@ -529,6 +529,9 @@ Map<Integer, String> map = Arrays.stream(departments)
 于SubList子列表的所有操作最终会反映到原列表上。 
 ```
 
+<font color=red>【强制】</font>在subList场景中，高度注意对父集合元素的增加或删除，均会导致子列表的遍历、
+增加、删除产生ConcurrentModificationException 异常。
+
 5、<font color=red>【强制】</font>使用Map的方法keySet()/values()/entrySet()返回集合对象时，不可以对其进行添加元素操作，否则会抛出UnsupportedOperationException异常。
 
 6、<font color=red>【强制】</font>使用集合转数组的方法，必须使用集合的toArray(T[] array)，传入的是类型完全一致、长度为0的空数组  
@@ -676,6 +679,7 @@ for (String item : list) {
    } finally { 
        lock.unlock(); 
    } 
+   ```
 ```
    
 7. <font color=red>【强制】</font>并发修改同一记录时，避免更新丢失，需要加锁。要么在应用层加锁，要么在缓存加锁，要么在数据库层使用乐观锁，使用version作为更新依据。 说明：如果每次访问冲突概率小于20%，推荐使用乐观锁，否则使用悲观锁。乐观锁的重试次数不得小于3次。 
@@ -685,7 +689,7 @@ for (String item : list) {
 
    ```sh
    正例：悲观锁遵循一锁二判三更新四释放的原则 
-   ```
+```
 
 9. <font color="FFB800">【推荐】</font>volatile解决多线程内存不可见问题。对于一写多读，是可以解决变量同步问题，但
    是如果多写，同样无法解决线程安全问题。 
