@@ -4,7 +4,7 @@ title: mysql的使用中常用的操作
 category: tool
 tags: [tool]
 keywords: mysql
-excerpt: mysql开机启动，用户的创建授权，datetime与timestamp的区别，连接报错
+excerpt: mysql开机启动，用户的创建授权，忘记密码后如何重置，datetime与timestamp的区别，连接报错
 lock: noneed
 ---
 
@@ -55,9 +55,11 @@ ps -ef|grep mysqld
 
 ### 忘记密码
 
+> skip-grant-tables模式启动
+
 **windows下mysql**
 
-版本为mysql8.0
+版本为mysql5.7
 
 1、关闭运行的Mysql服务
 
@@ -83,6 +85,95 @@ D:\mysql-8.0.16-winx64\bin>net stop mysql
 ```sh
 D:\mysql-8.0.16-winx64\bin>mysqld --nt --skip-grant-tables
 ```
+
+**centos下**
+
+版本为mysql5.7
+
+1、skip-grant-tables模式启动
+
+```sh
+#修改/etc/my.cnf文件
+vim /etc/my.cnf
+
+#在[mysqld]区域添加配置,并保存my.cnf文件
+skip-grant-tables
+
+#重启mysql
+systemctl restart mysqld
+
+#登录mysql
+mysql -u root -p
+
+#如果出现输入密码，直接回车，就可以进入数据库了
+```
+
+2、修改root密码
+
+```sh
+#登录mysql，此时还没有进入数据库，使用如下命令
+use mysql;
+
+#修改root密码（mysql5.7版本）
+update user set authentication_string = password('密码'), password_expired = 'N',password_last_changed = now() where user = 'root';
+
+#如果你的mysql是5.6版本修改root密码（mysql5.6版本）
+update user set password=password('密码') where user='root';
+
+#使其生效
+flush privileges;
+#退出
+exit;
+```
+
+3、如果你不想修改root密码，可以新增一个管理员用户，操作如下：
+
+```sh
+#登录mysql，此时还没有进入数据库，使用如下命令
+use mysql;
+
+#刷新数据库
+flush privileges;
+
+#创建一个用户，并赋予管理员权限
+grant all privileges on *.* to '用户'@'%' identified by '密码';
+
+#例如，创建一个admin用户，密码为admin
+grant all privileges on *.* to 'admin'@'%' identified by 'admin';
+```
+
+4、重启服务器
+
+```sh
+#修改/etc/my.cnf文件
+vim /etc/my.cnf
+
+#在[mysqld]区域删除改配置,并保存my.cnf文件
+#skip-grant-tables
+
+#重启mysql,#此时，修改完毕
+systemctl restart mysqld
+```
+
+版本为mysql8.0
+
+```sh
+#在skip-grant-tables模式下，将root密码置空
+update user set authentication_string = '' where user = 'root';
+
+#退出，将/etc/my.cnf文件下的skip-grant-tables去掉，重启服务器
+#登录mysql
+mysql -u root -p
+
+#因为密码置空，直接回车，进入数据库之后，修改密码
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Hello@123456';
+
+#因为mysql8，使用强校验，所以，如果密码过于简单，会报错，密码尽量搞复杂些！
+```
+
+
+
+
 
 
 
