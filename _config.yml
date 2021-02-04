@@ -62,6 +62,9 @@ defaults: []
 
 # Navigation. top menu list 导航顶部菜单
 menus:
+  - href: /yida.html
+    label: Ding
+    target: _self
   -
     href: /mysql.html
     label: Mysql
@@ -189,12 +192,6 @@ navs:
         subHref: http://www.justdojava.com
         subLabel: Java 极客技术
         target: _blank
-  - label: 钉钉
-    subnav:
-      -
-        subHref: /yida.html
-        subLabel: 钉钉认证部署专家
-        target: _self
   -
     href: /archives.html
     label: Archives
