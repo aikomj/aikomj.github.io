@@ -329,7 +329,14 @@ let init = function(option){
 node deploy.js
 # 使用nohup 后台运行
 nohup node deploy.js > out.log 2>&1 &
+
 ```
+
+<mark>注意</mark>
+
+使用nohup的时候，虽然Shell中提示了nohup成功，但还是需要按键盘上的任意键退回到Shell输入命令窗口，然后通过在Shell中输入exit来退出终端，而不是每次在nohup执行成功后直接关闭终端，避免nohup的线程在运行一段时间后自动断掉。
+
+
 
 6、nginx配置路由反向代理
 
