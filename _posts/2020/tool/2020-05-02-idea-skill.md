@@ -398,6 +398,24 @@ free-idea-mybatis是一款增强idea对mybatis支持的插件，主要功能如�
 
 ![](\assets\images\tools\idea-no-maven-2.jpg)
 
+### pom依赖自动提示
+
+在idea上使用maven插件时，发现在pom.xml编写项目依赖的jar包时，已经下载到本地的jar，无法自动补全，需要手动写出来，非常影响效率，下面是解决办法
+
+1. 打开IDEA，然后File----->Settings，然后再搜索框中输入maven,然后选择Repositores
+
+   ![](/assets/images/tools/idea-maven-depency-autocomplete.png)
+
+2. 选中本地的仓库，点击右上角的update，更新maven仓库索引。 这样对于已经下载到本地的jar都可以自动进行补全了。
+
+   ![](/assets/images/tools/idea-maven-depency-autocomplete-2.png)
+
+3. 这样就有代码提示了
+
+   ![](/assets/images/tools/idea-maven-depency-autocomplete-3.png)
+
+
+
 ## 7、本地maven仓库
 
 像aliyun-java-vod-upload-1.4.12.jar依赖还没有开源，所以maven都不会有这个依赖，maven打包的时候是没有这个jar包的，导致程序启动失败，解决办法就是把它添加到本地Maven仓库：

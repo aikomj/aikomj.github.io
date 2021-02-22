@@ -50,13 +50,13 @@ System.out.println(statusList.contains(3));
 
 `Arrays`的内部类`ArrayList`也继承了`AbstractList`类，重写了很多方法，比如我们上面使用的`contains`方法，但是却没有重写`add`方法，所以我们在调用`add`方法时才会抛出`java.lang.UnsupportedOperationException`异常。在《阿里巴巴Java开发手册》泰山版中，也有提及：
 
-![](\images\2021\javabase\arrays-aslist-5.png)
+![](\assets\images\2021\javabase\arrays-aslist-5.png)
 
 ### 总结
 
 `Arrays.asList`方法可以在一些简单的场合使用，比如快速声明一个集合，判断某个值是否在允许的范围内：
 
-![](\images\2021\javabase\arrays-aslist-6.png)、
+![](\assets\images\2021\javabase\arrays-aslist-6.png)
 
 但声明后不要再调用`add\remove\clear`等方法修改集合，否则会报`java.lang.UnsupportedOperationException`异常。
 
