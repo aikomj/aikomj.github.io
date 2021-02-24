@@ -61,7 +61,7 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
-
+跨域的解决方案参考自己写的文章
 
 ## 3、@Mapper和@Repository的区别
 
@@ -523,3 +523,22 @@ AOP是Spring框架面向切面的编程思想，它将涉及多业务流程的**
 
 具体看我的另外一篇文章：[Spring AOP 切面编程](http://139.199.13.139/blog/java/2020/11/27/spring-aop.html)
 
+## 10、@JsonFormat 日期格式化
+
+常用的做法在po类的日期类型字段上贴 **@JsonFormat**方式来设置格式
+
+```java
+@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd") // 返回给前端json字符串格式
+@DateTimeFormat(pattern="yyyy-MM-dd")//前端传参，接受格式，不是这个格式的就会报错
+private Date birthday;
+```
+
+全局配置，可以在application.properties中配置
+
+```properties
+# 接受和返回的日期格式
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+spring.jackson.time-zone=GMT+8 # 北京时间
+```
+
+上面是SpringBoot默认使用的jackson进行时间格式设置，spring-boot-starter-web默认引入jackson依赖

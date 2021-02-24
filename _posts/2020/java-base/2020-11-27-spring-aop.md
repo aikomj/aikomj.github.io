@@ -322,9 +322,63 @@ public class LogAspect {
   public Object proceed(Object[] args) throws Throwable;
   ```
 
+> 参考代码
+
+```java
+@Aspect
+public class RpcRequestInterceptor {
+    //作为中间变量，用于保存用户信息
+    private ThreadLocal<BaseRequest> threadLocal = new ThreadLocal<BaseRequest>();
+    //计数器，记录进入facade层数，用于退出相应层级时清空threadLocal里面值
+    private ThreadLocal<Integer> counter = new ThreadLocal<Integer>();
   
+   //对接口插入切面，否则在rpc层调用其它rpc模块时不能先从threadLocal中获取已塞进去的用户信息拿出来
+    @Around("execution(* com.midea.ccs..*.facade..*.*(..))")
+    public Object aroundFacadeImplMethod(ProceedingJoinPoint pjp) throws Throwable {
+    	long start = System.currentTimeMillis();
+        try {        	
+            increase();
+            logger.debug("进了RPC端的request interceptor(" + counter.get() + "次):" + pjp.getSignature().toString());
 
+            Object[] args = pjp.getArgs();
 
+            if (args != null && args.length > 0) {
+                if (args[0] != null && args[0] instanceof BaseRequest) { // 左边第一个
+                    BaseRequest arg = (BaseRequest) args[0];
+
+                    if (threadLocal.get() == null) { // case1: Web invoke RPC
+                        UserInfo userInfo = new UserInfo();
+                        BeanUtils.copyProperties(arg, userInfo);
+                        threadLocal.set(userInfo);
+                    } else { // case2: RPC invoke RPC
+                        BaseRequest source = threadLocal.get();
+                        List<String> ignores = buildIgnoreList(source,arg);
+                        String[] ignoreArray = ignores.toArray(new String[ignores.size()]);
+                        BeanUtils.copyProperties(source, arg, ignoreArray);
+                    }
+                }
+            }
+            return pjp.proceed(args);
+            
+        } catch (Exception e) {
+            logger.error("RPC调用时遇到异常:" + e.getMessage(), e);
+            throw e;
+        } finally {
+            Integer cnt = minus();
+            if (cnt <= 0) {
+                threadLocal.remove();
+                counter.remove();
+            }
+            
+            try {
+            	long end = System.currentTimeMillis();
+                logger.debug("RPC invoke time " + (end -start) + " ms (" + pjp.getTarget().getClass().getName() + "." + pjp.getSignature().getName() +")");
+            } catch (Exception ex) {            	
+            }
+        }
+    }
+}
+```
 
 
 

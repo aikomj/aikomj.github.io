@@ -79,18 +79,14 @@ public class ScopeTestController {
 
 > spring bean作用域
 
-- singleton: 单例模式，当spring创建applicationContext容器的时候，spring会欲初始化所有的该作用域实例，加上lazy-init就可以避免预处理；
+- singleton: 单例模式，当spring创建applicationContext容器的时候，spring会初始化所有的该作用域实例，加上lazy-init就可以避免预处理；
 
 - prototype： 原型模式，每次通过getBean获取该bean就会新产生一个实例，创建后spring将不再对其管理；
 
-- request： 搞web的大家都应该明白request的域了吧，就是每次请求都新产生一个实例，和prototype不同就是创建后，接下来的管理，spring依然在监听；
+- request： 每次请求都新产生一个实例，和prototype不同就是创建后，接下来的管理，spring依然在监听；
 
 - session: 每次会话，同上；
 
 - global session: 全局的web域，类似于servlet中的application。
-
-
-
-
 
 > 此文章为转载文章，转自方志鹏公众号

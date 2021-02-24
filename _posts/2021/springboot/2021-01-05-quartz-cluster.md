@@ -4,7 +4,7 @@ title: 定时任务调度实战2
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: springboot + quartz + mysql 实现持久化分布式调度，springboot整合xxl-job分布式调度任务平台
+excerpt: springboot + quartz + mysql 实现持久化分布式调度，springboot整合xxl-job分布式调度任务平台，springboot整合elastic-job分布式任务调度平台
 lock: noneed
 ---
 
@@ -1508,19 +1508,19 @@ Elastic-Job 最开始只有一个 elastic-job-core 的项目，定位轻量级�
 
 elastic-job-lite-console就是控制台，一个任务作业可视化界面管理系统。可以单独部署，与平台不关，通过配置注册中心和数据源来抓取数据可视化。
 
-跟阿里的流量卫兵控制台一样，通过java -jar启动的，参考文章 [http://139.199.13.139/blog/icoding-edu/2020/07/04/icoding-note-055.html](http://139.199.13.139/blog/icoding-edu/2020/07/04/icoding-note-055.html)
+这点跟阿里的流量卫兵控制台相似，通过java -jar启动的，参考文章 [http://139.199.13.139/blog/icoding-edu/2020/07/04/icoding-note-055.html](http://139.199.13.139/blog/icoding-edu/2020/07/04/icoding-note-055.html)
 
-Github：https://github.com/apache/shardingsphere-elasticjob
+Github：[https://github.com/apache/shardingsphere-elasticjob](https://github.com/apache/shardingsphere-elasticjob)
 
 Gitee: [https://gitee.com/elasticjob/elastic-job](https://gitee.com/elasticjob/elastic-job)
 
-https://github.com/apache/shardingsphere-elasticjob/releases
+登录github查看版本 [https://github.com/apache/shardingsphere-elasticjob/releases](https://github.com/apache/shardingsphere-elasticjob/releases)
 
 选择2.1.5版本下载
 
 ![](\assets\images\2021\springcloud\elastic-job-lite-console-215.png)
 
-在idea执行`mvn clean install`进行打包，启动服务后，在浏览器访问`http://127.0.0.1:8899`，输入账户、密码（都是`root`）即可进入控制台页面
+在idea执行`mvn clean install`进行打包，通过java -jar的方式启动服务后，在浏览器访问`http://127.0.0.1:8899`，输入账户、密码（都是`root`）即可进入控制台页面
 
 ![](\assets\images\2021\springcloud\elastic-job-lite-console-browser.png)
 
