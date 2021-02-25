@@ -113,20 +113,20 @@ renren-fast的框架就用到@PostConstruct注解在项目启动时加载定时�
 /**
 	 * 项目启动时，初始化定时器
 	 */
-	@PostConstruct
-	public void init(){
-    // 定时任务列表
-		List<ScheduleJobEntity> scheduleJobList = this.list();
-		for(ScheduleJobEntity scheduleJob : scheduleJobList){
-			CronTrigger cronTrigger = ScheduleUtils.getCronTrigger(scheduler, scheduleJob.getJobId());
-      //如果不存在，则创建
-      if(cronTrigger == null) {
-        ScheduleUtils.createScheduleJob(scheduler, scheduleJob);
-      }else {
-        ScheduleUtils.updateScheduleJob(scheduler, scheduleJob);
-      }
-		}
-	}
+@PostConstruct
+public void init(){
+  // 定时任务列表
+  List<ScheduleJobEntity> scheduleJobList = this.list();
+  for(ScheduleJobEntity scheduleJob : scheduleJobList){
+    CronTrigger cronTrigger = ScheduleUtils.getCronTrigger(scheduler, scheduleJob.getJobId());
+    //如果不存在，则创建
+    if(cronTrigger == null) {
+      ScheduleUtils.createScheduleJob(scheduler, scheduleJob);
+    }else {
+      ScheduleUtils.updateScheduleJob(scheduler, scheduleJob);
+    }
+  }
+}
 ```
 
 照猫画虎，我就在框架中加了分布式流水号的初始化

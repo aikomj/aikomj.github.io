@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 一个让你图文并茂轻松学习设计模式的网站
-category: java-design
+category: java-base
 tags: [java-design]
 keywords: java
 excerpt: 设计模式玩得炉火纯青，写出的代码就更优雅，阅读起来也会更加舒服，可维护性、可扩展性就更强。

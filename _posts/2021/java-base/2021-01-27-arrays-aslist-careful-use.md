@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 请谨慎使用Arrays.asList,ArrayList的subList，小心踩坑
-category: java
+category: java-base
 tags: [java]
 keywords: java
 excerpt: 巴里巴巴java开发手册上也有说明，Arrays.asList返回的ArrayList是Arrays的内部类，subList并不是ArrayList，只是一个视图，所有操作都会反映到原列表
