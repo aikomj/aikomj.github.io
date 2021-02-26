@@ -304,7 +304,7 @@ Mysql通过间隙锁来解决幻读的问题，把行锁和间隙锁合并在一
 
 ![](\assets\images\2021\mysql\transaction-phantom-read-5.jpg)
 
-事务B执行insert，发行并没有阻塞，执行成功，说明并没有间隙锁。
+事务B执行insert，发现并没有阻塞，执行成功，说明并没有间隙锁。
 
 ![](\assets\images\2021\mysql\transaction-phantom-read-6.jpg)
 

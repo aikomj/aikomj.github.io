@@ -28,7 +28,7 @@ lock: noneed
 
 评论区的一位大佬给出的一种解法，使用了mysql变量，简单易懂
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\mysql\leetcode-3.jpeg)
+![](\assets\images\2021\mysql\leetcode-3.jpeg)
 
 按我理解，解释一下sql，初始变量@prev,@count为null,使用case when 当轮询到第一条记录@prev 赋值为Num字段，@count赋值为1，第二条记录如果@prev 等于 Num字段值，则@count 加1，第三条记录如果@prev 等于 Num字段值，则@count 加1，此时Num已是连续出现3次了，如果不等于则@prev赋值为当前Num字段值，@count赋值为1，重新开始新一轮的判断。最终temp表是每行有两列，分别是Num 字段值及它连续出现的次数列CNT，加一个筛选条件CNT >3 过滤数据，最后再做一个distinct去重复。
 
