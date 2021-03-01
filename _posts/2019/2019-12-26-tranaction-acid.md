@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 一个事务必须满足ACID，事务隔离级别都懂了吗
-category: java
-tags: [java]
+category: mysql
+tags: [mysql]
 keywords: mysql
 excerpt: 原子性(Atomicity)、一致性（Consistency）、隔离性（Isolation）、持久性（Durability），RU读未提交，RC读提交，RR可重复读，串行化
 lock: noneed

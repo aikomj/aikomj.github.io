@@ -14,7 +14,7 @@ permalink: /java-base
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='java' or post.keywords=='jvm' or post.keywords contains 'java' %}
+                {% if post.category=='java' or post.keywords=='jvm' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

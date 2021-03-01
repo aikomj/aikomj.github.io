@@ -10,13 +10,13 @@ lock: noneed
 
 <mark>单例模式 Singleton</mark>
 
+![](\assets\images\2021\javabase\design-singleton.png)
+
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru  
+以下内容来源于网站 Refactoring Guru  : [https://refactoringguru.cn/design-patterns/singleton](https://refactoringguru.cn/design-patterns/singleton)
 
-[https://refactoringguru.cn/design-patterns/singleton](https://refactoringguru.cn/design-patterns/singleton)
-
-![](\assets\images\2021\javabase\design-singleton.png)
+创建型模式：提供创建对象的机制， 增加已有代码的灵活性和可复用性
 
 **单例模式**是一种创建型设计模式， 让你能够保证一个类只有一个实例， 并提供一个访问该实例的全局节点。
 
@@ -48,6 +48,10 @@ lock: noneed
 ### 真实世界类比
 
 政府是单例模式的一个很好的示例。 一个国家只有一个官方政府。 不管组成政府的每个人的身份是什么，  “某政府” 这一称谓总是鉴别那些掌权者的全局访问节点。
+
+### 单例模式结构
+
+![](/assets/images/2021/javabase/singleton-structure.jpg)
 
 ### 伪代码
 
@@ -91,7 +95,7 @@ class Application is
         // 变量 `bar` 和 `foo` 中将包含同一个对象。
 ```
 
-### 适用场景
+### 单例模式适用场景
 
 -  如果程序中的某个类对于所有客户端只有一个可用的实例， 可以使用单例模式。
 
@@ -100,6 +104,18 @@ class Application is
   单例模式与全局变量不同， 它保证类只存在一个实例。 除了单例类自己以外， 无法通过任何方式替换缓存的实例。 
 
   请注意， 你可以随时调整限制并设定生成单例实例的数量， 只需修改 `获取实例`方法， 即 getInstance 中的代码即可实现。
+
+### 实现方式
+
+1. 在类中添加一个私有静态成员变量用于保存单例实例。 
+
+2. 声明一个公有静态构建方法用于获取单例实例。 
+
+3. 在静态方法中实现"延迟初始化"。 该方法会在首次被调用时创建一个新对象， 并将其存储在静态成员变量中。 此后该方法每次被调用时都返回该实例。 
+
+4. 将类的构造函数设为私有。 类的静态方法仍能调用构造函数， 但是其他对象不能调用。 
+
+5. 检查客户端代码， 将对单例的构造函数的调用替换为对其静态构建方法的调用。
 
 ### 优缺点
 
