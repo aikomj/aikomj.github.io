@@ -355,16 +355,16 @@ public class RabbitUtil {
 @Configuration
 public class DirectConsumeListener {
 
-    /**
+  /**
      * 监听指定队列，名称：mq.direct.1
      * @param message
      * @param channel
      * @throws IOException
      */
-    @RabbitListener(queues = "mq.direct.1")
-    public void consume(Message message, Channel channel) throws IOException {
-        log.info("DirectConsumeListener，收到消息: {}", message.toString());
-    }
+  @RabbitListener(queues = "mq.direct.1")
+  public void consume(Message message, Channel channel) throws IOException {
+    log.info("DirectConsumeListener，收到消息: {}", message.toString());
+  }
 }
 ```
 
@@ -380,7 +380,6 @@ public class DirectConsumeListener {
 @Slf4j
 @Configuration
 public class DynamicConsumeListener {
-
     /**
      * 使用SimpleMessageListenerContainer实现动态监听
      * @param connectionFactory
@@ -646,7 +645,7 @@ public class RabbitController {
 
 上面的操作告诉我们怎么使用rabbitMQ,我们更多的时候是思考什么下的场景使用rabbitMQ
 
-> 业务场景
+### 订单场景
 
 以常见的订单系统为例，用户点击【下单】按钮之后的业务逻辑可能包括：**支付订单、扣减库存、生成相应单据、发红包、发短信通知等等**。
 
@@ -717,4 +716,11 @@ public class RabbitController {
   ```
 
   当引入 MQ 之后业务的确是解耦了，但是当 MQ 一旦挂了，所有的服务基本都挂了，是不是很可怕！这时候就要给MQ实现高可用，rabbitmq 结合Haproxy 搭建镜像模式，kafka结合zookeeper搭建集群模式。
+
+### 消费失败场景
+
+- rabbitMQ消费者端开启手动签收模式，通过NACK将消息重回队尾变成Ready状态然后再次消费
+- 如果重试次数超过最大值，会将异常消息存储到数据库，然后人工介入排查问题，进行手工重试
+
+[消费端消息可靠性消费](http://139.199.13.139/blog/icoding-gavin/2020/03/01/gavin-note-044.html)
 

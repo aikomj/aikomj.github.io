@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Mysql表数据量很大，分页查询很慢，有什么优化方案
+title: Mysql表数据量很大，SQL变慢，有什么优化方案
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: 使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化，排序值作为查询条件，避免隐式转换，union all 代替混合排序，inner join代替exists语句避免嵌套查询，提前缩小范围，with语句缩小中间结果集
+excerpt: sql执行较慢的3个原因,使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化，排序值作为查询条件，避免隐式转换，union all 代替混合排序，inner join代替exists语句避免嵌套查询，提前缩小范围，with语句缩小中间结果集
 lock: noneed
 ---
 
@@ -349,7 +349,7 @@ ORDER BY  o.selltime DESC limit 0, 15
 
 再检查执行计划：子查询物化后（select_type=DERIVED)参与 JOIN。虽然估算行扫描仍然为90万，但是利用了索引以及 LIMIT 子句后，实际执行时间变得很小。
 
-### 中间结果集下推
+### with语句结果集下推
 
 看下面这个已经初步优化过的例子
 
@@ -529,6 +529,8 @@ EXPLAIN SELECT * FROMtableWHERE id < 100 ORDER BY a;
 MySQL 常用的存储引擎有 MyISAM 和 InnoDB ， InnoDB 会创建主键索引，而主键索引属于聚簇索引，也就是在存储数据时，索引是基于 B+ 树构成的，具体的行数据则存储在叶子节点。也就是说，如果是通过主键索引查询的，会直接搜索 B+ 树，从而查询到数据如果不是通过主键索引查询的，需要先搜索索引树，得到在 B+ 树上的值，再到 B+ 树上搜索符合条件的数据，这个过程就是“回表”
 
 很显然，回表能够产生时间。这也是为什么建议， where 后面的条件，优先选择主键索引
+
+![]()
 
 ## 9、分析锁情况
 

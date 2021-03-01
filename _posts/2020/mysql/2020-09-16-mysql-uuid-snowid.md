@@ -4,7 +4,7 @@ title: MySQL不推荐使用uuid或者雪花id作为主键？
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: mysql做分库分表分布式设计，我是建议使用雪花ID的，但是单机就建议自增ID
+excerpt: mysql做分库分表分布式设计，我是建议使用雪花ID的，但是单机就建议自增ID，无序id主键导致索引重排
 lock: noneed
 ---
 
