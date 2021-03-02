@@ -1,10 +1,10 @@
 ---
 layout: post
 title: ThreadLocal的内存泄漏问题
-category: springboot
+category: java
 tags: [springboot]
 keywords: springboot
-excerpt: threadLocal 线程内变量为我们解决了多线程访问变量的安全问题
+excerpt: threadLocal线程内变量为我们解决了多线程访问变量的安全问题,key是弱引用，只能生存到下次GC前，如果很多线程使用Threadlocal可能会引起内存泄露
 lock: noneed
 ---
 

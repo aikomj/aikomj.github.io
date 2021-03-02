@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 为什么 Java 中“1000==1000”为false，而”100==100“为true？
-category: springboot
+category: java
 tags: [springboot]
 keywords: springboot
 excerpt: integer的缓存，快戳进来看答案
