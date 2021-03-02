@@ -8,20 +8,25 @@ excerpt: 不使用if null 逻辑，采用JDK8的Optional，自己设计工具类
 lock: noneed
 ---
 
-代码中写了大量的判空语句？可以使用JDK8提供的Optional来避免判空，点进Optional的源码
+## 1、Optional类
+
+代码中写了大量的判空语句？可以使用JDK8提供的Optional来避免显式判空，点进Optional的源码
 
 ![](\assets\images\2020\juc\optional.jpg)
 
-使用例子，都是基于函数式接口的编程
+### 避免null检查
+
+下面例子无需显示判断null
 
 ```java
 private String[] getFulfillments(XxxOrder xxxOrder) {
-    return Optional.ofNullable(xxxOrder)
-            .map((o) -> o.getXxxShippingInfo())
-            .map((si) -> si.getXxxShipmentDetails())
-            .map((sd) -> sd.getXxxTrackingInfo())
-            .map((t) -> new String[]{t.getTrackingNumber(), t.getTrackingLink()})
-            .orElse(null);
+  // 允许传递为null参数
+  return Optional.ofNullable(xxxOrder)
+    .map((o) -> o.getXxxShippingInfo())
+    .map((si) -> si.getXxxShipmentDetails())
+    .map((sd) -> sd.getXxxTrackingInfo())
+    .map((t) -> new String[]{t.getTrackingNumber(), t.getTrackingLink()})
+    .orElse(null);
 }
 ```
 
@@ -59,7 +64,9 @@ public static <T> Optional<T> of(T value) {
 }
 ```
 
-自己封装一个工具，采用链式编程的方式，无需判空，更加优雅精准
+### 显式null检查
+
+下面例子显式判断空，值需要存在
 
 ```java
 public class TestNPE {
@@ -90,7 +97,7 @@ class User {
 
 上面xjw的school变量为空，所以运行结果不会有任何输出
 
-工具类OptionalBean.java，参考类Optional
+### 工具类OptionalBean
 
 ```java
 final class OptionalBean<T> {
@@ -263,3 +270,6 @@ try {
 运行结果
 
 ![](\assets\images\2020\java\optional-bean-2.jpg)
+
+其实没必要自定义OptionalBean，使用java8的Optional可以应对大多数场景。
+

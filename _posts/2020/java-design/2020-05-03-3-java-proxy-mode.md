@@ -309,20 +309,20 @@ public class HostInvocationHandler implements InvocationHandler {
     return result;
   }
 
-	// 看房
-	public void seeHouse() {
-		System.out.println("动态代理-中介带你看房子");
-	}
+  // 看房
+  public void seeHouse() {
+    System.out.println("动态代理-中介带你看房子");
+  }
 
-	// 签合同
-	public void signRentContract() {
-		System.out.println("动态代理-签租赁合同");
-	}
+  // 签合同
+  public void signRentContract() {
+    System.out.println("动态代理-签租赁合同");
+  }
 
-	// 收中介费
-	public void fee() {
-		System.out.println("动态代理-收中介费");
-	}
+  // 收中介费
+  public void fee() {
+    System.out.println("动态代理-收中介费");
+  }
 }
 ```
 
@@ -330,16 +330,16 @@ public class HostInvocationHandler implements InvocationHandler {
 
 ```java
 public class Client {
-	public static void main(String[] args) {
-		// 真实角色：房东
-		Host host = new Host();
-		// 代理角色没有，动态生成一个
-		HostInvocationHandler handler = new HostInvocationHandler();
+  public static void main(String[] args) {
+    // 真实角色：房东
+    Host host = new Host();
+    // 代理角色没有，动态生成一个
+    HostInvocationHandler handler = new HostInvocationHandler();
     // 要代理的目标对象
-		handler.setRent(host);
-		Rent proxy =(Rent) handler.getProxy();
-		proxy.rent();
-	}
+    handler.setRent(host);
+    Rent proxy =(Rent) handler.getProxy();
+    proxy.rent();
+  }
 }
 ```
 
