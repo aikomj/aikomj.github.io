@@ -10,8 +10,6 @@ lock: noneed
 
 <mark>适配器模式adapter</mark>
 
-亦称：封装器模式、Wrapper、Adapter
-
 ![](\assets\images\2021\javabase\adapter-mini.png)
 
 ## 1、意图

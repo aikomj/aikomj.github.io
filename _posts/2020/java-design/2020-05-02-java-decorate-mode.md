@@ -10,7 +10,7 @@ lock: noneed
 
 <mark>装饰者模式Decorator</mark>
 
-亦称：装饰者模式、装饰器模式、Wrapper、Decorator
+亦称：装饰器模式、Wrapper、Decorator
 
 ![](\assets\images\2021\javabase\decorator-mini.png)
 
