@@ -126,14 +126,27 @@ class Application is
 ### 与其他模式的关系
 
 - [外观模式](https://refactoringguru.cn/design-patterns/facade)类通常可以转换为[单例模式](https://refactoringguru.cn/design-patterns/singleton)类， 因为在大部分情况下一个外观对象就足够了。
-
 - 如果你能将对象的所有共享状态简化为一个享元对象， 那么[享元模式](https://refactoringguru.cn/design-patterns/flyweight)就和[单例](https://refactoringguru.cn/design-patterns/singleton)类似了。 但这两个模式有两个根本性的不同。
 
   1. 只会有一个单例实体， 但是*享元*类可以有多个实体， 各实体的内在状态也可以不同。 
 
   2. 单例对象可以是可变的。 享元对象是不可变的。
-
 - [抽象工厂模式](https://refactoringguru.cn/design-patterns/abstract-factory)、 [生成器模式](https://refactoringguru.cn/design-patterns/builder)和[原型模式](https://refactoringguru.cn/design-patterns/prototype)都可以用[单例](https://refactoringguru.cn/design-patterns/singleton)来实现。
+
+### 代码示例
+
+在Java中使用
+
+复杂度：1
+
+流行度：3
+
+Java 核心程序库中仍有相当多的单例示例：
+
+- [`java.lang.Runtime#getRuntime()`](http://docs.oracle.com/javase/8/docs/api/java/lang/Runtime.html#getRuntime--)
+- [`java.lang.System#getSecurityManager()`](http://docs.oracle.com/javase/8/docs/api/java/lang/System.html#getSecurityManager--)
+
+看下面的写法
 
 ## 2、四种写法
 
@@ -219,6 +232,7 @@ public class Singleton {
         }
       }
     }
+    return singleton;
   }
 }
 ```

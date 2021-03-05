@@ -122,9 +122,15 @@ lock: noneed
 
 ### 代码示例
 
-目标对象和装饰器遵循同一接口， 因此你可用装饰来对对象进行无限次的封装， 结果对象将获得所有封装器叠加而来的行为。
+目标对象和装饰器遵循同一接口， 因此你可用装饰来对对象进行无限次的封装， 结果对象将获得所有装器叠加而来的行为。
 
-Java 核心程序库中有一些关于装饰的示例： 
+**在Java中使用模式**
+
+复杂度：2
+
+流行度：2
+
+**使用示例：** 装饰在 Java 代码中可谓是标准配置， 尤其是在与流式加载相关的代码中。Java 核心程序库中有一些关于装饰的示例： 
 
 - [ `java.io.InputStream`](http://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html)、 [ `Output­Stream`](http://docs.oracle.com/javase/8/docs/api/java/io/OutputStream.html)、 [ `Reader`](http://docs.oracle.com/javase/8/docs/api/java/io/Reader.html) 和 [ `Writer`](http://docs.oracle.com/javase/8/docs/api/java/io/Writer.html) 的所有代码都有以自身类型的对象作为参数的构造函数。 
 - [ `java.util.Collections`](http://docs.oracle.com/javase/8/docs/api/java/util/Collections.html)； [ `checked­XXX()`](http://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#checkedCollection-java.util.Collection-java.lang.Class-)、 [ `synchronized­XXX()`](http://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#synchronizedCollection-java.util.Collection-) 和 [ `unmodifiable­XXX()`](http://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#unmodifiableCollection-java.util.Collection-) 方法。 
@@ -369,20 +375,6 @@ Name,Salary
 John Smith,100000
 Steven Jobs,912000
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 2、场景举例
 

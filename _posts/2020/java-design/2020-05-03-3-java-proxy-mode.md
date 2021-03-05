@@ -8,6 +8,10 @@ excerpt: 代理模式的概念,静态代理,JDK动态代理,CGLIB动态代理,Ja
 lock: noneed
 ---
 
+<mark>代理模式Proxy</mark>
+
+![](\assets\images\2021\javabase\proxy-mini.png)
+
 动态代理在 Java 中有着广泛的应用，比如 **AOP 的实现原理、RPC远程调用、Java 注解对象获取、日志框架、全局性异常处理、事务处理等**。
 
 ## 1、代理模式的概念
@@ -791,3 +795,400 @@ public class AsmProxy extends ClassLoader implements Opcodes {
 - 在无侵入式的代码扩展目标类的方法（增强），同时减少代码量，避免代理类泛滥成灾。
 
 我们在选型中，性能考量并不是主要关注点，**可靠性、可维护性、编码工作量**同等重要。
+
+## 4、意图
+
+以下内容转载自 [https://refactoringguru.cn/design-patterns/proxy](https://refactoringguru.cn/design-patterns/proxy)
+
+结构型设计模式：该模式将对象和类组装成较大的结构， 并同时保持结构的灵活和高效
+
+**代理模式**是一种结构型设计模式， 让你能够提供对象的替代品或其占位符。 代理控制着对于原对象的访问， 并允许在将请求提交给对象前后进行一些处理。
+
+![](\assets\images\2021\javabase\proxy.png)
+
+### 问题
+
+为什么要控制对于某个对象的访问呢？ 举个例子： 有这样一个消耗大量系统资源的巨型对象， 你只是偶尔需要使用它， 并非总是需要。如数据库的访问
+
+![](\assets\images\2021\javabase\proxy-problem-zh.png)
+
+### 解决方案
+
+代理模式建议新建一个与原服务对象接口相同的代理类， 然后更新应用以将代理对象传递给所有原始对象客户端。 代理类接收到客户端请求后会创建实际的服务对象， 并将所有工作委派给它。动态代理
+
+![](\assets\images\2021\javabase\proxy-solution-zh.png)
+
+<mark>代理将自己伪装成数据库对象， 可在客户端或实际数据库对象不知情的情况下处理延迟初始化和缓存查询结果的工作。</mark>
+
+这有什么好处呢？ 如果需要在类的主要业务逻辑前后执行一些工作， 你无需修改类就能完成这项工作。 由于代理实现的接口与原类相同， 因此你可将其传递给任何一个使用实际服务对象的客户端。
+
+### 真实世界类比
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\javabase\proxy-live-example-zh.png)
+
+信用卡是银行账户的代理， 银行账户则是一大捆现金的代理。 它们都实现了同样的接口， 均可用于进行支付。 消费者会非常满意， 因为不必随身携带大量现金； 商店老板同样会十分高兴， 因为交易收入能以电子化的方式进入商店的银行账户中， 无需担心存款时出现现金丢失或被抢劫的情况。信用卡和银行账户支付都是现金支付的代理，它可以记录支付的相关信息，相当于增强了现金支付的功能，你使用现金支付是没有记录相关信息的。
+
+### 代理模式结构
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\javabase\proxy-structure.png)
+
+代理对象可以在服务对象的基础上做增强，如记录日志、访问控制、缓存
+
+### 伪代码
+
+本例演示如何使用**代理**模式在第三方腾讯视频 （TencentVideo， 代码示例中记为 TV） 程序库中添加延迟初始化和缓存
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\javabase\proxy-example-zh.png)
+
+程序库提供了视频下载类。 但是该类的效率非常低。 如果客户端程序多次请求同一视频， 程序库会反复下载该视频， 而不会将首次下载的文件缓存下来复用。
+
+代理类实现和原下载器相同的接口， 并将所有工作委派给原下载器。 不过， 代理类会保存所有的文件下载记录， 如果程序多次请求同一文件， 它会返回缓存的文件
+
+```java
+// 1、远程服务接口。
+interface ThirdPartyTVLib is
+    method listVideos()
+    method getVideoInfo(id)
+    method downloadVideo(id)
+
+// 2、服务对象（目标对象）  
+// 服务连接器的具体实现。该类的方法可以向腾讯视频请求信息。请求速度取决于
+// 用户和腾讯视频的互联网连接情况。如果同时发送大量请求，即使所请求的信息
+// 一模一样，程序的速度依然会减慢。
+class ThirdPartyTVClass implements ThirdPartyTVLib is
+    method listVideos() is
+        // 向腾讯视频发送一个 API 请求。
+
+    method getVideoInfo(id) is
+        // 获取某个视频的元数据。
+
+    method downloadVideo(id) is
+        // 从腾讯视频下载一个视频文件。
+
+// 3、代理对象  
+// 为了节省网络带宽，我们可以将请求结果缓存下来并保存一段时间。但你可能无
+// 法直接将这些代码放入服务类中。比如该类可能是第三方程序库的一部分或其签
+// 名是`final（最终）`。因此我们会在一个实现了服务类接口的新代理类中放入
+// 缓存代码。当代理类接收到真实请求后，才会将其委派给服务对象。
+class CachedTVClass implements ThirdPartyTVLib is
+    private field service: ThirdPartyTVLib
+    private field listCache, videoCache
+    field needReset
+
+    constructor CachedTVClass(service: ThirdPartyTVLib) is
+        this.service = service
+
+    method listVideos() is
+        if (listCache == null || needReset)
+            listCache = service.listVideos()
+        return listCache
+
+    method getVideoInfo(id) is
+        if (videoCache == null || needReset)
+            videoCache = service.getVideoInfo(id)
+        return videoCache
+
+    method downloadVideo(id) is
+        if (!downloadExists(id) || needReset)
+            service.downloadVideo(id)
+
+// 4、管理类
+// 之前直接与服务对象交互的 GUI 类不需要改变，前提是它仅通过接口与服务对
+// 象交互。我们可以安全地传递一个代理对象来代替真实服务对象，因为它们都实
+// 现了相同的接口。
+class TVManager is
+    protected field service: ThirdPartyTVLib
+
+    constructor TVManager(service: ThirdPartyTVLib) is
+        this.service = service
+
+    method renderVideoPage(id) is
+        info = service.getVideoInfo(id)
+        // 渲染视频页面。
+
+    method renderListPanel() is
+        list = service.listVideos()
+        // 渲染视频缩略图列表。
+
+    method reactOnUserInput() is
+        renderVideoPage()
+        renderListPanel()
+
+// 5、客户端
+// 程序可在运行时对代理进行配置。
+class Application is
+    method init() is
+        aTVService = new ThirdPartyTVClass()
+        aTVProxy = new CachedTVClass(aTVService)
+        manager = new TVManager(aTVProxy)
+        manager.reactOnUserInput()      
+      
+```
+
+这个代码示例是静态代理的方式。
+
+### 适合应用场景
+
+1. 延迟初始化 （虚拟代理）。 如果你有一个偶尔使用的重量级服务对象， 一直保持该对象运行会消耗系统资源时， 可使用代理模式。
+
+    <mark>你无需在程序启动时就创建该对象， 可将对象的初始化延迟到真正有需要的时候。</mark>
+
+2. 访问控制 （保护代理）。 如果你只希望特定客户端使用服务对象， 这里的服务对象可以是操作系统中非常重要的部分， 而客户端则是各种已启动的程序 （包括恶意程序）， 此时可使用代理模式。
+
+   <mark>代理可仅在客户端凭据满足要求时将请求传递给服务对象。</mark>
+
+3.  本地执行远程服务 （远程代理）。 适用于服务对象位于远程服务器上的情形。
+
+    在这种情形中， 代理通过网络传递客户端请求， 负责处理所有与网络相关的复杂细节。
+
+4.  记录日志请求 （日志记录代理）。 适用于当你需要保存对于服务对象的请求历史记录时。 代理可以在向服务传递请求前进行记录。
+
+5.  缓存请求结果 （缓存代理）。 适用于需要缓存客户请求结果并对缓存生命周期进行管理时， 特别是当返回结果的体积非常大时。
+
+   代理可对重复请求所需的相同结果进行缓存， 还可使用请求参数作为索引缓存的键值。
+
+6. 智能引用。 可在没有客户端使用某个重量级对象时立即销毁该对象。
+
+   代理会将所有获取了指向服务对象或其结果的客户端记录在案。 代理会时不时地遍历各个客户端， 检查它们是否仍在运行。 如果相应的客户端列表为空， 代理就会销毁该服务对象， 释放底层系统资源。像GC垃圾回收，原理是懂了但是落地实现，还是不懂。
+
+   代理还可以记录客户端是否修改了服务对象。 其他客户端还可以复用未修改的对象。
+
+### 实现方式
+
+1. 如果没有现成的服务接口， 你就需要创建一个接口来实现代理和服务对象的可交换性。 从服务类中抽取接口并非总是可行的， 因为你需要对服务的所有客户端进行修改， 让它们使用接口。 **备选计划是将代理作为服务类的子类， 这样代理就能继承服务的所有接口了**，CGLIB就是使用类继承的方式实现动态创建代理类的。
+2. 创建代理类， 其中必须包含一个存储指向服务的引用的成员变量。 通常情况下， 代理负责创建服务并对其整个生命周期进行管理。 在一些特殊情况下， 客户端会通过构造函数将服务传递给代理。
+3. 根据需求实现代理方法。 在大部分情况下， 代理在完成一些任务后应将工作委派给服务对象。
+4. 可以考虑新建一个构建方法来判断客户端可获取的是代理还是实际服务。 你可以在代理类中创建一个简单的静态方法， 也可以创建一个完整的工厂方法。
+5. 可以考虑为服务对象实现延迟初始化。
+
+### 优缺点
+
+- 你可以在客户端毫无察觉的情况下控制服务对象。
+- 如果客户端对服务对象的生命周期没有特殊要求， 你可以对生命周期进行管理
+- 即使服务对象还未准备好或不存在， 代理也可以正常工作。
+- 开闭原则，你可以在不对服务或客户端做出修改的情况下创建新代理。
+
+### 与其他模式的关系
+
+- [适配器模式](https://refactoringguru.cn/design-patterns/adapter)能为被封装对象（目标对象，服务对象）提供不同的接口， [代理模式](https://refactoringguru.cn/design-patterns/proxy)能为对象提供相同的接口， [装饰模式](https://refactoringguru.cn/design-patterns/decorator)则能为对象提供加强的接口（目标对象和装饰器遵循同一接口）。
+
+- [外观模式](https://refactoringguru.cn/design-patterns/facade)与[代理](https://refactoringguru.cn/design-patterns/proxy)的相似之处在于它们都缓存了一个复杂实体并自行对其进行初始化。 *代理*与其服务对象遵循同一接口， 使得自己和服务对象可以互换， 在这一点上它与外观不同。
+- [装饰](https://refactoringguru.cn/design-patterns/decorator)和[代理](https://refactoringguru.cn/design-patterns/proxy)有着相似的结构， 但是其意图却非常不同。 这两个模式的构建都基于组合原则， 也就是说一个对象应该将部分工作委派给另一个对象。 两者之间的不同之处在于*代理*通常自行管理其服务对象的生命周期， 而*装饰*的生成则总是由客户端进行控制。
+
+### 代码示例
+
+复杂度：2
+
+流行度：1
+
+**使用示例：** 尽管代理模式在绝大多数 Java 程序中并不常见， 但它在一些特殊情况下仍然非常方便。 当你希望在无需修改客户代码的前提下于已有类的对象上增加额外行为时， 该模式是无可替代的。
+
+**识别方法：**代理模式会将所有实际工作委派给一些其他对象。 除非代理是某个服务的子类， 否则每个代理方法最后都应该引用一个服务对象。
+
+> 缓存代理
+
+在本例中， 代理模式有助于实现延迟初始化， 并对低效的第三方 YouTube 集成程序库进行缓存
+
+1)**some_cool_media_library/ThirdPartyYouTubeLib.java:**  远程服务接口
+
+```java
+package refactoring_guru.proxy.example.some_cool_media_library;
+
+import java.util.HashMap;
+
+public interface ThirdPartyYouTubeLib {
+    HashMap<String, Video> popularVideos();
+
+    Video getVideo(String videoId);
+}
+```
+
+2) **some_cool_media_library/ThirdPartyYouTubeClass.java:**  远程服务实现
+
+```java
+public class ThirdPartyYouTubeClass implements ThirdPartyYouTubeLib {
+  @Override
+  public HashMap<String, Video> popularVideos() {
+    connectToServer("http://www.youtube.com");
+    return getRandomVideos();
+  }
+
+  @Override
+  public Video getVideo(String videoId) {
+    connectToServer("http://www.youtube.com/" + videoId);
+    return getSomeVideo(videoId);
+  }
+
+  // -----------------------------------------------------------------------
+  // Fake methods to simulate network activity. They as slow as a real life.
+
+  private int random(int min, int max) {
+    return min + (int) (Math.random() * ((max - min) + 1));
+  }
+
+  private void experienceNetworkLatency() {
+    int randomLatency = random(5, 10);
+    for (int i = 0; i < randomLatency; i++) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException ex) {
+        ex.printStackTrace();
+      }
+    }
+  }
+
+  private void connectToServer(String server) {
+    System.out.print("Connecting to " + server + "... ");
+    experienceNetworkLatency();
+    System.out.print("Connected!" + "\n");
+  }
+
+  private HashMap<String, Video> getRandomVideos() {
+    System.out.print("Downloading populars... ");
+
+    experienceNetworkLatency();
+    HashMap<String, Video> hmap = new HashMap<String, Video>();
+    hmap.put("catzzzzzzzzz", new Video("sadgahasgdas", "Catzzzz.avi"));
+    hmap.put("mkafksangasj", new Video("mkafksangasj", "Dog play with ball.mp4"));
+    hmap.put("dancesvideoo", new Video("asdfas3ffasd", "Dancing video.mpq"));
+    hmap.put("dlsdk5jfslaf", new Video("dlsdk5jfslaf", "Barcelona vs RealM.mov"));
+    hmap.put("3sdfgsd1j333", new Video("3sdfgsd1j333", "Programing lesson#1.avi"));
+
+    System.out.print("Done!" + "\n");
+    return hmap;
+  }
+
+  private Video getSomeVideo(String videoId) {
+    System.out.print("Downloading video... ");
+
+    experienceNetworkLatency();
+    Video video = new Video(videoId, "Some video title");
+
+    System.out.print("Done!" + "\n");
+    return video;
+  }
+}
+```
+
+some_cool_media_library/Video.java: 视频文件
+
+```java
+public class Video {
+  public String id;
+  public String title;
+  public String data;
+
+  Video(String id, String title) {
+    this.id = id;
+    this.title = title;
+    this.data = "Random video.";
+  }
+}
+```
+
+代理Proxy
+
+3)  **proxy/YouTubeCacheProxy.java:**  缓存代理
+
+```java
+public class YouTubeCacheProxy implements ThirdPartyYouTubeLib {
+  private ThirdPartyYouTubeLib youtubeService;
+  private HashMap<String, Video> cachePopular = new HashMap<String, Video>();
+  private HashMap<String, Video> cacheAll = new HashMap<String, Video>();
+
+  public YouTubeCacheProxy() {
+    this.youtubeService = new ThirdPartyYouTubeClass();
+  }
+
+  @Override
+  public HashMap<String, Video> popularVideos() {
+    if (cachePopular.isEmpty()) {
+      cachePopular = youtubeService.popularVideos();
+    } else {
+      System.out.println("Retrieved list from cache.");
+    }
+    return cachePopular;
+  }
+
+  @Override
+  public Video getVideo(String videoId) {
+    Video video = cacheAll.get(videoId);
+    if (video == null) {
+      video = youtubeService.getVideo(videoId);
+      cacheAll.put(videoId, video);
+    } else {
+      System.out.println("Retrieved video '" + videoId + "' from cache.");
+    }
+    return video;
+  }
+
+  public void reset() {
+    cachePopular.clear();
+    cacheAll.clear();
+  }
+}
+```
+
+4) **downloader/YouTubeDownloader.java:**  媒体下载应用
+
+```java
+public class YouTubeDownloader {
+    private ThirdPartyYouTubeLib api;
+
+    public YouTubeDownloader(ThirdPartyYouTubeLib api) {
+        this.api = api;
+    }
+
+    public void renderVideoPage(String videoId) {
+        Video video = api.getVideo(videoId);
+        System.out.println("\n-------------------------------");
+        System.out.println("Video page (imagine fancy HTML)");
+        System.out.println("ID: " + video.id);
+        System.out.println("Title: " + video.title);
+        System.out.println("Video: " + video.data);
+        System.out.println("-------------------------------\n");
+    }
+
+    public void renderPopularVideos() {
+        HashMap<String, Video> list = api.popularVideos();
+        System.out.println("\n-------------------------------");
+        System.out.println("Most popular videos on YouTube (imagine fancy HTML)");
+        for (Video video : list.values()) {
+            System.out.println("ID: " + video.id + " / Title: " + video.title);
+        }
+        System.out.println("-------------------------------\n");
+    }
+}
+```
+
+5) Demo测试
+
+```java
+public class Demo {
+  public static void main(String[] args) {
+    YouTubeDownloader naiveDownloader = new YouTubeDownloader(new ThirdPartyYouTubeClass());
+    YouTubeDownloader smartDownloader = new YouTubeDownloader(new YouTubeCacheProxy());
+
+    long naive = test(naiveDownloader);
+    long smart = test(smartDownloader);
+    System.out.print("Time saved by caching proxy: " + (naive - smart) + "ms");
+  }
+
+  private static long test(YouTubeDownloader downloader) {
+    long startTime = System.currentTimeMillis();
+    // User behavior in our app:
+    downloader.renderPopularVideos();
+    downloader.renderVideoPage("catzzzzzzzzz");
+    downloader.renderPopularVideos();
+    downloader.renderVideoPage("dancesvideoo");
+    // Users might visit the same page quite often.
+    downloader.renderVideoPage("catzzzzzzzzz");
+    downloader.renderVideoPage("someothervid");
+
+    long estimatedTime = System.currentTimeMillis() - startTime;
+    System.out.print("Time elapsed: " + estimatedTime + "ms\n");
+    return estimatedTime;
+  }
+}
+```
+
