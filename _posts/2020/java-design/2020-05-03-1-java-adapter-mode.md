@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之适配器模式
+title: 23种设计模式之适配器模式Adapter
 category: java-design
 tags: [java-design]
 keywords: java
@@ -8,7 +8,7 @@ excerpt: 将两种完全不同的事物联系到一起，就像现实生活中�
 lock: noneed
 ---
 
-<mark>适配器模式adapter</mark>
+<mark>适配器模式Adapter</mark>
 
 ![](\assets\images\2021\javabase\adapter-mini.png)
 

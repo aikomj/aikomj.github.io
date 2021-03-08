@@ -205,6 +205,20 @@ IDEA 自带本地版本管理的功能，能够让你本地编写代码变得更
 
 ![](\assets\images\tools\idea-local-history-2.jpg)
 
+### unicode编码显示中文
+
+使用idea打开一个包含Properties文件的项目，然后打开Properties配置文件（包含中文的），如下图
+
+![](\assets\images\tools\idea-unicode-properties.png)
+
+修改步骤：File -> Settings -> File Encodings
+
+打开File Encoding菜单，右侧可以看到Transparent native-to-ascii conversion勾选框，勾选之后点击确认。
+
+再打开之前的Properties文件，这个时候可以看到中文已经正常的显示了
+
+
+
 ## 4、代码调试相关
 
 ### 视图模式

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之装饰者模式
+title: 23种设计模式之装饰者模式Decorator
 category: java-design
 tags: [java-design]
 keywords: java
@@ -82,17 +82,125 @@ lock: noneed
 
 ![](\assets\images\2021\javabase\structure-indexed.png)
 
-- 部件 （Component） 声明封装器和被封装对象的公用接口。 
+1. 部件 （Component） 声明封装器和被封装对象的公用接口。 
 
-- 具体部件（Concrete Component） 类是被封装对象所属的类。 它定义了基础行为， 但装饰类可以改变这些行为。 
+2. 具体部件（Concrete Component） 类是被封装对象所属的类。 它定义了基础行为， 但装饰类可以改变这些行为。 
 
-- 基础装饰 （Base Decorator） 类拥有一个指向被封装对象的引用成员变量。 该变量的类型应当被声明为通用部件接口， 这样它就可以引用具体的部件和装饰。 装饰基类会将所有操作委派给被封装的对象。 
+3. 基础装饰 （Base Decorator） 类拥有一个指向被封装对象的引用成员变量。 该变量的类型应当被声明为通用部件接口， 这样它就可以引用具体的部件和装饰。 装饰基类会将所有操作委派给被封装的对象。 
 
-- 具体装饰类 （Concrete Decorators） 定义了可动态添加到部件的额外行为。 具体装饰类会重写装饰基类的方法， 并在调用父类方法之前或之后进行额外的行为。 
+4. 具体装饰类 （Concrete Decorators） 定义了可动态添加到部件Component的额外行为。 <mark>具体装饰类会重写装饰基类的方法， 并在调用父类方法之前或之后进行额外的行为。 </mark>
 
-- 客户端（Client） 可以使用多层装饰来封装部件， 只要它能使用通用接口与所有对象互动即可。
+5. 客户端（Client） 可以使用多层装饰来封装部件， 只要它能使用通用接口与所有对象互动即可。
 
-### 应用场景
+记住两个点：Component组件和Decorator装饰类
+
+### 伪代码
+
+在本例中， 装饰模式能够对敏感数据进行压缩和加密， 从而将数据从使用数据的代码中独立出来。类结构如下图：
+
+![](\assets\images\2021\javabase\decorator-example.png)
+
+- 程序使用一对装饰来封装数据源对象。 这两个封装器(装饰类)都改变了从磁盘读写数据的方式；
+- 当数据刚**从磁盘读出**后， 同样通过装饰对数据进行解压和解密。 装饰和数据源类实现同一接口， 从而能在客户端代码中相互替换；
+
+```java
+// 1、装饰可以改变组件接口所定义的操作。
+interface DataSource is
+    method writeData(data)
+    method readData():data
+  
+// 2、具体组件提供操作的默认实现。这些类在程序中可能会有几个变体。
+class FileDataSource implements DataSource is
+    constructor FileDataSource(filename) { ... }
+
+    method writeData(data) is
+        // 将数据写入文件。
+      
+    method readData():data is
+        // 从文件读取数据。
+ 
+// 3、装饰基类和其他组件遵循相同的接口。该类的主要任务是定义所有具体装饰的封
+// 装接口。封装的默认实现代码中可能会包含一个保存被封装组件的成员变量，并
+// 且负责对其进行初始化。
+class DataSourceDecorator implements DataSource is
+    protected field wrappee: DataSource
+
+    constructor DataSourceDecorator(source: DataSource) is
+        wrappee = source
+
+    // 装饰基类会直接将所有工作分派给被封装组件。具体装饰中则可以新增一些
+    // 额外的行为。
+    method writeData(data) is
+        wrappee.writeData(data)
+
+    // 具体装饰可调用其父类的操作实现，而不是直接调用被封装对象。这种方式
+    // 可简化装饰类的扩展工作。
+    method readData():data is
+        return wrappee.readData()
+
+// 4、具体装饰必须在被封装组件上调用方法，不过也可以自行在结果中添加一些内容。
+// 装饰必须在调用封装对象之前或之后执行额外的行为。
+class EncryptionDecorator extends DataSourceDecorator is
+    method writeData(data) is
+        // 具体装饰可调用其父类的操作实现
+        // 1. 对传递数据进行加密。
+        // 2. 将加密后数据传递给被封装对象 writeData（写入数据）方法。
+
+    method readData():data is
+  			// 具体装饰可调用其父类的操作实现
+        // 1. 通过被封装对象的 readData（读取数据）方法获取数据。
+        // 2. 如果数据被加密就尝试解密。
+        // 3. 返回结果。    
+  
+  // 5、你可以将对象（具体组件）封装在多层装饰中。
+class CompressionDecorator extends DataSourceDecorator is
+    method writeData(data) is
+        // 1. 压缩传递数据。
+        // 2. 将压缩后数据传递给被封装对象 writeData（写入数据）方法。（调用父类装饰基类的相同方法）
+
+    method readData():data is
+ 				// 调用父类装饰基类的相同方法获取数据
+        // 1. 通过被封装对象的 readData（读取数据）方法获取数据。
+        // 2. 如果数据被压缩就尝试解压。
+        // 3. 返回结果。
+  
+// 选项 1：装饰组件的简单示例
+class Application is
+    method dumbUsageExample() is
+  		// 具体组件
+        source = new FileDataSource("somefile.dat")
+        source.writeData(salaryRecords)
+        // 已将明码数据写入目标文件。
+
+        source = new CompressionDecorator(source)
+        source.writeData(salaryRecords)
+        // 已将压缩数据写入目标文件。
+
+        source = new EncryptionDecorator(source)
+        // 源变量中现在包含：
+        // Encryption > Compression > FileDataSource
+        source.writeData(salaryRecords)
+        // 已将压缩且加密的数据写入目标文件。
+  
+// 选项 2：客户端使用外部数据源。SalaryManager（工资管理器）对象并不关心
+// 数据如何存储。它们会与提前配置好的数据源进行交互，数据源则是通过程序配
+// 置器获取的。
+class SalaryManager is
+    field source: DataSource  // 具体组件和装饰基类都实现同一接口
+
+    constructor SalaryManager(source: DataSource) { ... }
+
+    method load() is
+        return source.readData()
+
+    method save() is
+        source.writeData(salaryRecords)
+    // ...其他有用的方法...
+```
+
+
+
+### 适合应用场景
 
 1） **如果你希望在无需修改代码的情况下即可使用对象， 且希望在运行时为对象新增额外的行为， 可以使用装饰模式**。 
 
@@ -100,31 +208,67 @@ lock: noneed
 
 2）**如果用继承来扩展对象行为的方案难以实现或者根本不可行， 你可以使用该模式。**
 
-许多编程语言使用 `final`最终关键字来限制对某个类的进一步扩展。 复用最终类已有行为的唯一方法是使用装饰模式： 用封装器对其进行封装。
+许多编程语言使用 `final`最终关键字来限制对某个类的进一步扩展。 复用最终类已有行为的唯一方法是使用装饰模式： 用装饰基类对其进行封装，具体装饰可以调用父类的操作实现而不是直接操作被封装的具体组件对象。
 
 ### 实现方式
 
 1. 确保业务逻辑可用一个基本组件及多个额外可选层次表示。 
 
-2. 找出基本组件和可选层次的通用方法。 创建一个组件接口并在其中声明这些方法。 
+2. 找出基本组件和可选层次的通用方法。 创建一个组件接口（Component）并在其中声明这些方法。 
 
-3. 创建一个具体组件类， 并定义其基础行为。 
+3. 创建一个具体组件类（Concrete Component）， 并定义其基础行为。 
 
-4. 创建装饰基类， 使用一个成员变量存储指向被封装对象的引用。 该成员变量必须被声明为组件接口类型， 从而能在运行时连接具体组件和装饰。 装饰基类必须将所有工作委派给被封装的对象。 
+4. 创建装饰基类(Base Decorator)， 使用一个成员变量存储指向被封装对象的引用。 该成员变量必须被声明为组件接口类型， 从而能在<mark>运行时</mark>连接具体组件和装饰。 装饰基类必须将所有工作委派给被封装的对象。 
 
 5. 确保所有类实现组件接口。 
 
-6. 将装饰基类扩展为具体装饰。 具体装饰必须在调用父类方法 （总是委派给被封装对象） 之前或之后执行自身的行为。 
+6. <mark>将装饰基类扩展为具体装饰</mark>(Concrete Decorator)。 具体装饰必须在调用父类方法 （总是委派给被封装对象-具体组件） 之前或之后执行自身的行为。 
 
 7. 客户端代码负责创建装饰并将其组合成客户端所需的形式。
 
+### 优缺点
 
+> 优点
+
+-  你无需创建新子类即可扩展对象（被封装的具体组件）的行为
+
+- 你可以在运行时添加或删除对象的功能。
+
+- 你可以用多个装饰封装对象来组合几种行为。
+
+- *单一职责原则*。 你可以将实现了许多不同行为的一个大类拆分为多个较小的类（具体装饰类）。
+
+> 缺点
+
+-  在封装器栈中删除特定封装器（装饰器）比较困难
+-   实现行为不受装饰栈顺序影响的装饰比较困难。
+
+### 与其他模式关系
+
+- [装饰](https://refactoringguru.cn/design-patterns/decorator)和[代理](https://refactoringguru.cn/design-patterns/proxy)有着相似的结构， 但是其意图却非常不同。 这两个模式的构建都基于组合原则， 也就是说一个对象应该将部分工作委派给另一个对象。 两者之间的不同之处在于*代理*通常自行管理其服务对象的生命周期， 而*装饰*的生成则总是由客户端进行控制。
+
+- [装饰](https://refactoringguru.cn/design-patterns/decorator)可让你更改对象的外表， [策略模式](https://refactoringguru.cn/design-patterns/strategy)则让你能够改变其本质。
+
+- 大量使用[组合](https://refactoringguru.cn/design-patterns/composite)和[装饰](https://refactoringguru.cn/design-patterns/decorator)的设计通常可从对于[原型模式](https://refactoringguru.cn/design-patterns/prototype)的使用中获益。 你可以通过该模式来复制复杂结构， 而非从零开始重新构造。
+
+- [组合模式](https://refactoringguru.cn/design-patterns/composite)和[装饰](https://refactoringguru.cn/design-patterns/decorator)的结构图很相似， 因为两者都依赖递归组合来组织无限数量的对象。 
+
+  *装饰*类似于*组合*， 但其只有一个子组件。 此外还有一个明显不同： *装饰*为被封装对象添加了额外的职责， *组合*仅对其子节点的结果进行了 “求和”。 
+
+  但是， 模式也可以相互合作： 你可以使用*装饰*来扩展*组合*树中特定对象的行为。
+
+- [责任链模式](https://refactoringguru.cn/design-patterns/chain-of-responsibility)和[装饰模式](https://refactoringguru.cn/design-patterns/decorator)的类结构非常相似。 两者都依赖递归组合将需要执行的操作传递给一系列对象。 但是， 两者有几点重要的不同之处。
+
+  [责任链](https://refactoringguru.cn/design-patterns/chain-of-responsibility)的管理者可以相互独立地执行一切操作， 还可以随时停止传递请求。 另一方面， 各种*装饰*可以在遵循基本接口的情况下扩展对象的行为。 此外， 装饰无法中断请求的传递。
+
+- [适配器](https://refactoringguru.cn/design-patterns/adapter)能为被封装对象提供不同的接口， [代理模式](https://refactoringguru.cn/design-patterns/proxy)能为对象提供相同的接口， [装饰](https://refactoringguru.cn/design-patterns/decorator)则能为对象提供加强的接口。
+- [适配器模式](https://refactoringguru.cn/design-patterns/adapter)可以对已有对象的接口进行修改， [装饰模式](https://refactoringguru.cn/design-patterns/decorator)则能在不改变对象接口的前提下强化对象功能。 此外， *装饰*还支持递归组合， *适配器*则无法实现。
 
 ### 代码示例
 
-目标对象和装饰器遵循同一接口， 因此你可用装饰来对对象进行无限次的封装， 结果对象将获得所有装器叠加而来的行为。
+<mark>被封装对象和装饰器遵循同一接口</mark>， 因此你可用装饰来对对象进行无限次的封装， 结果对象将获得所有装器叠加而来的行为。
 
-**在Java中使用模式**
+在Java中使用模式
 
 复杂度：2
 

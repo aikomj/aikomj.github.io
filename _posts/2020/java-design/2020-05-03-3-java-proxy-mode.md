@@ -824,13 +824,13 @@ public class AsmProxy extends ClassLoader implements Opcodes {
 
 ### 真实世界类比
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\javabase\proxy-live-example-zh.png)
+![](\assets\images\2021\javabase\proxy-live-example-zh.png)
 
 信用卡是银行账户的代理， 银行账户则是一大捆现金的代理。 它们都实现了同样的接口， 均可用于进行支付。 消费者会非常满意， 因为不必随身携带大量现金； 商店老板同样会十分高兴， 因为交易收入能以电子化的方式进入商店的银行账户中， 无需担心存款时出现现金丢失或被抢劫的情况。信用卡和银行账户支付都是现金支付的代理，它可以记录支付的相关信息，相当于增强了现金支付的功能，你使用现金支付是没有记录相关信息的。
 
 ### 代理模式结构
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\javabase\proxy-structure.png)
+![](\assets\images\2021\javabase\proxy-structure.png)
 
 代理对象可以在服务对象的基础上做增强，如记录日志、访问控制、缓存
 
@@ -838,7 +838,7 @@ public class AsmProxy extends ClassLoader implements Opcodes {
 
 本例演示如何使用**代理**模式在第三方腾讯视频 （TencentVideo， 代码示例中记为 TV） 程序库中添加延迟初始化和缓存
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\javabase\proxy-example-zh.png)
+![](\assets\images\2021\javabase\proxy-example-zh.png)
 
 程序库提供了视频下载类。 但是该类的效率非常低。 如果客户端程序多次请求同一视频， 程序库会反复下载该视频， 而不会将首次下载的文件缓存下来复用。
 
