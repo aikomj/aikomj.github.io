@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 23种设计模式之工厂方法模式
+title: 23种设计模式之工厂方法模式-Factory
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 简单工厂模式，工厂方法模式，抽象工厂模式
+excerpt: 简单工厂模式，工厂方法模式，创建者角色和产品角色,具体产品都遵循同一产品接口
 lock: noneed
 ---
 
@@ -445,16 +445,6 @@ Click! Button says - 'Hello World!'
 OutputDemo.png:**  执行结果 （Windows­Dialog）
 
 ![](\assets\images\2021\javabase\OutputDemo.png)
-
-
-
-
-
-
-
-
-
-
 
 
 
