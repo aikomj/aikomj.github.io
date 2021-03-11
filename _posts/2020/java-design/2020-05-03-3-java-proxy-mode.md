@@ -4,7 +4,7 @@ title: 23种设计模式之代理模式-Proxy
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 代理模式的概念,静态代理,JDK动态代理,CGLIB动态代理,Javassist动态代理,ASM动态代理
+excerpt: 代理模式是一种结构型设计模式，允许你控制原对象的访问和增加额外操作，读懂代理模式的概念,实现方式-静态代理、JDK动态代理、CGLIB动态代理、Javassist动态代理、ASM动态代理
 lock: noneed
 ---
 

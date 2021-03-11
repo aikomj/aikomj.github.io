@@ -4,7 +4,7 @@ title: 23种设计模式之外观模式Facade
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 外观模式提供统一的对外访问接口，屏蔽多个子系统的直接访问，也称门面模式
+excerpt: 外观模式是一种结构型设计模式，它提供统一的对外访问接口，屏蔽多个子系统的直接访问，也称门面模式
 lock: noneed
 ---
 

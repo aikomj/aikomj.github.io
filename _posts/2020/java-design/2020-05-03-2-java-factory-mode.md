@@ -4,7 +4,7 @@ title: 23种设计模式之工厂方法模式-Factory
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 简单工厂模式，工厂方法模式，创建者角色和产品角色,具体产品都遵循同一产品接口
+excerpt: 工厂方法模式是一种创建型设计模式，允许你通过具体工厂实例化具体的产品对象，简单工厂模式，工厂方法模式，两个角色（创建者角色和产品角色）,具体产品都遵循同一产品接口
 lock: noneed
 ---
 

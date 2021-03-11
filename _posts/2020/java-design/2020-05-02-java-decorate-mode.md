@@ -4,7 +4,7 @@ title: 23种设计模式之装饰者模式Decorator
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 对已有的业务逻辑进一步的封装，使其增加额外的功能
+excerpt: 装饰者是一种结构型设计模式，允许你通过将对象放入包含行为的特殊封装对象中来为原对象绑定新的行为，具体的装饰类都继承于同一装饰基类，基类通常包含一个被封装对象的引用（成员变量）
 lock: noneed
 ---
 

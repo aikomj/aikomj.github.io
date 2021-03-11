@@ -4,7 +4,7 @@ title: 23种设计模式之单例模式Singleton
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 适用场景，与其他模式的关系，四种写法-懒汉式、饿汉式、静态内部类、枚举、双重校验锁
+excerpt: 单例是一种创建型设计模式，保证一个类只有一个实例， 并提供一个访问该实例的全局节点，四种写法-懒汉式、饿汉式、静态内部类、枚举、双重校验锁
 lock: noneed
 ---
 

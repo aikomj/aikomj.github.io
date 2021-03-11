@@ -4,7 +4,7 @@ title: 23种设计模式之抽象工厂-Abstract Factory
 category: java-design
 tags: [java-design]
 keywords: java
-excerpt: 与工厂方法模式不同的是，工厂方法模式中的工厂只生产单一的产品，而抽象工厂模式中的工厂生产多个产品
+excerpt: 抽象工厂是一种创建型设计模式，对工厂方法模式的升级，工厂方法模式中的工厂只生产单一的产品，而抽象工厂模式中的工厂生产多个产品
 lock: noneed
 ---
 

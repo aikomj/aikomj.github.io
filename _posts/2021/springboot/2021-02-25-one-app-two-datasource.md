@@ -278,3 +278,5 @@ UserServiceImpl.java增加
 <mark>注意</mark>
 
 如果是主从复制- -读写分离：比如 db1 中负责增删改，db2 中负责查询。但是需要注意的是负责增删改的数据库必须是主库（master）
+
+源码下载：[https://gitee.com/jacobmj/study-demo/tree/master/jacob-multipledatasource](https://gitee.com/jacobmj/study-demo/tree/master/jacob-multipledatasource)

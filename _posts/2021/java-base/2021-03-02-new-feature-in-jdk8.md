@@ -4,7 +4,7 @@ title: java8的新特性介绍,你都懂了吗
 category: java
 tags: [java]
 keywords: java
-excerpt: 
+excerpt: Optional类避免显示null,Stream流使用，lambda表达式，函数式接口，冒号方法引用，扩展接口-默认方法和静态方法，新的日期时间API，java类库新增Base64
 lock: noneed
 ---
 
@@ -436,7 +436,7 @@ System.out.println("平均数 : " + stats.getAverage());
 
 ```java
 List<String> strings = Arrays.asList("abc", "", "bc", "efg", "abcd","", "jkl");
-// 获取空字符串的数量
+// 获取空字符串的数量，并行流使用的并发数是 CPU 核心数，不能局部更改
 long count = strings.parallelStream().filter(string -> string.isEmpty()).count();
 ```
 
