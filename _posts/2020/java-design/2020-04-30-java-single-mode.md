@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之单例模式Singleton
+title: 23种设计模式之单例模式-Singleton
 category: java-design
 tags: [java-design]
 keywords: java

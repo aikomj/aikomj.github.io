@@ -14,6 +14,8 @@ lock: noneed
 
 ## 1、意图
 
+以下内容来源于网站 Refactoring Guru: [https://refactoringguru.cn/design-patterns/prototype](https://refactoringguru.cn/design-patterns/prototype)
+
 创建型模式：提供创建对象的机制， 增加已有代码的灵活性和可复用性。
 
 **原型模式**是一种创建型设计模式， 使你能够复制已有对象， 而又无需使代码依赖它们所属的类。

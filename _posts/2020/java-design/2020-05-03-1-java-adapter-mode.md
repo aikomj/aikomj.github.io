@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之适配器模式Adapter
+title: 23种设计模式之适配器模式-Adapter
 category: java-design
 tags: [java-design]
 keywords: java

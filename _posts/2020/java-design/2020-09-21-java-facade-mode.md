@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之外观模式Facade
+title: 23种设计模式之外观模式-Facade
 category: java-design
 tags: [java-design]
 keywords: java

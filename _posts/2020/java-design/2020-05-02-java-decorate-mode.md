@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之装饰者模式Decorator
+title: 23种设计模式之装饰者模式-Decorator
 category: java-design
 tags: [java-design]
 keywords: java
