@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 如何设计一个秒杀系统
-category: arch
-tags: [arch]
-keywords: arch
+category: architect
+tags: [architect]
+keywords: architect
 excerpt: 设计秒杀系统的几个关键点
 lock: noneed
 ---
