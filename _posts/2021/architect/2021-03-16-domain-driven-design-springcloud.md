@@ -375,23 +375,305 @@ DDD 分层架构中数据对象转换的过程如下图。
 
 ## 3、项目实战
 
-项目主要目标是实现在线请假和考勤管理。基本功能包括：请假、考勤以及人员管理等。
+### 结算中心
 
-- 请假：请假人填写请假单提交审批，根据请假人身份和请假天数进行校验，根据审批规则逐级递交审批，核批通过则完成审批。
-- 考勤：根据考勤规则，剔除请假数据后，对员工考勤数据进行校验，输出考勤统计表。
-- 人员管理：维护人员基本信息和上下级关系。 
+settlement-center作为父模块依赖，有4个子模块，如下图：
 
-由于人员管理与请假聚合两者业务关联紧密，共同完成人员请假功能，两者一起构成请假限界上下文，考勤聚合则单独形成考勤限界上下文。因此根据限界上下文直接拆分为请假和考勤两个微服务。
+![](\assets\images\2021\springcloud\settlement-center-pom.jpg)
 
-jacob-ddd-cloud-demo:
+注意父模块的parent依赖
 
-- jacob-ddd-parent 依赖包版本管控
-- jacob-ddd-leave  请假和人员管理微服务模块
-- jacob-ddd-attend 考勤微服务模块
+```xml
+<parent>
+  <groupId>com.midea.mcsp</groupId>
+  <artifactId>mcsp-starter-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</parent>
+```
 
+点击依赖
 
+```xml
+<parent>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-parent</artifactId>
+  <version>2.3.0.RELEASE</version>
+</parent>
+<modelVersion>4.0.0</modelVersion>
 
+<groupId>com.midea.mcsp</groupId>
+<artifactId>mcsp-starter-parent</artifactId>
+<version>1.0.0-SNAPSHOT</version>
+<packaging>pom</packaging>
 
+<repositories>
+  <repository>
+    <id>atp-midea-releases</id>
+    <name>Midea Repository</name>
+    <url>http://mvn.midea.com/nexus/content/repositories/atp-release/</url>
+    <releases>
+      <enabled>true</enabled>
+    </releases>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+  <repository>
+    <id>atp-midea-snapshots</id>
+    <name>Midea Snapshots</name>
+    <url>http://mvn.midea.com/nexus/content/repositories/atp-snapshot/</url>
+    <releases>
+      <enabled>false</enabled>
+    </releases>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+</repositories>
+
+<properties>
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  <java.version>1.8</java.version>
+
+  <springboot.version>2.3.0.RELEASE</springboot.version>
+  <springcloud.version>Hoxton.RELEASE</springcloud.version>
+  <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+  <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+  <eureka.version>2.2.0.RELEASE</eureka.version>
+
+  <mysql.version>5.1.47</mysql.version>
+  <druid-starter.version>1.2.1</druid-starter.version>
+  <common.core>1.0.0-SNAPSHOT</common.core>
+  <service.core>1.0.0-SNAPSHOT</service.core>
+
+  <lombok.version>1.16.16</lombok.version>
+  <mybatis-plus.version>3.3.2</mybatis-plus.version>
+  <druid.version>1.2.1</druid.version>
+  <sentinel.version>1.8.0</sentinel.version>
+  <sentinel.starter.version>0.9.0.RELEASE</sentinel.starter.version>
+
+  <skywalking.version>6.6.0</skywalking.version>
+  <carrier.version>2.0.4</carrier.version>
+  <apollo.client.version>1.7.0</apollo.client.version>
+  <apollo.core.version>1.7.0.m3-SNAPSHOT</apollo.core.version>
+
+</properties>
+
+<dependencyManagement>
+  <dependencies>
+    <!-- spring-boot和spring-cloud 组件 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-dependencies</artifactId>
+      <version>${springboot.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-dependencies</artifactId>
+      <version>${springcloud.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+
+    <!-- eureka 组件 -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+      <version>${eureka.version}</version>
+    </dependency>
+
+    <!-- 数据库 组件 -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>${mysql.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <version>${druid-starter.version}</version>
+    </dependency>
+
+    <!-- common-core 组件 -->
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>base-core</artifactId>
+      <version>${common.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>http-core</artifactId>
+      <version>${common.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>jedis-core</artifactId>
+      <version>${common.core}</version>
+    </dependency>
+
+    <!-- service-core 组件 -->
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>mx-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>application-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>atomic-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>constant-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>mces-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>mq-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.midea.mcsp</groupId>
+      <artifactId>oss-service-core</artifactId>
+      <version>${service.core}</version>
+    </dependency>
+
+    <!-- sentinel 组件 -->
+    <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-core</artifactId>
+      <version>${sentinel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+      <version>${sentinel.starter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba.csp</groupId>
+      <artifactId>sentinel-transport-simple-http</artifactId>
+      <version>${sentinel.version}</version>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+
+<dependencies>
+  <dependency>
+    <groupId>com.midea.mcsp</groupId>
+    <artifactId>base-core</artifactId>
+    <version>${common.core}</version>
+  </dependency>
+  <dependency>
+    <groupId>com.ctrip.framework.apollo</groupId>
+    <artifactId>apollo-client</artifactId>
+    <version>${apollo.client.version}</version>
+    <exclusions>
+      <exclusion>
+        <groupId>com.ctrip.framework.apollo</groupId>
+        <artifactId>apollo-core</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>com.ctrip.framework.apollo</groupId>
+    <artifactId>apollo-core</artifactId>
+    <version>${apollo.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>com.midea.mgp</groupId>
+    <artifactId>carrier-client-2.x</artifactId>
+    <version>${carrier.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.skywalking</groupId>
+    <artifactId>apm-toolkit-logback-1.x</artifactId>
+    <version>${skywalking.version}</version>
+  </dependency>
+</dependencies>
+```
+
+springboot 使用2.3.0，,依赖了md封装的基础包，如base-core。
+
+> 子模块职责讲解
+
+- settlement-common 项目的公共代码模块、公共依赖模块
+
+- settlement-core 基础模块
+
+- settlement-service 提供的服务模块，这里分3个微服务settlement-ar-service、settlement-credit-service、settle-so-sevice
+
+- settlement-web 供前端应用的用户层接口服务模块，分settlement-console-web和settlement-inner-web两个子模块，同时也是2个微服务，
+
+  settlement-console-web：对外，前端应用请求处理。
+
+  settlement-inner-web：对内，任务调度处理，整合了xxl-job分布式任务调度框架。
+
+  它们通过feign调用settlement-service里的每个微服务的用户接口层的Controller接口方法。
+
+> DDD分层微服务模块讲解
+
+基于DDD分层的微服务模块settlement-service，以settlement-ar-service为例，如下图：
+
+![](\assets\images\2021\springcloud\settlement-center-structure.jpg)
+
+一开始个人觉得，基于DDD分层的原则，如下依赖更简洁清晰
+
+![](\assets\images\2021\springcloud\settlement-center-structure-2.jpg)
+
+与设计人沟通一番后，领域层确实不能依赖基础层，目的是为了解耦，领域层对数据的处理是定义到仓储接口，具体的仓储实现是定义在基础层，领域层不能耦合具体的仓储实现，因为实际支持的数据库可以选择mysql、oracle、portsql等，到时更换数据库了，领域层代码不用修改。
+
+传统的MVC三层结构中的DAO层数据库访问层代码放到基础层，那就是仓储实现，原来我们Service层是直接调用DAO层的Mapper(用Mybatis举例)，现在的话要加一层仓储接口，具体的仓储实现类在基础层调用Mapper去操作数据库。
+
+![](\assets\images\2021\springcloud\settlement-ar-service.jpg)
+
+- settlement-ar-api
+
+  ![](\assets\images\2021\springcloud\settlement-ar-api.jpg)
+
+  封装feign调用接口被第三方作为依赖服务引入，就像前面提到的settlement-console-web会在pom依赖这个api子模块，因为要用到它的feign接口。
+
+- settlement-ar-app 应用层
+
+  ![](\assets\images\2021\springcloud\settlement-ar-app.jpg)
+
+  封装应用服务，对微服内的领域服务以及微服务外的应用服务（Feign方式调用）进行组合和编排，数据结果的拼装（DO转换DTO给上层的用户接口层）
+
+- settlement-ar-domain 领域层
+
+  ![](\assets\images\2021\springcloud\settlement-ar-domain.jpg)
+
+  包含多个聚合，共同实现微服务的核心业务逻辑，就是领域模型的落地实现层。仓储接口如`HelloWorldRepo`
+
+- settlement-ar-facade 用户接口层
+
+  ![](\assets\images\2021\springcloud\settlement-ar-facade.jpg)
+
+  处理用户请求Request，将VO转换为DTO，传递数据给应用层
+
+- settlement-ar-infrastructure 基础层
+
+  ![](\assets\images\2021\springcloud\settlement-ar-infrastructure.jpg)
+
+  仓储接口的实现代码层，仓储接口实现类如`HelloWorldRepoImpl`,还有其他的基础资源服务实现，如消息队列、缓存
+
+- settlement-ar-starter 微服务的启动模块
+
+  ![](\assets\images\2021\springcloud\settlement-ar-starter.jpg)
+
+  依赖settlement-ar-facade 和 settlement-ar-infrastructure 启动整个微服务
 
 
 
@@ -399,7 +681,7 @@ jacob-ddd-cloud-demo:
 
 ## 总结
 
-我觉得原文章的缺点
+我觉得原文章[驱动领域DDD的微服务设计和开发实战](https://www.cnblogs.com/burningmyself/p/12116388.html)的缺点
 
 - 实体的行为方法，领域服务、应用服务的方法的业务粒度粗细，没讲清楚
 - 服务矩阵例子的类名、方法名命名分层不合理，不符合MVC的分层思想，没有内聚感觉
@@ -410,6 +692,14 @@ jacob-ddd-cloud-demo:
 
 [https://www.cnblogs.com/netfocus/p/5548025.html](https://www.cnblogs.com/netfocus/p/5548025.html)
 
-原文：[驱动领域DDD的微服务设计和开发实战](https://www.cnblogs.com/burningmyself/p/12116388.html)
-
 [聚合和聚合根](https://www.cnblogs.com/snidget/p/13061233.html)
+
+[领域驱动设计在互联网业务开发中的实践](https://tech.meituan.com/2017/12/22/ddd-in-practice.html)
+
+Todo:
+
+1. 了解一下apollo
+2. 阅读美团的DDD实践，修改文章
+3. DDD实战课
+4. mave 的profile标签的作用
+

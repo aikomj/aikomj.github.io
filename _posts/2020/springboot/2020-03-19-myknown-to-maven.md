@@ -172,34 +172,40 @@ mvn clean install -rf ../dailylog-common
 
 ## 3、常用依赖包
 
-- guava
+### guava
 
-  ```xml
-  <dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>30.1-jre</version>
-  </dependency>
-  ```
+```xml
+<dependency>
+  <groupId>com.google.guava</groupId>
+  <artifactId>guava</artifactId>
+  <version>30.1-jre</version>
+</dependency>
+```
 
-- lombok，编译时自动生成get/set，简化代码
 
-  ```xml
-  <dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-  </dependency>
-  ```
 
-- joda-time，简化java中日期时间开发，java8深受影响，在java.time包下新增了API管理时间，如Clock类、LocalDate类等
+### lombok
 
-  ```xml
-  <dependency>
-    <groupId>joda-time</groupId>
-    <artifactId>joda-time</artifactId>
-    <version>${jodatime.version}</version>
-  </dependency>
-  ```
+编译时自动生成get/set，简化代码
 
-  
+```xml
+<dependency>
+  <groupId>org.projectlombok</groupId>
+  <artifactId>lombok</artifactId>
+</dependency>
+```
+
+### joda-time
+
+简化java中日期时间开发，java8深受其影响，在java.time包下新增了API管理时间，如Clock类、LocalDate类等
+
+```xml
+<dependency>
+  <groupId>joda-time</groupId>
+  <artifactId>joda-time</artifactId>
+  <version>${jodatime.version}</version>
+</dependency>
+```
+
+
 
