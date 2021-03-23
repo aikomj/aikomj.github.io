@@ -182,7 +182,206 @@ mvn clean install -rf ../dailylog-common
 </dependency>
 ```
 
+guava是Google 公司开源的 Java 开发核心库，常用的模块包括集合 [collections] 、缓存 [caching] 、原生类型支持 [primitives support] 、并发库  [concurrency libraries] 、通用注解 [common annotations] 、字符串处理 [string  processing] 、I/O 等
 
+> Optional类
+
+java8得益于guava，也引入了Optional类，不过还是有不同点的
+
+- guava的 Optional 是 abstract 的，意味着我可以有子类对象；java8的是 final 的，意味着没有子类对象
+- guava的Optional 实现了 Serializable 接口，可以序列化;java8的没有
+
+> Immutable不可变集合
+
+为什么需要不可变集合
+
+- 保证线程安全。在并发程序中，使用不可变集合既保证线程的安全性，也大大地增强了并发时的效率（跟并发锁方式相比）。
+- 如果一个对象不需要支持修改操作，不可变的集合将会节省空间和时间的开销。
+- 可以当作一个常量来对待，并且集合中的对象在以后也不会被改变
+
+```java
+// java8
+List list = new ArrayList();
+list.add("雷军");
+list.add("乔布斯");
+// 得到一个不可修改的集合，是Collection的内部类
+List unmodifiableList = Collections.unmodifiableList(list);
+unmodifiableList.add("马云");
+```
+
+执行代码，确实报错了
+
+![](\assets\images\2021\javabase\unmodifiable-list.jpg)
+
+我们使用原始集合添加元素
+
+```java
+// java8
+List list = new ArrayList();
+list.add("雷军");
+list.add("乔布斯");
+
+List unmodifiableList = Collections.unmodifiableList(list);
+list.add("马云");
+unmodifiableList.stream().forEach(System.out::println);
+```
+
+执行结果：
+
+![](\assets\images\2021\javabase\unmodifiable-list-2.jpg)
+
+说明`Collections.unmodifiableList(…)` 实现的不是真正的不可变集合，当原始集合被修改后，不可变集合里面的元素也是跟着发生变化。
+
+```java
+// guava
+List list = new ArrayList();
+list.add("雷军");
+list.add("乔布斯");
+ImmutableList immutableList = ImmutableList.copyOf(list);
+immutableList.add("马云");
+```
+
+查看源码，add已经被舍弃了
+
+![](\assets\images\2021\javabase\immutable-collection-add.jpg)
+
+所以执行代码一样会报不支持操作的异常
+
+![](\assets\images\2021\javabase\unmodifiable-list.jpg)
+
+尝试使用原集合修改
+
+```java
+// guava
+ImmutableList immutableList = ImmutableList.copyOf(list);
+list.add("马云");
+System.out.println("list:" + list.toString());
+System.out.println("immutableList:"+immutableList.toString());
+```
+
+执行结果：
+
+![](\assets\images\2021\javabase\immutable-list-2.jpg)
+
+发现原集合list增加了元素，immutableList并没有变化，才是真正的不可变。
+
+> 新的集合类型
+
+- **Multiset，可以多次添加相等的元素**。当把 Multiset 看成普通的 Collection 时，它表现得就像无序的 ArrayList；当把 Multiset 看作 `Map<E, Integer>` 时，它也提供了符合性能期望的查询操作。
+- Multimap，可以很容易地把一个键映射到多个值。
+- BiMap，一种特殊的 Map，可以用 `inverse()` 反转  `BiMap<K, V>` 的键值映射；保证值是唯一的，因此 `values()` 返回 Set 而不是普通的 Collection。
+
+> 字符串处理
+
+guava提供了连接器——Joiner，可以用分隔符把字符串序列连接起来，下面的代码将会返回“雷军; 乔布斯”，你可以使用 `useForNull(String)` 方法用某个字符串来替换 null，
+
+```java
+Joiner joiner = Joiner.on("; ").skipNulls();
+System.out.println(joiner.join("雷军", null, "乔布斯"));
+joiner = Joiner.on("; ").useForNulls("空");
+System.out.println(joiner.join("雷军", null, "乔布斯"));
+```
+
+执行结果：
+
+```sh
+雷军; 乔布斯
+雷军; 空; 乔布斯
+```
+
+guava提供了连接器——Splitter，可以按照指定的分隔符把字符串序列进行拆分。
+
+```java
+Iterable<String> split = Splitter.on(',')
+  .trimResults()
+  .omitEmptyStrings()
+  .split("雷军,乔布斯,,   沉默王二");
+System.out.println(split.toString());
+```
+
+执行结果：
+
+```java
+[雷军, 乔布斯, 沉默王二]
+```
+
+> 缓存
+
+缓存在很多场景下都是相当有用的。你应该知道，检索一个值的代价很高，尤其是需要不止一次获取值的时候，就应当考虑使用缓存。
+
+guava提供的 Cache 和 java8的ConcurrentMap 很相似，但也不完全一样。最基本的区别是 ConcurrentMap 会一直保存所有添加的元素，直到显式地移除。相对地，我提供的 Cache 为了限制内存占用，通常都设定为**自动回收元素**。
+
+[spring缓存管理](http://139.199.13.139/springboot/2021/02/23/spring-skill-001.html)
+
+如果你愿意消耗一些内存空间来提升速度，你能预料到某些键会被查询一次以上，缓存中存放的数据总量不会超出内存容量，就可以使用 Cache。
+
+```java
+@SpringBootTest
+public class TestCache {
+    @Test
+    public void testCache() throws ExecutionException, InterruptedException {
+
+        CacheLoader cacheLoader = new CacheLoader<String, Animal>() {
+            // 如果找不到元素，会调用这里
+            @Override
+            public Animal load(String s) {
+                return null;
+            }
+        };
+        LoadingCache<String, Animal> loadingCache = CacheBuilder.newBuilder()
+                .maximumSize(1000) // 容量
+                .expireAfterWrite(3, TimeUnit.SECONDS) // 过期时间
+                .removalListener(new MyRemovalListener()) // 失效监听器
+                .build(cacheLoader); //
+        loadingCache.put("狗", new Animal("旺财", 1));
+        loadingCache.put("猫", new Animal("汤姆", 3));
+        loadingCache.put("狼", new Animal("灰太狼", 4));
+
+        loadingCache.invalidate("猫"); // 手动失效
+
+        Animal animal = loadingCache.get("狼");
+        System.out.println(animal);
+        Thread.sleep(8 * 1000);
+        // 狼已经自动过去，获取为 null 值报错
+        System.out.println(loadingCache.get("狼"));
+    }
+
+    /**
+     * 缓存移除监听器
+     */
+    class MyRemovalListener implements RemovalListener<String, Animal> {
+
+        @Override
+        public void onRemoval(RemovalNotification<String, Animal> notification) {
+            String reason = String.format("key=%s,value=%s,reason=%s", notification.getKey(), notification.getValue(), notification.getCause());
+            System.out.println(reason);
+        }
+    }
+
+    @Data
+    class Animal {
+        private String name;
+        private Integer age;
+
+        public Animal(String name, Integer age) {
+            this.name = name;
+            this.age = age;
+        }
+    }
+}
+```
+
+执行结果
+
+![](\assets\images\2021\javabase\guava-cache.jpg)
+
+CacheLoader 中重写了 load 方法，这个方法会在查询缓存没有命中时被调用，我这里直接返回了 null，其实这样会在没有命中时抛出 CacheLoader returned null for key 异常信息。
+
+MyRemovalListener 作为缓存元素失效时的监听类，在有元素缓存失效时会自动调用 onRemoval 方法，这里需要注意的是这个方法是同步方法，如果这里耗时较长，会阻塞直到处理完成。
+
+LoadingCache 就是缓存的主要操作对象了，常用的就是其中的 put 和 get 方法了。
+
+参考：[http://www.itwanger.com/java/2021/01/29/guava.html](http://www.itwanger.com/java/2021/01/29/guava.html)
 
 ### lombok
 
