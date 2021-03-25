@@ -430,7 +430,9 @@ free-idea-mybatis是一款增强idea对mybatis支持的插件，主要功能如�
 
 
 
-## 7、本地maven仓库
+## 7、其他技巧
+
+### 本地maven仓库
 
 像aliyun-java-vod-upload-1.4.12.jar依赖还没有开源，所以maven都不会有这个依赖，maven打包的时候是没有这个jar包的，导致程序启动失败，解决办法就是把它添加到本地Maven仓库：
 
@@ -441,6 +443,38 @@ mvn install:install-file -DgroupId=com.aliyun -DartifactId=aliyun-java-vod-uploa
 ```
 
 ![](/assets/images/2020/java/maven-local-jar.jpg)
+
+### 启动多个实例
+
+如何在idea下启动多个实例，请参照这篇文章： https://blog.csdn.net/forezp/article/details/76408139
+
+下面是步骤：
+
+**step1**
+
+在idea上点击Application右边的下三角，弹出选项后，点击Edit Configuration
+
+![](\assets\images\2019\springcloud\idea-edit-configuration.png)
+
+**step2**
+
+打开配置后，将默认的Single instance only(单实例)的钩去掉。
+
+![](\assets\images\2019\springcloud\idea-edit-configuration2.png)
+
+**step3**
+
+通过修改application文件的server.port的端口，启动。多个实例，需要多个端口，分别启动。
+
+还有第二种方式，直接定义新的启动配置，需要配置启动参数，如下图
+
+![](\assets\images\2020\java\vm-option-program-args.jpg)
+
+![](\assets\images\2020\java\vm-option-2.jpg)
+
+![](\assets\images\tools\idea-start-multi-application.jpg)
+
+
 
 更多idea使用技巧请参考官方文档
 

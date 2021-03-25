@@ -49,7 +49,7 @@ ribbon 已经默认实现了这些配置bean：
 
 ![](/assets/images/2019/springcloud/idea-edit-configuration2.png)
 
-### step 3
+**step 3**
 
 通过修改application文件的server.port的端口，启动。多个实例，需要多个端口，分别启动。
 
