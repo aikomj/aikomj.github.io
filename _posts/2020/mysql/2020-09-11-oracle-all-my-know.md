@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Oracle的sql优化策略，快速插入大量数量
+title: 我对Oracle的使用
 category: mysql
 tags: [mysql]
 keywords: oracle

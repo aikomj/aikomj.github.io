@@ -8,8 +8,6 @@ excerpt: 真是防不胜防，猜解数据库，绕过密码登录验证，判�
 lock: noneed
 ---
 
-[Mybatis](http://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247490411&idx=2&sn=34db2fb1e7e3fad0bdccabb35c247ed7&chksm=eb539e5ddc24174b6b47e65dd26f914b931b1fd7fc27dd21bbfa5bec30fd3abd89cb78315755&scene=21#wechat_redirect)框架下易产生SQL注入漏洞的情况主要分为以下三种：
-
 ## 1、了解SQL注入
 
 ### SQL漏洞的概念
@@ -286,15 +284,13 @@ id in<foreach collection="ids" item="item" open="("separatosr="," close=")">#{id
 
 这种场景应当在Java层面做映射，设置一个字段/表名数组，仅允许用户传入索引值。这样保证传入的字段或者表名都在白名单里面。需要注意的是在mybatis-generator自动生成的SQL语句中，order by使用的也是$，而like和in没有问题。
 
-
-
 > 总结
 
-1、[Mybatis](http://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247490411&idx=2&sn=34db2fb1e7e3fad0bdccabb35c247ed7&chksm=eb539e5ddc24174b6b47e65dd26f914b931b1fd7fc27dd21bbfa5bec30fd3abd89cb78315755&scene=21#wechat_redirect)框架下审计SQL注入，重点关注在三个方面like，in和order by
+1、Mybatis框架下审计SQL注入，重点关注在三个方面like，in和order by
 
 2、xml方式编写sql时，可以先筛选xml文件搜索$,逐个分析，要特别注意mybatis-generator的order by注入
 
-3、[Mybatis](http://mp.weixin.qq.com/s?__biz=MzI3ODcxMzQzMw==&mid=2247490411&idx=2&sn=34db2fb1e7e3fad0bdccabb35c247ed7&chksm=eb539e5ddc24174b6b47e65dd26f914b931b1fd7fc27dd21bbfa5bec30fd3abd89cb78315755&scene=21#wechat_redirect)注解编写sql时方法类似
+3、Mybatis注解编写sql时方法类似
 
 4、java层面应该做好参数检查，假定用户输入均为恶意输入，防范潜在的攻击
 

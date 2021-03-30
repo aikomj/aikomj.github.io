@@ -1,6 +1,6 @@
 ---
 layout: post
-title: mysql的使用中常用的操作
+title: mysql常用的操作
 category: tool
 tags: [tool]
 keywords: mysql

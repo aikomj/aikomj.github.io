@@ -4,7 +4,7 @@ title: 高并发场景下，到底先更新缓存还是先更新数据库
 category: mysql
 tags: [mysql]
 keywords: redis
-excerpt: 
+excerpt: 先更新数据库，后删除缓存
 lock: noneed
 ---
 

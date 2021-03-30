@@ -345,7 +345,7 @@ DDD 分层架构中数据对象转换的过程如下图。
 
 ![](\assets\images\2021\springcloud\ddd-fold-structure.jpg)
 
-### 设计原则
+### 设计原则和场景
 
 高内聚低耦合、复用、单一职责是最基本的了，强调以下几条
 
@@ -370,8 +370,6 @@ DDD 分层架构中数据对象转换的过程如下图。
 - 要做自己能 hold 住的微服务，而不是过度拆分的微服务
 
   过度拆分必然会带来软件维护成本的上升，如：集成成本、运维成本以及监控和定位问题的成本。
-
-### 设计场景
 
 > 新建系统的微服务设计
 
@@ -568,9 +566,7 @@ PS-合作关系，ACL-防腐层
 
 另外，在抽奖领域中，我们还会使用抽奖结果（SendResult）作为输出信息，使用用户领奖记录（UserLotteryLog）作为领奖凭据和存根。
 
-## 4、项目实战
-
-### 结算中心
+## 4、结算中心实例
 
 settlement-center作为父模块依赖，有4个子模块，如下图：
 
@@ -672,99 +668,8 @@ settlement-center作为父模块依赖，有4个子模块，如下图：
       <type>pom</type>
       <scope>import</scope>
     </dependency>
-
-    <!-- eureka 组件 -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-      <version>${eureka.version}</version>
-    </dependency>
-
-    <!-- 数据库 组件 -->
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>${mysql.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.alibaba</groupId>
-      <artifactId>druid-spring-boot-starter</artifactId>
-      <version>${druid-starter.version}</version>
-    </dependency>
-
-    <!-- common-core 组件 -->
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>base-core</artifactId>
-      <version>${common.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>http-core</artifactId>
-      <version>${common.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>jedis-core</artifactId>
-      <version>${common.core}</version>
-    </dependency>
-
-    <!-- service-core 组件 -->
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>mx-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>application-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>atomic-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>constant-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>mces-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>mq-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.midea.mcsp</groupId>
-      <artifactId>oss-service-core</artifactId>
-      <version>${service.core}</version>
-    </dependency>
-
-    <!-- sentinel 组件 -->
-    <dependency>
-      <groupId>com.alibaba.csp</groupId>
-      <artifactId>sentinel-core</artifactId>
-      <version>${sentinel.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-      <version>${sentinel.starter.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.alibaba.csp</groupId>
-      <artifactId>sentinel-transport-simple-http</artifactId>
-      <version>${sentinel.version}</version>
-    </dependency>
-  </dependencies>
+    ...
 </dependencyManagement>
-
 <dependencies>
   <dependency>
     <groupId>com.midea.mcsp</groupId>
@@ -870,17 +775,235 @@ springboot 使用2.3.0，,依赖了md封装的基础包，如base-core。
 
   依赖settlement-ar-facade 和 settlement-ar-infrastructure 启动整个微服务
 
+## 5、请假考勤实例
+
+**产品功能**
+
+基于DDD拆分微服务设计实例，目标是实现在线请假和考勤管理：
+
+1. 请假人填写请假单提交审批，根据请假人身份、请假类型和请假天数进行校验，根据审批规则逐级递交上级审批，逐级核批通过则完成审批，否则审批不通过退回申请人。
+2. 根据考勤规则，核销请假数据后，对考勤数据进行校验，输出考勤统计
+
+### 用例场景分析
+
+根据不同角色的旅程和场景分析，尽可能全面地梳理出从前端操作到后端业务逻辑发生的所有用例操作、命令、领域事件以及外部依赖关系等信息。
+
+> 请假场景
+
+- 请假
+
+  用户： 请假人
+
+  a)  请假人登录系统：从权限微服务获取请假人信息和权限数据，完成登录认证。
+
+  b) 创建请假单：打开请假页面，选择请假类型和起始时间，录入请假信息。保存并创建请
+  假单，提交请假审批。
+
+  c) 修改请假单：查询请假单，打开请假页面，修改请假单，提交请假审批。
+
+  d) 提交审批：根据请假类型和时长，获取审批规则，根据审批规则，从人员组织关系中获取审批人，给请假单分配审批人。
+
+- 审批
+
+  用户： 审批人
+
+  a) 审批人登录系统：从权限微服务获取审批人信息和权限数据，完成登录认证
+
+  b) 获取请假单：获取审批人名下请假单，选择请假单。
+
+  c) 审批：填写审批意见。
+
+  d) 逐级审批：如果还需要上级审批，根据审批规则，从人员组织关系中获取审批人，给请
+  假单分配审批人。重复以上 4 步，
+
+  最后审批人完成审批
+
+完成审批后，产生请假审批已通过领域事件（上面提交请假审批也应该产生领域事件通知审批人）。后续有两个进一步的业务操作：
+
+1. 发送请假审批已通过的通知，通知邮件系统告知请假人；
+2. 将请假数据发送到考勤以便核销。
+
+场景分析结果图如下：
+
+![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/leave-business-1.jpg)
+
+> 人员场景
+
+用户：后台管理员
+
+a)  管理员登录系统：从权限微服务获取登录人信息和权限数据，完成登录认证
+
+b) 创建人员：打开创建人员页面，外部人员需要填写人员信息，内部人员则从HR获取人员信息，保存并创建人员。
+
+场景分析结果图如下：
+
+![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/employee-business-1.jpg)
+
+### 领域建模
+
+> 找出实体和值对象
+
+领域对象：实体、值对象、命令、事件
+
+根据场景分析图，找出产生命令或事件的实体和值对象，将与实体或值对象有关的命令和事件聚集到实体。得到实体与命令事件关系图：
+
+![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/domain-object.jpg)
+
+图例：蓝色-命令，绿色-实体，黄色-事件
+
+### 定义聚合
+
+根据实体与命令事件关系图
+
+1、找出聚合根，可以找出“请假单”和“人员”两个聚合根
+
+2、找出与聚合根紧密依赖的实体，我们发现“审批意见”、"审批规则"和“请假单”紧密依赖，”组织关系“和”人员“紧密依赖。
+
+刷卡明细、考勤明细和考勤统计这几个实体，它们之间相互独立，找不出聚合根，不是富领域模型，但它们一起完成考勤业务逻辑，具有很高的业务内聚性。我们将这几个业务关联紧密的实体，放在一个考勤聚合内。在微服务设计时，我们依然采用 DDD 的设计和分析方法。由于没有聚合根来管理聚合内的实体，我们可以用传统的方法来管理实体。
+
+最终我们建立了请假、人员组织关系和考勤三个聚合，聚合图如下：
+
+![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/aggregate.jpg)
 
 
-**参考**
 
-[https://www.cnblogs.com/netfocus/p/5548025.html](https://www.cnblogs.com/netfocus/p/5548025.html)
+### 定义限界上下文
 
-[聚合和聚合根](https://www.cnblogs.com/snidget/p/13061233.html)
+得到聚合图后下一步就是划分限界上下文了，它可以指导微服务的拆分，理论上一个限界上下文就是一个微服务。
 
-Todo:
+由于人员组织关系聚合与请假聚合，共同完成请假的业务功能，两者在请假的限界上下文内。考勤聚合则单独构成考勤统计限界上下文。因此我们为业务划分请假和考勤统计两个限界上下文，建立请假和考勤两个领域模型，如上面的聚合图所示。
 
-1. 了解一下apollo
-3. DDD实战课
-4. mave 的profile标签的作用
+### 微服务拆分
+
+**理论上一个限界上下文就是一个微服务**，在这个项目，我们划分微服务主要考虑职责单一性原则。因此根据限界上下文就可以拆分为请假和考勤两个微服务。其中请假微服务包含人员组织关系和请假两个聚合，考勤微服务包含考勤聚合。到这里，战略设计就结束了。
+
+通过战略设计，我们建立了领域模型，划分了微服务边界。下一步就是战术设计了，也就是微服务设计。
+
+<mark>战略设计=领域建模+微服务拆分</mark>
+
+一路走来，基本上是这样的路线：
+
+**场景分析图 -》实体与命令事件关系图-》聚合图-》划分限界上下文-》完成微服务拆分**
+
+<mark>战术设计=微服务设计</mark>
+
+### 微服务设计
+
+分两个阶段：分析微服务领域对象和设计微服务代码结构
+
+> 1、分析微服务领域对象
+
+主要工作包括：
+
+**1) 服务的识别与分层?根据命令识别服务**
+
+场景分析图中的`命令`是微服务对外提供的能力，它是与应用服务或者领域服务对应的。以`提交审批`这个命令为例说明，它的场景流程描述是这样的：根据请假类型和时长，查询请假审批规则，获取下一步审批人的角色。根据审批角色从人员组织关系中查询下一审批人，为请假单分配审批人。
+
+根据场景分析图，在应用层和领域层设计出以下服务和方法
+
+- 应用层：提交审批应用服务
+- 领域层：查询审批规则领域服务，根据审批规则查询审批人领域服务，修改请假流程信息领域服务，
+
+**2) 应用服务由哪些服务组合和编排完成?**
+
+应用服务的服务集合中的服务包括领域服务或其它微服务的应用服务。根据应用服务功能要求设计领域服务，定义领域服务。看下面的服务分层依赖关系图
+
+应用服务-》领域服务-》实体方法
+
+**3) 领域服务包括哪些实体和实体方法？**
+
+对`提交审批`命令的分析，我们得出服务分层依赖关系图：
+
+![](\assets\images\2021\springcloud\ddd-leave-demo-1)
+
+这里我们发现一个原则：一个聚合对应一个仓储服务接口，接口的命名应该跟聚合根的命名相关联。
+
+**4) 哪个实体是聚合根？**
+
+根据聚合图，我们知道有请假单、人员两个聚合根，考勤聚合没有聚合根，但由于业务的内聚性，把考勤作为一个微服务，使用传统的Controller/Service/Dao三层代码结构。
+
+**5) 实体有哪些属性和方法？**
+
+- 在请假聚合中，聚合根是请假单
+
+  **实体**
+
+  请假单经多级审核后，会产生多条审批意见，为了方便查询，我们可以将审批意见设计为实体。请假审批通过后，会产生请假审批通过的领域事件，因此还会有请假事件实体。请假聚合有以下实体：审批意见（记录审批人、审批状态和审批意见）和请假事件实体。
+
+  **值对象**
+
+  我们再来分析一下请假单聚合的值对象。请假人和下一审批人数据来源于人员组织关系聚合中的人员实体，可设计为值对象。人员类型、请假类型和审批状态是枚举值类型，可设计为值对象。确定请假审批规则后，审批规则也可作为请假单的值对象。
+
+  请假单聚合将包含以下值对象：请假人、下一审批人、人员类型、请假类型、审批状态和审批规则。
+
+  为什么审批规则是值对象？因为审批规则会在后续审批流程中多次使用（根据审批规则查询下一审批人），将他设计为值对象保存到请假单，后面请假单信息修改，影响到审批规则，会整体替换审批规则数据。（像数据冗余）
+
+  得出请假聚合对象关系图
+
+  ![](\assets\images\2021\springcloud\ddd-leave-demo-2)
+
+  
+
+- 在人员组织关系聚合中，聚合根是人员
+
+  实体有组织关系（包括组织关系类型和上级审批领导）。其中组织关系类型（如项目经理、处长、总经理等）是值对象。上级审批领导来源于人员聚合根，可设计为值对象。
+
+  得出人员组织关系聚合对象关系图：
+
+  ![](\assets\images\2021\springcloud\ddd-leave-demo-3)
+
+**6) 哪些对象应该设计为值对象？就是实体的属性**
+
+根据上面的**服务分层依赖关系图和聚合对象关系图**，我们得出了微服务内的对象清单，设计出各领域对象（应用服务、领域服务、实体方法、事件发布订阅、实体、值对象）在代码模型中的代码对象（包括代码对象的包名、类名和方法名），建立领域对象与代码对象的一一映射关系了。对象清单如下图：
+
+![](\assets\images\2021\springcloud\ddd-leave-demo-4)
+
+到此，基本上是这样的路线：
+
+**服务分层依赖关系图-》聚合对象关系图-》微服务的对象清单**
+
+> 2、设计微服务代码结构
+
+根据微服务内的对象清单，我们可以定义请假微服务的代码结构
+
+**1) 应用层代码结构**
+
+包括应用服务、事件发布订阅相关代码
+
+![](\assets\images\2021\springcloud\ddd-leave-demo-5)
+
+**2)领域层代码结构**
+
+领域层包括一个或多个聚合的实体类、事件实体类、领域服务以及工厂、仓储相关代码。一个聚合对应一个聚合代码目录，聚合之间在代码上完全隔离，聚合之间通过应用层协调。请假微服务领域层包含请假和人员两个聚合。人员和请假代码都放在各自的聚合所在目录结构的代码包中。如果随着业务发展，人员相关功能需要从请假微服务中拆分出来，我们只需将人员聚合代码包稍加改造，独立部署，即可快速发布为人员微服务。到这里，微服务内的领域对象，分层以及依赖关系就梳理清晰了。微服务的总体架构和代码模型也基本搭建完成
+
+![](\assets\images\2021\springcloud\ddd-leave-demo-6)
+
+### 后续工作
+
+> 1、详细设计
+
+在完成领域模型和微服务设计后，我们还需要对微服务进行详细的设计。主要设计以下内容：**实体属性、数据库表和字段、实体与数据库表映射**、服务参数规约及功能实现等。
+
+> 2、代码开发和测试
+
+开发人员只需要按照详细的设计文档和功能要求，找到业务功能对应的代码位置，完成代码开发就可以了。代码开发完成后，开发人员要编写单元测试用例，基于挡板模拟依赖对象完成服务测试。
+
+## 总结
+
+通过上面的例子，把DDD设计过程走了一遍，有两个阶段
+
+1. <mark>战略设计</mark>从事件风暴开始，然后我们要找出实体等领域对象，找出聚合根构建聚合，划分限界上下文，建立领域模型。
+2. <mark>战术设计</mark>从事件风暴的命令开始，识别和设计服务，建立各层服务的依赖关系，设计微服务内的实体和值对象，找出微服务中所有的领域对象，并建立领域对象与代码对象的映射关系。
+
+DDD对微服务的拆分设计流程如下图：
+
+![](\assets\images\2021\springcloud\ddd-leave-demo-7)
+
+
+
+
+
+
+
+
 
