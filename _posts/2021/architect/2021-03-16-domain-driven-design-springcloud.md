@@ -825,7 +825,7 @@ springboot 使用2.3.0，,依赖了md封装的基础包，如base-core。
 
 场景分析结果图如下：
 
-![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/leave-business-1.jpg)
+![](\assets\images\2021\springcloud\leave-business-1.jpg)
 
 > 人员场景
 
@@ -837,7 +837,7 @@ b) 创建人员：打开创建人员页面，外部人员需要填写人员信�
 
 场景分析结果图如下：
 
-![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/employee-business-1.jpg)
+![](\assets\images\2021\springcloud\employee-business-1.jpg)
 
 ### 领域建模
 
@@ -847,7 +847,7 @@ b) 创建人员：打开创建人员页面，外部人员需要填写人员信�
 
 根据场景分析图，找出产生命令或事件的实体和值对象，将与实体或值对象有关的命令和事件聚集到实体。得到实体与命令事件关系图：
 
-![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/domain-object.jpg)
+![](\assets\images\2021\springcloud\domain-object.jpg)
 
 图例：蓝色-命令，绿色-实体，黄色-事件
 
@@ -863,9 +863,7 @@ b) 创建人员：打开创建人员页面，外部人员需要填写人员信�
 
 最终我们建立了请假、人员组织关系和考勤三个聚合，聚合图如下：
 
-![](D:/jacob/code/study-demo/jacob-ddd-smooth/image/aggregate.jpg)
-
-
+![](\assets\images\2021\springcloud\aggregate.jpg)
 
 ### 定义限界上下文
 
