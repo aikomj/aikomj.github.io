@@ -10,7 +10,7 @@ lock: noneed
 
 ## 1、领域驱动设计
 
-Domain Driven Design 领域驱动设计，简称DDD，就是基于模型驱动开发的设计思想。domain就是数据模型，领域就是问题域，系统要解决的问题就是核心业务。
+Domain Driven Design 领域驱动设计，简称DDD，就是基于模型驱动开发的设计思想。domain就是问题域，系统要解决的问题就是核心业务。
 
 ### 术语
 
@@ -975,6 +975,8 @@ b) 创建人员：打开创建人员页面，外部人员需要填写人员信�
 领域层包括一个或多个聚合的实体类、事件实体类、领域服务以及工厂、仓储相关代码。一个聚合对应一个聚合代码目录，聚合之间在代码上完全隔离，聚合之间通过应用层协调。请假微服务领域层包含请假和人员两个聚合。人员和请假代码都放在各自的聚合所在目录结构的代码包中。如果随着业务发展，人员相关功能需要从请假微服务中拆分出来，我们只需将人员聚合代码包稍加改造，独立部署，即可快速发布为人员微服务。到这里，微服务内的领域对象，分层以及依赖关系就梳理清晰了。微服务的总体架构和代码模型也基本搭建完成
 
 ![](\assets\images\2021\springcloud\ddd-leave-demo-6)
+
+源码：[https://gitee.com/jacobmj/study-demo/tree/master/jacob-ddd-smooth](https://gitee.com/jacobmj/study-demo/tree/master/jacob-ddd-smooth)
 
 ### 后续工作
 
