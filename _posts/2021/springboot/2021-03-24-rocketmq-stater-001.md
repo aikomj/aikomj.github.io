@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: MessageQueue
 tags: [MessageQueue]
 keywords: MessageQueue
-excerpt: 
+excerpt: rocketMQ的架构模型，安装部署，springboot集成rocketMQ简单发送接收消息
 lock: noneed
 ---
 
