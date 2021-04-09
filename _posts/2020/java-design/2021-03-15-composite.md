@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 23种设计模式之组合模式-composite
+title: 23种设计模式之组合模式-Composite
 category: java-design
 tags: [java-design]
 keywords: java

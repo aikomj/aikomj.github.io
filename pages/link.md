@@ -23,7 +23,7 @@ permalink: /link
 - [姜戈看世界](https://www.jianshu.com/u/85c6c3dcbb4f) - 开源爱好者，互联网IT专栏作者
 
 ## 推荐网站
-- [必应搜索](https://cn.bing.com/) - 一个微软的搜索引擎网站
+- [Tooool-程序员一站式导航网站](http://tooool.org/) - 整合了各种博客、社区、工具、学习网站、插件等资源，集程序员工作、学习、休闲娱乐为一体的实用性效用性都很强的网站。
 - [小白学堂](http://www.itmind.net/) - 学的不仅是技术，更是前程！
 - [猿天地](http://cxytiandi.com/) - 天地是一个综合性的网站,以程序猿用户为主,提供各种开发相关的内容。
 - [cmsblogs](http://cmsblogs.com/) - chenssy记录、分享JAVA技术 
