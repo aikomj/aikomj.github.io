@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 使用javassist修改class文件
-category: java-base
+category: java
 tags: [java]
 keywords: java
 excerpt: 简单的动态编程，反编译class文件查看代码，javassist修改

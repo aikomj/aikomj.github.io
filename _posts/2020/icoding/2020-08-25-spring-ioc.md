@@ -1,14 +1,14 @@
 ---
 layout: post
 title: Spring IOC 理论推导
-category: springcloud
-tags: [springcloud]
-keywords: springboot
+category: spring
+tags: [spring]
+keywords: spring
 excerpt: spring框架的7大模块了解，IOC的原型由我们自行控制对象的创建，控制反转的本质是获得对象的方式反转了，将对象的创建转移给第三方
 lock: noneed
 ---
 
-<font color=red>**Spring是一个轻量级的控制反转(IoC)和面向切面(AOP)的容器（框架）**</font>
+<mark>Spring是一个轻量级的控制反转(IoC)和面向切面(AOP)的容器（框架）</mark>
 
 ## 1、spring组成
 

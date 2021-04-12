@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Spring的Controller是单例还是多例？怎么保证并发的安全
-category: springboot
-tags: [springboot]
-keywords: springboot
+category: spring
+tags: [spring]
+keywords: spring
 excerpt: Spring的Controller默认是单例的，线程不安全，不要使用非静态的成员变量，如何多例
 lock: noneed
 ---

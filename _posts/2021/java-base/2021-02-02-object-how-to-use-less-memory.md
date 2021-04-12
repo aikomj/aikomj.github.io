@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 如何在开发中使用对象减少对内存的使用
-category: java-base
+category: java
 tags: [java]
 keywords: java
 excerpt: 都知道堆内存要回收垃圾，那么你也得知道如何在开发中使用对象来减少内存使用，软引用，使用享元模式，分析对象的外在状态和内在状态成员变量
