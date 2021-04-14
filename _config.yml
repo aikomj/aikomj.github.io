@@ -155,11 +155,13 @@ navs:
       - subHref: https://leetcode-cn.com/problemset/all/
         subLabel: 力扣刷题
         target: _blank
+  - href: /spring.html
+    label: Spring
+    target: _self
   -
     href: /spring-boot.html
     label: Spring Boot
     target: _self
-
   -
     href: /spring-cloud.html
     label: Spring Cloud
@@ -168,7 +170,6 @@ navs:
     href: /dubbo.html
     label: Dubbo    
     target: _self
-
   -
     label: Java
     subnav:
