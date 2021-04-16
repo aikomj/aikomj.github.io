@@ -2,7 +2,7 @@
 layout: page
 title: Spring 源码系列文章
 titlebar: spring-boot
-subtitle: <span class="mega-octicon oction-bell"></span> &nbsp;&nbsp; 你一定要活出自己喜欢的样子
+subtitle: <span class="mega-octicon octicon-bell"></span> &nbsp;&nbsp; 你一定要活出自己喜欢的样子
 menu: spring
 css: ['blog-page.css']
 permalink: /spring
@@ -15,7 +15,7 @@ keywords: Spring
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category =='spring' or post.tags == 'spring' or post.keywords contains 'spring'%}
+                {% if post.category =='spring' or post.tags == 'spring'%}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>
