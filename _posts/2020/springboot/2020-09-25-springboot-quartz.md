@@ -4,11 +4,75 @@ title: 定时任务调度实战1
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 在单体应用中使用Timer定时器，Spring Scheduled注解，Quartz框架
+excerpt: linux系统下使用crontab，在单体应用中使用Timer定时器，Spring Scheduled注解，Quartz框架，分布式调度框架xxl-job,elastic-job,saturn,tbschedule
 lock: noneed
 ---
 
-## 0、while+sleep方案
+## 1、Linux的crontab
+
+场景：使用`crontab -e`编辑定时器，执行一个jar包，生成的excel文件下载到本地
+
+运行`crontab -e`，可以编辑定时器，然后加入如下命令：
+
+```sh
+0 2 * * * /usr/local/java/jdk1.8/bin/java -jar /data/app/tool.jar > /logs/tool.log &
+```
+
+就可以在`每天凌晨2点`，定时执行`tool.jar`程序，并且把日志输出到`tool.log`文件中。当然你也可以把后面的执行java程序的命令写成shell脚本，更方便维护。
+
+crontab命令的基本格式如下:
+
+```sh
+crontab [参数] [文件名]
+```
+
+| 参数 |              功能               |
+| :--- | :-----------------------------: |
+| -u   |            指定用户             |
+| -e   |  编辑某个用户的crontab文件内容  |
+| -l   |  显示某个用户的crontab文件内容  |
+| -r   |     删除某用户的crontab文件     |
+| -i   | 删除某用户的crontab文件时需确认 |
+
+以上参数，如果没有使用`-u`指定用户，则默认使用的当前用户。
+
+通过`crontab -e`命令编辑文件内容，具体语法如下：
+
+```sh
+[分] [小时] [日期] [月] [星期] 具体任务
+```
+
+- 分，表示多少分钟，范围：0-59
+- 小时，表示多少小时，范围：0-23
+- 日期，表示具体在哪一天，范围：1-31
+- 月，表示多少月，范围：1-12
+- 星期，表示多少周，范围：0-7，0和7都代表星期日
+
+其中，还有一些特殊字符：
+
+- `*`代表如何时间，比如：`*1***` 表示每天凌晨1点执行。
+- `/`代表每隔多久执行一次，比如：`*/5 ****` 表示每隔5分钟执行一次。
+- `,`代表支持多个，比如：`10 7,9,12 ***` 表示在每天的7、9、12点10分各执行一次。
+- `-`代表支持一个范围，比如：`10 7-9 ***` 表示在每天的7、8、9点10分各执行一次。
+
+> crond服务
+
+顺便说一下`crontab`需要`crond`服务支持，`crond`是`linux`下用来周期地执行某种任务的一个守护进程，在安装`linux`操作系统后，默认会安装`crond`服务工具，且`crond`服务默认就是自启动的。`crond`进程每分钟会定期检查是否有要执行的任务，如果有，则会自动执行该任务。
+
+```sh
+service crond status // 查看运行状态
+service crond start //启动服务
+service crond stop //关闭服务
+service crond restart //重启服务
+service crond reload //重新载入配置
+```
+
+**使用`crontab`的优缺点：**
+
+- 优点：方便修改定时规则，支持一些较复杂的定时规则，通过文件可以统一管理配好的各种定时脚本
+- 缺点：如果定时任务非常多，不太好找，而且必须要求操作系统是`linux`，否则无法执行。
+
+## 2、while+sleep方案
 
 最简单定时，while+sleep方案，就是定义一个线程，然后 while 循环，通过 sleep 延迟时间来达到周期性调度任务。
 
@@ -39,9 +103,15 @@ public static void main(String[] args) {
 
 正因此，JDK 中的 Timer 定时器由此诞生了！
 
-## 1、Timer定时器
+## 3、Timer定时器
 
 ### Timer
+
+`Timer`类是jdk专门提供的定时器工具，用来在后台线程计划执行指定任务，在`java.util`包下，要跟`TimerTask`一起配合使用。
+
+![](/assets/images/2021/javabase/timer.jpg)
+
+`Timer`类其实是一个任务调度器，它里面包含了一个`TimerThread`线程，在这个线程中无限循环从`TaskQueue`中获取`TimerTask`（该类实现了Runnable接口），调用其`run`方法，就能异步执行定时任务。我们需要继承`TimerTask`类，实现它的`run`方法，在该方法中加上自己的业务逻辑。
 
 首先看一个timer的例子
 
@@ -257,6 +327,8 @@ public static void main(String[] args) {
 
 - **串行阻塞**：调度线程只有一个，长任务会阻塞短任务的执行，例如，A任务跑了一分钟，B任务至少需要等1分钟才能跑
 - **容错能力差**：没有异常处理能力，一旦一个任务执行故障，后续任务都无法执行
+
+阿里巴巴开发者规范中不建议使用它。
 
 ### ScheduledThreadPoolExecutor
 
@@ -927,26 +999,58 @@ test5
 
 详细源码分析地址：[https://crossoverjie.top/2019/09/27/algorithm/time%20wheel/]
 
+## 4、ScheduledExecutorService
+
+`ScheduledExecutorService`是基于多线程的，设计的初衷是为了解决`Timer`单线程执行，多个任务之间会互相影响的问题。
+
+它主要包含4个方法：
+
+- `schedule(Runnable command,long delay,TimeUnit unit)`，带延迟时间的调度，只执行一次，调度之后可通过Future.get()阻塞直至任务执行完毕。
+- `schedule(Callable<V> callable,long delay,TimeUnit unit)`，带延迟时间的调度，只执行一次，调度之后可通过Future.get()阻塞直至任务执行完毕，并且可以获取执行结果。
+
+- `scheduleAtFixedRate`，表示以固定频率执行的任务，如果当前任务耗时较多，超过定时周期period，则当前任务结束后会立即执行。
+
+- `scheduleWithFixedDelay`，表示以固定延时执行任务，延时是相对当前任务结束为起点计算开始时间。
+
+具体代码如下：
+
+```java
+public class ScheduleExecutorTest {
+  public static void main(String[] args) {
+    ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
+    scheduledExecutorService.scheduleAtFixedRate(() -> {
+      System.out.println("doSomething");
+    },1000,1000, TimeUnit.MILLISECONDS);
+  }
+}
+```
+
+调用`ScheduledExecutorService`类的`scheduleAtFixedRate`方法实现周期性任务，每隔1秒钟执行一次，每次延迟1秒再执行。
+
+这种定时任务是阿里巴巴开发者规范中用来替代`Timer`类的方案，对于多线程执行周期性任务，是个不错的选择。
+
+<mark>优点：</mark>基于多线程的定时任务，多个任务之间不会相关影响，支持周期性的执行任务，并且带延迟功能
+
+<mark>缺点：</mark>不支持一些较复杂的定时规则
 
 
-## 2、定时注解@Schedule
+
+## 5、Spring task
+
+### 注解@Schedule
 
 Spring实现定时任务，首先说它支持的定时任务注解@Scheduled，支持cron表达式，代码内嵌简单的定时任务，例子：
 
-```java
-// 定时任务类
-@Service
-public class ScheduledService {
+1、pom.xml导入依赖
 
-	// 每分钟执行一次
-	@Scheduled(cron = "0 * * * * ?")
-	public void hello(){
-		System.out.println("Hello ......");
-	}
-} 
+```xml
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+</dependency>
 ```
 
-启动类开启定时任务
+2、springboot启动类加上`@EnableScheduling`注解
 
 ```java
 @SpringBootApplication
@@ -960,9 +1064,89 @@ public class SpringBootDataStudyXjwApplication {
 }
 ```
 
+3、定时任务
+
+```java
+// 定时任务类
+@Service
+public class ScheduledService {
+	// 每分钟执行一次
+	@Scheduled(cron = "0 * * * * ?")
+	public void hello(){
+		System.out.println("Hello ......");
+	}
+} 
+```
+
+application.properties配置参数的方式
+
+```properties
+# 每10执行一次
+sue.spring.task.cron=*/10 * * * * ?
+```
+
+```java
+@Service
+public class SpringTaskTest {
+    @Scheduled(cron = "${sue.spring.task.cron}")
+    public void fun() {
+        System.out.println("doSomething");
+    }
+}
+```
+
+> cron规则
+
+spring4以上的版本中，cron表达式包含6个参数：
+
+```sh
+[秒] [分] [时] [日期] [月] [星期]
+
+秒: 取值范围：0-59，支持*、,、-、/。
+分: 取值范围：0-59，支持*、,、-、/。
+时: 取值范围：0-23，支持*、,、-、/。
+日期: 取值范围：1-31，支持*、,、-、/。比秒多了?，表示如果指定的星期触发了，则配置的日期变成无效。
+月: 取值范围：1-12，支持*、,、-、/。
+星期: 取值范围：1~7，1代表星期天，6代表星期六，其他的以此类推。支持*、,、-、/、?。比秒多了?，表示如果指定的日期触发了，则配置的星期变成无效。
+```
+
+与Linux的crontab规则是一样的
+
+```sh
+*：表示任何时间触发任务
+,：表示指定的时间触发任务
+-：表示一段时间内触发任务
+/：表示从哪一个时刻开始，每隔多长时间触发一次任务。
+?：表示用于月中的天和周中的天两个子表达式，表示不指定值。
+```
+
+举例：
+
+- `0 0 0 1 * ?` 每月1号零点执行
+- `0 0 2 * * ?` 每天凌晨2点执行
+- `0 0 2 * * ?` 每天凌晨2点执行
+- `0 0/5 11 * * ?` 每天11点-11点55分，每隔5分钟执行一次
+- `0 0 18 ? * WED` 每周三下午6点执行
+
+spring task先通过ScheduledAnnotationBeanPostProcessor类的processScheduled方法，解析和收集`Scheduled`注解中的参数，包含：cron表达式。
+
+然后在ScheduledTaskRegistrar类的afterPropertiesSet方法中，默认初始化一个<mark>单线程</mark>的`ThreadPoolExecutor`执行任务。
+
+<mark>优点：</mark>
+
+- spring框架自带的定时功能，springboot做了非常好的封装，开启和定义定时任务非常容易，支持复杂的`cron`表达式，可以满足绝大多数单机版的业务场景。单个任务时，当前次的调度完成后，再执行下一次任务调度。
+
+<mark>缺点：</mark>
+
+- 默认单线程，如果前面的任务执行时间太长，对后面任务的执行有影响。不支持集群方式部署，不能做数据存储型定时任务
 
 
-## 3、定时框架Quartz
+
+
+
+
+
+## 6、定时框架Quartz
 
 ### Quartz的架构图
 
@@ -1452,12 +1636,6 @@ scheduler.start();
 ```
 
 ### SpringBoot 整合
-
-第二个用过的就是quartz，主要有三个核心概念
-
-- scheduler 调度器
-- trigger 触发器
-- job 任务
 
 > 单体应用介绍
 
@@ -1968,6 +2146,245 @@ public class QuartzConfigration {
     }
 }
 ```
+
+### 总结
+
+- 优点：默认是多线程异步执行，单个任务时，在上一个调度未完成时，下一个调度时间到时，会另起一个线程开始新的调度，多个任务之间互不影响。支持复杂的`cron`表达式，它能被集群实例化，支持分布式部署。
+- 缺点：相对于spring task实现定时任务成本更高，需要手动配置`QuartzJobBean`、`JobDetail`和`Trigger`等。需要引入了第三方的`quartz`包，有一定的学习成本。不支持并行调度，不支持失败处理策略和动态分片的策略等。
+
+## 7、分布式调度框架
+
+### xxl-job
+
+在《定时任务实战2》中，我也有介绍如何使用，这里也说一下。
+
+`xxl-job`是大众点评（许雪里）开发的一个分布式任务调度平台，其核心设计目标是开发迅速、学习简单、轻量级、易扩展。现已开放源代码并接入多家公司线上产品线，开箱即用。
+
+它对对`quartz`进行了扩展，使用`mysql`数据库存储数据，并且内置jetty作为`RPC`服务调用。
+
+主要特点如下：
+
+1. 有界面维护定时任务和触发规则，非常容易管理。
+2. 能动态启动或停止任务
+3. 支持弹性扩容缩容
+4. 支持任务失败报警
+5. 支持动态分片
+6. 支持故障转移
+7. Rolling实时日志
+8. 支持用户和权限管理
+
+在xxl-job中，有2个角色
+
+- xxl-job-admin，调度任务管理系统，官方代码已经写好，直接启动即可
+- xxl-job-excutor，通常是我们业务系统
+
+整体架构图如下：
+
+![](/assets/images/2021/juc/xxljob-structure.jpg)
+
+使用quartz架构图如下：
+
+![](/assets/images/2021/juc/xxljob-quartz-structure.jpg)
+
+> 项目实战
+
+假设xxl-job-admin服务已准备好，接下来我们需要做xxl-job-excutor的部分，新建一个springboot工程
+
+1、pom.xml导入依赖
+
+```xml
+<dependency>
+   <groupId>com.xuxueli</groupId>
+   <artifactId>xxl-job-core</artifactId>
+</dependency>
+```
+
+2、application.properties配置
+
+```properties
+xxl.job.admin.address: http://localhost:8088/xxl-job-admin/
+xxl.job.executor.appname: xxl-job-executor-sample
+xxl.job.executor.port: 8888
+xxl.job.executor.logpath: /data/applogs/xxl-job/
+```
+
+3、继承`IJobHandler`类
+
+```java
+@JobHandler(value = "helloJobHandler")
+@Component
+public class HelloJobHandler extends IJobHandler {
+    @Override
+    public ReturnT<String> execute(String param) {
+        System.out.println("XXL-JOB, Hello World.");
+        return SUCCESS;
+    }
+}
+```
+
+启动工程xxl-job-excutor，在xxl-job-admin中可以看到helloJobHandler的配置，在控制台修改配置和启动任务。
+
+**优缺点**
+
+- 优点：有界面管理定时任务，支持弹性扩容缩容、动态分片、故障转移、失败报警等功能。它的功能非常强大，很多大厂在用，可以满足绝大多数业务场景。
+- 缺点：和`quartz`一样，通过数据库分布式锁，来控制任务不能重复执行。在任务非常多的情况下，有一些性能问题。
+
+### elastic-job
+
+在《定时任务实战2》中，我有深入介绍使用，这里也说一下
+
+`elastic-job`是当当网开发的弹性分布式任务调度系统，功能丰富强大，采用zookeeper实现分布式协调，实现任务高可用以及分片。它是专门为高并发和复杂业务场景开发。
+
+`elastic-job`目前是`apache`的`shardingsphere`(前身是sharding-jdbc)项目下的一个子项目，
+
+官网地址：[http://shardingsphere.apache.org/elasticjob/](http://shardingsphere.apache.org/elasticjob/)
+
+`elastic-job`在2.x之后，出了两个产品线：`Elastic-Job-Lite`和`Elastic-Job-Cloud`，而我们一般使用Elastic-Job-Lite就能够满足需求。Elastic-Job-Lite定位为轻量级无中心化解决方案，使用jar包的形式提供分布式任务的协调服务，外部仅依赖于Zookeeper。
+
+主要特点如下：
+
+- 分布式调度协调
+- 弹性扩容缩容
+- 失效转移
+- 错过执行作业重触发
+- 作业分片一致性，保证同一分片在分布式环境中仅一个执行实例
+- 自诊断并修复分布式不稳定造成的问题
+- 支持并行调度
+
+整体架构图如下：
+
+![](/assets/images/2021/springcloud/elastic-job-arch.png)
+
+> 项目实战
+
+前提已准备好zookeeper和elastic-job-lite-console控制台，下面新建一个springboot工程
+
+1、pom.xml导入依赖
+
+```xml
+<dependency>
+    <groupId>com.dangdang</groupId>
+    <artifactId>elastic-job-lite-core</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.dangdang</groupId>
+    <artifactId>elastic-job-lite-spring</artifactId>
+</dependency>
+```
+
+2、增加zkconfig类，配置`zookeeper`
+
+```java
+@Configuration
+@ConditionalOnExpression("'${zk.serverList}'.length() > 0")
+public class ZKConfig {
+
+  @Bean
+  public ZookeeperRegistryCenter registry(@Value("${zk.serverList}") String serverList,
+                                          @Value("${zk.namespace}") String namespace) {
+    return new ZookeeperRegistryCenter(new ZookeeperConfiguration(serverList, namespace));
+  }
+}
+```
+
+3、定义一个类实现`SimpleJob`接口
+
+```java
+public class TestJob implements SimpleJob {
+    @Override
+    public void execute(ShardingContext shardingContext){
+        System.out.println("ShardingTotalCount:"+shardingContext.getShardingTotalCount());
+        System.out.println("ShardingItem:"+shardingContext.getShardingItem());
+    }
+}
+```
+
+4、增加JobConfig配置任务
+
+```java
+@Configuration
+public class JobConfig {
+    @Value("${sue.spring.elatisc.cron}")
+    private String testCron;
+    @Value("${sue.spring.elatisc.itemParameters}")
+    private  String shardingItemParameters;
+    @Value("${sue.spring.elatisc.jobParameters}")
+    private String jobParameters =;
+    @Value("${sue.spring.elatisc.shardingTotalCount}")
+    private int shardingTotalCount;
+    
+    @Autowired
+    private ZookeeperRegistryCenter registryCenter;
+
+    @Bean
+    public SimpleJob testJob() {
+        return new TestJob();
+    }
+
+    @Bean
+    public JobScheduler simpleJobScheduler(final SimpleJob simpleJob) {
+        return new SpringJobScheduler(simpleJob, registryCenter, getConfiguration(simpleJob.getClass(),
+                cron, shardingTotalCount, shardingItemParameters, jobParameters));
+    }
+
+    private geConfiguration getConfiguration(Class<? extends SimpleJob> jobClass,String cron,int shardingTotalCount,String shardingItemParameters,String jobParameters) {
+        JobCoreConfiguration simpleCoreConfig = JobCoreConfiguration.newBuilder(jobClass.getName(), testCron, shardingTotalCount).
+                shardingItemParameters(shardingItemParameters).jobParameter(jobParameters).build();
+        SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(simpleCoreConfig, jobClass.getCanonicalName());
+        LiteJobConfiguration jobConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).overwrite(true).build();
+        return jobConfig;
+    }
+}
+```
+
+- cron：cron表达式，定义触发规则。
+- shardingTotalCount：定义作业分片总数
+- shardingItemParameters：定义分配项参数，一般用分片序列号和参数用等号分隔，多个键值对用逗号分隔，分片序列号从0开始，不可大于或等于作业分片总数。
+- jobParameters：作业自定义参数
+
+5、application.properties配置参数
+
+```java
+spring.application.name=elasticjobDemo
+zk.serverList=localhost:2181
+zk.namespace=elasticjobDemo
+sue.spring.elatisc.cron=0/5 * * * * ?
+sue.spring.elatisc.itemParameters=0=A,1=B,2=C,3=D
+sue.spring.elatisc.jobParameters=test
+sue.spring.elatisc.shardingTotalCount=4
+```
+
+这样定时任务就配置好了，创建定时任务的步骤，相对于`xxl-job`来说要繁琐一些
+
+**优缺点**
+
+- 优点：支持分布式调度协调，支持分片，适合高并发，和一些业务相对来说较复杂的场景。
+
+- 缺点：需要依赖于zookeeper，实现定时任务相对于`xxl-job`要复杂一些，要对分片规则非常熟悉。
+
+### Saturn
+
+Saturn是唯品会开源的一个分布式任务调度平台。取代传统的Linux Cron/Spring Batch Job的方式，做到全域统一配置，统一监控，任务高可用以及分片并发处理。
+
+Saturn是在当当开源的Elastic-Job基础上，结合各方需求和我们的实践见解改良而成。使用案例：唯品会、酷狗音乐、新网银行、海融易、航美在线、量富征信等。 
+
+github地址：[https://github.com/vipshop/Saturn/](https://github.com/vipshop/Saturn/)
+
+### TBSchedule
+
+ TBSchedule是阿里开发的一款分布式任务调度平台，旨在将调度作业从业务系统中分离出来，降低或者是消除和业务系统的耦合度，进行高效异步任务处理。
+
+目前被广泛应用在阿里巴巴、淘宝、支付宝、京东、聚美、汽车之家、国美等很多互联网企业的流程调度系统中。
+
+github地址：[https://github.com/taobao/TBSchedule](https://github.com/taobao/TBSchedule)
+
+### 总结
+
+老实说优秀的定时任务还是挺多的，不是说哪种定时任务牛逼我们就一定要用哪种，而是要根据实际业务需求选择。每种定时任务都有优缺点，合理选择既能满足业务需求，又能避免资源浪费，才是上上策。当然在实际的业务场景，通常会多种定时任务一起配合使用。
+
+
+
+
 
 
 
