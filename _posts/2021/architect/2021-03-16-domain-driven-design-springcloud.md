@@ -3,7 +3,7 @@ layout: post
 title: DDD领域驱动如何将业务拆分成微服务
 category: architect
 tags: [architect]
-keywords: architect,springcloud
+keywords: architect,mysql
 excerpt: DDD分层微服务，项目实战
 lock: noneed
 ---
@@ -16,7 +16,7 @@ Domain Driven Design 领域驱动设计，简称DDD，就是基于模型驱动�
 
 - 战略建模： 战略设计侧重于高层次、宏观上去划分和集成限界上下文，而战术设计则关注更具体使用建模工具来细化上下文；
 - 实体 Entity：带有业务行为的持久化对象，不直接与数据表映射，具有唯一标识，带有业务行为，如属性的验证放到实体中；
-- 值对象 Value Object：无业务行为的简单对象，没有唯一标识，对事物进行描述，比如颜色信息`{name:黑色，css:fffff}`
+- 值对象 Value Object：无业务行为的简单对象，没有唯一标识，对事物进行描述，比如颜色信息`{name:黑色，css:fffff}`，值对象是实体的其中构成部分。
 - 聚合 Aggregate： 由业务和逻辑紧密关联的根实体，实体和值对象组合而成。领域的构成部分，聚合包含的实体和值对象就是领域对象，作为一个整体被外界访问。聚合可以指导详细设计。
 - 聚合根：一个聚合中被其他实体围绕的根实体，通常是业务的核心
 - 限界上下文 Bounded Context ，其实就是聚合，对于问题域的一个解决方案
