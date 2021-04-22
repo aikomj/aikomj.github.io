@@ -78,7 +78,7 @@ Domain Driven Design 领域驱动设计，简称DDD，就是基于模型驱动�
 
 ![](\assets\images\2021\springcloud\ddd-structure.jpg)
 
-- 展示层
+- 展示层（用户接口层）
 
   展现层负责向用户显示信息和解释用户指令，对接微服务的用户接口层
 
@@ -99,6 +99,20 @@ Domain Driven Design 领域驱动设计，简称DDD，就是基于模型驱动�
   b) 为领域层提供数据库持久化机制等
   
   c) 它还能通过技术框架来支持各层之间的交互
+
+> 依赖反转设计
+
+依赖反转设计原则：底层服务（基础设施层）应依赖高层组件（用户接口层、应用层、领域层）所提供的接口。
+
+基于该原则，DDD的分层依赖关系如下：
+
+<img src="\assets\images\2021\springcloud\ddd-structure-2.jpg" style="zoom:80%;" />
+
+1) 基础设施层都依赖用户接口层、应用层、领域层，对他们提供的接口进行实现
+
+2) 用户接口层依赖应用层，它要调用应用层的`应用服务`
+
+3) 应用层依赖领域层，它要调用领域层的`领域服务`
 
 ### 微服务内的服务视图
 
@@ -998,6 +1012,13 @@ b) 创建人员：打开创建人员页面，外部人员需要填写人员信�
 DDD对微服务的拆分设计流程如下图：
 
 ![](\assets\images\2021\springcloud\ddd-leave-demo-7)
+
+
+
+**参考**
+
+- DDD实战课
+- [https://blog.csdn.net/qq_33589510/article/details/108991348](https://blog.csdn.net/qq_33589510/article/details/108991348)
 
 
 
