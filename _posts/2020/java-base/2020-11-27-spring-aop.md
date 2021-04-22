@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Spring AOP 切面编程的思想，简化开发
-category: java
-tags: [java]
-keywords: java
+category: spring
+tags: [spring]
+keywords: spring
 excerpt: AOP 切面编程，简化开发，无侵入业务层
 lock: noneed
 ---
@@ -108,7 +108,7 @@ public void logAspect() {}
 
 **注意：**
 
-可以使用&&、||、!、三种运算符来组合切点表达式，表示与或非的关系。
+可以使用`&&和||和!`三种运算符来组合切点表达式，表示与或非的关系。
 
 
 
