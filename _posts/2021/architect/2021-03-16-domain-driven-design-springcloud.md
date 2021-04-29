@@ -610,116 +610,9 @@ settlement-center作为父模块依赖，有4个子模块，如下图：
 <artifactId>mcsp-starter-parent</artifactId>
 <version>1.0.0-SNAPSHOT</version>
 <packaging>pom</packaging>
-
-<repositories>
-  <repository>
-    <id>atp-midea-releases</id>
-    <name>Midea Repository</name>
-    <url>http://mvn.midea.com/nexus/content/repositories/atp-release/</url>
-    <releases>
-      <enabled>true</enabled>
-    </releases>
-    <snapshots>
-      <enabled>false</enabled>
-    </snapshots>
-  </repository>
-  <repository>
-    <id>atp-midea-snapshots</id>
-    <name>Midea Snapshots</name>
-    <url>http://mvn.midea.com/nexus/content/repositories/atp-snapshot/</url>
-    <releases>
-      <enabled>false</enabled>
-    </releases>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-  </repository>
-</repositories>
-
-<properties>
-  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  <java.version>1.8</java.version>
-
-  <springboot.version>2.3.0.RELEASE</springboot.version>
-  <springcloud.version>Hoxton.RELEASE</springcloud.version>
-  <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-  <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-  <eureka.version>2.2.0.RELEASE</eureka.version>
-
-  <mysql.version>5.1.47</mysql.version>
-  <druid-starter.version>1.2.1</druid-starter.version>
-  <common.core>1.0.0-SNAPSHOT</common.core>
-  <service.core>1.0.0-SNAPSHOT</service.core>
-
-  <lombok.version>1.16.16</lombok.version>
-  <mybatis-plus.version>3.3.2</mybatis-plus.version>
-  <druid.version>1.2.1</druid.version>
-  <sentinel.version>1.8.0</sentinel.version>
-  <sentinel.starter.version>0.9.0.RELEASE</sentinel.starter.version>
-
-  <skywalking.version>6.6.0</skywalking.version>
-  <carrier.version>2.0.4</carrier.version>
-  <apollo.client.version>1.7.0</apollo.client.version>
-  <apollo.core.version>1.7.0.m3-SNAPSHOT</apollo.core.version>
-
-</properties>
-
-<dependencyManagement>
-  <dependencies>
-    <!-- spring-boot和spring-cloud 组件 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-dependencies</artifactId>
-      <version>${springboot.version}</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-dependencies</artifactId>
-      <version>${springcloud.version}</version>
-      <type>pom</type>
-      <scope>import</scope>
-    </dependency>
-    ...
-</dependencyManagement>
-<dependencies>
-  <dependency>
-    <groupId>com.midea.mcsp</groupId>
-    <artifactId>base-core</artifactId>
-    <version>${common.core}</version>
-  </dependency>
-  <dependency>
-    <groupId>com.ctrip.framework.apollo</groupId>
-    <artifactId>apollo-client</artifactId>
-    <version>${apollo.client.version}</version>
-    <exclusions>
-      <exclusion>
-        <groupId>com.ctrip.framework.apollo</groupId>
-        <artifactId>apollo-core</artifactId>
-      </exclusion>
-    </exclusions>
-  </dependency>
-  <dependency>
-    <groupId>com.ctrip.framework.apollo</groupId>
-    <artifactId>apollo-core</artifactId>
-    <version>${apollo.core.version}</version>
-  </dependency>
-  <dependency>
-    <groupId>com.midea.mgp</groupId>
-    <artifactId>carrier-client-2.x</artifactId>
-    <version>${carrier.version}</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.skywalking</groupId>
-    <artifactId>apm-toolkit-logback-1.x</artifactId>
-    <version>${skywalking.version}</version>
-  </dependency>
-</dependencies>
 ```
 
-springboot 使用2.3.0，,依赖了md封装的基础包，如base-core。
+springboot 使用2.3.0，依赖了md封装的基础包，如base-core。
 
 > 子模块职责讲解
 
@@ -727,9 +620,21 @@ springboot 使用2.3.0，,依赖了md封装的基础包，如base-core。
 
 - settlement-core 基础模块
 
-- settlement-service 提供的服务模块，这里分3个微服务settlement-ar-service、settlement-credit-service、settle-so-sevice
+- settlement-service 提供的服务模块，这里按业务拆分6个微服务模块
 
-- settlement-web 供前端应用的用户层接口服务模块，分settlement-console-web和settlement-inner-web两个子模块，同时也是2个微服务，
+  1) settlement-smc-service 结算中心，处理销售、退货、索赔等结算业务(周建刚)
+
+  2) settlement-cdc-service 信用额度中心，处理信用授信、客户款项计算相关业务(黄洪彬)
+
+  3) settlement-mcc-service 收款中心，处理收款、退款、转款相关业务(黄洪彬)
+
+  4) settlement-ivc-sevice 发票中心，处理销售单拆分合并形成发票池及电子发票，纸质专票对接发票平台开票(郭伟权)
+
+  5) settlement-coc-service 费用中心，处理费用报销和申请(郭伟权)
+
+  6) settlement-rcc-service 对账中心，处理客户往来对账，核销相关业务(郭伟权)
+
+- settlement-web 供前端应用的用户层接口服务模块，分2个微服务
 
   settlement-console-web：对外，前端应用请求处理。
 
@@ -788,6 +693,84 @@ springboot 使用2.3.0，,依赖了md封装的基础包，如base-core。
   ![](\assets\images\2021\springcloud\settlement-ar-starter.jpg)
 
   依赖settlement-ar-facade 和 settlement-ar-infrastructure 启动整个微服务
+
+> 发票模块
+
+<mark>1、申请开票</mark>
+
+根据不同角色的旅程和场景分析，尽可能全面地梳理出从前端操作到后端业务逻辑发生的所有用例操作、命令、领域事件以及外部依赖关系等信息。
+
+用户：系统
+
+1) mq订阅开票申请数据的消息，将消息体转换为DTO
+
+2) 校验申请数据，校验逻辑可写在DTO方法内(app层)，也可DTO转换DO后写在DO方法内（domain层）
+
+- 不通过，mq发布校验失败消息
+
+- 通过，生成发票申请记录，具体就是保存发票头、行到数据库表
+
+3) 如果是电子发票，开票申请的发票流水号写入redis的list队列，并以发票流水号为key，待推送发票平台的数据DTO为value写入redis的hash中，格式如下：
+
+tobePushInvoiceList: 发票流水号1,发票流水号2.....
+
+tobePushHashMap:{发票流水号1:待推送数据1，发票流水号2:待推送数据2}...
+
+如果是纸质发票，暂不处理
+
+**场景分析图**：
+
+![](\assets\images\2021\architect\ivc-1.jpg)
+
+**实体命令事件关系图**：根据场景分析图，将与实体或值对象有关的命令和事件聚集到实体
+
+![](\assets\images\2021\architect\ivc-3.jpg)
+
+**聚合对象关系图**:
+
+![](\assets\images\2021\architect\ivc-4.jpg)
+
+**服务分层关系图**:根据场景分析图，划分出应用服务、领域服务、实体方法
+
+![](\assets\images\2021\architect\ivc-5.jpg)
+
+<mark>2、开票数据推送开票平台</mark>
+
+根据不同角色的旅程和场景分析，尽可能全面地梳理出从前端操作到后端业务逻辑发生的所有用例操作、命令、领域事件以及外部依赖关系等信息。
+
+用户：系统
+
+1) 系统定时从redis读取开票数据，并推送到开票平台进行开票
+
+redis存储开票数据是一个list类型的列表数据（待推送列表），元素是发票流水号，根据发票流水号redis的tobePushHashmap 获取发票数据，调用开票平台接口推送数据，推送完成后，修改发票状态为`已推送`，发票流水号从redis待推送list中移除->发票数据从redis待推送hash中移除 ->发票流水号写入redis已推送list（pushedInvoiceList）
+
+2) 开票平台异步调用系统接口，更新对应开票结果状态，mq发布开票结果消息
+
+   mios代码的web接口是`InvoiceController.invoiceResult()`
+
+3) 定时调用开票平台获取开票结果。
+
+xxl-job任务从redis的pushedInvoiceList获取发票流水号，调用开票平台查询开票结果，已有结果的
+
+​	a.更新开票状态
+
+​	b.mq发布发票开票结果消息
+
+​	c.发票流水号从已推送list（pushedInvoiceList）删除
+
+**场景分析图**：
+
+![](\assets\images\2021\architect\ivc2-1.jpg)
+
+**实体命令事件关系图**：根据场景分析图，将与实体或值对象有关的命令和事件聚集到实体
+
+![](\assets\images\2021\architect\ivc2-2.jpg)
+
+**服务分层关系图**：根据场景分析图，划分出应用服务、领域服务、实体方法
+
+
+
+
 
 ## 5、请假考勤实例
 

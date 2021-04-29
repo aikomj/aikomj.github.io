@@ -2222,7 +2222,7 @@ public class HelloJobHandler extends IJobHandler {
 }
 ```
 
-启动工程xxl-job-excutor，在xxl-job-admin中可以看到helloJobHandler的配置，在控制台修改配置和启动任务。
+启动工程xxl-job-excutor，在xxl-job-admin中可以看到helloJobHandler的配置，在控制台修改配置和启动任务。这里入参param是任务配置传入的参数，可以根据param查询分片数据进行处理，任务可以配置多个，配置的param都不一样。
 
 **优缺点**
 

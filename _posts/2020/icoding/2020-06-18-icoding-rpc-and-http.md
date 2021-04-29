@@ -4,7 +4,7 @@ title: SpringCloud远程服务调用的方式Rpc和Http
 category: icoding-edu
 tags: [icoding-edu]
 keywords: springcloud
-excerpt: 微服务的两种远程调用方式rpc和http
+excerpt: OSI七层网络模型,微服务的两种远程调用方式rpc和http，http的三次握手四次挥手
 lock: noneed
 ---
 

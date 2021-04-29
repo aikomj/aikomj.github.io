@@ -1457,6 +1457,152 @@ public class SampleXxlJob {
 
 ![](\assets\images\2021\juc\xxljob-4.png)
 
+### 任务分片实战
+
+场景：有k个地方，每个地市有x个订单需要执行，总共有kx个订单，下面初始化订单任务
+
+```java
+@Component
+@Slf4j
+public class AhOrdersXxlJob {
+  //城市编号
+  private static final List<Integer> CITY_ID_LIST = Arrays.asList(550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 561, 562, 563, 564, 566);
+  //每个城市的任务数
+  private static final int PER_LATN_TASK_NUM = 30; 
+  // 任务数据库
+  private static final Map<Integer, List<String>> singleMachineMultiTasks; 
+
+  static {
+    singleMachineMultiTasks = new HashMap<>();
+    CITY_ID_LIST.forEach(city -> {
+      List<String> tasks = new ArrayList<>(PER_LATN_TASK_NUM);
+      IntStream.rangeClosed(1, PER_LATN_TASK_NUM).forEach(index -> {
+        String orderInfo = city + "------NO." + index ;
+        tasks.add(orderInfo);
+      });
+
+      singleMachineMultiTasks.put(city, tasks);
+    });
+  }
+}
+```
+
+> 单实例多任务分片
+
+在xxl-job-admin配置两个任务
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-1.png)
+
+每个任务指定不同的参数
+
+![](\assets\images\2021\springcloud\xxl-job-2.png)
+
+任务处理实现方法
+
+```java
+@XxlJob(value = "singleMachineMultiTasks", init = "init", destroy = "destroy")
+public ReturnT<String> singleMachineMultiTasks(String cities) throws Exception {
+  if (StringUtils.isEmpty(cities)) {
+    return new ReturnT(FAIL_CODE, "latnIds不能为空");
+  }
+
+  Arrays.stream(cities.split(",")).map(String::trim).filter(StringUtils::isNotBlank).map(Integer::parseInt).forEach(latnId -> {
+    List<String> tasks = singleMachineMultiTasks.get(latnId);
+    Optional.ofNullable(tasks).ifPresent(todoTasks -> {
+      todoTasks.forEach(task -> {
+        XxlJobLogger.log("【{}】执行【{}】，任务内容为：{}", Thread.currentThread().getName(), latnId, task);
+      });
+    });
+  });
+  return ReturnT.SUCCESS;
+}
+
+ public void init() {
+     log.info("init");
+ }
+
+ public void destroy() {
+     log.info("destory");
+ }
+```
+
+在xxl-job-admin上启动配置的两个任务，在xxl-job-excutor 执行实例上是分两个线程执行任务的
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-3.png)
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-4.png)
+
+> 多实例单任务分片
+
+启动多个excutor执行器实例
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-5.png)
+
+在xxl-job-admin上可以看到多个excutor
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-6.png)
+
+xxl-job-admin上配置任务
+
+![](\assets\images\2021\springcloud\xxl-job-7.png)
+
+这里要使用<mark>取模</mark>的方式进行数据分片，理解一下下面的方案，xxl-job封装了工具类`ShardingUtil`
+
+```java
+// 获取分片
+ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
+//执行器数量
+int number = shardingVO.getTotal();
+//当前分片
+int index = shardingVO.getIndex();
+
+// sql每次从表中取100条数据：表id是自增的，用id对执行器数量（分片总数）取模，那么每个分片获取的数据就不会重复，避免重复消费数据。
+SELECT id,name,password
+FROM t_push
+WHERE `status` = 0
+AND mod(id,#{number}) = #{index}  //number 分片总数，index当前分片数 mod函数取余
+order by id desc
+LIMIT 100;
+```
+
+任务处理实现方法
+
+```java
+@XxlJob(value = "multiMachineMultiTasks", init = "init", destroy = "destroy")
+public ReturnT<String> multiMachineMultiTasks(String params) throws Exception {
+  // xxl-job封装的工具类
+  ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
+  int n = shardingVO.getTotal(); // n 个实例  
+  int i = shardingVO.getIndex(); // 当前为第i个
+
+  IntStream.range(0, CITY_ID_LIST.size()).forEach(cityIndex -> {
+    if (cityIndex % n == i) { // 取模后等于当前分片索引的，则处理
+      int city = CITY_ID_LIST.get(cityIndex);
+      List<String> tasks = singleMachineMultiTasks.get(city);
+      Optional.ofNullable(tasks).ifPresent(todoTasks -> {
+        todoTasks.forEach(task -> {
+          XxlJobLogger.log("实例【{}】执行【{}】，任务内容为：{}", i, city, task);
+        });
+
+      });
+    }
+  });
+  return ReturnT.SUCCESS;
+}
+```
+
+ShardingUtil的源码
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-shardingutil.png)
+
+现在我们分别启动3个执行器和xxl-job-admin上配置的任务，看每个执行器上的输出
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-sharding-1.png)
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-sharding-2.png)
+
+![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-sharding-3.png)
+
 ## 3、Elastic Job分布式任务调度
 
 ### 诞生
