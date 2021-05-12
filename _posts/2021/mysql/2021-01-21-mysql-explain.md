@@ -4,7 +4,7 @@ title: 在sql语句中使用Mysql变量
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: leetcode，编写一个 SQL 查询，查找所有至少连续出现三次的数字
+excerpt: leetcode题目，编写一个 SQL 查询，查找所有至少连续出现三次的数字
 lock: noneed
 ---
 

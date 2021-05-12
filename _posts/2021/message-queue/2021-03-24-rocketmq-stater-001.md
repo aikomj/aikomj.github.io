@@ -12,8 +12,6 @@ lock: noneed
 
 rocket 由哪些组件组成，后面慢慢补充
 
-
-
 ## 2、rocketmq的安装部署
 
 安装到windows上是为了方便自己测试，生产都安装到linux上，并做集群，后面补充

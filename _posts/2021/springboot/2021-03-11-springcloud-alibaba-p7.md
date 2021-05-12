@@ -4,7 +4,7 @@ title: SpringCloud Alibaba P7面试题
 category: springcloud
 tags: [springcloud]
 keywords: springcloud
-excerpt: 会答了，代表你可以做一名架构师
+excerpt: 会答了，代表你可以做一名初级架构师
 lock: noneed
 ---
 
