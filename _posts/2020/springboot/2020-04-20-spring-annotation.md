@@ -4,7 +4,7 @@ title: spring web开发常用到的注解，你都知道了吗
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: spring boot项目中常用到的一些注解使用，别弄丢了，post-put-get-delete请求
+excerpt: spring boot项目中常用到的一些注解使用，别弄丢了，post-put-get-delete请求,aspect切面编程，@jsonformat日期格式化，autowired装配注解你了解多少
 lock: noneed
 ---
 
@@ -374,7 +374,7 @@ public class UserService  implements UserService {}
 public class UserService2 implements UserService {}
 ```
 
-那么在方法中使用接口UserService，使用@Autowired来标注时，需要加上@Qualifier区分注入具体的实现类。
+那么在方法中使用接口UserService，使用@Autowired来标注时，需要加上@Qualifier区分注入具体的实现类。spring的@Service注解默认会将类名的第一个字母转换成小写，作为bean的名称，bean的情况必须是唯一的
 
 ```java
 @Autowired
@@ -392,7 +392,7 @@ private LoginService loginService;
 
 2. <font color=red>@Autowired 默认按类型装配</font>
    
-	 默认情况下依赖对象必须存在，如果要允许null值，可以设置它的required属性为false
+	 默认情况下依赖对象必须存在，如果要允许null值，可以设置它的required属性为false，就不会自动装配了
 
    ```java
    @Autowired(required=false)
@@ -401,6 +401,362 @@ private LoginService loginService;
 3. <font color=red>@Resource(这个注解属于J2EE的)默认按名称装配</font>
    
 	 通过name属性指定，如果没有指定name属性，就字段名装配；如果注解写在setter方法上，默认按属性名进行装配，当找不到匹配的bean时才按照类型进行装配。注意：如果name属性一旦指定，就只会按照名称进行装配。
+
+下面展开@Autowired深入说明
+
+> @Qualifier
+
+```java
+public class TestService1 {
+    public void test1() {
+    }
+}
+
+@Service
+public class TestService2 {
+    @Autowired
+    private TestService1 testService1;
+
+    public void test2() {
+    }
+}
+
+@Configuration
+public class TestConfig {
+    @Bean("test1")
+    public TestService1 test1() {
+        return new TestService1();
+    }
+
+    @Bean("test2")
+    public TestService1 test2() {
+        return new TestService1();
+    }
+}
+```
+
+启动会报错
+
+![](/assets/images/2021/spring/autowired-two-beans.jpg)
+
+提示testService1是单例的，根据类型匹配找到两个对象，需要加上@Qualifier区分注入具体的实现类,相当于byName的方式，Qualifier意思是合格者，一般跟Autowired配合使用，需要指定一个bean的名称，通过bean名称就能找到需要装配的bean。
+
+```java
+@Autowired
+@Qualifier("test1")
+private TestService1 testService1;
+```
+
+> @Primary
+
+```java
+public interface IUser {
+    void say();
+}
+
+@Service
+public class User1 implements IUser{
+    @Override
+    public void say() {
+    }
+}
+
+@Service
+public class User2 implements IUser{
+    @Override
+    public void say() {
+    }
+}
+
+@Service
+public class UserService {
+
+    @Autowired
+    private IUser user;
+}
+```
+
+启动同样因为找到两个同类型的bean对象报错，可以加`@Primary`注解解决
+
+```java
+@Primary
+@Service
+public class User1 implements IUser{
+    @Override
+    public void say() {
+    }
+}
+```
+
+当我们使用自动配置的方式装配Bean时，如果这个Bean有多个候选者，假如其中一个候选者具有@Primary注解修饰，该候选者会被选中，作为自动配置的值。
+
+> @Autowired的使用范围
+
+看源码
+
+![](/assets/images/2021/spring/autowired-source.png)
+
+看元注解`@Target`我们知道autowired的作用范围
+
+![](/assets/images/2021/spring/autowired-target.jpg)
+
+下面逐一说明
+
+- **成员变量**
+
+  这种方式我们平时用的最多
+
+  ```java
+  @Service
+  public class UserService {
+      @Autowired
+      private IUser user;
+  }
+  ```
+
+- **构造器**
+
+  在构造器上使用Autowired注解：
+
+  ```java
+  @Service
+  public class UserService {
+      private IUser user;
+  
+      @Autowired
+      public UserService(IUser user) {
+          this.user = user;
+          System.out.println("user:" + user);
+      }
+  }
+  ```
+
+  其实是自动装配了IUser类的bean对象
+
+- **方法**
+
+  在普通方法上加Autowired注解：
+
+  ```java
+  @Service
+  public class UserService {
+      @Autowired
+      public void test(IUser user) {
+         user.say();
+      }
+  }
+  ```
+
+  spring会在项目启动的过程中，自动调用一次加了@Autowired注解的方法，我们可以在该方法做一些初始化的工作。
+
+- **参数**
+
+  可以在构造器的入参上加Autowired注解
+
+  ```java
+  @Service
+  public class UserService {
+      private IUser user;
+  
+      public UserService(@Autowired IUser user) {
+          this.user = user;
+          System.out.println("user:" + user);
+      }
+  }
+  
+  @Service
+  public class UserService {
+      public void test(@Autowired IUser user) {
+         user.say();
+      }
+  }
+  ```
+
+> @Autowired的高端玩法
+
+将UserService方法调整一下，用一个List集合接收IUser类型的参数：
+
+```java
+@Service
+public class UserService {
+    @Autowired
+    private List<IUser> userList;
+
+    @Autowired
+    private Set<IUser> userSet;
+
+    @Autowired
+    private Map<String, IUser> userMap;
+
+    public void test() {
+        System.out.println("userList:" + userList);
+        System.out.println("userSet:" + userSet);
+        System.out.println("userMap:" + userMap);
+    }
+}
+```
+
+增加一个controller
+
+```java
+@RequestMapping("/u")
+@RestController
+public class UController {
+    @Autowired
+    private UserService userService;
+
+    @RequestMapping("/test")
+    public String test() {
+        userService.test();
+        return "success";
+    }
+}
+```
+
+![](/assets/images/2021/spring/autowired-more-beans.jpg)
+
+从上图中看出：userList、userSet和userMap都打印出了两个元素，说明@Autowired会自动把相同类型的IUser对象收集到集合中。
+
+> @Autowired自动装配失败
+
+- **没有加@Service注解**
+
+  在类上面忘了加@Controller、@Service、@Component、@Repository等注解，spring就无法完成自动装配的功能，例如
+
+  ```java
+  public class UserService {
+      @Autowired
+      private IUser user;
+  
+      public void test() {
+          user.say();
+      }
+  }
+  ```
+
+- **注入Filter或Listener**
+
+  web应用启动的顺序是：`listener`->`filter`->`servlet`
+
+  接下来，看看这个案例
+
+  ```java
+  public class UserFilter implements Filter {
+      @Autowired
+      private IUser user;
+  
+      @Override
+      public void init(FilterConfig filterConfig) throws ServletException {
+          user.say();
+      }
+  
+      @Override
+      public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+  
+      }
+  
+      @Override
+      public void destroy() {
+      }
+  }
+  ```
+
+  ```java
+  @Configuration
+  public class FilterConfig {
+      @Bean
+      public FilterRegistrationBean filterRegistrationBean() {
+          FilterRegistrationBean bean = new FilterRegistrationBean();
+          bean.setFilter(new UserFilter());
+          bean.addUrlPatterns("/*");
+          return bean;
+      }
+  }
+  ```
+
+  程序启动会报错：
+
+  ![](/assets/images/2021/spring/autowired-error.jpg)
+
+  tomcat无法正常启动。
+
+  什么原因呢？
+
+  众所周知，springmvc的启动是在DisptachServlet里面做的，而它是在listener和filter之后执行。如果我们想在listener和filter里面@Autowired某个bean，肯定是不行的，因为filter初始化的时候，此时bean还没有初始化，无法自动装配。
+
+  如果工作当中真的需要这样做，我们该如何解决这个问题呢？
+
+  ```java
+  public class UserFilter  implements Filter {
+      private IUser user;
+  
+      @Override
+      public void init(FilterConfig filterConfig) throws ServletException {
+          ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+          this.user = ((IUser)(applicationContext.getBean("user1")));
+          user.say();
+      }
+  
+      @Override
+      public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+  
+      }
+  
+      @Override
+      public void destroy() {
+      }
+  }
+  ```
+
+  答案是使用WebApplicationContextUtils.getWebApplicationContext获取当前的ApplicationContext，再通过它获取到bean实例。
+
+- **注解未被@ComponentScan扫描**
+
+  通常情况下，@Controller、@Service、@Component、@Repository、@Configuration等注解，是需要通过@ComponentScan注解扫描，收集元数据的。
+
+  但是，如果没有加@ComponentScan注解，或者@ComponentScan注解扫描的路径不对，或者路径范围太小，会导致有些注解无法收集，到后面无法使用@Autowired完成自动装配的功能。
+
+  有个好消息是，在springboot项目中，如果使用了`@SpringBootApplication`注解，它里面内置了@ComponentScan注解的功能，启动类会默认扫描同package及子package的路径，自动装配的功能
+
+- **循环依赖问题**
+
+  spring的bean默认是单例的，如果单例bean使用@Autowired装配，大多数情况，能解决循环依赖问题。
+
+> @Autowired和@Resource的区别
+
+@Autowired功能虽说非常强大，但是也有些不足之处。比如：比如它跟spring强耦合了，如果换成了JFinal等其他框架，功能就会失效。而@Resource是JSR-250提供的，它是Java标准，绝大部分框架都支持。有些场景使用@Autowired无法满足的要求，改成@Resource却能解决问题。
+
+- @Autowired默认按byType自动装配，而@Resource默认byName自动装配。
+- @Autowired只包含一个参数：required，表示是否开启自动准入，默认是true。而@Resource包含七个参数，其中最重要的两个参数是：name 和 type。
+- @Autowired如果要使用byName，需要使用@Qualifier一起配合。而@Resource如果指定了name，则用byName自动装配，如果指定了type，则用byType自动装配。
+- @Autowired能够用在：构造器、方法、参数、成员变量和注解上，而@Resource能用在：类、成员变量和方法上。
+- @Autowired是spring定义的注解，而@Resource是JSR-250定义的注解。
+
+他们的装配顺序不同
+
+**@Autowired的装配顺序如下**
+
+![](/assets/images/2021/spring/autowired-works-2.jpg)
+
+**@Resource的装配顺序如下**
+
+1. 如果同时指定了name和type：
+
+   ![](/assets/images/2021/spring/resource-autowired-1.jpg)
+
+2. 如果指定了name：
+
+   ![](/assets/images/2021/spring/resource-autowired-2.jpg)
+
+3. 如果指定了type：
+
+   ![](/assets/images/2021/spring/resource-autowired-3.jpg)
+
+4. 如果既没有指定name，也没有指定type
+
+   ![](/assets/images/2021/spring/resource-autowired-4.jpg)
+
+
 
 ## 7、@Slf4j
 
