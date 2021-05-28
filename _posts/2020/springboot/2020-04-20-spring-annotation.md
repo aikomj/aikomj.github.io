@@ -1,10 +1,10 @@
 ---
 layout: post
-title: spring web开发常用到的注解，你都知道了吗
+title: spring开发常用注解，你都知道吗
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: spring boot项目中常用到的一些注解使用，别弄丢了，post-put-get-delete请求,aspect切面编程，@jsonformat日期格式化，autowired装配注解你了解多少
+excerpt: 链式编程注解，跨域注解，@Mapper和@Repository的区别，@PostConstruct服务启动后执行一些初始操作，本地事务管理，@Autowired与@Resource装配bean的两种方式，@Slf4打印日志注解，@RequestMapping的post、put、get、delete请求，@Aspect切面编程，@JsonFormat与前端对接日期格式化
 lock: noneed
 ---
 
@@ -76,22 +76,17 @@ public class CorsConfig implements WebMvcConfigurer {
   ```java
   @SpringBootApplication   //添加启动类注解
   @MapperScan("com.anson.dao")  //配置mapper扫描地址
-  public class application
-  {
+  public class application{
       public static   void main(String[] args)
       {
           SpringApplication.run(application.class,args);
       }
   }
   ```
-
   
-
 - @Mapper <font color=red>不需要配置扫描地址</font>，通过xml里面的namespace里面的接口地址，生成了Bean后注入到Service层中。
 
   结合Mybatis-Plus,在dao类只需加上@mapper注解就可以了。
-
-
 
 ## 4、@PostConstruct和@PreDestroy修饰方法
 
@@ -99,7 +94,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 - <mark>@PostConstruct</mark>
 
-  被@PostConstruct修饰的方法会在服务器加载Servlet的时候运行，并且只会被服务器调用一次，类似于Servlet的inti()方法。被@PostConstruct修饰的方法会在构造函数之后，init()方法之前运行。
+  被@PostConstruct修饰的方法会在服务器加载Servlet的时候运行，并且只会被服务器调用一次，类似于Servlet的init()方法。被@PostConstruct修饰的方法会在构造函数之后，init()方法之前运行。
 
 - <mark>@PreDestroy</mark>
 
@@ -236,9 +231,7 @@ public class SerialNumberServiceImpl implements SerialNumberService {
 
 ```
 
-
-
-## 5、事务管理
+## 5、@Transcactional本地事务
 
 Spring 使用 @Transcactional注解管理事务，我们一起来看看它的源码：
 
@@ -349,7 +342,7 @@ Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，�
 
 ![](/assets/images/2020/annotation/transaction-on-service.gif)
 
-> 事务失效的场景
+> 事务失效
 
 1、只在public方法上生效
 
@@ -360,7 +353,7 @@ Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，�
 - unchecked异常：派生于Error或者RuntimeException的异常
 - checked异常：所有其他的异常
 
-
+编程式事务：[http://139.199.13.139/blog/springboot/2021/02/24/spring-skill-002.html](http://139.199.13.139/blog/springboot/2021/02/24/spring-skill-002.html)
 
 ## 6、@Autowired与@Resource的区别
 
@@ -374,7 +367,9 @@ public class UserService  implements UserService {}
 public class UserService2 implements UserService {}
 ```
 
-那么在方法中使用接口UserService，使用@Autowired来标注时，需要加上@Qualifier区分注入具体的实现类。spring的@Service注解默认会将类名的第一个字母转换成小写，作为bean的名称，bean的情况必须是唯一的
+spring的@Service注解默认会将类名的第一个字母转换成小写，作为bean的名称，如上面的`userService`，当然我们也可以自定义bean名称，就像上面的写法
+
+那么在方法中使用接口UserService，使用@Autowired来标注时，需要加上@Qualifier区分注入具体的实现类。
 
 ```java
 @Autowired
@@ -390,7 +385,7 @@ private LoginService loginService;
 
 1. @Autowired 与@Resource都可以用来装配bean，写在字段上或者setter方法上;
 
-2. <font color=red>@Autowired 默认按类型装配</font>
+2. <font color=red>@Autowired 默认按类型装配</font>，就是bytype方式
    
 	 默认情况下依赖对象必须存在，如果要允许null值，可以设置它的required属性为false，就不会自动装配了
 
