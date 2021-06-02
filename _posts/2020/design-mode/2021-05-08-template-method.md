@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 23种设计模式之模板方法模式-Template-method
-category: java-design
-tags: [java-design]
-keywords: java
+category: design-mode
+tags: [design-mode]
+keywords: design-mode
 excerpt: 模板方法模式是一种行为设计模式，它在超类中定义了一个算法的框架，允许子类在不修改结构的情况下重写算法的特定步骤。
 lock: noneed
 ---

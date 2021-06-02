@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 23种设计模式之适配器模式-Adapter
-category: java-design
-tags: [java-design]
-keywords: java
+category: design-mode
+tags: [design-mode]
+keywords: design-mode
 excerpt: 适配器是一种结构型设计模式，将两种完全不同的事物联系到一起，就像现实生活中的变压器
 lock: noneed
 ---

@@ -3,9 +3,9 @@ layout: page
 title: 设计模式系列文章
 titlebar: java
 subtitle: <span class="mega-octicon octicon-globe"></span> &nbsp;&nbsp; 修炼java内功，23种设计模式
-menu: java-design
+menu: design-mode
 css: ['blog-page.css']
-permalink: /java-design
+permalink: /design-mode
 ---
 
 <div class="row">
@@ -14,7 +14,7 @@ permalink: /java-design
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='java-design' %}
+                {% if post.category=='design-mode' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

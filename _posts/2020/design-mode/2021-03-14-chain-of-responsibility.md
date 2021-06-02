@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 23种设计模式之责任链模式-chain of responsibility
-category: java-design
-tags: [java-design]
-keywords: java
+category: design-mode
+tags: [design-mode]
+keywords: design-mode
 excerpt: 责任链是一种行为设计模式， 允许你将请求沿着处理者链进行发送， 直至其中一个处理者对其进行处理。
 lock: noneed
 ---

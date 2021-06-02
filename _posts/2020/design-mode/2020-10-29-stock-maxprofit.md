@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 计算股票买卖的最大收益时机
-category: java-design
-tags: [java-design]
-keywords: java
+category: design-mode
+tags: [design-mode]
+keywords: design-mode
 excerpt: 玩玩学习一下简单的算法，找到生活中的应用场景
 lock: noneed
 ---

@@ -182,7 +182,7 @@ navs:
         subLabel: Java并发
         target: _self
       -
-        subHref: /java-design.html
+        subHref: /design-mode.html
         subLabel: 设计模式
         target: _self
       # -

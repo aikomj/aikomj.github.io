@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 23种设计模式之组合模式-Composite
-category: java-design
-tags: [java-design]
-keywords: java
+category: design-mode
+tags: [design-mode]
+keywords: design-mode
 excerpt: 组合模式是一种结构型设计模式， 你可以使用它将对象组合成<mark>树状结构</mark>， 并且能像使用独立对象一样使用它们
 lock: noneed
 ---

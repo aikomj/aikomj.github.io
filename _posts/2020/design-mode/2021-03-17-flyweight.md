@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 23种设计模式之享元模式-Flyweight
-category: java-design
-tags: [java-design]
-keywords: java
+category: design-mode
+tags: [design-mode]
+keywords: design-mode
 excerpt: 内在状态指多个对象中重复出现的数据，通常是不可变的，一次性初始化的。外在状态是可让其他对象“从外部”读取的，状态就是对象的成员变量。享元模式能大量减少对象的内存容量
 lock: noneed
 ---
