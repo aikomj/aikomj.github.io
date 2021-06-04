@@ -34,6 +34,8 @@ lock: noneed
 
 11. Nacos&Eureka&Zookeeper集群架构都有脑裂问题吗？
 
+    eureka优先保证可用性，不存在脑裂问题，eureka集群的各个节点是平等的，不存在master的概念，只要有一个eureka节点，注册和查询服务都是可用的。
+
 12. 如何设计能支撑全世界公司使用的微服务云架构？
 
 13. RocketMQ架构如何设计能支撑每天万亿级消息处理？

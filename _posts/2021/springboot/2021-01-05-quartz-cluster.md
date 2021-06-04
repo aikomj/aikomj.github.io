@@ -1491,7 +1491,7 @@ public class AhOrdersXxlJob {
 
 在xxl-job-admin配置两个任务
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-1.png)
+![](\assets\images\2021\springcloud\xxl-job-1.png)
 
 每个任务指定不同的参数
 
@@ -1528,19 +1528,19 @@ public ReturnT<String> singleMachineMultiTasks(String cities) throws Exception {
 
 在xxl-job-admin上启动配置的两个任务，在xxl-job-excutor 执行实例上是分两个线程执行任务的
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-3.png)
+![](\assets\images\2021\springcloud\xxl-job-3.png)
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-4.png)
+![](\assets\images\2021\springcloud\xxl-job-4.png)
 
 > 多实例单任务分片
 
 启动多个excutor执行器实例
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-5.png)
+![](\assets\images\2021\springcloud\xxl-job-5.png)
 
 在xxl-job-admin上可以看到多个excutor
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-6.png)
+![](\assets\images\2021\springcloud\xxl-job-6.png)
 
 xxl-job-admin上配置任务
 
@@ -1593,15 +1593,15 @@ public ReturnT<String> multiMachineMultiTasks(String params) throws Exception {
 
 ShardingUtil的源码
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-shardingutil.png)
+![](\assets\images\2021\springcloud\xxl-job-shardingutil.png)
 
 现在我们分别启动3个执行器和xxl-job-admin上配置的任务，看每个执行器上的输出
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-sharding-1.png)
+![](\assets\images\2021\springcloud\xxl-job-sharding-1.png)
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-sharding-2.png)
+![](\assets\images\2021\springcloud\xxl-job-sharding-2.png)
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\springcloud\xxl-job-sharding-3.png)
+![](\assets\images\2021\springcloud\xxl-job-sharding-3.png)
 
 ## 3、Elastic Job分布式任务调度
 
