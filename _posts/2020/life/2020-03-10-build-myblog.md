@@ -440,7 +440,7 @@ html代码段
 
 下面记录于2020-08-06
 
-博客代码放到github上，云服务器放在国内，使用了webhook功能自动化部署，但有时侯也会因为网络的原因，没有通知到国内的服务器进行下拉代码自动部署，考虑到这个问题，尝试把博客代码迁移到gitee上。
+博客代码托管到国外的github上，云服务器放在国内，使用了webhook功能自动化部署，但有时侯也会因为网络的原因，没有通知到国内的服务器进行下拉代码自动部署，考虑到这个问题，尝试把博客代码迁移到国内的gitee上。
 
 ### 同步github仓库
 
@@ -652,4 +652,122 @@ cd /etc/rc.d/init.d
 chkconfig --add autostart.sh
 chkconfig autostart.sh on
 ```
+
+## 5、整合gitalk 评论插件
+
+这个jekyll博客，我使用的评论插件是gitalk，它需要使用github账号登录后对当前文章进行评论，效果如下
+
+![](/assets/images/2020/blog/gitalk-github-login.jpg)
+
+
+
+![](/assets/images/2020/blog/gitalk-github-login-2.jpg)
+
+我们来看一下怎么整合到博客吧
+
+**第一步，登录github注册授权应用**，地址：[https://github.com/settings/applications/new](https://github.com/settings/applications/new)
+
+![](/assets/images/2020/blog/jekyll-theme-gitalk-register.png)
+
+注册完就会有自己的 Client ID 和 Client Secret
+
+![](/assets/images/2020/blog/jekyll-theme-gitalk-client.png)
+
+**第二步，配置config.yml**
+
+在评论页面comments添加，
+
+```sh
+  gitalk: true
+  gitalk_clientID: 'Client ID'
+  gitalk_Secret: 'Client Secret'
+  gitalk_repo: '用户名.github.io'
+  gitalk_owner: '用户名'
+  gitalk_admin: '用户名'
+  distractionFreeMode: true
+```
+
+![](/assets/images/2020/blog/jekyll-theme-gitalk-config.png)
+
+在当前博客代码里我修改了_config.yml配置文件：
+
+![](/assets/images/2020/blog/gitalk-comment-plugin.png)
+
+**第三步，配置post.html**
+
+文件的位置在 `_layouts\post.html`，提交gitalk.css、gitalk.min.js
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+```
+
+在  {% include footer.html %} 里添加
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+```
+
+在 {% if site.comments.disqus %} 后面添加
+
+```html
+{% if site.comments.gitalk %}
+    <script>
+        var gitalk = new Gitalk({
+              clientID: '{{ site.comments.gitalk_clientID }}',
+              clientSecret: '{{ site.comments.gitalk_Secret }}',
+              repo: '{{ site.comments.gitalk_repo }}',
+              owner: '{{ site.comments.gitalk_owner }}',
+              admin: '{{ site.comments.gitalk_admin }}',
+              id: location.pathname,      // Ensure uniqueness and length less than 50{{ page.title }}
+              distractionFreeMode: '{{ site.comments.distractionFreeMode }}'  // Facebook-like distraction free mode
+            })
+
+            gitalk.render('disqus_thread')
+    </script>
+  {% endif %}
+```
+
+根据实际代码放置css、js文件，我在head.html引入了css
+
+![](/assets/images/2020/blog/gitalk-css-import.jpg)
+
+然后在comments.html页面引入js，创建gitalk对象并渲染到div元素
+
+![](/assets/images/2020/blog/gitalk-js-import.jpg)
+
+**第四步，开issues**
+
+登录github，进入托管仓库中的博客项目，点击设置，如下图：
+
+![](/assets/images/2020/blog/jekyll-theme-gitalk-issue.png)
+
+勾选issues
+
+![](/assets/images/2020/blog/jekyll-theme-issue-check.png)
+
+参考原文：[https://www.tinymind.net.cn/articles/6b542e37702d63](https://www.tinymind.net.cn/articles/6b542e37702d63)
+
+使用主题：https://github.com/kaeyleo/jekyll-theme-H2O/
+
+> 整合中踩过的坑
+
+我的博客是一开始是使用github的page服务，后面迁移到了自己的腾讯云服务器上，所以授权博客的首页url要变化一下
+
+![image-20200315023355795](/assets/images/2020/blog/gitalk-ouath-app.png)
+
+2、在使用gitalk的页面里引用官方提供的gitalk js 和 css
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+```
+
+3、你是给自己账号下的仓库创建App还是给组织账号下的仓库创建App,如果是给自己用，直接从Developer settings进去建App,如果是给组织建，就要从Organization settings 进到组织账号下的Developer settings建App。
+
+![image-20200315023841097](/assets/images/2020/blog/gitalk-issue.png)
+
+4、repo仓库下如果一个issues都没有，就手动创建一条issues
+
+
 
