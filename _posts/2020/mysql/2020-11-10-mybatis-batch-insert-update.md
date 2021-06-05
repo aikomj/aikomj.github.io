@@ -76,6 +76,15 @@ update test <set> test=${item.test}+1 </set> where id = ${item.id}
 </update>
 ```
 
+- allowMultiQueries=true的意思是允许sql语句携带分号，实现多语句执行。
+
+```java
+// Mapper DAO接口的方法使用@Param注解指定参数名 
+int batchUpdate(@Param( "list" ) List<CcsBaseUserOpcenter> recordList);
+```
+
+
+
 **oracle批量更新**
 
 ```xml
