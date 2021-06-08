@@ -234,3 +234,134 @@ void insertOrder(){
 ```
 
 ![](/assets/images/2020/icoding/mysql/sharding-jdbc-snowflake-id.jpg)
+
+## 4. Redis实现全局唯一ID
+
+### 原理
+
+因为 Redis 的所有命令是单线程的，所以可以利用 Redis 的原子操作 INCR 和 INCRBY，来生成全局唯一的ID。redis是单线程的，是因为它基于 Reactor 模型开发了网络事件处理器，这个处理器被称为文件事件处理器，它由4部分构成：
+
+- 多个套接字
+- IO多路复用程序
+- 文件事件分派器
+- 事件处理器
+
+<mark>因为文件事件分派器队列的消费是单线程的，所以 Redis 才叫单线程模型。</mark>
+
+所谓的redis多路复用机制，就是指多个网络IO线程复用一个redis线程，这也是redis高效的原因。
+
+好了，说回Redis生成全局唯一ID的事。
+
+> 方式一：StringRedisTemplate
+
+我们的实体类如下：
+
+```java
+public class Activity {
+    private Long id;
+    private String name;
+    private BigDecimal price;
+}
+```
+
+我们定义一个Service类来调用redis生成全局唯一id
+
+```java
+public class IdGeneratorService {
+  @Autowired
+  private StringRedisTemplate stringRedisTemplate;
+
+  private static final String ID_KEY = "id:generator:activity";
+
+  public Long incrementId() {
+    return stringRedisTemplate.opsForValue().increment(ID_KEY);
+  }
+```
+
+调用
+
+```java
+long id = idGeneratorService.incrementId(); // 调用生成
+```
+
+感觉好像有点 low ,但总算生成了全局唯一id
+
+> 方式二：lua脚本
+
+生产环境中，我们的redis都是集群部署的，生成id就要变化一下：集群中每个节点预生成生成ID；然后与redis的已经存在的ID做比较。如果大于，则取节点生成的ID；小于的话，取Redis中最大ID自增。这个时候我们还需要一段 lua 脚本来保证我们实现的ID是唯一的，这才是真正的本质，不然我们实现的ID再高端，不唯一，有个锤子用。
+
+lua核心脚本如下：
+
+```java
+local function get_max_seq()
+    local key = tostring(KEYS[1])
+    local incr_amoutt = tonumber(KEYS[2])
+    local seq = tostring(KEYS[3])
+    local month_in_seconds = 24 * 60 * 60 * 30
+    if (1 == redis.call(\'setnx\', key, seq))
+    then
+        redis.call(\'expire\', key, month_in_seconds)
+        return seq
+    else
+        local prev_seq = redis.call(\'get\', key)
+        if (prev_seq < seq)
+        then
+            redis.call(\'set\', key, seq)
+            return seq
+        else
+        --[[
+            不能直接返回redis.call(\'incr\', key),因为返回的是number浮点数类型,会出现不精确情况。
+            注意: 类似"16081817202494579"数字大小已经快超时lua和reids最大数值,请谨慎的增加seq的位数
+        --]]
+            redis.call(\'incrby\', key, incr_amoutt)
+            return redis.call(\'get\', key)
+        end
+    end
+end
+return get_max_seq()
+```
+
+### Reactor模式
+
+前面我们说Redis 基于 Reactor 模型开发了网络事件处理器，这个网络事件处理器由4部分组成：多个套接字、IO多路复用程序、文件事件分派器、事件处理器。因为文件事件分派器队列的消费是单线程的，所以 Redis 才叫单线程模型。
+
+这个Reactor模式，其实在Netty 中也是有使用的。
+
+> 什么是Reactor模型
+
+Reactor模型，就是一个多路复用I/O模型，主要用于在高并发、高吞吐量的环境中进行I/O处理。而这种多路复用的模型所依赖的永远都是那么几个内容，事件分发器，事件处理器，还有调用的客户端，如下图：
+
+![](\assets\images\2021\springcloud\reactor-1.jpg)
+
+Reactor模型是一个同步的I/O多路复用模型，关于同步IO，可以看之前的文章回顾一下
+
+[java io 体系](http://139.199.13.139/java/2020/10/16/java-io.html)
+
+[选择netty，不使用socket](http://139.199.13.139/java/2021/04/29/about-netty.html)
+
+这种单线程的模型是什么样子的呢，如下图：
+
+![](\assets\images\2021\springcloud\reactor-2.jpg)
+
+这种模型的意思是说：<mark>Redis 单线程指的是网络请求模块使用了一个线程（所以不需考虑并发安全性）</mark>，即一个线程处理所有网络请求，**其他模块仍用了多个线程**。多路复用，指的就是这个，也是为什么redis高效的原因。首先redis的数据是直接从内存读取的，但是我们这里说的快速是针对存储在磁盘上的数据来说的，因为断电后，内存中的数据丢失了，重启redis后，还是需要从磁盘读取的。
+
+我们看一段redis官网说的话：
+
+```sh
+Redis is single threaded. How can I exploit multiple CPU / cores?
+It's not very frequent that CPU becomes your bottleneck with Redis, as usually Redis is either memory or network bound. For instance, using pipelining Redis running on an average Linux system can deliver even 1 million requests per second, so if your application mainly uses O(N) or O(log(N)) commands, it is hardly going to use too much CPU.
+
+However, to maximize CPU usage you can start multiple instances of Redis in the same box and treat them as different servers. At some point a single box may not be enough anyway, so if you want to use multiple CPUs you can start thinking of some way to shard earlier.
+
+You can find more information about using multiple Redis instances in the Partitioning page.
+
+However with Redis 4.0 we started to make Redis more threaded. For now this is limited to deleting objects in the background, and to blocking commands implemented via Redis modules. For future releases, the plan is to make Redis more and more threaded.
+```
+
+翻译过来大致就是说，<mark>当我们使用 Redis 的时候，CPU 成为瓶颈的情况并不常见，通常是内存或网络受限成为瓶颈。</mark>
+
+其实说白了，官网就是说我们 Redis 就是这么的快，并且正是由于在单线程模式的情况下已经很快了，就没有必要在使用多线程了。其实redis 6.0开始，已经支持多线程，只不过是默认关闭的。
+
+使用多线程不见得一定快，原因在于CPU切换的时间损耗：其实 Redis 使用单个 CPU 绑定一个内存，针对内存的处理就是单线程的,而我们使用多个 CPU 模拟出多个线程来，光在多个 CPU 之间的切换，然后再操作 Redis ，实际上就不如直接从内存中拿出来，毕竟耗时在这里摆着。
+
+你认为的 Redis 为什么是单线程的？

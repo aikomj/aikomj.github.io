@@ -139,15 +139,27 @@ public class TimeClientHandler extends ChannelInboundHandlerAdapter {
 }
 ```
 
-启动服务端
+启动服务端，控制台输出：
 
+```sh
+TimeServer Started on 18081...
+```
 
+接着启动客户端，控制要输出：
+
+```sh
+Now is:Mon Apr 19 11:34:21 CST 2021
+```
+
+既然代码写了，那我们是不是就得来分析一下这个Netty在中间都干了什么东西，他的类是什么样子的，都有哪些方法。
 
 ### 源码分析
 
 大家先从代码的源码上开始看起，因为我们在代码中分别使用到了好几个类，而这些类的父类，或者是接口定义者追根到底，也就是这个样子的，我们从IDEA中打开他的类图可以清晰的看到。
 
 ![](\assets\images\2021\javabase\netty-nio-class.jpg)
+
+而在源码中，最重要的就是这个Channel。分析源码，我们要知道源码创作者是在表达什么意思。
 
 All I/O operations are asynchronous.一句话点出核心所有的IO操作都是异步的，这意味着任何I/O调用都将立即返回，但不保证请求的I/O操作已完成。这是在源码的注释上面给出的解释。
 
@@ -164,11 +176,35 @@ Netty对Jdk原生的ServerSocketChannel进行了封装和增强封装成了NioXX
 - 用于数据读写的unsafe内部类
 - 关联上相伴终生的NioEventLoop
 
-JDK NIO的BUG，比如epoll bug，这个BUG会在linux上导致cpu 100%，使得nio server/client不可用，而且在1.7中都没有解决完这个bug,只不过发生频率比较低。
+如果大家想对这个这个类的API有更多的了解，官网给大家送上[Package io.netty.channel](Package io.netty.channel)。
+
+> Channel
+
+关于Channel，其实换成大家容易理解的话的话，那就是**由它负责同对端进行网络通信、注册和数据操作等功能**
+
+```sh
+A Channel can have a parent depending on how it was created. For instance, a SocketChannel, that was accepted by ServerSocketChannel, will return the ServerSocketChannel as its parent on parent().
+
+The semantics of the hierarchical structure depends on the transport implementation where the Channel belongs to. For example, you could write a new Channel implementation that creates the sub-channels that share one socket connection, as BEEP and SSH do.
+```
+
+一个Channel可以有一个父Channel，这取决于它是如何创建的。例如，被ServerSocketChannel接受的SocketChannel将返回ServerSocketChannel作为其parent（）上的父对象。层次结构的语义取决于通道所属的传输实现。
+
+Channel的抽象类AbstractChannel中有一个受保护的构造方法，而AbstractChannel内部有一个pipeline属性，Netty在对Channel进行初始化的时候将该属性初始化为DefaultChannelPipeline的实例。
+
+### 为什么选择Netty
+
+![](\assets\images\2021\springcloud\java-io-1.jpg)
+
+其实在上面的图中，已经能看出来了，不同的I/O模型，效率，使用难度，吞吐量都是非常重要的，所以选择的时候，肯定要慎重选择，而我们为什么不使用Java原生的呢？因为复杂、不好用。
+
+对于Java的NIO的类库和API繁杂使用麻烦，你需要熟练掌握Selectol,ServerSocketChannel,SocketChannel,ByteBuffer 等
+
+<mark>JDK NIO的BUG</mark>，比如epoll bug，这个BUG会在linux上导致cpu 100%，使得nio server/client不可用，而且在1.7中都没有解决完这个bug,只不过发生频率比较低。
 
 而Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Future-Listener机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
 
-
+所以，综上考虑，我们还是选择使用了Netty，而不使用Socket。
 
 示例代码：[https://gitee.com/jacobmj/study-demo/tree/master/jacob-netty-demo](https://gitee.com/jacobmj/study-demo/tree/master/jacob-netty-demo)
 
