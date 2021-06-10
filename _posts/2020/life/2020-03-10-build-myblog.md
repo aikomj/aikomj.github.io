@@ -698,35 +698,11 @@ chkconfig autostart.sh on
 文件的位置在 `_layouts\post.html`，提交gitalk.css、gitalk.min.js
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"></link>
 <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 ```
 
-在  {% include footer.html %} 里添加
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-```
-
-在 {% if site.comments.disqus %} 后面添加
-
-```html
-{% if site.comments.gitalk %}
-    <script>
-        var gitalk = new Gitalk({
-              clientID: '{{ site.comments.gitalk_clientID }}',
-              clientSecret: '{{ site.comments.gitalk_Secret }}',
-              repo: '{{ site.comments.gitalk_repo }}',
-              owner: '{{ site.comments.gitalk_owner }}',
-              admin: '{{ site.comments.gitalk_admin }}',
-              id: location.pathname,      // Ensure uniqueness and length less than 50{{ page.title }}
-              distractionFreeMode: '{{ site.comments.distractionFreeMode }}'  // Facebook-like distraction free mode
-            })
-
-            gitalk.render('disqus_thread')
-    </script>
-  {% endif %}
-```
+![](/assets/images/2020/blog/gitalk-comment-plugin-2.jpg)
 
 根据实际代码放置css、js文件，我在head.html引入了css
 
@@ -759,7 +735,7 @@ chkconfig autostart.sh on
 2、在使用gitalk的页面里引用官方提供的gitalk js 和 css
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"></link>
 <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 ```
 
