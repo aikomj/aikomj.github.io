@@ -4,7 +4,7 @@ title: MariaDB与MySQL数据库的区别是什么
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: 
+excerpt: mariadb是mysql的一个分支版本
 lock: noneed
 ---
 
