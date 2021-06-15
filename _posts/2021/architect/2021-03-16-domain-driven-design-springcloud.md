@@ -3,7 +3,7 @@ layout: post
 title: DDD领域驱动如何将业务拆分成微服务
 category: architect
 tags: [architect]
-keywords: architect,mysql
+keywords: architect,springcloud
 excerpt: DDD分层微服务，项目实战
 lock: noneed
 ---
