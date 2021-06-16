@@ -1,6 +1,6 @@
 ---
 layout: post
-title: spring开发常用注解，你都知道吗
+title: spring常用注解，你都知道吗
 category: springboot
 tags: [springboot]
 keywords: springboot
@@ -893,3 +893,29 @@ spring.jackson.time-zone=GMT+8 # 北京时间
 ```
 
 上面是SpringBoot默认使用的jackson进行时间格式设置，spring-boot-starter-web默认引入jackson依赖
+
+## 11、@RedisOpener
+
+点击源码
+
+```java
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Import({RedisSelecter.class})
+public @interface RedisOpener {
+  // 开启模板类
+  boolean enableTemplate() default true;
+// 开启缓存
+  boolean enableCache() default false;
+// 开启分布式锁
+  boolean enableLock() default false;
+}
+```
+
+可以看到会引入`RedisSelecter`选择器，点击源码
+
+![](\assets\images\2021\redis\redisselector.png)
+
+enableLock=true会开启RedissonConfig的配置，就是配置redisson分布式锁
+
+![](\assets\images\2021\redis\redisson-config.png)
