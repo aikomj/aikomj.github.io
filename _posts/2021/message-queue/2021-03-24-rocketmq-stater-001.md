@@ -123,6 +123,26 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 安装到windows上是为了方便自己测试，生产都安装到linux上，并做集群，后面补充
 
+### 查看消息堆积
+
+点击`主题(Topic)`，找到我们发消息时的Topic，然后点击`CONSUMER管理`选项
+
+![](\assets\images\2021\mq\rocketmq-message-1.jpg)
+
+![](\assets\images\2021\mq\rocketmq-message-2.jpg)
+
+可以看到topic的消息被分片了16个队列，`差值`就是每个队列的堆积消息，`差值之和`就是topic对于当前订阅组未消费的堆积消息
+
+### 查看消息是否已消费
+
+选择topic，搜索消息，选择一条，点击`MESSAGE DETAIL`,往下拉，通过trackType可以看出是否被消费：
+
+- NOT_ONLINE 代表该Consumer没有运行
+- CONSUMED 代表该消息已经被消费
+- NOT_CONSUME_YET 还没被消费
+- UNKNOW_EXCEPTION 报错
+- CONSUMED_BUT_FILTERED 消费了，但是被过滤了，一般是被tag过滤了
+
 ## 3、Springboot集成
 
 原生的方式是导入依赖

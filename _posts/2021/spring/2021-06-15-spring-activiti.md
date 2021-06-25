@@ -8,7 +8,9 @@ excerpt: activity工作流引擎的的相关表act_id_*身份信息表，act_hi_
 lock: noneed
 ---
 
-## 1、什么是Activity工作流引擎
+## 1、Activity项目
+
+### 什么是Activity工作流引擎
 
 什么是工作流，比如说，我们在公司请假，可能要走审批的流程，从你自己到 Leader,然后从 Leader 到部门经理，然后部门经理再到人事部门，这一系列的流程实际上就相当于是一个工作流程，而这个就是一个工作流的最容易理解的模型。官方[https://www.activiti.org/](https://www.activiti.org/)是这样解析的：
 
@@ -17,8 +19,6 @@ lock: noneed
 一个简单请假的流程图
 
 ![](\assets\images\2021\spring\activiti-leave.jpg)
-
-## 2、Activity项目
 
 ### 准备工作
 
@@ -70,7 +70,11 @@ lock: noneed
 | act_ru_task         |      |     运行时任务节点     |
 | act_ru_variable     |      |      流程变量数据      |
 
-我们可以直接使用 Activity 设计好流程图，让它帮我们去生成表。
+我们可以直接使用 Activity 设计好流程图，让它帮我们去生成上面的表。
+
+### 表说明
+
+
 
 ### idea创建activity项目
 
@@ -156,7 +160,7 @@ lock: noneed
 
 3、使用配置文件去生成表。
 
-**activity.cfg.xml**
+在src/main/resources下，**activity.cfg.xml**
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -249,7 +253,19 @@ public void startProcess() {
 
 这样，我们一个简单的activity流程将创建完了。
 
-## 3、开源项目
+### Activity的生命周期
+
+生命周期要经过的步骤如下：
+
+1.流程部署 ---> 2.启动流程实例 --- > 3.执行流程对象(一个流程实例包含多执行对象) ---> 4.完成整个流程
+
+![](\assets\images\2021\spring\activiti-life.jpg)
+
+上图是个请假流程图，我们按照这个来整点代码来安排一下这个工作请假审批流。
+
+
+
+## 2、开源项目
 
 在gitee上有关于spring activiti 不错的开源项目，可以参考一下，地址：
 

@@ -444,6 +444,44 @@ mvn install:install-file -DgroupId=com.aliyun -DartifactId=aliyun-java-vod-uploa
 
 ![](/assets/images/2020/java/maven-local-jar.jpg)
 
+springboot项目pom.xml引入依赖
+
+```xml
+<!-- 将我们自己导入的以来放入，确定它进来了！ -->
+<dependency>
+  <groupId>com.aliyun</groupId>
+  <artifactId>aliyun-java-vod-upload</artifactId>
+  <version>1.4.12</version>
+</dependency>
+```
+
+导入ImpalaJDBC41.jar 到本地maven仓库
+
+![](\assets\images\2020\java\maven-local-jar-2.jpg)
+
+```sh
+mvn install:install-file -DgroupId=com.cloudera.impala -DartifactId=ImpalaJDBC41 -Dversion=2.6.4 -Dpackaging=jar -Dfile=D:\jacob\settlement-center\lib\ImpalaJDBC41.jar
+
+mvn install:install-file -DgroupId=com.cloudera.impala -DartifactId=impala-datasource-api -Dversion=1.0-SNAPSHOT -Dpackaging=jar -Dfile=D:\jacob\settlement-center\lib\impala-data-source-api-1.0-SNAPSHOT.jar
+```
+
+执行完引入成功后，项目pom.xml引入依赖，刷新maven
+
+```xml
+<dependency>
+  <groupId>com.cloudera.impala</groupId>
+  <artifactId>ImpalaJDBC41</artifactId>
+  <version>2.6.4</version>
+</dependency>
+<dependency>
+  <groupId>com.cloudera.impala</groupId>
+  <artifactId>impala-datasource-api</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+注意，使用本地导入依赖，项目只会有一个依赖jar包，而使用maven引入依赖，则相关的依赖包也会引入，这就是区别。
+
 ### 启动多个实例
 
 如何在idea下启动多个实例，请参照这篇文章： https://blog.csdn.net/forezp/article/details/76408139
