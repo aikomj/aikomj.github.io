@@ -218,6 +218,244 @@ Kudu+Impala为实时数据仓库存储提供了良好的解决方案。这套架
 - Impala不支持高并发读写操作，即使Kudu是支持的；
 - Impala和Hive有部分语法不兼容。
 
+### Springboot连接Impala
+
+新建springboot项目，pom.xml导入
+
+```xml
+<dependency>
+  <groupId>com.cloudera.impala</groupId>
+  <artifactId>ImpalaJDBC41</artifactId>
+  <version>2.6.4</version>
+</dependency>
+<dependency>
+  <groupId>com.cloudera.impala</groupId>
+  <artifactId>libthrift</artifactId>
+  <version>0.9.0</version>
+</dependency>
+<dependency>
+  <groupId>com.cloudera.impala</groupId>
+  <artifactId>hive-service</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+ImpalaJDBC41.jar包里面不能带有slfj4.jar日志jar包，否则会有springboot自带日志jar包冲突（相同的类路径下有两个slfj4.jar包）导致启动失败
+
+> 直接连接
+
+```java
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+ 
+public class Impala_jdbc {
+    private static String DRIVER = "com.cloudera.impala.jdbc41.Driver";
+    private static String URL = "jdbc:impala://IP:21050/数据库名";
+ 
+    public static void main(String[] args)
+    {
+        Connection conn = null;
+        ResultSet rs = null;
+        PreparedStatement pst = null;
+ 
+        try {
+            Class.forName(DRIVER);
+            conn = DriverManager.getConnection(URL);
+            pst = conn.prepareStatement("select * from 数据库名.表名 limit 3");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                //rs.get类型(字段列)：字段列从1开始算起
+                System.out.println(rs.getString(1) + "," + rs.getObject(2) + "," + rs.getObject(3));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.close();
+                pst.close();
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+> 使用连接池
+
+pom.xml
+
+```xml
+<dependency>
+  <groupId>com.alibaba</groupId>
+  <artifactId>druid</artifactId>
+  <version>1.1.16</version>
+</dependency>
+<dependency>
+  <groupId>commons-dbutils</groupId>
+  <artifactId>commons-dbutils</artifactId>
+  <version>1.7</version>
+</dependency>
+<dependency>
+  <groupId>com.cloudera</groupId>
+  <artifactId>ImpalaJDBC41</artifactId>
+  <version>2.6.3</version>
+</dependency>
+```
+
+新建配置文件\src\main\resources\Impaladruid.properties
+
+```properties
+driverClassName=com.cloudera.impala.jdbc41.Driver
+url=jdbc:impala://IP:21050/数据库名
+ 
+initialSize=10
+maxActive=100
+maxWait=60000
+ 
+timeBetweenEvictionRunsMillis=60000
+minEvictableIdleTimeMillis=300000
+validationQuery=SELECT 1
+testWhileIdle=true
+testOnBorrow=false
+testOnReturn=false
+poolPreparedStatements=false
+maxPoolPreparedStatementPerConnectionSize=200
+```
+
+工具类
+
+```java
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger; 
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
+ 
+public class MysqlUtil
+{
+    private static DataSource dataSource; //Druid 连接池
+    private static Connection conn; //数据库连接对象
+    private static Logger logger = LogManager.getLogger(MysqlUtil.class);
+    private static InputStream in = null;
+    private final static MysqlUtil mysqlUtil = new MysqlUtil();
+    static
+    {
+        //使用druid.properties属性文件的配置方式 设置参数，文件名称没有规定但是属性文件中的key要一定的
+        // 从druid.properties属性文件中获取key参数对应的value配置信息
+        Properties properties = new Properties();
+        try
+        {
+            //resources目录下的配置文件实际都会被编译进到 \target\classes 目录下
+            in = mysqlUtil.getClass().getResourceAsStream("/Impaladruid.properties");
+            properties.load(in);
+            in.close();
+        }
+        catch (IOException e)
+        {
+            logger.error("ERROR:",e);//错误异常完整写入日志文件
+//            e.printStackTrace();//窗口也打印错误信息
+        }
+        // 创建 Druid 连接池
+        try {
+            dataSource = DruidDataSourceFactory.createDataSource(properties);
+        } catch (Exception e) {
+            logger.error("ERROR:",e);//错误异常完整写入日志文件
+//            e.printStackTrace();//窗口也打印错误信息
+        }
+ 
+        //从 连接池中获取一个 数据库连接对象
+//        Connection  数据库连接对象conn  =  dataSource.getConnection();
+        //调用数据库连接对象的close()方法，把连接对象归还给连接池，并不是关闭连接
+//        conn.close();
+    }
+ 
+    //获得连接池
+    public static DataSource getDataSource()
+    {
+        return dataSource;
+    }
+ 
+    //从 连接池中获取一个 数据库连接对象
+    public static Connection getConnection()
+    {
+        //从 连接池中获取一个 数据库连接对象
+        try {
+//            System.out.println("从 连接池中获取一个 数据库连接对象");
+            conn  =  dataSource.getConnection();
+        } catch (Exception e) {
+//            e.printStackTrace();//窗口也打印错误信息
+            logger.error("ERROR:",e);//错误异常完整写入日志文件
+        }
+        return conn;
+    }
+ 
+    /*
+        new QueryRunner(MysqlUtil.getDataSource())
+                QueryRunner中传入连接池，交由QueryRunner自动操作连接池中的连接。提供了自定事务处理、自动释放资源等操作，无需再手动。
+                所以无需手动调用conn.close()，交由QueryRunner自动管理。
+    */
+    //调用数据库连接对象的close()方法，把指定的连接对象归还给连接池，并不是关闭连接
+    public static void connectionClose(Connection conn)
+    {
+        //调用数据库连接对象的close()方法，把连接对象归还给连接池，并不是关闭连接
+        try {
+            conn.close();
+        } catch (SQLException e) {
+//            e.printStackTrace();//窗口也打印错误信息
+            logger.error("ERROR:",e);//错误异常完整写入日志文件
+        }
+    }
+}
+```
+
+测试
+
+```java
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import java.sql.*;
+import java.util.List;
+ 
+public class ImpalaTest{
+     public static void main(String[] args){
+        QueryRunner queryRunner = new QueryRunner(MysqlUtil.getDataSource());
+        List<Object[]> arrayListResult = null;
+        String sql =  "";
+        try
+        {
+            arrayListResult = queryRunner.query(sql, new ArrayListHandler());
+        } 
+        catch (SQLException e) 
+        {
+            e.printStackTrace();
+        }
+        for (Object[] o : arrayListResult1)
+        {
+            System.out.println(o[0].toString());
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+参考：[https://blog.csdn.net/zimiao552147572/article/details/90234974](https://blog.csdn.net/zimiao552147572/article/details/90234974)
+
 ## 4、总结
 
 1) Impala支持高并发读写吗？

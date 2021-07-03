@@ -30,7 +30,7 @@ if (转介绍用户 || 付费用户 || 内推用户) {
 }
 ```
 
-按照业务语义，返回false说明该试用用户没有权限，都是基于and条件或者or条件判断，如果有一个不匹配的话，其实咱们后续的流程是不用执行的，就是需要具备一个短路的功能。
+按照业务语义，返回false说明该试用用户没有权限，都是基于and条件或者or条件判断，如果有一个不匹配的，后续的流程就不用执行，就是需要具备一个短路的功能。
 
 ## 2、规则执行器
 
@@ -48,7 +48,13 @@ public class RuleDto {
   private int age;
 }
 
-// 规则抽象
+// 常量定义
+public class RuleConstant {
+  public static final String MATCH_ADDRESS_START= "北京";
+  public static final String MATCH_NATIONALITY_START= "中国";
+}
+
+// 规则接口
 public interface BaseRule {
   boolean execute(RuleDto dto);
 }
@@ -83,7 +89,6 @@ public class AddressRule extends AbstractRule {
 
 // 具体规则- 例子2
 public class NationalityRule extends AbstractRule {
-
   @Override
   protected <T> T convert(RuleDto dto) {
     NationalityRuleDto nationalityRuleDto = new NationalityRuleDto();
@@ -102,12 +107,6 @@ public class NationalityRule extends AbstractRule {
     }
     return false;
   }
-}
-
-// 常量定义
-public class RuleConstant {
-  public static final String MATCH_ADDRESS_START= "北京";
-  public static final String MATCH_NATIONALITY_START= "中国";
 }
 ```
 
@@ -160,8 +159,7 @@ public class RuleService {
 
     private boolean and(RuleDto dto, List<BaseRule> ruleList) {
         for (BaseRule rule : ruleList) {
-            boolean execute = rule.execute(dto);
-            if (!execute) {
+            if (! rule.execute(dto)) {
                 // and 关系匹配失败一次，返回 false
                 return false;
             }
@@ -172,8 +170,7 @@ public class RuleService {
 
     private boolean or(RuleDto dto, List<BaseRule> ruleList) {
         for (BaseRule rule : ruleList) {
-            boolean execute = rule.execute(dto);
-            if (execute) {
+            if ( rule.execute(dto)) {
                 // or 关系匹配到一个就返回 true
                 return true;
             }
@@ -188,7 +185,6 @@ public class RuleService {
 
 ```java
 public class RuleServiceTest {
-
     @org.junit.Test
     public void execute() {
         //规则执行器
@@ -230,3 +226,5 @@ public class RuleServiceTest {
 缺点
 
 - 上下 rule 有数据依赖性，如果直接修改公共传输对象 dto 这样设计不是很合理，建议提前构建数据。
+
+是否可以用责任链模式实现，责任链更像是and条件规则的全部校验。
