@@ -145,7 +145,7 @@ public class SpringSourcesApplication {
 
 启动运行：
 
-![](/aikomj.github.io/assets/images/2020/annotation/configuration-2.jpg)
+![](/assets/images/2020/annotation/configuration-2.jpg)
 
  把proxyBeanMethods改为false
 
@@ -157,6 +157,6 @@ public class ICodingConfig {
 
 再次启动运行
 
-![](/aikomj.github.io/assets/images/2020/annotation/configuration-3.jpg)
+![](/assets/images/2020/annotation/configuration-3.jpg)
 
 现在是false 也就是说tomcat里面的组件jackdog与 spring容器中的组件jackdog不是同一个对象，也就是说堆中存在了两个jackdog对象
