@@ -24,6 +24,8 @@ Exception 是指程序中可以遇见性的异常，如RuntimeException,IOExcept
 
 Error与Exception是平级的，共同父类是Throwable
 
+![](\assets\images\2021\javabase\throwable.jpg)
+
 ## 2、抽象类
 
 在面向对象的概念中，所有的对象都是通过类来描绘的。自己好少用抽象类(abtract class)，用接口多，现在算是明白抽象类的使用场景了，抽象类里的抽象方法与接口里的方法一样是没有方法体的，它的具体实现由它的子类确定，跟普通类一样，抽象类也拥有成员变量、构造方法、成员方法，但是它不能直接实例化对象，必须通过子类继承抽象类，实例化子类，那么抽象类里的成员变量、成员方法被子类继承了，才可以被调用。Java里类是单继承的extend，但是可以实现implement多个接口 (interface)
