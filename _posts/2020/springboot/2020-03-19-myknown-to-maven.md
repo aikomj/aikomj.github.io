@@ -4,7 +4,7 @@ title: 对maven的笔记
 category: springboot
 tags: [java]
 keywords: maven
-excerpt: 记录maven引入依赖包时不懂的点
+excerpt: 记录maven 相关的知识点
 lock: noneed
 ---
 
@@ -88,6 +88,12 @@ scope的默认值是compile,表示当前依赖参与项目的编译、测试、�
 - 第一段`<resource>`配置声明：在src/main/resources目录下，仅jdbc.properties和mail.properties两个文件是资源文件，然后，这两个文件需要被过滤。
 - 第二段`<resource>`配置声明：在src/main/resources目录下，除jdbc.properties和mail.properties两个文件外的其他文件也是资源文件，但是它们不会被过滤。
 
+### idea的maven依赖包关系图
+
+查看springboot项目的maven依赖包关系图
+
+![](\assets\images\2021\springcloud\maven-depend-relation.jpg)
+
 ## 2、构建命令
 
 ### 打包
@@ -169,6 +175,53 @@ mvn clean install -rf ../dailylog-common
 # dailylog-common成功安装到本地库
 # dailylog-web成功安装到本地库
 ```
+
+` mvn clean deploy -B -e -U -Dmaven.repo.local=xxx`
+
+- 使用deploy而不是install： 构建的SNAPSHOT输出应当被自动部署到私有Maven仓库供他人使用，
+
+- 使用-U参数： 该参数能强制让Maven检查所有SNAPSHOT依赖更新，确保集成基于最新的状态，如果没有该参数，Maven默认以天为单位检查更新，而持续集成的频率应该比这高很多。
+- 使用-e参数：如果构建出现异常，该参数能让Maven打印完整的stack trace，以方便分析错误原因
+- 使用-Dmaven.repo.local参数：如果持续集成服务器有很多任务，每个任务都会使用本地仓库，下载依赖至本地仓库，为了避免这种多线程使用本地仓库可能会引起的冲突，可以使用-Dmaven.repo.local=/home/juven/ci/foo-repo/这样的参数为每个任务分配本地仓库。
+- 使用-B参数：该参数表示让Maven使用批处理模式构建项目，能够避免一些需要人工参与交互而造成的挂起状态。
+- 使用-X参数：开启DEBUG模式。
+
+### 打包跳过test
+
+这里有三种方法
+
+- 第一种，在 pom 中添加插件的形式
+
+  ```xml
+  <build>
+    <plugins>                    
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  ```
+
+- 第二种，通过idea 工具实现，点击右上角 有点像闪电样子的图标，看到 test 被划掉了。然后点击maven 打包的功能就可以跳过测试了。
+
+  ![](\assets\images\2021\springcloud\maven-skip-test.jpg)
+
+- 第三种，spring-boot-maven-plugin插件已经集成了maven-surefire-plugin插件
+   只需要在pom.xml里增加
+   <skipTests>true</skipTests>
+   即可。
+
+  ```xml
+  <properties>
+      <skipTests>true</skipTests>
+  </properties>
+  ```
+
+  
 
 ## 3、常用依赖包
 

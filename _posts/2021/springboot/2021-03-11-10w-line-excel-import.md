@@ -235,9 +235,7 @@ public class InsertConsumer {
         if (list == null || list.size() < 1) {
             return;
         }
-
         List<List<T>> streamList = new ArrayList<>();
-
         for (int i = 0; i < list.size(); i += SIZE) {
             int j = Math.min((i + SIZE), list.size());
             List<T> subList = list.subList(i, j);

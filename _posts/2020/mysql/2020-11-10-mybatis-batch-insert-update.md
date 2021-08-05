@@ -10,11 +10,11 @@ lock: noneed
 
 ## 前言
 
-使用MybatisPlus后，批量insert 和update，它都是有封装的了，但是有写旧的系统是使用mybatis的，就有必要整理一下批量insert 和update的 mapper.xml 的sql语句写法，下面是转摘别人的文章
+使用MybatisPlus后，批量insert 和update，它都是有封装的了，但是有写旧的系统是使用mybatis的，就有必要整理一下批量insert 和update的 mapper.xml 的sql语句写法
 
-### 批量插入
+## 批量插入
 
-**mysql批量插入**
+### mysql批量插入
 
 ```xml
 <insert id="addRoleModule" parameterType="java.util.List">
@@ -26,7 +26,7 @@ lock: noneed
 </insert>
 ```
 
-**oracle批量插入**
+### oracle批量插入
 
 ```xml
 <insert id="addRoleModule" parameterType="java.util.List">
@@ -37,7 +37,7 @@ lock: noneed
 </insert>
 ```
 
-测试这插入指定序列，参考配置如下：
+测试插入指定序列：
 
 ```xml
 <foreach collection="list" item="item" index="index" separator=" UNION ALL ">  
@@ -62,17 +62,25 @@ select 2,'77' from dual) a
 </foreach>
 ```
 
-### 批量更新
+## 批量更新
 
-**mysql批量更新**
+### mysql批量更新
 
 mysql数据库采用一下写法即可执行，但是数据库连接必须配置：&allowMultiQueries=true，如：jdbc:mysql://blog.yoodb.com:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&allowMultiQueries=true
 
 ```xml
 <update id="batchUpdate" parameterType="java.util.List">
   <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-update test <set> test=${item.test}+1 </set> where id = ${item.id}
+		update test <set> test=${item.test}+1 </set> where id = ${item.id}
  </foreach>
+</update>
+
+<update id="updateEmsBatch" parameterType="java.util.List">
+  <foreach collection="list" item="item" open="" close="" separator=";">
+    update smc_so_trx_header 
+    <set>ems_code=#{item.emsCode},ems_company=#{item.emsCompany} </set>
+    where trx_header_code = #{item.trxHeaderCode}
+  </foreach>
 </update>
 ```
 
@@ -85,7 +93,7 @@ int batchUpdate(@Param( "list" ) List<CcsBaseUserOpcenter> recordList);
 
 
 
-**oracle批量更新**
+### oracle批量更新
 
 ```xml
 <update id="batchUpdate"  parameterType="java.util.List">

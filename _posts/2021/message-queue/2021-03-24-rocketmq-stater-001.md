@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: MessageQueue
 tags: [MessageQueue]
 keywords: MessageQueue
-excerpt: rocketMQ的架构模型，topic与queue，安装部署，springboot集成rocketMQ简单发送接收消息
+excerpt: rocketMQ的架构模型，topic由多个queue组成，使用netty框架实现网络通信，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息
 lock: noneed
 ---
 
@@ -81,7 +81,7 @@ RocketMQ提供两种类型，都是客户端主动去拉取消息的，区别如
 
   1个acceptor线程，N1个IO线程，N2个线程用来做Shake-hand,SSL验证,编解码;M个线程用来做业务处理。这样的好处将编解码，和SSL验证等一些可能耗时的操作放在了一个单独的线程池，不会占据我们业务线程和IO线程
 
-### 与kafka比较吞吐量
+### 与Kafka比较吞吐量
 
 RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性能方面也有很大的差别，这是16年阿里中间件团队对RocketMQ和Kafka不同数量Topic下做的性能测试:
 
@@ -94,7 +94,7 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 1、为什么kafka的吞吐量会那么低？
 
-因为kafka一个topic下面的所有消息都是以partition的方式分布式的存储在多个节点上。同时在kafka的机器上，每个Partition其实都会对应一个日志目录，在目录下面会对应多个日志分段。所以如果Topic很多的时候Kafka虽然写文件是顺序写，但实际上文件过多，会造成磁盘IO竞争非常激烈
+因为kafka一个topic下面的所有消息都是以partition的方式分布式的存储在多个节点上。同时在kafka的机器上，每个Partition其实都会对应一个日志目录，在目录下面会对应多个日志分段。所以如果Topic很多的时候Kafka虽然写文件是顺序写，但<mark>实际上文件过多，会造成磁盘IO竞争非常激烈</mark>
 
 2、RocketMQ为什么在多Topic的情况下，依然还能很好的保持较多的吞吐量呢?
 
@@ -106,15 +106,21 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 - config：保存一些配置信息，包括一些Group，Topic以及Consumer消费offset等信息。
 
-- consumeQueue:消息消费队列，引入的目的主要是提高消息消费的性能，由于RocketMQ是基于主题topic的订阅模式，消息消费是针对主题进行的，如果要遍历commitlog文件中根据topic检索消息是非常低效的。Consumer根据ConsumeQueue来查找待消费的消息。其中，ConsumeQueue(逻辑消费队列)作为消费消息的索引，保存了指定Topic下的队列消息在CommitLog中的起始物理偏移量offset，消息大小size和消息Tag的HashCode值。
+- consumeQueue:消息消费队列，提高消息消费的性能，RocketMQ是基于主题topic的订阅模式，消息消费是针对主题进行的，如果要遍历commitlog文件中根据topic检索消息是非常低效的。Consumer根据ConsumeQueue来查找待消费的消息。其中，ConsumeQueue(逻辑消费队列)作为消费消息的索引，保存了指定Topic下的队列消息在CommitLog中的起始物理偏移量offset，消息大小size和消息Tag的HashCode值。
 
-  consumequeue文件可以看成是基于topic的commitlog索引文件(如表建立索引一样，加快查询，思想是一样的)，consumequeue文件夹的组织方式是topic/queue/file三层组织结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个IndexFile文件大小约为400M，一个IndexFile可以保存 2000W个索引。IndexFile的底层存储设计是在文件系统中实现HashMap结构，所以RocketMQ的索引文件其底层实现是hash索引。
+  consumequeue文件可以看成是基于topic的commitlog索引文件(如表建立索引一样，加快查询，思想是一样的)，consumequeue文件夹的组织方式是topic/queue/file三层组织结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个IndexFile文件大小约为400M，一个IndexFile可以保存 2000W个索引。IndexFile的底层存储设计是在文件系统中实现HashMap结构，所以RocketMQ的索引文件底层实现是hash索引。
   
 
-### 总结
+**总结**
 
-1. RocketMQ的topic和队列是什么样的，和Kafka的分区有什么不同？
+1. RocketMQ的Topic和队列是什么样的，和Kafka的分区有什么不同？
+
+   topic上的消息hash到多个有序对列上，kafka的topic分片到不同分区上，每个分区会分为Leader和Follower分区，follower分区只是做备份使用，体现HA。
+
 2. RocketMQ网络模型是什么样的，和Kafka对比如何？
+
+   netty网络模型
+
 3. RocketMQ消息存储模型是什么样的，如何保证高可靠的存储，和Kafka对比如何？
 
 
@@ -143,9 +149,35 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 - UNKNOW_EXCEPTION 报错
 - CONSUMED_BUT_FILTERED 消费了，但是被过滤了，一般是被tag过滤了
 
-## 3、Springboot集成
+## 3、RocketMQ的特点和优势
 
-原生的方式是导入依赖
+### 削峰填谷
+
+削峰填谷（主要解决诸如秒杀、抢红包、企业开门红等大型活动时皆会带来较高的流量脉冲，或因没做相应的保护而导致系统超负荷甚至崩溃，或因限制太过导致请求大量失败而影响用户体验，海量消息堆积能力强）
+
+![](\assets\images\2021\springcloud\rocketmq-feature.jpg)
+
+### 异步解耦
+
+异步解耦（高可用松耦合架构设计，对高依赖的项目之间进行解耦，当下游系统出现宕机，不会影响上游系统的正常运行，或者雪崩）
+
+![](\assets\images\2021\springcloud\rocketmq-feature-2.jpg)
+
+### 顺序消息
+
+顺序消息（顺序消息即保证消息的先进先出，比如证券交易过程时间优先原则，交易系统中的订单创建、支付、退款等流程，航班中的旅客登机消息处理等）
+
+![](\assets\images\2021\springcloud\rocketmq-feature-3.jpg)
+
+### 分布式事务消息
+
+分布式事务消息（确保数据的最终一致性，大量引入 MQ 的分布式事务，既可以实现系统之间的解耦，又可以保证最终的数据一致性，减少系统间的交互）
+
+![](\assets\images\2021\springcloud\rocketmq-feature-4.jpg)
+
+## 4、Springboot集成
+
+使用原生方式导入依赖
 
 ```xml
 <dependency>
@@ -155,7 +187,7 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 </dependency>
 ```
 
-使用start的方式是导入依赖，使用简化xxxTemplate模板类调用rocketmq client
+使用start的方式导入依赖，使用简化xxxTemplate模板类调用rocketmq client，下面例子代码是使用该方式
 
 ```xml
 <dependency>
@@ -208,7 +240,7 @@ public class OrderProducer{
      * 发送异步消息 在SendCallback中可处理相关成功失败时的逻辑
      */
   public void sendAsyncMsg(String msgBody){
-    rocketMQTemplate.asyncSend("queue_test_topic",MessageBuilder.withPayload(msgBody).build(), new SendCallback() {
+   rocketMQTemplate.asyncSend("queue_test_topic",MessageBuilder.withPayload(msgBody).build(), new SendCallback() {
       @Override
       public void onSuccess(SendResult sendResult) {
         // 处理消息发送成功逻辑
@@ -294,10 +326,88 @@ idea 启动两个消费者实例，发现是对半接收消息的，说明有负
 
 ![](\assets\images\2021\springcloud\rocketmq-consumer-test2.jpg)
 
+参考：
 
-
-参考：[https://blog.csdn.net/qq_38306688/article/details/107716046](https://blog.csdn.net/qq_38306688/article/details/107716046)
+[https://blog.csdn.net/qq_38306688/article/details/107716046](https://blog.csdn.net/qq_38306688/article/details/107716046)
 
 [https://blog.csdn.net/qq_38366063/article/details/93387680](https://blog.csdn.net/qq_38366063/article/details/93387680)
 
-https://blog.csdn.net/zxl646801924/article/details/105659481
+[https://blog.csdn.net/zxl646801924/article/details/105659481](https://blog.csdn.net/zxl646801924/article/details/105659481)
+
+### 事务消息方案
+
+RocketMQ 事务消息设计则主要是为了解决 Producer 端的消息发送与本地事务执行的原子性问题，目的是实现与下游消息消费的最终数据一致性。
+
+在RocketMQ 4.3后实现了完整的事务消息，实际上其实是对本地消息表的一个封装，将本地消息表移动到了MQ内部，解决 Producer 端的消息发送与本地事务执行的原子性问题。
+
+![](\assets\images\2021\springcloud\rocketmq-transaction-message.jpg)
+
+执行流程如下：
+
+本例子中Producer是用户服务，负责新增用户，Consumer是积分服务，负责新增积分。
+
+1、Producer 发送事务消息
+
+Producer 发送事务消息至MQ Server，MQ Server将消息状态标记为Prepared（预备状态），注意此时这条消息Consumer是无法消费到的。本例中，Producer 发送 ”增加积分消息“ 到MQ Server。
+
+2、MQ Server回应消息发送成功
+
+MQ Server接收到Producer 发送的消息则回应发送成功。
+
+3、Producer 执行本地事务
+
+Producer 端执行业务代码逻辑，通过本地数据库事务控制。
+
+4、消息投递
+
+若Producer 本地事务执行成功则自动向MQ Server发送commit消息，MQ Server接收到commit消息后，将”增加积分消息“ 状态标记为可消费，此时Consumer可正常消费消息
+
+若Producer 本地事务执行失败则自动向MQ Server发送rollback消息，MQ Server接收到rollback消息后，将删除”增加积分消息“ 。
+
+Consumer（积分服务）消费消息，消费成功则向MQ回应ack，否则将重复接收消息。这里ack默认自动回应，即程序执行正常则自动回应ack。
+
+5、事务回查
+
+如果Producer端执行本地事务过程中挂掉或超时，MQ Server将会不停的询问同组的其他Producer来获取事务执行状态，这个过程叫<mark>事务回查</mark>。MQ Server会根据事务回查结果来决定是否投递消息。
+
+以上主流程已由RocketMQ实现，对用户来说，只需分别实现本地事务执行以及本地事务回查方法，RoacketMQ提供RocketMQLocalTransactionListener接口，如下：
+
+```java
+public interface RocketMQLocalTransactionListener {
+  /*
+   - 发送prepare消息成功此方法被回调，该方法用于执行本地事务
+   - @param msg 回传的消息，利用transactionId即可获取到该消息的唯一Id
+   - @param arg 调用send方法时传递的参数，当send时候若有额外的参数可以传递到send方法中，这里能获取到
+   - @return 返回事务状态，COMMIT：提交  ROLLBACK：回滚  UNKNOW：回调
+     */
+  RocketMQLocalTransactionState executeLocalTransaction(Message msg, Object arg);
+  
+  /*
+   - @param msg 通过获取transactionId来判断这条消息的本地事务执行状态
+   - @return 返回事务状态，COMMIT：提交  ROLLBACK：回滚  UNKNOW：回调
+     */
+  RocketMQLocalTransactionState checkLocalTransaction(Message msg);
+}
+```
+
+<mark>发送事务消息的API</mark>
+
+```java
+TransactionMQProducer producer = new TransactionMQProducer("ProducerGroup");
+producer.setNamesrvAddr("127.0.0.1:9876");
+producer.start();
+//设置TransactionListener实现
+producer.setTransactionListener(transactionListener）；
+//发送事务消息
+SendResult sendResult = producer.sendMessageInTransaction(msg, null);
+```
+
+> 代码示例
+
+
+
+
+
+参考：
+
+[https://blog.csdn.net/weixin_44062339/article/details/100180487](https://blog.csdn.net/weixin_44062339/article/details/100180487)

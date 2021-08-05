@@ -188,13 +188,8 @@ public class ConsumerController {
 ```
 重启工程，在浏览器上访问http://localhost:8763/hi-feign，可以在浏览器上展示正确的响应，这时nacos-consumer调用nacos-provider服务成功。
 
-
-
 **源码下载**
 
 https://github.com/forezp/SpringCloudLearning/tree/master/springcloud-alibaba/nacos-discovery
 
 
-
-> 本文为转载文章  
-> 原文链接：https://www.fangzhipeng.com/springcloud/2019/05/30/sc-nacos-discovery.html

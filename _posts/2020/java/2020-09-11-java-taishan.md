@@ -346,6 +346,10 @@ lock: noneed
 |        `@ToString`         | 重写该类的`toString()`方法                                   |
     |    `@EqualsAndHashCode`    | 重写该类的`equals()`和`hashCode()`方法                       |
     |          `@Data`           | 等价于上面的`@Setter`、`@Getter`、`@RequiredArgsConstructor`、`@ToString`、`@EqualsAndHashCode` |
+    |   @Accessors(chain=true)   | 让类支持链式编程                                             |
+    |    @AllArgsConstructor     | 全参的构造方法                                               |
+    
+    
     
     使用lombok插件的@Data注解会包含toString方法，使用IDEA对class文件反编译得到最终的类，注意使用@Data的POJO类有继承父类的话，要加上
     
@@ -377,11 +381,11 @@ lock: noneed
     
       t1.setOldName("123");
       t2.setOldName("123");
-    
+
       String name = "1";
     t1.setName(name);
       t2.setName(name);
-
+    
       int age = 1;
       t1.setAge(age);
       t2.setAge(age);
@@ -395,9 +399,51 @@ lock: noneed
     
     ![](\assets\images\2020\java\lombok-data-equal-tostring.jpg)
     
+11. <font color="#FFB800">【推荐】</font> 使用静态构造方法
+
+    静态构造方法的语义和简化程度真的高于直接去 new 一个对象。比如 new 一个 List 对象，过去的使用是这样的：
+
+    ```java
+    List<String> list = new ArrayList<>();
+    ```
+
+    引入guava依赖包后的创建方式：
+
+    ```java
+    List<String> list = Lists.newArrayList();
+    ```
+
+    Lists 命名是一种约定(俗话说：约定优于配置)，它是指 Lists 是 List 这个类的一个工具类，那么使用 List 的工具类去产生 List，这样的语义是不是要比直接 new 一个子类来的更直接一些呢，答案是肯定的，再比如如果有一个工具类叫做 Maps，那你是否想到了创建 Map 的方法呢：
+
+    ```java
+    HashMap<String, String> objectObjectHashMap = Maps.newHashMap();
+    ```
+
+    使用Lombok的`@RequiredArgsConstructor` 和 `@NonNull`注解创建必传参数的静态构造方法
+
+    ```java
+    @Accessors(chain = true)
+    @Setter
+    @Getter
+    @RequiredArgsConstructor(staticName = "ofName")
+    public class Student {
+        @NonNull 
+      	private String name;
+        private int age;
+    }
+    ```
+
+    使用
+
+    ```java
+    Student student = Student.ofName("jacob").setAge(33);
+    ```
+
+    这样来写代码，真的很简洁，并且可读性很强。
+
     
-    
-11. <font color="#FFB800">【推荐】</font> 使用索引访问用String的split方法得到的数组时，需做最后一个分隔符后有无内容
+
+12. <font color="#FFB800">【推荐】</font> 使用索引访问用String的split方法得到的数组时，需做最后一个分隔符后有无内容
     的检查，否则会有抛IndexOutOfBoundsException的风险。 
 
     ```java
@@ -408,7 +454,7 @@ lock: noneed
     }
     ```
 
-12. <font color="#FFB800">【推荐】</font>类内方法定义的顺序依次是：公有方法或保护方法 > 私有方法 > getter / setter 
+13. <font color="#FFB800">【推荐】</font>类内方法定义的顺序依次是：公有方法或保护方法 > 私有方法 > getter / setter 
     方法。 
 
     ```sh
@@ -417,7 +463,7 @@ lock: noneed
     的信息价值较低，所有Service和DAO的getter/setter方法放在类体最后。
     ```
 
-13. <font color="#FFB800">【推荐】</font>循环体内，字符串的连接方式，使用StringBuilder的append方法进行扩展，避免造成内存资源的浪费。
+14. <font color="#FFB800">【推荐】</font>循环体内，字符串的连接方式，使用StringBuilder的append方法进行扩展，避免造成内存资源的浪费。
 
     ```java
     /*说明：下例中，反编译出的字节码文件显示每次循环都会new出一个StringBuilder对象，然后进行append
@@ -429,11 +475,11 @@ lock: noneed
     } 
     ```
 
-14. <font color="#FFB800">【推荐】</font>慎用Object的clone方法来拷贝对象。 
+15. <font color="#FFB800">【推荐】</font>慎用Object的clone方法来拷贝对象。 
     说明：对象clone方法默认是浅拷贝（只拷贝基本类型的属性），若想实现深拷贝需覆写clone方法实现域对象的深度遍历式拷贝。 
 
-15. <font color="#FFB800">【推荐】</font>类成员与方法访问控制从严： 
-    
+16. <font color="#FFB800">【推荐】</font>类成员与方法访问控制从严： 
+
     - 如果不允许外部直接通过new来创建对象，那么构造方法必须是private。 
     - 工具类不允许有public或default构造方法。 
     - 类非static成员变量并且与子类共享，必须是protected。 

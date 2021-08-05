@@ -512,9 +512,20 @@ mvn install:install-file -DgroupId=com.cloudera.impala -DartifactId=impala-datas
 
 ![](\assets\images\tools\idea-start-multi-application.jpg)
 
+### 查看Endpoints
+
+在这里，我们可以看到spring容器里的beans，mapping控制层路由
+
+![](\assets\images\tools\idea-endpoints.jpg)
+
 
 
 更多idea使用技巧请参考官方文档
 
 https://github.com/judasn/IntelliJ-IDEA-Tutorial
 
+### maven依赖关系图
+
+查看springboot项目的maven依赖包关系图
+
+![](\assets\images\2021\springcloud\maven-depend-relation.jpg)
