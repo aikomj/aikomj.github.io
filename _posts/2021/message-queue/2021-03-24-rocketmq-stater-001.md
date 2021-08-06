@@ -306,6 +306,7 @@ public class OrderSender {
 > 接收方
 
 ```java
+// selectorExpression 就是发送端的tag,默认是*,即接受所有tag的消息
 @Service
 @RocketMQMessageListener(topic = "settlement-test",selectorExpression = "test",consumerGroup = "settlement-ar-test")
 public class OrderReceiver implements RocketMQListener<Map> {
@@ -398,13 +399,289 @@ producer.setNamesrvAddr("127.0.0.1:9876");
 producer.start();
 //设置TransactionListener实现
 producer.setTransactionListener(transactionListener）；
-//发送事务消息
+//发送事务消息，
 SendResult sendResult = producer.sendMessageInTransaction(msg, null);
 ```
 
 > 代码示例
 
+场景说明，两个账户在分别在不同的银行(张三在bank1、李四在bank2)，bank1、bank2是两个微服务。交易过程是，张三给李四转账指定金额。
 
+![](\assets\images\2021\mq\rocketmq-transaction-demo-1.jpg)
+
+张三扣减金额与给bank2发转账消息，两个操作必须是一个原子性事务
+
+使用MQ消息中间件解决这个场景的技术架构如下图：
+
+![](\assets\images\2021\mq\rocketmq-transaction-demo-2.jpg)
+
+交互流程如下：
+
+1、Bank1向MQ Server发送转账消息
+
+2、Bank1执行本地事务，扣减金额
+
+3、Bank2接收消息，执行本地事务，添加金额
+
+MQ环境已经搭建，下面创建数据库
+
+创建bank1库，并导入以下表结构和数据(包含张三账户)
+
+```sql
+CREATE DATABASE `bank1` CHARACTER SET 'utf8' COLLATE 'utf8_general_ci';
+
+DROP TABLE IF EXISTS `account_info`;
+CREATE TABLE `account_info`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `account_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '户主姓名',
+  `account_no` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '银行卡号',
+  `account_password` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '帐户密码',
+  `account_balance` double NULL DEFAULT NULL COMMENT '帐户余额',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+INSERT INTO `account_info` VALUES (2, '张三的账户', '1', '', 10000);
+```
+
+创建bank2库，并导入以下表结构和数据(包含李四账户)
+
+```sql
+CREATE DATABASE `bank2` CHARACTER SET 'utf8' COLLATE 'utf8_general_ci';
+
+CREATE TABLE `account_info`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `account_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '户主姓名',
+  `account_no` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '银行卡号',
+  `account_password` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '帐户密码',
+  `account_balance` double NULL DEFAULT NULL COMMENT '帐户余额',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+INSERT INTO `account_info` VALUES (3, '李四的账户', '2', NULL, 0);
+```
+
+**注意**：在bank1、bank2数据库中新增de_duplication，交易记录表(去重表)，用于交易幂等控制，RocketMQ需要用到这张表
+
+```sql
+DROP TABLE IF EXISTS `de_duplication`;
+CREATE TABLE `de_duplication`  (
+  `tx_no`  varchar(64) COLLATE utf8_bin NOT NULL,
+  `create_time` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`tx_no`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Dynamic;
+```
+
+> Producer 端
+
+在application-local.propertis中配置rocketMQ nameServer地址及生产组：
+
+```properties
+rocketmq.producer.group = producer_bank2
+rocketmq.name-server = 127.0.0.1:9876
+```
+
+1) Dao层
+
+```java
+@Mapper
+@Component
+public interface AccountInfoDao {
+    @Update("update account_info set account_balance=account_balance+#{amount} where account_no=#{accountNo}")
+    int updateAccountBalance(@Param("accountNo") String accountNo, @Param("amount") Double amount);
+
+    @Select("select count(1) from de_duplication where tx_no = #{txNo}")
+    int isExistTx(String txNo);
+
+    @Insert("insert into de_duplication values(#{txNo},now());")
+    int addTx(String txNo);
+}
+```
+
+2) 服务层实现类
+
+```java
+@Service
+@Slf4j
+public class AccountInfoServiceImpl implements AccountInfoService {
+	@Resource
+	private RocketMQTemplate rocketMQTemplate;
+
+	@Autowired
+	private AccountInfoDao accountInfoDao;
+
+	/**
+	 * 更新帐号余额-发送消息
+	 * producer向MQ Server发送消息
+	 * @param accountChangeEvent
+	 */
+	@Override
+	public void sendUpdateAccountBalance(AccountChangeEvent accountChangeEvent) {
+		//构建消息体
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("accountChange",accountChangeEvent);
+		Message<String> message = MessageBuilder.withPayload(jsonObject.toJSONString()).build();
+		TransactionSendResult sendResult = rocketMQTemplate.sendMessageInTransaction("producer_group_txmsg_bank1", "topic_txmsg:tag1", message, null);
+
+		log.info("send transcation message body={},result={}",message.getPayload(),sendResult.getSendStatus());
+	}
+
+	/**
+	 * 更新帐号余额-本地事务
+	 * producer发送消息完成后接收到MQ Server的回应即开始执行本地事务
+	 * @param accountChangeEvent
+	 */
+	@Transactional
+	@Override
+	public void doUpdateAccountBalance(AccountChangeEvent accountChangeEvent) {
+		log.info("开始更新本地事务，事务号：{}",accountChangeEvent.getTxNo());
+		accountInfoDao.updateAccountBalance(accountChangeEvent.getAccountNo(),accountChangeEvent.getAmount() * -1);
+		//为幂等作准备
+		accountInfoDao.addTx(accountChangeEvent.getTxNo());
+		if(accountChangeEvent.getAmount() == 2){
+			throw new RuntimeException("bank1更新本地事务时抛出异常");
+		}
+		log.info("结束更新本地事务，事务号：{}",accountChangeEvent.getTxNo());
+	}
+}
+```
+
+3) 编写RocketMQLocalTransactionListener接口实现类，实现<font color=red>执行本地事务和事务回查</font>两个方法。
+
+```java
+@Component
+@Slf4j
+@RocketMQTransactionListener(txProducerGroup = "producer_group_txmsg_bank1")
+public class ProducerTxmsgListener implements RocketMQLocalTransactionListener {
+    @Autowired
+    AccountInfoService accountInfoService;
+    @Autowired
+    AccountInfoDao accountInfoDao;
+
+    //消息发送成功回调此方法，此方法执行本地事务
+    @Override
+    @Transactional
+    public RocketMQLocalTransactionState executeLocalTransaction(Message message, Object arg){
+        //解析消息内容
+        try {
+            String jsonString = new String((byte[]) message.getPayload());
+            JSONObject jsonObject = JSONObject.parseObject(jsonString);
+            AccountChangeEvent accountChangeEvent = JSONObject.parseObject(jsonObject.getString("accountChange"), AccountChangeEvent.class);
+            //扣除金额
+            accountInfoService.doUpdateAccountBalance(accountChangeEvent);
+            return RocketMQLocalTransactionState.COMMIT;
+        } catch (Exception e) {
+            log.error("executeLocalTransaction 事务执行失败",e);
+            e.printStackTrace();
+            return RocketMQLocalTransactionState.ROLLBACK;
+        }
+    }
+
+    //此方法检查事务执行状态
+    @Override
+    public RocketMQLocalTransactionState checkLocalTransaction(Message message) {
+        RocketMQLocalTransactionState state;
+        final JSONObject jsonObject = JSON.parseObject(new String((byte[]) message.getPayload()));
+        AccountChangeEvent accountChangeEvent = JSONObject.parseObject(jsonObject.getString("accountChange"),AccountChangeEvent.class);
+
+        //事务id
+        String txNo = accountChangeEvent.getTxNo();
+        int isexistTx = accountInfoDao.isExistTx(txNo);
+        log.info("回查事务，事务号: {} 结果: {}", accountChangeEvent.getTxNo(),isexistTx);
+        if(isexistTx>0){
+            state=  RocketMQLocalTransactionState.COMMIT;
+        }else{
+            state=  RocketMQLocalTransactionState.UNKNOWN;
+        }
+        return state;
+    }
+}
+```
+
+4) Controller层
+
+```java
+@RestController
+@Slf4j
+public class AccountInfoController {
+    @Autowired
+    private AccountInfoService accountInfoService;
+
+    @GetMapping(value = "/transfer")
+    public String transfer(@RequestParam("accountNo")String accountNo,@RequestParam("amount") Double amount){
+        String tx_no = UUID.randomUUID().toString();
+        AccountChangeEvent accountChangeEvent = new AccountChangeEvent(accountNo,amount,tx_no);
+				// 更新帐号余额-发送消息
+        accountInfoService.sendUpdateAccountBalance(accountChangeEvent);
+        return "转账成功";
+    }
+}
+```
+
+> Consumer 端
+
+1、监听MQ，接收消息。
+
+2、接收到消息增加账户金额。
+
+1) 服务实现类
+
+```java
+@Service
+@Slf4j
+public class AccountInfoServiceImpl implements AccountInfoService {
+  @Autowired
+  AccountInfoDao accountInfoDao;
+  
+  /**
+     * 消费消息，更新本地事务，添加金额
+     * @param accountChangeEvent
+     */
+  @Override
+  @Transactional
+  public void addAccountInfoBalance(AccountChangeEvent accountChangeEvent) {
+    log.info("bank2更新本地账号，账号：{},金额：{}",accountChangeEvent.getAccountNo(),accountChangeEvent.getAmount());
+
+    //幂等校验
+    int existTx = accountInfoDao.isExistTx(accountChangeEvent.getTxNo());
+    if(existTx<=0){
+ 		  //执行更新    	   
+      accountInfoDao.updateAccountBalance(accountChangeEvent.getAccountNo(),accountChangeEvent.getAmount());
+      //添加事务记录
+      accountInfoDao.addTx(accountChangeEvent.getTxNo());
+      log.info("更新本地事务执行成功，本次事务号: {}", accountChangeEvent.getTxNo());
+    }else{
+      log.info("更新本地事务执行失败，本次事务号: {}", accountChangeEvent.getTxNo());
+    }
+  }
+}
+```
+
+2) MQ监听类
+
+```java
+@Component
+@RocketMQMessageListener(topic = "topic_txmsg",selectorExpression="tag1",consumerGroup = "consumer_txmsg_group_bank2")
+@Slf4j
+public class TxmsgConsumer implements RocketMQListener<String> {
+    @Autowired
+    AccountInfoService accountInfoService;
+
+    @Override
+    public void onMessage(String s) {
+        log.info("开始消费消息:{}",s);
+        //解析消息为对象
+        final JSONObject jsonObject = JSON.parseObject(s);
+        AccountChangeEvent accountChangeEvent = JSONObject.parseObject(jsonObject.getString("accountChange"),AccountChangeEvent.class);
+        //调用service增加账号金额
+        accountChangeEvent.setAccountNo("2");
+        accountInfoService.addAccountInfoBalance(accountChangeEvent);
+    }
+}
+```
+
+测试场景
+
+- bank1本地事务失败，则bank1不发送转账消息。
+- bank2接收转账消息失败，会进行重试发送消息。
+- bank2多次消费同一个消息，实现幂等。
 
 
 
