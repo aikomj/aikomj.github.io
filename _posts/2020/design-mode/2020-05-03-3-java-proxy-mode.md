@@ -298,15 +298,19 @@ public class HostInvocationHandler implements InvocationHandler {
   }
 
   // 动态生成得到代理类
+  // 第一个参数：类加载器路径
+  // 第二个参数：要代理的接口
+  // 第三个参数：InvocationHandler的实现类，动态代理应该怎么执行方法，就是下面的invoke方法
+  // 返回一个动态代理类
   public Object getProxy() {
     return Proxy.newProxyInstance(this.getClass().getClassLoader(),rent.getClass().getInterfaces(),this);
   }
 
-  // 处理代理实例，并返回结果
+  // 动态代理的核心，它会在这里拦截目标方法的执行，也就是接口rent的每一个方法执行
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
     // 动态代理的本质，就是使用反射机制实现
-    Object result = method.invoke(rent,args);
+    Object result = method.invoke(rent,args); // 调用目标类的方法
     seeHouse();
     signRentContract();
     fee();
@@ -371,7 +375,7 @@ public class ProxyInvocationHandler implements InvocationHandler {
 		return Proxy.newProxyInstance(this.getClass().getClassLoader(),target.getClass().getInterfaces(),this);
 	}
 
-  // 处理代理实例,并返回结果
+  // 动态代理的核心，它会在这里拦截目标方法的执行，也就是接口target的每一个方法执行
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
     // 通过反射获取方法名
@@ -397,7 +401,7 @@ public class Client {
     ProxyInvocationHandler handler = new ProxyInvocationHandler();
     // 设置要代理的对象
     handler.setTarget(userService);
-    UserService proxy = (UserService) handler.getProxy();
+    UserService proxy = (UserService) handler.getProxy(); // 动态创建实现类 
     proxy.add();
     proxy.query();
   }
@@ -408,10 +412,11 @@ public class Client {
 
 JDK动态代理的特点：
 
-- 动态代理通常是在程序运行时，通过`反射机制`动态生成的。
+- 动态代理通常是在程序运行时，Proxy.newProxyInstance()通过`反射机制`动态生成的代理类，本质上它就是所代理接口的实现类
 - 动态代理类通常代理`接口`下的所有类。
-- 动态代理事先不知道要代理的是什么，只有在运行的时候才能确定。
+- 动态代理事先不知道要代理的目标类是什么，只有在运行的时候才能确定，其实它代理的是接口，
 - 动态代理的调用处理程序必须事先继承 InvocationHandler 接口，使用 Proxy 类中的 newProxyInstance 方法动态的创建代理类。
+- 核心在于动态代理的处理类即继承 InvocationHandler 接口的实现类中的invoke方法，它会拦截所有代理接口的方法的调用
 
 ### CGLIB 动态代理
 
