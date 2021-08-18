@@ -4,7 +4,7 @@ title: mysql常用的操作
 category: tool
 tags: [tool]
 keywords: mysql
-excerpt: mysql开机启动，用户的创建授权，忘记密码后如何重置，datetime与timestamp的区别，连接报错
+excerpt: mysql启动关闭，用户的创建授权，忘记密码后如何重置，相关表操作，datetime与timestamp的区别，连接报错，分析锁情况的相关命令
 lock: noneed
 ---
 
@@ -301,6 +301,24 @@ GBK：一个汉字＝2个字节
 ```sh
 mysql> use mysql;
 mysql> ALTER USER 'test'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+```
+
+## 7、分析锁情况
+
+```sql
+-- 针对mysql
+-- 查看正在被锁定的的表
+show OPEN TABLES where In_use > 0;
+-- 查询最近发送给服务器的 SQL 语句，默认情况下是记录最近已经执行的 15 条记录
+show profiles;
+-- 查看服务器状态
+show status like '%lock%';
+-- 查看超时时间：
+show variables like '%timeout%';
+-- 查看所有连接的客户端连接
+show processlist;
+-- 杀掉指定mysql连接的进程号，注意进程id是在Host列
+kill $pid；
 ```
 
 

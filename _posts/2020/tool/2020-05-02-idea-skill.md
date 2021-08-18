@@ -186,6 +186,63 @@ IDEA提供了强大的实时代码模板功能，并且原生内置了很多的�
 
   ![](\assets\images\tools\idea-ctrl-alt-t.jpg)
 
+> java8数据流的终止操作模板
+
+jdk8的stream流提升了代码的简洁性，可读性，但是它只提供了几个终止操作，reduce和findFist属于直接操作，其它的都要通过collect来访问
+
+```java
+stringCollection
+    .stream()
+    .filter(e -> e.startsWith("a"))
+    .collect(Collectors.toList());
+```
+
+使用IDEA的实时模板，为我们提供上面代码段`.collect(Collectors.toList());`的快捷方式，就如你键入sout，按下tab键，IDEA就会插入代码段System.out.println()。我们键入`.toList` IDEA就会插入代码段`.collect(Collectors.toList())`
+
+让我们看看如何自己构建这样的实时模板
+
+1) 首先访问设置（Settings）并在左侧的菜单中选择实时模板。你也可以使用对话框左上角的便利的输入过滤
+
+![](\assets\images\tools\idea-live-template.png)
+
+通过右侧的+图标创建一个新的组Template Group，叫做Stream，接下来我们向组中添加所有数据流相关的实时模板，如我经常使用默认的收集器toList、toSet、groupingBy 和 join，然后在下面的对话框定义缩写、描述和实际的模板代码，
+
+![](\assets\images\tools\idea-live-template-3.png)
+
+记得选择Java - > Other
+
+![](\assets\images\tools\idea-live-template-2.png)
+
+```java
+// Abbreviation: .toList
+.collect(Collectors.toList())
+
+// Abbreviation: .toSet
+.collect(Collectors.toSet())
+
+// Abbreviation: .join
+.collect(Collectors.joining("$END$"))
+
+// Abbreviation: .groupBy
+.collect(Collectors.groupingBy(e -> $END$))
+```
+
+特殊的变量`$END$`指定在使用模板之后的光标位置，所以你可以直接在这个位置上打字。
+
+2） 开启"Add unambiguous imports on the fly"（自动添加明确的导入）选项，便于让IDEA自动添加java.util.stream.Collectors的导入语句，选项在Editor → General → Auto Import中。
+
+最终效果：
+
+连接
+
+![](\assets\images\tools\idea-live-template-5.gif)
+
+分组
+
+![](\assets\images\tools\idea-live-template-6.gif)
+
+你可以用它来极大提升代码的生产力
+
 ### 定制代码模板
 
 IDEA也提供自己定制实时代码模板的功能。

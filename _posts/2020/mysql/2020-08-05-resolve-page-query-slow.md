@@ -4,7 +4,7 @@ title: Mysql表数据量很大，SQL变慢，有什么优化方案
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: sql执行较慢的3个原因,使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化，排序值作为查询条件，避免隐式转换，union all 代替混合排序，inner join代替exists语句避免嵌套查询，提前缩小范围，with语句缩小中间结果集
+excerpt: sql执行较慢的3个原因,使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化，排序值作为查询条件，避免隐式转换，union all 代替混合排序，inner join代替exists语句避免嵌套查询，提前缩小范围，with语句缩小中间结果集，SQL查找是否存在，别再count了
 lock: noneed
 ---
 
@@ -158,7 +158,7 @@ select * from orders_history where type=8 limit 100000,100;
 
 先使用**范围查询**定位 id （或者索引），然后再使用索引进行定位数据，能够提高好几倍查询速度。即先 select id，然后再 select * where id>= ，限定id的范围，innodb引擎的表数据是按照id 排序存储，所以使用id来限定范围查询，能提高好几倍的查询速度，所以id不要使用uuid，它是无序的，而使用自增或者雪花id
 
-## 6、慢场景
+## 6、慢场景分析
 
 ### Limit语句
 
@@ -390,6 +390,39 @@ from a left join (
 
 程序员在设计数据模型以及编写SQL语句时，要把算法的思想或意识带进来。编写复杂SQL语句要养成使用 WITH 语句的习惯。简洁且思路清晰的SQL语句也能减小数据库的负担 。提前缩小数据查询的范围，避免不必要的数据扫描与转换操作，就好像多线程任务时如果是cpu型任务应该减少核心线程数避免频繁切换cpu带来的时间耗损，核心线程数应该少于cpu核心数。
 
+### 判断存在
+
+根据某一条件从数据库表中查询 『有』与『没有』，只有两种状态，没必要用select count(*)，很多人的写法是这样的：
+
+```java
+##### SQL写法:  
+SELECT count(*) FROM table WHERE a = 1 AND b = 2  
+  
+##### Java写法:  
+int nums = xxDao.countXxxxByXxx(params);  
+if ( nums > 0 ) {  
+  //当存在时，执行这里的代码  
+} else {  
+  //当不存在时，执行这里的代码  
+}  
+```
+
+推荐写法：
+
+```java
+SELECT 1 FROM table WHERE a = 1 AND b = 2 LIMIT 1  
+  
+##### Java写法:  
+Integer exist = xxDao.existXxxxByXxx(params);  
+if ( exist != NULL ) {  
+  //当存在时，执行这里的代码  
+} else {  
+  //当不存在时，执行这里的代码  
+}
+```
+
+SQL不再使用`count`，而是改用`LIMIT 1`，让数据库查询时遇到一条就返回，不要再继续查找还有多少条了，业务代码中直接判断是否非空即可，根据查询条件查出来的条数越多，性能提升的越明显。
+
 ## 7、SQL语句执行较慢的3个原因
 
 ### 没建立索引或索引失效
@@ -532,21 +565,5 @@ MySQL 常用的存储引擎有 MyISAM 和 InnoDB ， InnoDB 会创建主键索�
 
 ![]()
 
-## 9、分析锁情况
 
-```sql
--- 针对mysql
--- 查看正在被锁定的的表
-show OPEN TABLES where In_use > 0;
--- 查询最近发送给服务器的 SQL 语句，默认情况下是记录最近已经执行的 15 条记录
-show profiles;
--- 查看服务器状态
-show status like '%lock%';
--- 查看超时时间：
-show variables like '%timeout%';
--- 查看所有连接的客户端连接
-show processlist;
--- 杀掉指定mysql连接的进程号，注意进程id是在Host列
-kill $pid；
-```
 
