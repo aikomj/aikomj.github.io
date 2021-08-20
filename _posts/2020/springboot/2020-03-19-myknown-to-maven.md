@@ -221,7 +221,102 @@ mvn clean install -rf ../dailylog-common
   </properties>
   ```
 
-  
+### 多环境profiles
+
+在实际开发项目中，常常有几种环境，一般情况下最少有三种环境：开发、测试、正式,各个环境之间的参数也各不相同，在父项目的pom.xml加入profiles标签，以mscp-reconciliation-center为例：
+
+```xml
+<modules>
+  <module>settlement-rcc-api</module>
+  <module>settlement-rcc-common</module>
+  <module>settlement-rcc-starter</module>
+</modules>
+
+<profiles>
+  <profile>
+    <id>dev</id>
+    <activation>
+      <activeByDefault>true</activeByDefault>
+    </activation>
+    <distributionManagement>
+      <snapshotRepository>
+        <id>mcsp-dev-snapshot</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-DEV-snapshot</url>
+      </snapshotRepository>
+      <repository>
+        <id>mcsp-dev-release</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-DEV-release</url>
+      </repository>
+    </distributionManagement>
+    <repositories>
+      <repository>
+        <id>mcsp-group-dev</id>
+        <url>http://mvn.midea.com/nexus/content/groups/mcsp-group-dev/</url>
+      </repository>
+    </repositories>
+  </profile>
+  <profile>
+    <id>sit</id>
+    <distributionManagement>
+      <snapshotRepository>
+        <id>mcsp-sit-snapshot</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-SIT-snapshot</url>
+      </snapshotRepository>
+      <repository>
+        <id>mcsp-sit-releases</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-SIT-release</url>
+      </repository>
+    </distributionManagement>
+    <repositories>
+      <repository>
+        <id>mcsp-group-sit</id>
+        <url>http://mvn.midea.com/nexus/content/groups/mcsp-group-sit/</url>
+      </repository>
+    </repositories>
+  </profile>
+  <profile>
+    <id>uat</id>
+    <distributionManagement>
+      <snapshotRepository>
+        <id>mcsp-uat-snapshot</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-UAT-snapshot</url>
+      </snapshotRepository>
+      <repository>
+        <id>mcsp-uat-release</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-UAT-release</url>
+      </repository>
+    </distributionManagement>
+    <repositories>
+      <repository>
+        <id>mcsp-group-uat</id>
+        <url>http://mvn.midea.com/nexus/content/groups/mcsp-group-uat/</url>
+      </repository>
+    </repositories>
+  </profile>
+  <profile>
+    <id>prod</id>
+    <distributionManagement>
+      <snapshotRepository>
+        <id>mcsp-prod-snapshot</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-PROD-snapshot</url>
+      </snapshotRepository>
+      <repository>
+        <id>mcsp-prod-releases</id>
+        <url>http://mvn.midea.com/nexus/content/repositories/MCSP-PROD-release</url>
+      </repository>
+    </distributionManagement>
+    <repositories>
+      <repository>
+        <id>mcsp-group-prod</id>
+        <url>http://mvn.midea.com/nexus/content/groups/mcsp-group-prod/</url>
+      </repository>
+    </repositories>
+  </profile>
+</profiles>
+```
+
+activeByDefault标签的值为true的话表示为默认的profile
+profiles.activation为我们配置激活的profile
 
 ## 3、常用依赖包
 
