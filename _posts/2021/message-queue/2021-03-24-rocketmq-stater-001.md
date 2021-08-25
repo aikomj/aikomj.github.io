@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: MessageQueue
 tags: [MessageQueue]
 keywords: MessageQueue
-excerpt: rocketMQ的架构模型，topic由多个queue组成，使用netty框架实现网络通信，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息
+excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，发送消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费
 lock: noneed
 ---
 
@@ -16,7 +16,7 @@ lock: noneed
 
 可以看到消费者都是拉的方式从Broker获取消息来消费的。
 
-### 术语
+### 概念
 
 看上面的架构图，Broker信息会上报至NameServer,Consumer会从NameServer中拉取Broker和Topic的信息。
 
@@ -55,9 +55,13 @@ RocketMQ提供两种类型，都是客户端主动去拉取消息的，区别如
 
 在RocketMQ针对不同的场景，提供了**集群消费**与**广播消费**这两种模式，都是基于pull拉取的消费模型，由Consumer从broker拉取消息消费。
 
-- 集群消费：一个消费组内的所有消费者共同消费一个主题中的队列，消费组内的每个消费者只消费一个topic的部分队列，但从消费组为维度，多个消费者最终能消费一个topic的全部消费，这就是**负载均衡**的思想。在RocketMQ中，**队列负载的指导思想**：以**消费组为维度**，**一个消费者能分配多个队列，但一个队列只会分配给一个消费者**。故一个topic的队列数量直接决定了其支持的消费者的最大数，**如果topic的队列数量小于消费者的数量，那部分消费者将无法消费消息**。
+- **集群消费**：一个消费组内的所有消费者共同消费一个主题中的队列，<mark>消费组内的每个消费者只消费一个topic的部分队列</mark>，从消费组的维度，多个消费者最终能消费一个topic的全部消息。在RocketMQ中，队列负载：以消费组为维度**，**一个消费者能分配多个队列，但一个队列只会分配给一个消费者。故一个topic的队列数量直接决定了其支持的消费者的最大数，如果topic的队列数量小于消费者的数量，那部分消费者将无法消费消息，这很正常，rocketmq 生产环境都是集群部署，即多个broker，每个broker都有topic的部分队列，这也是分片的思想，消息就存储在队列。
 
-- 广播模式：一个消费组内的每一个消费者都会消费topic中的所有消息，即topic 中的所有队列都会分配给消费组内的每一个消费者，其主要使用场景：**刷新本地缓存**
+  ![](\assets\images\2021\mq\rockermq-consumre-group.jpg)
+
+  ![](\assets\images\2021\mq\rockermq-consumre-group-2.jpg)
+
+- **广播模式**：一个消费组内的每一个消费者都会消费topic中的所有消息，即topic 中的所有队列都会分配给消费组内的每一个消费者，其主要使用场景：**刷新本地缓存**
 
   ![](\assets\images\2021\mq\rocketmq-consumer-global.jpg)
 
