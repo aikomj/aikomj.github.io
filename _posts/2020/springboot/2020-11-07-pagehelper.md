@@ -46,7 +46,7 @@ public static void clearLocalPage() {
 
 LOCAL_PAGE 是一个ThreadLocal 线程变量，每个被调用的查询SQL语句线程都会保存一个该变量的副本，查询的参数互不影响，与他相对的就是共享变量，
 
-上面的startPage方法就是保存了当前线程的Page参数的变量，有赋值就有取值，那么在下面的分页过程中，肯定在哪边取到了这个threadLocal的page参数。下面就是执行了mybatis的SQL语句
+上面的startPage方法就是保存了当前线程的Page参数的变量，有赋值就有取值，那么在下面的分页过程中，肯定在哪边取到了这个threadLocal的page参数。执行的SQL语句：
 
 ```java
 <select id="selectAll" resultMap="BaseResultMap">
@@ -57,7 +57,7 @@ LOCAL_PAGE 是一个ThreadLocal 线程变量，每个被调用的查询SQL语句
 </select>
 ```
 
-，那到底是哪里做了拦截吗？带着这个疑问，我跟进了代码，发现进入了mybatis的MapperPoxy这个代理类，
+，那到底是哪里做了拦截吗？带着这个疑问，我跟进了代码，发现进入了mybatis的MapperPoxy这个代理类，每一个mybatis的xxxMapper接口都是通过JDK的动态代理创建代理对象实现数据库操作的
 
 ```java
 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -73,7 +73,7 @@ public Object invoke(Object proxy, Method method, Object[] args) throws Throwabl
 }
 ```
 
-最后执行execute方法，点击execute的源码
+最后执行execute方法，点进源码
 
 ```java
 public Object execute(SqlSession sqlSession, Object[] args) {
@@ -114,7 +114,7 @@ public Object execute(SqlSession sqlSession, Object[] args) {
 }
 ```
 
-由于执行的是select操作，并且查询出多条，所以就到了executeForMany这个方法中，后面继续跟进代码SqlSessionTemplate,DefaultSqlSession（不再赘述），最后可以看到代码进入了Plugin这个类的invoke方法中
+由于执行的是select操作，并且查询出多条，所以就到了`executeForMany`方法，后面继续跟进代码SqlSessionTemplate,DefaultSqlSession，最后可以看到代码进入了Plugin这个类的invoke方法中
 
 ```java
 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -130,7 +130,7 @@ public Object invoke(Object proxy, Method method, Object[] args) throws Throwabl
 }
 ```
 
-interceptor是mybatis的拦截器，而PageHelper这个类就实现了interceptor接口，调用其中的intercept方法。
+interceptor是mybatis的拦截器，而PageHelper这个类就实现了interceptor接口，进入`intercept`方法。
 
 ```java
 /**

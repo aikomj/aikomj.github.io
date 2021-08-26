@@ -145,7 +145,7 @@ navs:
         target: _self
       -
         subHref: /icoding-allen.html
-        subLabel: Spring源码
+        subLabel: 源码分析
         target: _self
       -
         subHref: https://www.icodingedu.com/
@@ -184,6 +184,10 @@ navs:
       -
         subHref: /design-mode.html
         subLabel: 设计模式
+        target: _self
+      -
+        subHref: /java-relearn.html
+        subLabel: Java重学系列
         target: _self
       # -
       #   subHref: /algorithm.html
@@ -291,6 +295,6 @@ lazy_load_disqus : false
 # ---------------- #
 simple_jekyll_search:
     # 是否支持全文搜索
-    fulltext: false
+    fulltext: true
     # 最多显示多少条搜索结果
     limit: 10

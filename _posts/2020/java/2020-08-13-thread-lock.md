@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 线程与锁
-category: java
+category: java-concurrent
 tags: [java]
-keywords: java
+keywords: juc
 excerpt: 马士兵讲线程与锁
 lock: noneed
 ---

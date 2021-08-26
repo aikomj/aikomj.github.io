@@ -2,7 +2,7 @@
 layout: post
 title: 开源项目推荐
 titlebar: Gitee
-subtitle: <span class="mega-octicon octicon-organization"></span>&nbsp;&nbsp; 通过他人的作品，增长编程思想，经验。
+subtitle: <span class="mega-octicon octicon-organization"></span>&nbsp;&nbsp; 通过他人的作品，扩展自己的编程思维，增长见识。
 menu: Gitee
 permalink: /gitee
 ---

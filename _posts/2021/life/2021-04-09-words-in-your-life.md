@@ -4,7 +4,7 @@ title: 人生哲学
 category: life
 tags: [life]
 keywords: life
-excerpt: 随笔
+excerpt: 每一句都值得拿来做你的座右铭
 lock: noneed
 ---
 
