@@ -8,7 +8,13 @@ excerpt: throw 主动抛出异常，throws 关键字写在方法上声明可能�
 lock: noneed
 ---
 
-以下内容转自“沉默王二“
+原创 沉默王二，Java程序员进阶之路，
+
+码云地址: [https://gitee.com/itwanger/toBeBetterJavaer](https://gitee.com/itwanger/toBeBetterJavaer)
+
+GitHub 地址：[https://github.com/itwanger/toBeBetterJavaer](https://github.com/itwanger/toBeBetterJavaer])
+
+进入正题。
 
 ## 1、throw和throws的区别
 
