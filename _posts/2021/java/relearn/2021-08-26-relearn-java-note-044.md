@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 重学Java第43讲：ArrayList的扩容机制
+title: 重学Java第44讲：ArrayList的扩容机制
 category: java-relearn
 tags: [java]
 keywords: java
@@ -110,11 +110,13 @@ private void ensureExplicitCapacity(int minCapacity) {
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
-        elementData = Arrays.copyOf(elementData, newCapacity);
+        elementData = Arrays.copyOf(elementData, newCapacity); // 元素复制到新的数组上
     }
 ```
 
 然后对数组进行第一次扩容 `Arrays.copyOf(elementData, newCapacity)`，由原来的 DEFAULTCAPACITY_EMPTY_ELEMENTDATA 空数组扩容为容量为 10 的数组。
+
+
 
 ### 移位运算与位权
 
