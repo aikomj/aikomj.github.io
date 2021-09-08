@@ -40,5 +40,11 @@ lock: noneed
 
 跟着师傅修业谓之“守”，在传承中加入自己想法谓之“破”，开创自己新境界谓之“离”
 
+## 英文
+
+Value your capabilities and talents, for they are what make you truly unique.
+
+珍视自我潜能
+
 
 

@@ -62,9 +62,6 @@ defaults: []
 
 # Navigation. top menu list 导航顶部菜单
 menus:
-  - href: /yida.html
-    label: Ding
-    target: _self
   -
     href: /mysql.html
     label: Mysql
@@ -116,10 +113,13 @@ menus:
     href: /life.html
     label: 生活
     target: _self
-
   -
     href: /link.html
     label: 友链
+    target: _self
+  -
+    href: /yida.html
+    label: Ding
     target: _self
 
   #   href: /about.html
@@ -155,7 +155,25 @@ navs:
       - subHref: https://leetcode-cn.com/problemset/all/
         subLabel: 力扣刷题
         target: _blank
-  - href: /spring.html
+  - label: Java
+    subnav:
+    - subHref: /java-base.html
+      subLabel: Java基础
+      target: _self
+    - subHref: /java-concurrent.html
+      subLabel: Java并发
+      target: _self
+    - subHref: /design-mode.html
+      subLabel: 设计模式
+      target: _self
+    - subHref: /java-relearn.html
+      subLabel: Java重学系列
+      target: _self
+    - subHref: http://www.justdojava.com
+      subLabel: Java 极客技术
+      target: _blank
+  -
+    href: /spring.html
     label: Spring
     target: _self
   -
@@ -170,33 +188,6 @@ navs:
     href: /dubbo.html
     label: Dubbo    
     target: _self
-  -
-    label: Java
-    subnav:
-      -
-        subHref: /java-base.html
-        subLabel: Java基础
-        target: _self
-      -
-        subHref: /java-concurrent.html
-        subLabel: Java并发
-        target: _self
-      -
-        subHref: /design-mode.html
-        subLabel: 设计模式
-        target: _self
-      -
-        subHref: /java-relearn.html
-        subLabel: Java重学系列
-        target: _self
-      # -
-      #   subHref: /algorithm.html
-      #   subLabel: 算法
-      #   target: _blank     
-      -
-        subHref: http://www.justdojava.com
-        subLabel: Java 极客技术
-        target: _blank
   -
     href: /archives.html
     label: Archives
