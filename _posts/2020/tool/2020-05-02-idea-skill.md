@@ -485,7 +485,17 @@ free-idea-mybatis是一款增强idea对mybatis支持的插件，主要功能如�
 
    ![](/assets/images/tools/idea-maven-depency-autocomplete-3.png)
 
+### maven依赖不更新
 
+在idea刷新maven reload project，某些依赖包依然下载失败报错cantnot resolve project ，尝试mvn命令手动下载
+
+```sh
+mvn dependency:get -DremoteRepositories=http://mvn.midea.com/nexus/content/repositories/MCSP-SIT-snapshot/ -DgroupId=com.midea.mcsp  -DartifactId=settlement-smc-api -Dversion=1.0.0-SNAPSHOT
+```
+
+下载没有报错，但依赖包还是没有下载下来，最后发现是idea的maven 设置勾选了work offline 离线工作，怪不得依赖包不下载，不更新啦。
+
+![](\assets\images\tools\idea-maven-work-offine.jpg)
 
 ## 7、其他技巧
 
