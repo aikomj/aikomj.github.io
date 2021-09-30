@@ -131,7 +131,7 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 ## 2、RocketMQ的安装部署
 
-安装到windows上是为了方便自己测试，生产都安装到linux上，并做集群，后面补充
+生产都安装到linux上，并做集群
 
 ### 查看消息堆积
 
@@ -152,6 +152,10 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 - NOT_CONSUME_YET 还没被消费
 - UNKNOW_EXCEPTION 报错
 - CONSUMED_BUT_FILTERED 消费了，但是被过滤了，一般是被tag过滤了
+
+消息在broker保存默认最多3天，超过3天未消费的消息会被删除，当然这个消息保存时间是可以调整的
+
+参考：[https://help.aliyun.com/knowledge_detail/172349.html](https://help.aliyun.com/knowledge_detail/172349.html)
 
 ## 3、RocketMQ的特点和优势
 
