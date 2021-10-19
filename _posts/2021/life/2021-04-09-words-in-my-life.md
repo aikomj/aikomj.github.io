@@ -4,7 +4,7 @@ title: 人生哲学
 category: life
 tags: [life]
 keywords: life
-excerpt: 每一句都值得拿来做你的座右铭
+excerpt: 每一句都值得拿来做你的座右铭,生活中的某个时间点，某个场合，它就会触动你的内心，让你有所感悟
 lock: noneed
 ---
 
@@ -45,6 +45,8 @@ lock: noneed
 Value your capabilities and talents, for they are what make you truly unique.
 
 珍视自我潜能
+
+
 
 
 
