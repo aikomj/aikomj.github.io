@@ -18,21 +18,19 @@ lock: noneed
 
 ![](\assets\images\2020\juc\threadlocal.jpg)
 
-可以看到，在 Thread 中持有一个 ThreadLocalMap ， ThreadLocalMap 又是由 Entry 来组成的，在 Entry 里面有 ThreadLocal 和 value
+可以看到，在 Thread 中持有一个 ThreadLocalMap ， ThreadLocalMap 是由 Entry 来组成的，在 Entry 里面有 ThreadLocal 和 value
 
 ## 2、内存泄漏
 
 上面的Entry 继承了 WeakReference ，而 Entry 对象中的 key 使用了 WeakReference 封装，key是一个弱引用，只能生存到下次GC前。
 
-如果一个线程调用了 ThreadLocalMap 的 set 设置变量，当前的 ThreadLocalMap 就会新增一条记录，但由于发生了一次垃圾回收， key 值被回收掉了，但是 value 值还在内存中，而且如果线程一直存在的话，那么它的 value 值就会一直存在。就会存在一条引用链：hread -> ThreadLocalMap -> Entry -> Value 
+如果一个线程调用了 ThreadLocalMap 的 set 设置变量，当前的 ThreadLocalMap 就会新增一条记录，但由于发生了一次垃圾回收， key 值被回收掉了，但是 value 值还在内存中，而且如果线程一直存在的话，那么它的 value 值就会一直存在。就会存在一条引用链：thread -> ThreadLocalMap -> Entry -> Value 
 
 ![](\assets\images\2020\juc\threadlocal2.jpg)
 
-就是因为这条引用链的存在，就会导致如果 Thread 还在运行，那么 Entry 不会被回收，进而 value 也不会被回收掉，但是 Entry 里面的 key 值已经被回收掉了。
+就是因为这条引用链的存在，就会导致如果Thread 还在运行，那么 Entry 不会被回收，进而 value 也不会被回收掉，但是 Entry 里面的 key 值已经被回收掉了。如果很多个线程就会造成内存泄漏，因为value值没有被回收掉。
 
-如果很多个线程就会造成内存泄漏，因为value值没有被回收掉。
-
-**解决**：使用完 key 值之后，将 value 值通过 remove 方法 remove 掉
+**解决办法**：使用完 key 值之后，将 value 值通过 remove 方法 remove 掉
 
 ## 3、ThreadLocalMap
 
