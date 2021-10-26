@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: MessageQueue
 tags: [MessageQueue]
 keywords: MessageQueue
-excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，发送消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费
+excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制
 lock: noneed
 ---
 
@@ -104,16 +104,11 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 ![](\assets\images\2021\mq\rocketmq-file.jpg)
 
-上面是RocketMQ比较关键的目录
+原因在于RocketMQ关键的3个目录：
 
-- commitLog：消息主体以及元数据的存储主体，存储Producer端写入的消息主体内容,消息内容不是定长的。单个文件大小默认1G ，文件名长度为20位，左边补零，剩余为起始偏移量，比如00000000000000000000代表了第一个文件，起始偏移量为0，文件大小为1G=1073741824；当第一个文件写满了，第二个文件为00000000001073741824，起始偏移量为1073741824，以此类推。消息主要是顺序写入日志文件，当文件满了，写入下一个文件；
-
-- config：保存一些配置信息，包括一些Group，Topic以及Consumer消费offset等信息。
-
-- consumeQueue:消息消费队列，提高消息消费的性能，RocketMQ是基于主题topic的订阅模式，消息消费是针对主题进行的，如果要遍历commitlog文件中根据topic检索消息是非常低效的。Consumer根据ConsumeQueue来查找待消费的消息。其中，ConsumeQueue(逻辑消费队列)作为消费消息的索引，保存了指定Topic下的队列消息在CommitLog中的起始物理偏移量offset，消息大小size和消息Tag的HashCode值。
-
-  consumequeue文件可以看成是基于topic的commitlog索引文件(如表建立索引一样，加快查询，思想是一样的)，consumequeue文件夹的组织方式是topic/queue/file三层组织结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个IndexFile文件大小约为400M，一个IndexFile可以保存 2000W个索引。IndexFile的底层存储设计是在文件系统中实现HashMap结构，所以RocketMQ的索引文件底层实现是hash索引。
-  
+- commitlog目录：消息主体以及元数据的存储主体，存储Producer端写入的消息主体内容,消息内容不是定长的。单个文件大小默认1G ，文件名长度为20位，左边补零，剩余为起始偏移量，比如00000000000000000000代表了第一个文件，起始偏移量为0，文件大小为1G=1073741824；当第一个文件写满了，第二个文件为00000000001073741824，起始偏移量为1073741824，以此类推。消息主要是顺序写入日志文件，当文件满了，写入下一个文件；
+- config：保存一些配置信息，包括Group，Topic以及Consumer消费偏移量offset。
+- consumequeue目录：索引文件，提高消息消费的性能，RocketMQ是基于主题topic的订阅模式，消息消费是针对topic进行的，如果根据topic遍历commitlog文件去查找待消费消息是非常低效的，consumequeue保存了指定topic下的消息在commitlog中的起始物理偏移量offset、消息大小size、消息tag的HashCode值。跟表建立索引加快查询一样的道理，Consumer根据consumequeue的索引文件信息可以快速查找到指定topic在commlitlog下的待消费消息。consumequeue目录是topic/queue/file三层目录结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个索引文件大小约为400M，可以保存 2000W个索引。索引文件的底层存储设计是HashMap结构，所以可以叫hash索引
 
 **总结**
 
@@ -183,7 +178,7 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 ![](\assets\images\2021\springcloud\rocketmq-feature-4.jpg)
 
-## 4、Springboot集成
+## 4、SpringBoot集成
 
 使用原生方式导入依赖
 
@@ -691,8 +686,65 @@ public class TxmsgConsumer implements RocketMQListener<String> {
 - bank2接收转账消息失败，会进行重试发送消息。
 - bank2多次消费同一个消息，实现幂等。
 
-
-
 参考：
 
 [https://blog.csdn.net/weixin_44062339/article/details/100180487](https://blog.csdn.net/weixin_44062339/article/details/100180487)
+
+### 消费端的ACK机制
+
+springboot集成rocketmq消费消息，我们只需实现接口`RocketMQListener`就可以了
+
+```java
+/**
+ * @Author xiejw17
+ * @Date 2021/9/22 20:27
+ * 分销转自营，生成折让、红冲折让的销售单的结果订阅消费
+ */
+@Service
+@RocketMQMessageListener(topic="TOPIC-MCSP-SMC-SETTLE-REBACK",selectorExpression="TAG-SETTLEBILL-RCC",consumerGroup="rcc-producer-group")
+public class DistributeDiscountReversalConsumer implements RocketMQListener<MessageExt> {
+    @Autowired
+    BillProcessingLogService billProcessingLogService;
+
+    @Autowired
+    DistributeToOwnDetailMapper distributeToOwnDetailMapper;
+
+    // 只要没有抛异常，就会消费成功，请不要捕获异常，否则不会重新拉取消息进行重新消费
+    @Override
+    public void onMessage(MessageExt msg) {
+        String json = new String(msg.getBody());
+        //log.info("生成折让消息体{}",json);
+        SettleBillCallBackDTO dto = JSON.parseObject(json,SettleBillCallBackDTO.class);
+        Map<String,Object> param = new HashMap<>(5);
+        String id = dto.getSrcBillNum().substring(2);
+        param.put("id", Long.parseLong(id));
+        UpdateWrapper<BillProcessingLog> updateWrapper = new UpdateWrapper();
+        if("Y".equals(dto.getProcessFlag())){
+            // 1、成功，更新折让单单号，状态，原单号=前缀+id，
+            param.put("orderNum",dto.getSettleBillNum()); // 单号
+            param.put("state","11"); // 11-已审核
+            if(dto.getSrcBillNum().startsWith("DI")){
+                // 生成折让
+                distributeToOwnDetailMapper.updateDiscount(param);
+            }else{
+                // 红冲折让
+                distributeToOwnDetailMapper.updateReversalDiscount(param);
+            }
+            updateWrapper.set(BillProcessingLog.STATUS, BillProcessStatusEnum.COMPLETE.getStatus())
+                    .set(BillProcessingLog.DETAIL,"success");
+        }else{
+            // 失败
+            updateWrapper.set(BillProcessingLog.STATUS,BillProcessStatusEnum.EXCEPTION.getStatus())
+                    .set(BillProcessingLog.DETAIL,dto.getResultMsg().length()>400?dto.getResultMsg().substring(0,400):dto.getResultMsg());
+        }
+        // 2、更新对账记录日志
+        updateWrapper.eq("id",id);
+        updateWrapper.set("updated_by","rocketMq");
+        updateWrapper.set("update_time", LocalDateTime.now());
+        billProcessingLogService.update(updateWrapper);
+    }
+}
+```
+
+那它是怎么确认消息是消费成功的？如果业务发生异常，消费者会重新拉取消息进行消费吗？会，只要你不catch异常处理掉，把它抛出去就可以，来看一下原理
+

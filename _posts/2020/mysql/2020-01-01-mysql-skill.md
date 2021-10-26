@@ -1,8 +1,8 @@
 ---
 layout: post
 title: mysql常用的操作
-category: tool
-tags: [tool]
+category: mysql
+tags: [mysql]
 keywords: mysql
 excerpt: mysql启动关闭，用户的创建授权，忘记密码后如何重置，相关表操作，datetime与timestamp的区别，连接报错，分析锁情况的相关命令
 lock: noneed
@@ -42,7 +42,7 @@ systemctl list-unit-files | grep enable
 # enabled是开机启动，disabled是开机不启动
 ```
 
-### 状态
+**状态**
 
 ```sh
 # 查询进程
@@ -55,11 +55,9 @@ ps -ef|grep mysqld
 
 ### 忘记密码
 
-> skip-grant-tables模式启动
+> windows
 
-**windows下mysql**
-
-版本为mysql5.7
+版本为mysql5.7，skip-grant-tables模式启动
 
 1、关闭运行的Mysql服务
 
@@ -86,7 +84,7 @@ D:\mysql-8.0.16-winx64\bin>net stop mysql
 D:\mysql-8.0.16-winx64\bin>mysqld --nt --skip-grant-tables
 ```
 
-**centos下**
+> centos linux
 
 版本为mysql5.7
 
@@ -170,10 +168,6 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'Hello@123456';
 
 #因为mysql8，使用强校验，所以，如果密码过于简单，会报错，密码尽量搞复杂些！
 ```
-
-
-
-
 
 
 
@@ -265,8 +259,6 @@ ALTER TABLE penguins AUTO_INCREMENT=1001;
 
 如果只是想表示年、日期、时间的还可以使用 `year`、 `date`、 `time`，它们分别占据 1、3、3 字节，而`datetime`就是它们的集合。
 
-
-
 ## 5、text与blob的扩展
 
 1.一个汉字占多少长度与编码有关：
@@ -285,8 +277,6 @@ GBK：一个汉字＝2个字节
 | longtext   | 4,294,967,295bytes,约4G | 极大文本   |
 
 建议使用文件代替text字段
-
-
 
 ## 6、常见报错
 
@@ -309,16 +299,42 @@ mysql> ALTER USER 'test'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
 -- 针对mysql
 -- 查看正在被锁定的的表
 show OPEN TABLES where In_use > 0;
+
 -- 查询最近发送给服务器的 SQL 语句，默认情况下是记录最近已经执行的 15 条记录
 show profiles;
+
 -- 查看服务器状态
 show status like '%lock%';
+
 -- 查看超时时间：
 show variables like '%timeout%';
--- 查看所有连接的客户端连接
+
+-- 查看当前用户的所有会话连接前100条，包括当前status,执行的sql
 show processlist;
+-- 列出所有
+show full processlist
 -- 杀掉指定mysql连接的进程号，注意进程id是在Host列
 kill $pid；
+-- 会话状态说明
+locked --被其他查询锁住了
+sending data --正在处理select查询的记录
+system lock --等待一个外部的系统锁
+Upgrading lock  --INSERT DELAYED正在尝试取得一个锁表以插入新记录。
+
+-- 当前数据库有哪些事务正在执行
+select * from information_schema.INNODB_TRX it 
+
+-- 查看正在锁的事务
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS; 
+
+-- 查看等待锁的事务
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS; 
+
+-- 查看打开的表，In_use列表示有多少线程正在使用某张表，Name_locked表示表名是否被锁，这一般发生在Drop或Rename命令操作这张表时
+show open tables;
+-- 查看是否锁表
+show open tables where in_use>0;
+
 ```
 
 
