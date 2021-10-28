@@ -140,6 +140,54 @@ lock: noneed
 
   
 
+## 5、上手架构设计
+
+4R架构指Rank 、Role、Relation、Rule
+
+### 4+1架构视图
+
+![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2021/architect/four-add-one.png)
+
+- **<font color=red>逻辑视图</font>**
+
+  logical view 描述系统提供给用户的功能，对应UML class 类图 和状态图 state diagrams
+
+- **<font color=red>处理视图</font>**
+
+  process view 描述系统的处理过程，对应UML的sequence 和 activity 图
+
+- **<font color=red>开发视图</font>**
+
+  Development veiw 描述程序员视角看系统的逻辑组成，对应UML的package 图
+
+- **<font color=red>物理视图</font>**
+
+  Physical veiw 描述系统工程师视角看系统的物理组成，对应UML的部署图deployment diagrams
+
+- **<font color=red>场景视图</font>**
+
+  Scenarios  描述用户角度看系统需要实现的需求，对应UML的用例图 user case diagrams
+
+国内企业很少用4+1视图描述架构，因为
+
+1）4+1视图是1995年 Philippe kruchten在《IEEE Software》提出，那时候是单体系统时代，现在大多数都是分布式系统了，无法满足描述现在复杂的架构；
+
+2）4+1视图是绑定UML图去画我们的架构图的，比较丑
+
+3）理解困难，容易混淆
+
+举例：
+
+![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2021/architect/four-add-one-2.png)
+
+左边UML画的架构示意图，右边使用ppt画的架构示意图可以使用颜色的图标，就比较好看，有更好的表达
+
+### 架构图分类
+
+![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2021/architect/category.png)
+
+
+
 ## 总结：
 
 1) 什么是好的设计方案？
