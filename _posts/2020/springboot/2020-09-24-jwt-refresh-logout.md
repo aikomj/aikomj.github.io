@@ -76,9 +76,113 @@ spring boot微服务里经常用到 oauth2 和 jwt整合，做用户鉴权，难
 
 百度的一些注销方案，个人觉得还是可行的
 
-- **将JWT存储在数据库中**。您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的（把JWT 变成有状态的，中心化）。用过的renren_fast 框架的确是这么做的，用来对接APP端，一个注销把jwt token 从数据库删除
-- **从客户端删除令牌**（前端把token从cookie中删除），这将阻止客户端进行经过身份验证的请求，但如果令牌仍然有效且其他人可以访问它，则仍可以使用该令牌。这引出了我的下一点。
+- **将JWT存储在数据库中**。您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的（把JWT 变成有状态的，中心化）。用过的renren_fast 框架的确是这么做的，用来对接APP端，注销就把token 从数据库删除
 
+  renren框架使用shiro+token做登录认证
+
+  Shiroconfig配置类
+
+  ```java
+  @Configuration
+  public class ShiroConfig {
+      @Bean("securityManager")
+      public SecurityManager securityManager(OAuth2Realm oAuth2Realm) {
+          DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+          securityManager.setRealm(oAuth2Realm);
+          securityManager.setRememberMeManager(null);
+          return securityManager;
+      }
+  
+      @Bean("shiroFilter")
+      public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
+          ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
+          shiroFilter.setSecurityManager(securityManager);
+  
+          //oauth过滤
+          Map<String, Filter> filters = new HashMap<>();
+          filters.put("oauth2", new OAuth2Filter());
+          shiroFilter.setFilters(filters);
+  
+          Map<String, String> filterMap = new LinkedHashMap<>();
+          filterMap.put("/webjars/**", "anon");
+          filterMap.put("/druid/**", "anon");
+          filterMap.put("/app/**", "anon");
+          filterMap.put("/sys/login", "anon");
+          filterMap.put("/swagger/**", "anon");
+          filterMap.put("/v2/api-docs", "anon");
+          filterMap.put("/swagger-ui.html", "anon");
+          filterMap.put("/swagger-resources/**", "anon");
+          filterMap.put("/captcha.jpg", "anon");
+          filterMap.put("/images/**", "anon");
+          filterMap.put("/upload/**", "anon");
+          filterMap.put("/temp/**", "anon");
+          filterMap.put("/sys/pay/success", "anon");
+          filterMap.put("/sys/pay/cancel","anon");
+          filterMap.put("/**", "oauth2");
+          shiroFilter.setFilterChainDefinitionMap(filterMap);
+  
+          return shiroFilter;
+      }
+  
+      @Bean("lifecycleBeanPostProcessor")
+      public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+          return new LifecycleBeanPostProcessor();
+      }
+  
+      @Bean
+      public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+          AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+          advisor.setSecurityManager(securityManager);
+          return advisor;
+      }
+  }
+  ```
+
+登录时就生成token保存到数据库，登出就删除token
+
+```java
+	/**
+	 * 登录
+	 */
+	@PostMapping("/sys/login")
+	public Map<String, Object> login(@RequestBody SysLoginForm form)throws IOException {
+		boolean captcha = sysCaptchaService.validate(form.getUuid(), form.getCaptcha());
+		if(!captcha){
+			return R.error("验证码不正确");
+		}
+
+		//用户信息
+		SysUserEntity user = sysUserService.queryByUserName(form.getUsername());
+
+		//账号不存在、密码错误
+		if(user == null || !user.getPassword().equals(new Sha256Hash(form.getPassword(), user.getSalt()).toHex())) {
+			return R.error("账号或密码不正确");
+		}
+
+		//账号锁定
+		if(user.getStatus() == 0){
+			return R.error("账号已被锁定,请联系管理员");
+		}
+
+		//生成token，并保存到数据库
+		R r = sysUserTokenService.createToken(user.getUserId());
+		return r;
+	}
+
+
+	/**
+	 * 退出
+	 */
+	@PostMapping("/sys/logout")
+	public R logout() {
+		sysUserTokenService.logout(getUserId());
+		return R.ok();
+	}
+```
+
+
+
+- **从客户端删除令牌**（前端把token从cookie中删除），这将阻止客户端进行经过身份验证的请求，但如果令牌仍然有效且其他人可以访问它，则仍可以使用该令牌。这引出了我的下一点。
 - **刷新令牌**。当用户登录时，为他们提供JWT和刷新令牌ref_token。将刷新令牌存储在数据库中。对于经过身份验证的请求，客户端可以使用JWT，但是当令牌过期（或即将过期）时，让客户端使用刷新令牌发出请求以换取新的JWT。这样，您只需在用户登录或要求新的JWT时访问数据库。当用户注销时，您需要使存储的刷新令牌无效。否则，即使用户已经注销，有人在监听连接时仍然可以获得新的JWT。但注销到JWT过期仍然有一个时间窗口，JWT是依然可用的。这里只是解决了用户无感刷新JWT的问题，客户端携带刷新令牌获取新的JWT。
 - **创建JWT黑名单**。根据过期时间，当客户端删除其令牌时，它可能仍然有效一段时间。如果令牌生存期很短，则可能不是问题，但如果您仍希望令牌立即失效，则可以创建令牌黑名单。当后端收到注销请求时，从请求中获取JWT并将其存储在内存数据库（Redis,并设置过期时间等于JWT的剩余存活时间）中。对于每个经过身份验证的请求，您需要检查内存数据库(Redis)以查看令牌是否已失效。为了保持较小的搜索空间，您可以从黑名单中删除已经过期的令牌。（根据令牌剩余有效期设置内存数据失效时间，达到自动清除的目的，JWT中携带一个UUID,作为黑名单中JWT的key，該key带有redis的过期时间）
 
