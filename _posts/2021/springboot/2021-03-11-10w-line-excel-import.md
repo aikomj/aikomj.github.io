@@ -1,4 +1,5 @@
 ---
+
 layout: post
 title: 10w 级别Excel数据导入的优化记录
 category: springboot
@@ -338,7 +339,6 @@ public class StockInvAccountAgeController {
             // 创建线程池
             ExecutorService threadPool = new ThreadPoolExecutor(7,50,10,TimeUnit.SECONDS
                     ,new LinkedBlockingDeque<>(100),new BlockRejectedExecutionHandler());
-
             try {
                 // 逐条处理导入数据
                 for (int i = 1; i <= importDataCnt; i++) {
@@ -374,9 +374,42 @@ public class StockInvAccountAgeController {
             result.put("msg", "数据异常！");
             logger.error("导入数据失败：", e);
         }
-
         return result;
     }
+}
+```
+
+线程资源类DealProtectDays.java
+
+```java
+// 线程资源类
+public class DealProtectDays {
+  private List<Map<Object, Object>> list;
+  private AtomicInteger successCount;
+  private Map<Integer,String> bsImportMsg;
+  private List<Integer> setsOfBooksList;
+  private String loginId;
+
+  public DealProtectDays(List<Map<Object, Object>> list,AtomicInteger successCount,Map<Integer,String> bsImportMsg,List<Integer> setsOfBooksList){
+    this.list = list;
+    this.successCount = successCount;
+    this.bsImportMsg = bsImportMsg;
+    this.setsOfBooksList = setsOfBooksList;
+    this.loginId = SecurityUtils.getSessionUser().getLoginId(); // 登录账号
+  }
+
+  public void importExcelData(int i){
+    try{
+      Map<Object,Object> data = list.get(i);
+      data.put("loginId",loginId);
+      stockInvAccountAgeFacade.saveImportData(data,setsOfBooksList);
+      bsImportMsg.put(i, "导入成功");
+      successCount.incrementAndGet();
+    }catch (Exception e){
+      logger.error(e.getMessage(), e);
+      bsImportMsg.put(i, e.getMessage());
+    }
+  }
 }
 ```
 
@@ -472,52 +505,7 @@ public class ExcelImportUtils {
 		}
 		sheet = null;
 	}
-}
-```
-
-线程资源类DealProtectDays.java
-
-```java
-// 线程资源类
-public class DealProtectDays {
-  private List<Map<Object, Object>> list;
-  private AtomicInteger successCount;
-  private Map<Integer,String> bsImportMsg;
-  private List<Integer> setsOfBooksList;
-  private String loginId;
-
-  public DealProtectDays(List<Map<Object, Object>> list,AtomicInteger successCount,Map<Integer,String> bsImportMsg,List<Integer> setsOfBooksList){
-    this.list = list;
-    this.successCount = successCount;
-    this.bsImportMsg = bsImportMsg;
-    this.setsOfBooksList = setsOfBooksList;
-    this.loginId = SecurityUtils.getSessionUser().getLoginId(); // 登录账号
-  }
-
-  public void importExcelData(int i){
-    try{
-      Map<Object,Object> data = list.get(i);
-      data.put("loginId",loginId);
-      stockInvAccountAgeFacade.saveImportData(data,setsOfBooksList);
-      bsImportMsg.put(i, "导入成功");
-      successCount.incrementAndGet();
-    }catch (Exception e){
-      logger.error(e.getMessage(), e);
-      bsImportMsg.put(i, e.getMessage());
-    }
-  }
-}
-```
-
-工具类ExcelImportUtils.java，错误信息写回excel文件部分
-
-```java
-// 有导入失败行，失败行信息写回原Excel文件
-String resultFileUrl = ExcelImportUtils.getResultFileUrl(request, file, bsImportMsg, importResultDir);
-```
-
-```java
-public class ExcelImportUtils {
+  
   // 错误信息写入文件，返回文件路径
   public static String getResultFileUrl(HttpServletRequest request, MultipartFile importFile, 
                                         Map<Integer, String> errorMsgMap, String importResultDir) {
@@ -591,13 +579,7 @@ public class ExcelImportUtils {
   // 写入Sheet
   private static boolean updateMessage4Excel(Workbook workbook, int page, 
 			Map<Integer, String> map,String downloadFileName) {
-		if (map == null) {
-			return false;
-		}
-		if (workbook == null) {
-			return false;
-		}
-		if (StringUtils.isEmpty(downloadFileName)) {
+		if (map == null || workbook == null || StringUtils.isEmpty(downloadFileName)) {
 			return false;
 		}
 		Sheet sheet = workbook.getSheetAt(page);
@@ -656,8 +638,11 @@ public class ExcelImportUtils {
 			}
 		}	
 	}
+  
 }
 ```
+
+工具类ExcelImportUtils.java，错误信息写回excel文件部分
 
 如果是微服务，excel文件不能保留在服务单例上，应该上传到fastDFS或者OSS上
 

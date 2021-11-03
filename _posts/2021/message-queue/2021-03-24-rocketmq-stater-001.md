@@ -108,7 +108,7 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 - commitlog目录：消息主体以及元数据的存储主体，存储Producer端写入的消息主体内容,消息内容不是定长的。单个文件大小默认1G ，文件名长度为20位，左边补零，剩余为起始偏移量，比如00000000000000000000代表了第一个文件，起始偏移量为0，文件大小为1G=1073741824；当第一个文件写满了，第二个文件为00000000001073741824，起始偏移量为1073741824，以此类推。消息主要是顺序写入日志文件，当文件满了，写入下一个文件；
 - config：保存一些配置信息，包括Group，Topic以及Consumer消费偏移量offset。
-- consumequeue目录：索引文件，提高消息消费的性能，RocketMQ是基于主题topic的订阅模式，消息消费是针对topic进行的，如果根据topic遍历commitlog文件去查找待消费消息是非常低效的，consumequeue保存了指定topic下的消息在commitlog中的起始物理偏移量offset、消息大小size、消息tag的HashCode值。跟表建立索引加快查询一样的道理，Consumer根据consumequeue的索引文件信息可以快速查找到指定topic在commlitlog下的待消费消息。consumequeue目录是topic/queue/file三层目录结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个索引文件大小约为400M，可以保存 2000W个索引。索引文件的底层存储设计是HashMap结构，所以可以叫hash索引
+- consumequeue目录：索引文件，提高消息消费的性能，RocketMQ是基于主题topic的订阅模式，消息消费是针对topic进行的，如果根据topic遍历commitlog文件去查找待消费消息是非常低效的，consumequeue保存了指定topic下的消息在commitlog中的起始物理偏移量offset、消息大小size、消息tag的HashCode值。跟表建立索引加快查询一样的道理，Consumer根据consumequeue的索引文件信息可以快速查找到指定topic在commlitlog下的待消费消息。consumequeue目录是topic/queue/file三层目录结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个索引文件大小约为400M，可以保存 2000W个索引。索引文件的底层存储设计是HashMap结构，所以也叫hash索引
 
 **总结**
 
@@ -316,6 +316,7 @@ public class OrderReceiver implements RocketMQListener<Map> {
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
+  // 只要没有抛异常，就会消费成功，请不要捕获异常，否则不会重新拉取消息进行重新消费
     @Override
     public void onMessage(Map message) {
         System.out.println("收到消息");
@@ -330,13 +331,45 @@ idea 启动两个消费者实例，发现是对半接收消息的，说明有负
 
 ![](\assets\images\2021\springcloud\rocketmq-consumer-test2.jpg)
 
+分析@RocketMQMessageListener注解的源码
+
+
+
 参考：
 
 [https://blog.csdn.net/qq_38306688/article/details/107716046](https://blog.csdn.net/qq_38306688/article/details/107716046)
 
-[https://blog.csdn.net/qq_38366063/article/details/93387680](https://blog.csdn.net/qq_38366063/article/details/93387680)
-
 [https://blog.csdn.net/zxl646801924/article/details/105659481](https://blog.csdn.net/zxl646801924/article/details/105659481)
+
+### 消费组tag
+
+同一个消费组的设置相同的tag，必须要保持订阅关系一致。同一个消费组中，设置不同tag时，后启动的消费者会**覆盖**先启动的消费者设置的tag。从原理分析，上面与kafka比较吞吐量也分析了，rocketmq保存消息的三个核心文件夹：commitlog、consumerqueue、config
+
+- commitlog
+
+  1) 保存所有topic的原始消息
+
+  2) commitLog文件夹下分为多个文件，每个文件默认最大为1G
+
+  3) 每条记录包括：消息长度和消息文本（消息体，属性，uid等等）
+
+  4) 因每条消息长度不一致，每个commitLog文件的记录长度也不一致
+
+- consumerqueue
+
+  1) 保存某个Topic下某个Queue的索引信息
+
+  2) 每条记录包括：消息在commitLog中的offset，消息大小，消息tag的哈希值
+
+  3) 每条记录长度固定为20byte
+
+  4) producer发送消息后，先保存到commitLog，再异步建立该条消息对应的topic + queue对应的ConsumerQueue索引
+
+  5) 第三部分的Hash(tag)是服务端过滤消息的重要依据
+
+consumer消费者如何订阅消息式，会将订阅信息注册到到服务端，保存订阅信息的是Map类，**key为topic**，value主要是tag，subVersion是版本号，所以同一个消费组的消费者依次注册订阅关系，比如消费者1订阅tag1，消费者2订阅tag2。最后map中只保存tag2，所以消费者都只订阅了tag2的消息
+
+
 
 ### 事务消息方案
 
