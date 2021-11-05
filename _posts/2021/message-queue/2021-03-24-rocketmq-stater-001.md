@@ -331,10 +331,6 @@ idea 启动两个消费者实例，发现是对半接收消息的，说明有负
 
 ![](\assets\images\2021\springcloud\rocketmq-consumer-test2.jpg)
 
-分析@RocketMQMessageListener注解的源码
-
-
-
 参考：
 
 [https://blog.csdn.net/qq_38306688/article/details/107716046](https://blog.csdn.net/qq_38306688/article/details/107716046)
@@ -367,7 +363,24 @@ idea 启动两个消费者实例，发现是对半接收消息的，说明有负
 
   5) 第三部分的Hash(tag)是服务端过滤消息的重要依据
 
-consumer消费者如何订阅消息式，会将订阅信息注册到到服务端，保存订阅信息的是Map类，**key为topic**，value主要是tag，subVersion是版本号，所以同一个消费组的消费者依次注册订阅关系，比如消费者1订阅tag1，消费者2订阅tag2。最后map中只保存tag2，所以消费者都只订阅了tag2的消息
+consumer消费者如何订阅消息，会将订阅信息注册到到服务端，保存订阅信息的是ConcurrentHashMap类，key为topic，value主要是tag，subVersion是版本号，所以同一个消费组的消费者依次注册订阅关系，比如消费者1订阅tag1，消费者2订阅tag2。最后map中只保存tag2，所以消费者都只订阅了tag2的消息，这个可以看项目启动时，执行RocketMQAutoConfiguration自动配置类，向rocketmq broker推送注册信息注册消费者时，类DefaultRocketMQListenerContainer的initRocketMQPushConsumer()方法，里面调用DefaultMQPushConsumerImpl类的subscribe() 方法，把订阅信息放进map里面
+
+```java
+    public void subscribe(String topic, String subExpression) throws MQClientException {
+        try {
+            SubscriptionData subscriptionData = FilterAPI.buildSubscriptionData(this.defaultMQPushConsumer.getConsumerGroup(), topic, subExpression);
+            this.rebalanceImpl.getSubscriptionInner().put(topic, subscriptionData);
+            if (this.mQClientFactory != null) {
+                this.mQClientFactory.sendHeartbeatToAllBrokerWithLock();
+            }
+
+        } catch (Exception var4) {
+            throw new MQClientException("subscription exception", var4);
+        }
+    }
+```
+
+
 
 
 
@@ -779,5 +792,298 @@ public class DistributeDiscountReversalConsumer implements RocketMQListener<Mess
 }
 ```
 
-那它是怎么确认消息是消费成功的？如果业务发生异常，消费者会重新拉取消息进行消费吗？会，只要你不catch异常处理掉，把它抛出去就可以，来看一下原理
+那它是怎么确认消息是消费成功的？如果业务发生异常，消费者会重新拉取消息进行消费吗？会，只要你不catch异常处理掉，把它抛出去就可以，来分析源码
+
+### @RocketMQListener源码分析
+
+分析@RocketMQMessageListener注解的源码，项目启动会扫描该注解创建消费者，配置类`org.apache.rocketmq.spring.autoconfigure.ListenerContainerConfiguration`会被`RocketMQAutoConfiguration` 自动配置@import引入创建Bean对象
+
+![](\assets\images\2021\mq\rocketmq-autoconfiguration.jpg)
+
+也在`RocketMQAutoConfiguration`自动配置类创建生产者
+
+![](\assets\images\2021\mq\rocketmq-autoconfiguration-defaultMQProducer.jpg)
+
+创建Bean 实例`RocketMQTemplate`
+
+```java
+@Bean(destroyMethod = "destroy")
+@ConditionalOnBean(DefaultMQProducer.class)
+@ConditionalOnMissingBean(name = RocketMQConfigUtils.ROCKETMQ_TEMPLATE_DEFAULT_GLOBAL_NAME)
+public RocketMQTemplate rocketMQTemplate(DefaultMQProducer mqProducer,
+                                         ObjectMapper rocketMQMessageObjectMapper,
+                                         RocketMQMessageConverter rocketMQMessageConverter) {
+  RocketMQTemplate rocketMQTemplate = new RocketMQTemplate();
+  rocketMQTemplate.setProducer(mqProducer);
+  rocketMQTemplate.setObjectMapper(rocketMQMessageObjectMapper);
+  rocketMQTemplate.setMessageConverter(rocketMQMessageConverter.getMessageConverter());
+  return rocketMQTemplate;
+}
+```
+
+事务消息注册处理
+
+```java
+@Bean
+@ConditionalOnBean(name = RocketMQConfigUtils.ROCKETMQ_TEMPLATE_DEFAULT_GLOBAL_NAME)
+@ConditionalOnMissingBean(TransactionHandlerRegistry.class)
+public TransactionHandlerRegistry transactionHandlerRegistry(
+  @Qualifier(RocketMQConfigUtils.ROCKETMQ_TEMPLATE_DEFAULT_GLOBAL_NAME) RocketMQTemplate template) {
+  return new TransactionHandlerRegistry(template);
+}
+
+@Bean(name = RocketMQConfigUtils.ROCKETMQ_TRANSACTION_ANNOTATION_PROCESSOR_BEAN_NAME)
+@ConditionalOnBean(TransactionHandlerRegistry.class)
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public static RocketMQTransactionAnnotationProcessor transactionAnnotationProcessor(
+  TransactionHandlerRegistry transactionHandlerRegistry) {
+  return new RocketMQTransactionAnnotationProcessor(transactionHandlerRegistry);
+}
+```
+
+继续看`ListenerContainerConfiguration`类，被创建Bean实例，就会调用构造方法，然后触发属性设置的后置方法`afterSingletonsInstantiated()`，因为它实现了接口`SmartInitializingSingleton`
+
+![](\assets\images\2021\mq\rocketmq-listernerContainerConfiguration.jpg)
+
+每个带有注解`RocketMQMessageListener`的Bean实例都会去调用registerContainer()方法注册进容器创建消费者，来看看这个方法：
+
+```java
+private void registerContainer(String beanName, Object bean) {
+        Class<?> clazz = AopProxyUtils.ultimateTargetClass(bean);
+
+  // 都需要继承RocketMQListener，否则抛异常
+        if (!RocketMQListener.class.isAssignableFrom(bean.getClass())) {
+            throw new IllegalStateException(clazz + " is not instance of " + RocketMQListener.class.getName());
+        }
+
+  // 利用反射获取注解信息
+        RocketMQMessageListener annotation = clazz.getAnnotation(RocketMQMessageListener.class);
+
+  // 从注解你获取消费组、topic名称
+        String consumerGroup = this.environment.resolvePlaceholders(annotation.consumerGroup());
+        String topic = this.environment.resolvePlaceholders(annotation.topic());
+
+  // 判断是否不订阅注解中的消费组和topic，是则不创建消费者
+        boolean listenerEnabled =
+            (boolean)rocketMQProperties.getConsumer().getListeners().getOrDefault(consumerGroup, Collections.EMPTY_MAP)
+                .getOrDefault(topic, true);
+
+        if (!listenerEnabled) {
+            log.debug(
+                "Consumer Listener (group:{},topic:{}) is not enabled by configuration, will ignore initialization.",
+                consumerGroup, topic);
+            return;
+        }
+  // 校验
+        validate(annotation);
+
+        String containerBeanName = String.format("%s_%s", DefaultRocketMQListenerContainer.class.getName(),
+            counter.incrementAndGet());
+        GenericApplicationContext genericApplicationContext = (GenericApplicationContext)applicationContext;
+// 创建消费者实例，注册进ioc容器
+        genericApplicationContext.registerBean(containerBeanName, DefaultRocketMQListenerContainer.class,
+            () -> createRocketMQListenerContainer(containerBeanName, bean, annotation));
+        DefaultRocketMQListenerContainer container = genericApplicationContext.getBean(containerBeanName,
+            DefaultRocketMQListenerContainer.class);
+ // 启动消费者，开始监听
+        if (!container.isRunning()) {
+            try {
+                container.start();
+            } catch (Exception e) {
+                log.error("Started container failed. {}", container, e);
+                throw new RuntimeException(e);
+            }
+        }
+
+        log.info("Register the listener to container, listenerBeanName:{}, containerBeanName:{}", beanName, containerBeanName);
+    }
+```
+
+如果你applicaiton.yml配置文件中，配置了不订阅的消费组和topic , 那么对应的消费者就不会被创建，属性配置看类`RocketMQProperties`的内部静态类`Consumer`
+
+![](\assets\images\2021\mq\rocketmq-properties.jpg)
+
+```java
+public static final class Consumer {
+  /**
+         * listener configuration container
+         * the pattern is like this:
+         * group1.topic1 = false
+         * group2.topic2 = true
+         * group3.topic3 = false
+         */
+  private Map<String, Map<String, Boolean>> listeners = new HashMap<>();
+
+  public Map<String, Map<String, Boolean>> getListeners() {
+    return listeners;
+  }
+
+  public void setListeners(Map<String, Map<String, Boolean>> listeners) {
+    this.listeners = listeners;
+  }
+}
+```
+
+所以我在application.yml 添加了如下配置
+
+```yml
+rocketmq:
+  producer:
+    group: rcc-producer-group
+  name-server: 10.16.157.69:9876;10.16.157.70:9876;10.16.157.71:9876
+  consumer:
+    listeners:
+      GROUP-RCC-INVOICE-APPLY:
+        TOPIC-MCSP-RCC-INVOICE-APPLY-RESULT: false
+      GROUP-RCC-AR-PAYABLE-HEDGE:
+        TOPIC-MCSP-MCC-PAYMENT-TEMPORARY-PAY-INFO-MSG: false
+      rcc-producer-group:
+        TOPIC-MCSP-SMC-SETTLE-REBACK: false
+      ERP-AR-APPLY-RESULT-GROUP:
+        TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR: false
+      ERP-AR-TRX-APPLY-RESULT-GROUP:
+        TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR: false
+      ERP-AR-TRX-UN-APPLY-RESULT-GROUP:
+        TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR: false
+      ERP-AR-UN-APPLY-RESULT-GROUP:
+        TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR: false
+      GROUP-SMC-INTF-RESULT-DISTRIBUTOR:
+        TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR: false
+```
+
+下面这段代码创建消费者Bean
+
+```java
+ genericApplicationContext.registerBean(containerBeanName, DefaultRocketMQListenerContainer.class,
+            () -> createRocketMQListenerContainer(containerBeanName, bean, annotation));
+```
+
+注册Spring bean时会调用方法`createRocketMQListenerContainer()`，来提供一个bean实例放入spring ioc容器
+
+```java
+    private DefaultRocketMQListenerContainer createRocketMQListenerContainer(String name, Object bean,
+        RocketMQMessageListener annotation) {
+        DefaultRocketMQListenerContainer container = new DefaultRocketMQListenerContainer();
+        
+        container.setRocketMQMessageListener(annotation);
+        
+        String nameServer = environment.resolvePlaceholders(annotation.nameServer());
+        nameServer = StringUtils.isEmpty(nameServer) ? rocketMQProperties.getNameServer() : nameServer;
+        String accessChannel = environment.resolvePlaceholders(annotation.accessChannel());
+        container.setNameServer(nameServer);
+        if (!StringUtils.isEmpty(accessChannel)) {
+            container.setAccessChannel(AccessChannel.valueOf(accessChannel));
+        }
+        container.setTopic(environment.resolvePlaceholders(annotation.topic()));
+        String tags = environment.resolvePlaceholders(annotation.selectorExpression());
+        if (!StringUtils.isEmpty(tags)) {
+            container.setSelectorExpression(tags);
+        }
+        container.setConsumerGroup(environment.resolvePlaceholders(annotation.consumerGroup()));
+        container.setRocketMQMessageListener(annotation);
+        container.setRocketMQListener((RocketMQListener)bean); // 具体的业务消费者对象
+        container.setObjectMapper(objectMapper);
+        container.setMessageConverter(rocketMQMessageConverter.getMessageConverter());
+        container.setName(name);  // REVIEW ME, use the same clientId or multiple?
+
+        return container;
+    }
+```
+
+`DefaultRocketMQListenerContainer`对象创建完后，就开始监听了
+
+```java
+if (!container.isRunning()) {
+  try {
+    container.start();
+  } catch (Exception e) {
+    log.error("Started container failed. {}", container, e);
+    throw new RuntimeException(e);
+  }
+}
+```
+
+点进`DefaultRocketMQListenerContainer`类的start方法
+
+![](\assets\images\2021\mq\default-rocketmq-listener-container.jpg)
+
+这里还有stop()方法，是不是可以通过applicationContext根据所有DefaultRocketMQListenerContainer类的消费者，然后判断topic或者consumerGroup进行手动关闭。调用`consumer.start()` 
+
+```java
+DefaultMQPushConsumer consumer;
+```
+
+应该是想rocketmq 服务端推送自己的注册信息，这个consumer对象是什么时候被创建的?DefaultRocketMQListenerContainer类实现了接口InitializingBean，这个接口有一个afterPropertiesSet()的后置方法
+
+```java
+public interface InitializingBean {
+
+	/**
+	 * Invoked by the containing {@code BeanFactory} after it has set all bean properties
+	 * and satisfied {@link BeanFactoryAware}, {@code ApplicationContextAware} etc.
+	 * <p>This method allows the bean instance to perform validation of its overall
+	 * configuration and final initialization when all bean properties have been set.
+	 * @throws Exception in the event of misconfiguration (such as failure to set an
+	 * essential property) or if initialization fails for any other reason
+	 */
+	void afterPropertiesSet() throws Exception;
+}
+```
+
+所以在上面`createRocketMQListenerContainer()`方法创建完 DefaultRocketMQListenerContainer container对象后就触发了DefaultRocketMQListenerContainer 类的afterPropertiesSet()方法，里面调用了initRocketMQPushConsumer()方法初始化consumer对象
+
+![](\assets\images\2021\mq\default-rocketmq-listener-container-2.jpg)
+
+initRocketMQPushConsumer()方法是一个核心方法，它设置了每个@RocketMQMessageListener 消费者向rocketMQ broker组成自己的消费者信息，如nameServer地址、一个消费者的最大消费线程数consumeThreadMax、 消费者连接超时时间consumeTimeout、消费模式consumerMode、选择消息的类型SelectorType（默认是TAG类型，即根据tag表达式取选择消息）、TAG表达式selectorExpression、消息模式messageModel（默认集群消费）
+
+里面有一段代码会选择消费模式，顺序消费还是并发消费，会创建对应的消费类：
+
+```java
+switch (consumeMode) {
+  case ORDERLY:
+    consumer.setMessageListener(new DefaultMessageListenerOrderly());
+    break;
+  case CONCURRENTLY:
+    consumer.setMessageListener(new DefaultMessageListenerConcurrently());
+    break;
+  default:
+    throw new IllegalArgumentException("Property 'consumeMode' was wrong.");
+}
+```
+
+@RocketMQMessageListener 注解的属性consumeMode默认是CONCURRENTLY 并发模式，那么就会创建消费对象DefaultMessageListenerConcurrently
+
+```java
+public class DefaultMessageListenerConcurrently implements MessageListenerConcurrently {
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+    for (MessageExt messageExt : msgs) {
+      log.debug("received msg: {}", messageExt);
+      try {
+        long now = System.currentTimeMillis();
+        // 把消息转换后，调用自定义的业务消费类，消费消息
+        rocketMQListener.onMessage(doConvertMessage(messageExt));
+        long costTime = System.currentTimeMillis() - now;
+        log.debug("consume {} cost: {} ms", messageExt.getMsgId(), costTime);
+      } catch (Exception e) {
+        log.warn("consume message failed. messageExt:{}", messageExt, e);
+        context.setDelayLevelWhenNextConsume(delayLevelWhenNextConsume);
+        return ConsumeConcurrentlyStatus.RECONSUME_LATER; // 消费失败，让broker重发消息
+      }
+    }
+
+    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS; // 消费成功
+  }
+}
+```
+
+consumeMessage()就是消费方法啦，它把消息经过转换解析后再给到我们自定义的业务消费类，所以添加了注解@RocketMQMessageListener 的Service类都会创建一个消费者consumer，实现接口RocketMQListener，只需重写 onMessage() 消费消息，不要catch异常。
+
+那这个consumer是什么时候调用MessageListenerConcurrently对象的，要好好研究consumer.start()方法做了什么操作。
+
+
+
+
 
