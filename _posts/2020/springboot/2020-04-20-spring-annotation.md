@@ -282,16 +282,22 @@ public @interface Transactional {
 public enum Propagation {
   /**支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择，也是 Spring 默认的事务的传播。*/
   REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED),
+  
   /**支持当前事务，如果当前没有事务，就以非事务方式执行*/
   SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
+  
   /**支持当前事务，如果当前没有事务，就抛出异常*/
   MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
+  
   /**新建事务，如果当前存在事务，把当前事务挂起*/
   REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
+  
   /**-以非事务方式执行操作，如果当前存在事务，就把当前事务挂起*/
   NOT_SUPPORTED(TransactionDefinition.PROPAGATION_NOT_SUPPORTED),
+  
   /**以非事务方式执行，如果当前存在事务，则抛出异常*/
   NEVER(TransactionDefinition.PROPAGATION_NEVER),
+  
   /**如果一个活动的事务存在，则运行在一个嵌套的事务中。如果没有活动事务，则按REQUIRED属性执行。
      * 它使用了一个单独的事务，这个事务拥有多个可以回滚的保存点。
      * 内部事务的回滚不会对外部事务造成影响。
@@ -358,6 +364,14 @@ Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，�
 - checked异常：所有其他的异常
 
 编程式事务：[http://139.199.13.139/blog/springboot/2021/02/24/spring-skill-002.html](http://139.199.13.139/blog/springboot/2021/02/24/spring-skill-002.html)
+
+>  @EnableTransactionManagement 源码分析
+
+@Transactional是如何选择事务控制器的，还有编程式事务TransactionTemplate是如何获取事务控制器，为什么多数据源的情况下需要指定事务控制器，否则spring事务失效
+
+
+
+
 
 ## 6、@Autowired与@Resource的区别
 

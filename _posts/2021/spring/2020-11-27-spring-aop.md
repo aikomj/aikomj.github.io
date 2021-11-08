@@ -326,6 +326,69 @@ public class LogAspect {
 
 > 参考代码
 
+rcc 的SecurityUtils工具类使用了线程变量
+
+```java
+@Component
+public class SecurityUtils {
+  // 对比ThreadLocal，InheritableThreadLocal的可继承线程变量
+    private static ThreadLocal<BaseRequest> THREAD_BASE_REQUEST = new InheritableThreadLocal<BaseRequest>() {
+        protected BaseRequest initialValue() {
+            return new BaseRequest();
+        }
+    };
+
+    private SecurityUtils() {
+    }
+
+    public static void setBaseRequest(BaseRequest baseRequest) {
+        THREAD_BASE_REQUEST.set(baseRequest);
+    }
+
+    public static BaseRequest getBaseRequest() {
+        return (BaseRequest)THREAD_BASE_REQUEST.get();
+    }
+
+    public static void clear() {
+        THREAD_BASE_REQUEST.remove();
+    }
+
+    public static String getOriginSystem() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getOriginSystem();
+    }
+
+    public static String getUserKey() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getUserKey();
+    }
+
+    public static String getIpAddr() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getIpAddr();
+    }
+
+    public static String getLanguage() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getLanguage();
+    }
+
+    public static Integer getTimeZone() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getTimeZone();
+    }
+
+    public static String getUserCode() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getUserCode();
+    }
+
+    public static String getUserName() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getUserName();
+    }
+
+    public static String getWorkIp() {
+        return ((BaseRequest)THREAD_BASE_REQUEST.get()).getWorkIp();
+    }
+}
+```
+
+在AOP中给每个请求的线程变量重新赋值
+
 ```java
 @Aspect
 public class RpcRequestInterceptor {
