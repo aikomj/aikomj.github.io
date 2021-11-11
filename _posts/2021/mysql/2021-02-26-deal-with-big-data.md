@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 如何处理海量数据，从大方面去如何把控
+title: 如何处理海量数据，从大方面去把控
 category: mysql
 tags: [mysql]
 keywords: mysql
