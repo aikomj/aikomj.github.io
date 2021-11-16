@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: MessageQueue
 tags: [MessageQueue]
 keywords: MessageQueue
-excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制
+excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者
 lock: noneed
 ---
 
@@ -118,7 +118,7 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 2. RocketMQ网络模型是什么样的，和Kafka对比如何？
 
-   netty网络模型
+   netty网络模型，kafka使用socket进行网络通信
 
 3. RocketMQ消息存储模型是什么样的，如何保证高可靠的存储，和Kafka对比如何？
 
@@ -1007,13 +1007,13 @@ if (!container.isRunning()) {
 
 ![](\assets\images\2021\mq\default-rocketmq-listener-container.jpg)
 
-这里还有stop()方法，是不是可以通过applicationContext根据所有DefaultRocketMQListenerContainer类的消费者，然后判断topic或者consumerGroup进行手动关闭。调用`consumer.start()` 
+这里还有stop()方法，是不是可以通过applicationContext根据所有DefaultRocketMQListenerContainer类的消费者，然后判断topic或者consumerGroup进行手动关闭。调用`consumer.start()` ，看看conusmer对象如下：
 
 ```java
 DefaultMQPushConsumer consumer;
 ```
 
-应该是想rocketmq 服务端推送自己的注册信息，这个consumer对象是什么时候被创建的?DefaultRocketMQListenerContainer类实现了接口InitializingBean，这个接口有一个afterPropertiesSet()的后置方法
+看类名字就知道是向rocketmq 服务端推送自己的注册信息，这个consumer对象是什么时候被创建的?DefaultRocketMQListenerContainer类实现了接口InitializingBean，这个接口有一个afterPropertiesSet()的后置方法
 
 ```java
 public interface InitializingBean {
@@ -1031,6 +1031,8 @@ public interface InitializingBean {
 ```
 
 所以在上面`createRocketMQListenerContainer()`方法创建完 DefaultRocketMQListenerContainer container对象后就触发了DefaultRocketMQListenerContainer 类的afterPropertiesSet()方法，里面调用了initRocketMQPushConsumer()方法初始化consumer对象
+
+![](\assets\images\2021\mq\rocketmq-initRocketMQPushConsumer.png)
 
 ![](\assets\images\2021\mq\default-rocketmq-listener-container-2.jpg)
 
