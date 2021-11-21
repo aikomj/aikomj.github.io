@@ -276,11 +276,15 @@ InsertConsumer.insertData(feeList, arrearageMapper::insertList);
 
 提升Excel导入速度的方法：
 
-- 使用更快的 Excel 读取框架(推荐使用阿里 EasyExcel)
-- 对于需要与数据库交互的校验、按照业务逻辑适当的使用缓存。用空间换时间
-- 使用 values(),(),() 拼接长 SQL 一次插入多行数据
-- 使用多线程插入数据，利用掉网络IO等待时间(推荐使用并行流，简单易用)
-- 避免在循环中打印无用的日志
+1）使用更快的 Excel 读取框架(推荐使用阿里 EasyExcel)
+
+2）对于需要与数据库交互的校验、按照业务逻辑适当的使用缓存。用空间换时间
+
+3）使用 values(),(),() 拼接长 SQL 一次插入多行数据
+
+4）使用多线程插入数据，利用掉网络IO等待时间(推荐使用并行流，简单易用)
+
+5）避免在循环中打印无用的日志
 
 ## 5、信息回写
 
@@ -291,7 +295,7 @@ web层请求接口StockInvAccountAgeController.java
 ```java
 @RequestMapping("/mobile/stockInvAccountAgeCtrl")
 public class StockInvAccountAgeController {
-    private static final Logger logger = LoggerFactory.getLogger(StockInvAccountAgeController.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(StockInvAccountAgeController.class.getName());
 
   // 配置的excel文件夹路径
   @Value("${ccs.file.importResult.dir}")
@@ -458,7 +462,44 @@ public class ExcelImportUtils {
 		return list;
 	}
   
-  // 表格数据读取到List
+  // 错误信息写入文件，返回文件路径
+  public static String getResultFileUrl(HttpServletRequest request, MultipartFile importFile, 
+                                        Map<Integer, String> errorMsgMap, String importResultDir) {
+    // 保存导入结果文件的文件夹在服务器上的本地路径
+    String importResultLocalDir =importResultDir;
+
+    String fileDate = fileDateSdf.format(new Date());		
+    importResultLocalDir += File.separator + fileDate;
+
+    File tempFile = new File(importResultLocalDir);
+    if (!tempFile.exists()) { // 文件夹不存在就新建
+      tempFile.mkdirs();
+    }
+
+    // 通过UUID创建唯一编码
+    String fileId = UUID.randomUUID().toString();
+    // 导出结果文件的后缀名要与导入文件的一致
+    String fileName = fileId + getFileSuffix(importFile.getOriginalFilename());
+    // 导出结果文件的服务器路径
+    String fileLocalPath = importResultLocalDir + File.separator + fileName;
+    boolean result = false;
+    try {
+      result = writeImportResultFile(errorMsgMap, 0, importFile.getInputStream(), fileLocalPath);
+    } catch (ApplicationException e) {
+      logger.error("文件生成失败：", e);
+      return null;
+    } catch (IOException e) {
+      logger.error("文件生成失败：", e);
+      return null;
+    }
+    if (result) {
+      return importResultLocalDir
+        + File.separator  + fileName;
+    }
+    return null;
+  }
+  
+   // 表格数据读取到List
   private static void saveData4Excel(Sheet sheet, List<Map<Object, Object>> list, List<String> headerList) {
 		if (sheet == null) {
 			throw new IllegalArgumentException("sheet 不能为null");
@@ -506,42 +547,6 @@ public class ExcelImportUtils {
 		sheet = null;
 	}
   
-  // 错误信息写入文件，返回文件路径
-  public static String getResultFileUrl(HttpServletRequest request, MultipartFile importFile, 
-                                        Map<Integer, String> errorMsgMap, String importResultDir) {
-    // 保存导入结果文件的文件夹在服务器上的本地路径
-    String importResultLocalDir =importResultDir;
-
-    String fileDate = fileDateSdf.format(new Date());		
-    importResultLocalDir += File.separator + fileDate;
-
-    File tempFile = new File(importResultLocalDir);
-    if (!tempFile.exists()) { // 文件夹不存在就新建
-      tempFile.mkdirs();
-    }
-
-    // 通过UUID创建唯一编码
-    String fileId = UUID.randomUUID().toString();
-    // 导出结果文件的后缀名要与导入文件的一致
-    String fileName = fileId + getFileSuffix(importFile.getOriginalFilename());
-    // 导出结果文件的服务器路径
-    String fileLocalPath = importResultLocalDir + File.separator + fileName;
-    boolean result = false;
-    try {
-      result = writeImportResultFile(errorMsgMap, 0, importFile.getInputStream(), fileLocalPath);
-    } catch (ApplicationException e) {
-      logger.error("文件生成失败：", e);
-      return null;
-    } catch (IOException e) {
-      logger.error("文件生成失败：", e);
-      return null;
-    }
-    if (result) {
-      return importResultLocalDir
-        + File.separator  + fileName;
-    }
-    return null;
-  }
   // 写入workbook  
 	private static boolean writeImportResultFile(Map<Integer, String> map, int page, 
 			InputStream inputStream,String fileName) throws IOException, ApplicationException {
@@ -638,7 +643,6 @@ public class ExcelImportUtils {
 			}
 		}	
 	}
-  
 }
 ```
 
