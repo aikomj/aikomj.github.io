@@ -4,7 +4,7 @@ title: 孤尽老师做客艾编程笔记
 category: architect
 tags: [architect]
 keywords: architect
-excerpt: 项目和需求有什么区别，什么是项目管理，架构图是什么，系统鲁棒性与容灾机制
+excerpt: 项目和需求有什么区别，什么是项目管理，系统鲁棒性与容灾机制，架构图是什么，架构图的分类 业务架构、客户端与前端架构、系统架构,上手架构设计
 lock: noneed
 ---
 
@@ -146,7 +146,7 @@ lock: noneed
 
 ### 4+1架构视图
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2021/architect/four-add-one.png)
+![](/assets/images/2021/architect/four-add-one.png)
 
 - **<font color=red>逻辑视图</font>**
 
@@ -178,13 +178,115 @@ lock: noneed
 
 举例：
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2021/architect/four-add-one-2.png)
+![](/assets/images/2021/architect/four-add-one-2.png)
 
 左边UML画的架构示意图，右边使用ppt画的架构示意图可以使用颜色的图标，就比较好看，有更好的表达
 
 ### 架构图分类
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2021/architect/category.png)
+![](/assets/images/2021/architect/category.png)
+
+简单来说，客户端与前端都是一台设备上的，比如说手机或一台电脑上部署一个应用程序，而后端它是在多台服务器上部署很多个应用程序，比如nginx、业务数据库、业务应用等。客户端与前端基本上不存在像后端这么复杂的划分，还有不同的技术，所以说客户端和前端的架构一般情况下只会按照模块划分。
+
+### 业务架构
+
+从业务的角度去划分你的系统，可以得到业务架构，它描述了系统对用户提供了什么业务功能，也就是4+1的<mark>场景视图</mark>
+
+举例，香港支付宝钱包的业务架构图：
+
+![](/assets/images/2021/architect/ali-pay-hk.png)
+
+MTR：香港地铁
+
+人传人：你可以邀请你的好友来使用AlipayHK来获得一些红包
+
+> 使用场景
+
+- 产品人员规划业务
+- 给新员工汇报业务
+- 给新员工培训业务
+
+> 画图技巧
+
+- 通过不同<mark>颜色</mark>来标识业务状态
+
+  比如说你可以用颜色来标识业务是不是已经比较稳定了，还是说现在在快速发展
+
+  比如说某个颜色可以标识这个业务今年才开始做的，已经在规划，明年要做的
+
+- 业务<mark>分组</mark>管理（业务相似性、关联性一组）
+
+  像上面分了4组：钱包业务、第三方业务、商家服务、用户管理
+
+  它的目的是把相关的业务放在一起，能够更方便的识别出整个业务的一个结构和它的状态。分组要有一个明确的要求，这些业务它本质上是要有一定的类似性的。
+
+### 客户端与前端架构
+
+> 定义
+
+本质上都是针对客户端领域或者前端领域，按照逻辑的领域划分的，类似于4+1视图的逻辑视图
+
+举例
+
+![](/assets/images/2021/architect/weixin-front.png)
+
+> 使用场景
+
+1. 整体架构设计
+
+   比如，你代表你们的技术团队，跟产品团队、其他部门或者是业界的技术大会上进行分享
+
+2. 架构培训
+
+   新员工培训，与其他部门技术交流可以用这个客户端架构、前端架构
+
+> 画图技巧
+
+1. 通过不同<mark>颜色</mark>来标识不同角色
+2. 通过<mark>连接线</mark>来表示关系relation
+
+### 系统架构
+
+> 定义
+
+后端的逻辑架构，也叫后端架构、技术架构
+
+举例，MongoDB的系统架构
+
+![](/assets/images/2021/architect/mongodb.png)
+
+首先看里面的角色：Router 、Config Server、Shard
+
+再看里面的关系：Router 会访问Config Server，Config server 同时管理Router、Shard，Router也会访问Shard来拿数据，同时每个Shard 主分片可以有1个或者多个副本分片叫replica set。
+
+这就是MongoDB整体分片的系统架构图
+
+> 使用场景
+
+1. 整体架构设计
+
+   系统设计的核心
+
+2. 架构培训
+
+> 画图技巧
+
+1. 通过不同<mark>颜色</mark>来标识不同角色
+2. 通过<mark>连接线</mark>来表示关系relation
+
+**为什么后端的逻辑架构直接就叫系统架构？**
+
+一个系统的架构核心的部分，它的重点其实就在后端架构，所以一般说系统架构主要就是讲它的后端架构
+
+> 系统架构复杂，画2张图
+
+**功能示意图：**
+
+![](/assets/images/2021/architect/arch-demo-2.png)
+
+**交互示意图**
+
+
 
 
 

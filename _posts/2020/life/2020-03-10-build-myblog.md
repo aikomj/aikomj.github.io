@@ -425,7 +425,7 @@ html代码段
 ```
 
 2.上面的default我们可以在_layouts目录下找到：
-![](/assets/images/2020/icoding/jekyll-layout.gif)
+![](/assets/images/2020/blog/jekyll-layout.gif)
 上面的content 将由index.html中的html代码填充。
 
 > 扩展阅读：[http://jmcglone.com/guides/github-pages/](http://jmcglone.com/guides/github-pages/)
@@ -448,7 +448,7 @@ html代码段
 
 参考 [https://gitee.com/help/articles/4284#article-header0](https://gitee.com/help/articles/4284#article-header0)
 
-![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee.jpg)
+![](/assets/images/2020/blog/jekyll-blog-github-to-gitee.jpg)
 
 文章内介绍了gitee 和github同步更新的3种方式，我选择了方式1
 
@@ -459,7 +459,7 @@ git remote add 远程库名 远程库地址
 eg: git remote add gitee git@github.com:xxx/xxx.git
 ```
 
-![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-2.jpg)
+![](/assets/images/2020/blog/jekyll-blog-github-to-gitee-2.jpg)
 
 修改提交到远程仓库的名字
 
@@ -470,11 +470,11 @@ git remote rename  origin github
 git remote rename aikomj.github.io gitee
 ```
 
-![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-3.jpg)
+![](/assets/images/2020/blog/jekyll-blog-github-to-gitee-3.jpg)
 
 注意：这里同步的意思是push代码到远程仓库时，分别选择gitee和github各自push
 
-![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-4.jpg)
+![](/assets/images/2020/blog/jekyll-blog-github-to-gitee-4.jpg)
 
 由于我是新增的gitee远程仓库地址，所以本地git并没有它的提交记录，所以会显示之前全部的github记录给你，让你提交，但没必要提交历史的push，只提交最新的push，因为gitee上的仓库初始化已与github上的仓库一致，所以只需提交最新的。
 
@@ -482,7 +482,7 @@ git remote rename aikomj.github.io gitee
 
 还有另外一种方式，在gitee上的仓库点击“强制“同步gitee和github上的代码
 
-![](/assets/images/2020/icoding/blog/jekyll-blog-github-to-gitee-5.jpg)
+![](/assets/images/2020/blog/jekyll-blog-github-to-gitee-5.jpg)
 
 
 
@@ -534,14 +534,17 @@ jekyll build --destination=/www/jekyll-blog
 
 **参数说明**
 
-| 属性名      | 说明         | 类型   | 必填 | 可选值   |
-| ----------- | ------------ | ------ | ---- | -------- |
-| port        | 端口         | Number | 是   | -        |
-| method      | 请求方法     | string | 是   | POST/GET |
-| url         | 链接         | string | 是   | '/'      |
-| acceptToken | 认证         | string | 是   | -        |
-| userAgnet   | ua           | string | 是   | -        |
-| cmd         | 要执行的命令 | arr    | 是   | -        |
+| 属性名      | 说明                                                         | 类型    | 必填              | 可选值       |
+| ----------- | ------------------------------------------------------------ | ------- | ----------------- | ------------ |
+| port        | 端口                                                         | Number  | 是                | -            |
+| method      | 请求方法                                                     | string  | 是                | POST/GET     |
+| url         | 链接                                                         | string  | 是                | '/'          |
+| acceptToken | 认证                                                         | string  | 是                | -            |
+| userAgnet   | ua                                                           | string  | 是                | -            |
+| type        | 执行命令或脚本文件,默认是command                             | string  | 是                | command/file |
+| executeFile | 执行脚本文件的全路径                                         | string  | type='file'时必填 |              |
+| cmd         | 要执行的命令                                                 | arr     | 是                | -            |
+| async       | 同步/异步(同步将在命令执行完毕后返回执行结果，异步直接返回成功)，默认同步 | Boolean |                   | true/false   |
 
 2、gitee仓库配置webhook
 
@@ -609,6 +612,42 @@ let init = function(option){
     console.log('自动部署服务启动于：' + system + '操作系统，端口号：' + option.port);
 };
 ```
+
+2021年11月21日，腾讯云服务器差不多到期了，要把博客转移到阿里云服务器上，再看这个自动部署项目，已更新了，支持异步与直接执行脚本文件，所以把deploy.js修改
+
+```js
+const deployment = require('auto-deployment');
+deployment({
+    port:7788,
+    method:'POST',
+    url:'/jkwebhook',		# 这里我使用nginx代理路由
+    acceptToken:'1qaz2wsx3edc', # 配置仓库的webhook时填写的密码
+    userAgnet:"git-oschina-hook",
+  	type:'file',
+    executeFile:'/usr/local/jekyll-blog-auto-deploy/deploy.sh',
+  	async:true
+});
+```
+
+执行deploy.js查看out.log，报错缺少模块iconv-lite
+
+```sh
+[root@aliserver jekyll-blog-auto-deploy]# npm install iconv-lite
+# 使用nohup 后台运行
+nohup node deploy.js > out.log 2>&1 &
+# 执行成功
+[root@aliserver jekyll-blog-auto-deploy]# cat out.log 
+nohup: ignoring input
+自动部署服务启动于：linux操作系统，端口号：7788
+```
+
+nginx的配置文件增加了路由，需要重新reload
+
+```sh
+[root@helloworld conf]# nginx -s reload
+```
+
+
 
 ### 开机启动脚本
 
