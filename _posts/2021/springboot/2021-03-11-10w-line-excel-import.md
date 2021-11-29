@@ -5,7 +5,7 @@ title: 10w 级别Excel数据导入的优化记录
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 使用EasyExcel提升读取excel的性能，缓存数据库查询结果集HashMap匹配校验，insert批量插入，适当使用并行流优化插入速度，利用掉网络IO等待时间，避免循环打印无用日志
+excerpt: 使用EasyExcel提升读取excel的性能，缓存数据库查询结果集HashMap匹配校验，insert批量插入，适当使用并行流优化插入速度，利用掉网络IO等待时间，避免循环打印无用日志,导入结果回写原excel文件提供下载，异步分页导出大量数据
 lock: noneed
 ---
 
@@ -288,9 +288,13 @@ InsertConsumer.insertData(feeList, arrearageMapper::insertList);
 
 ## 5、信息回写
 
-上面使用了easyExcel导入文件内容到数据库，导入过程中某些行出错，我们可以把出错信息回写到excel对应行中，返回一个excel文件的下载路径给前端，用户下载后了解具体的行错误信息。在ccs项目组的时候，导入库存账龄保留天数就是这样实现的。
+上面使用了easyExcel导入文件内容到数据库，导入过程中某些行出错，我们可以把出错信息回写到excel对应行中，返回一个excel文件的下载路径给前端，用户下载后了解具体的行错误信息。
 
-web层请求接口StockInvAccountAgeController.java
+### POI方式导入
+
+在ccs项目组的时候，导入库存账龄保留天数就是这样实现的。
+
+1、controller层请求接口StockInvAccountAgeController.java
 
 ```java
 @RequestMapping("/mobile/stockInvAccountAgeCtrl")
@@ -417,7 +421,7 @@ public class DealProtectDays {
 }
 ```
 
-工具类ExcelImportUtils.java，导入功能可以使用easyExcel替代
+2、工具类ExcelImportUtils.java，导入功能可以使用easyExcel替代
 
 ```java
 public class ExcelImportUtils {
@@ -646,11 +650,824 @@ public class ExcelImportUtils {
 }
 ```
 
-工具类ExcelImportUtils.java，错误信息写回excel文件部分
-
 如果是微服务，excel文件不能保留在服务单例上，应该上传到fastDFS或者OSS上
 
+### EasyExcel方式导入
 
+rcc 对账服务佣金点位配置异步导入excel
+
+1、Controller层接口
+
+```java
+@Api(tags = "佣金点位配置")
+@RestController
+@RequestMapping("/pointConfig")
+public class PointConfigController {
+    @Autowired
+    PointConfigService pointConfigService;
+  
+    @ApiOperation("导入")
+    @PostMapping("/importFile.do")
+    public Result<String> importFile(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        return Result.getSuccessResult(pointConfigService.importFile(file));
+    }
+}
+```
+
+2、业务层实现类`PointConfigServiceImpl`
+
+```java
+@Service
+public class PointConfigServiceImpl extends ServiceImpl<PointConfigMapper, PointConfig> implements PointConfigService {
+    @Autowired
+    RccExcelServiceImpl rccExcelService;
+  
+  	// 新增点位数据
+   @Override
+    public void addBatch(String tenantCode,String userCode,List<PointConfigFormDTO> dtoList) {
+        // 尽量保证校验唯一与插入的原子性，避免插入重复数据
+        RLock rLock = redisLockHelper.tryLock("addPointConfig", 3, -1, TimeUnit.SECONDS);
+        Assert.notNull(rLock,"获取锁失败,请稍后重试");
+        try{
+            // 1.唯一判断校验，满足以下场景
+            // 相同模板+品牌+品类，允许商品编码空与非空的两种情况存在
+            // 相同模板+品牌+品类+商品编码空的唯一
+            // 相同模板+品牌+品类+商品编码非空的唯一
+            // 过滤商品编码空的记录,再进行分组，如果每组的数量大于1，则存在重复
+            Map<String, List<PointConfigFormDTO>> group1 = dtoList.stream().filter(dto -> StringUtils.isBlank(dto.getItemCode()))
+                    .collect(Collectors.groupingBy(dto -> dto.getTemplateId()+"-"+dto.getBrandCode() + "-" + dto.getCategoryCode()));
+            group1.forEach((k,v)->{
+                Assert.isTrue(v.size()==1,"模板-品牌-品类("+k+")存在重复点位配置");
+                // 判断数据库是否已存在该点位配置
+                PointConfig one = this.getOne(new QueryWrapper<PointConfig>().select(PointConfig.ID)
+                        .eq(PointConfig.TENANT_CODE,tenantCode).eq(PointConfig.TEMPLATE_ID,v.get(0).getTemplateId())
+                        .eq(PointConfig.BRAND_CODE, v.get(0).getBrandCode()).eq(PointConfig.CATEGORY_CODE, v.get(0).getCategoryCode())
+                        .and(wrap ->wrap.isNull(PointConfig.ITEM_CODE).or().eq(PointConfig.ITEM_CODE,"")).last("LIMIT 1"));
+                if(Objects.nonNull(one)){
+                    throw new RuntimeException("模板-品牌-品类("+k+")已存在点位配置，ID："+one.getId());
+                }
+            });
+            // 过滤商品编码非空的记录,再进行分组，如果每组的数量大于1，则存在重复
+            Map<String, List<PointConfigFormDTO>> group2 = dtoList.stream().filter(dto -> StringUtils.isNotBlank(dto.getItemCode()))
+                    .collect(Collectors.groupingBy(dto -> dto.getTemplateId()+ dto.getBrandCode() + "-" + dto.getCategoryCode() + "-" + dto.getItemCode()));
+            group2.forEach((k,v) ->{
+                Assert.isTrue(v.size()==1,"模板-品牌-品类-商品("+k+")存在重复点位配置");
+                PointConfig one = this.getOne(new QueryWrapper<PointConfig>().select(PointConfig.ID)
+                        .eq(PointConfig.TENANT_CODE,tenantCode).eq(PointConfig.TEMPLATE_ID,v.get(0).getTemplateId())
+                        .eq(PointConfig.BRAND_CODE, v.get(0).getBrandCode()).eq(PointConfig.CATEGORY_CODE, v.get(0).getCategoryCode())
+                        .eq(PointConfig.ITEM_CODE,v.get(0).getItemCode()).last("LIMIT 1"));
+                if(Objects.nonNull(one)){
+                    throw new RuntimeException("模板-品牌-品类-商品("+k+")已存在点位配置，ID："+one.getId());
+                }
+            });
+
+            // 2.插入
+            transactionTemplate.execute(status -> {
+                dtoList.forEach(dto ->{
+                    PointConfig entity = new PointConfig();
+                    BeanUtils.copyProperties(dto,entity);
+                    entity.setId(DateUtils.generateId());
+                    entity.setTenantCode(tenantCode);
+                    entity.setCreatedBy(userCode);
+                    entity.setUpdatedBy(userCode);
+                    this.save(entity);
+
+                    // 操作日志
+                    RccOperateLog operateLog = new RccOperateLog().setTenantCode(tenantCode).setForeignKey(entity.getId().toString())
+                            .setCreatedBy(userCode).setUpdatedBy(userCode).setOperateRecord("新增"+getFormString(dto));
+                    operateLogGenMapper.insert(operateLog);
+                });
+                return true;
+            });
+        }finally {
+            rLock.unlock();
+        }
+    }
+  
+    @Override
+    public String importFile(MultipartFile file) {
+        String tenantCode = SecurityUtils.getBaseRequest().getTenantCode();
+        String userCode = SecurityUtils.getUserCode();
+        Assert.isTrue(StringUtils.isNotBlank(tenantCode),"租户编码为空，请重新登录");
+      // excel文件工作簿对象
+        Workbook workbook = RccExcelUtils.getWorkBook(file);
+      // 导出文件的名称
+        String fileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DateUtils.DF_YMDHMS_S))+file.getOriginalFilename();
+      // 调用基础中心保存一条文件导出记录
+        ComExportRecordGenDTO fileRecord = rccExcelService.saveFileRecord("pointConfig", fileName);
+
+      // 异步导入
+        CompletableFuture.runAsync(()->{
+            try {
+                PointConfigExcelListener excelListener=new PointConfigExcelListener().setTenantCode(tenantCode).setUserCode(userCode)
+                        .setPointConfigService(this).setPointTemplateConfigService(pointTemplateConfigService)
+                        .setWorkbook(workbook).setExcelService(rccExcelService).setFileRecord(fileRecord);
+                // 读取第一个sheet,默认第1行是标题，忽略空行,文件流自动关闭
+                EasyExcel.read(file.getInputStream(), PointConfigFormDTO.class,excelListener).registerConverter(new LocalDateTimeConverter()).sheet().doRead();
+            } catch (IOException e) {
+                log.error("pointConfig importFile error {}",e);
+            }
+        });
+        return fileName;
+    }
+}
+```
+
+整个系统是微服务应用，先调用基础中心生成一条文件导出记录，生成成功，开启子线程异步导入excel，并返回文件名称给前端
+
+```java
+ ComExportRecordGenDTO fileRecord = rccExcelService.saveFileRecord("pointConfig", fileName);
+```
+
+实现类`RccExcelServiceImpl` 
+
+```java
+/**
+ * @Author xiejw17
+ * @Date 2021/11/15 17:45
+ */
+@Lazy
+@Service
+@Slf4j
+public class RccExcelServiceImpl {
+    @Value("${server.tomcat.basedir:/tmp/}")
+    private String tempDir;
+
+    @Resource
+    private ExportRecordAtoFeign exportRecordAtoFeign;
+    @Resource
+    private ComExportRecordGenFeign exportRecordGenFeign;
+
+    /**
+     * 保存文件记录
+     * @param prefix
+     * @param fileName
+     * @return
+     */
+    public ComExportRecordGenDTO saveFileRecord(String prefix, String fileName){
+        LockExportRequest request = new LockExportRequest();
+        request.setFilePrefix(prefix);
+        request.setFileName(prefix+"-"+fileName);
+        request.setCountLimit(5);
+        ComExportRecordGenDTO record = this.exportRecordAtoFeign.lockExportRecord(CommonRequest.build(request)).getData();
+        if (Objects.isNull(record)) {
+            throw new BussinessException(ModuleErrorEnum.EXCEL_PROGRESS_LIMIT, new Object[0]);
+        }
+        return record;
+    }
+
+    /**
+     * 文件上传OSS
+     * @param workbook
+     * @param record
+     * @param startTime
+     */
+    public void uploadFile(Workbook workbook,ComExportRecordGenDTO record){
+        File file = new File(this.tempDir +"/"+ record.getFileName());
+        try{
+            // 输出到文件
+            FileOutputStream out = new FileOutputStream(file);
+            workbook.write(out);
+            out.close();
+            //  文件上传OSS
+            UploadMediaRequest request = new UploadMediaRequest();
+            request.setSystem(GlobalConstants.OssSystem.PASS_OSS.getSystemSign());
+            request.setBucket("mcsp-public-store");
+            UploadResponse response = MediaUploadHelper.upload(file, request);
+            record.setFileSize(file.length());
+            if(Objects.isNull(response)){
+                record.setExportStatus(DictEnum.ExportStatus.FAIL.getStatus());
+                record.setRemark("上传OSS返回空");
+            }else{
+                record.setDownload(response.getUrl());
+                record.setExportStatus(DictEnum.ExportStatus.COMPLETED.getStatus());
+                record.setRemark("success");
+            }
+        }catch (Exception e){
+            record.setExportStatus(DictEnum.ExportStatus.FAIL.getStatus());
+            record.setRemark("导入结果文件上传OSS失败："+e.getMessage());
+        }finally {
+            file.delete();
+        }
+    }
+
+    // 更新文件记录
+    public void updateFileRecord(ComExportRecordGenDTO record,int tryTimes) throws InterruptedException{
+        try{
+            exportRecordGenFeign.updateComExportRecord(CommonRequest.build(record));
+        }catch (Exception e ){
+            tryTimes = tryTimes -1;
+            if(tryTimes<=0){
+                log.error("文件记录<"+record.getFileName()+">更新失败："+e.getMessage());
+            }else{
+                // 2秒后重试
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                    updateFileRecord(record,tryTimes);
+                } catch (InterruptedException interruptedException) {
+                    log.error("文件记录<"+record.getFileName()+">更新失败："+e.getMessage());
+                    throw interruptedException;
+                }
+            }
+        }
+    }
+}
+```
+
+feign接口
+
+```java
+@Component
+@FeignClient(
+    value = "base-atomic-service",
+    path = "/base-atomic"
+)
+public interface ExportRecordAtoFeign {
+    @PostMapping({"/export/lockExportRecord.ato.do"})
+    Result<ComExportRecordGenDTO> lockExportRecord(@RequestBody CommonRequest<LockExportRequest> request);
+
+    @PostMapping({"/export/exportRecordList.ato.do"})
+    PaginationResult<List<ExportRecordAtoRespDTO>> exportRecordList(@RequestBody PaginationRequest<ExportQueryAtoReqDTO> request);
+}
+
+@Component
+@FeignClient(
+    value = "base-atomic-service",
+    path = "/base-atomic"
+)
+public interface ComExportRecordGenFeign {
+    @PostMapping({"/comExportRecord/updateComExportRecord.gen.do"})
+    Result<Boolean> updateComExportRecord(@RequestBody CommonRequest<ComExportRecordGenDTO> request);
+}
+```
+
+这里整合EasyExcel导入文件，需要继承`AnalysisEventListener`重写数据处理监听器
+
+```java
+@Slf4j
+public class PointConfigExcelListener extends AnalysisEventListener<PointConfigFormDTO> {
+    private PointConfigService pointConfigService;
+    private PointTemplateConfigService pointTemplateConfigService;
+    private RccExcelServiceImpl excelService;
+    private ComExportRecordGenDTO fileRecord;
+    private String tenantCode;
+    private String userCode;
+    private Long startTime;
+    //private static final int BATCH_COUNT = 1;
+    private List<PointConfigFormDTO> configList;
+    private Map<String,Long> templateMap;
+    private Map<Integer,String> failMessageMap; // 行导入失败的原因
+    Workbook workbook;
+
+    public PointConfigExcelListener(){
+        this.configList = new ArrayList<>();
+        this.templateMap = new HashMap<>();
+        this.failMessageMap = new HashMap<>();
+        startTime = System.currentTimeMillis();
+    }
+
+    public PointConfigExcelListener setTenantCode(String tenantCode){
+        this.tenantCode = tenantCode;
+        return this;
+    }
+
+    public PointConfigExcelListener setUserCode(String userCode){
+        this.userCode = userCode;
+        return this;
+    }
+
+    public PointConfigExcelListener setPointConfigService(PointConfigService pointConfigService) {
+        this.pointConfigService = pointConfigService;
+        return this;
+    }
+
+    public PointConfigExcelListener setPointTemplateConfigService(PointTemplateConfigService pointTemplateConfigService) {
+        this.pointTemplateConfigService = pointTemplateConfigService;
+        return this;
+    }
+
+    public PointConfigExcelListener setExcelService(RccExcelServiceImpl excelService) {
+        this.excelService = excelService;
+        return this;
+    }
+
+    public PointConfigExcelListener setWorkbook(Workbook workbook) {
+        this.workbook = workbook;
+        return this;
+    }
+
+    public PointConfigExcelListener setFileRecord(ComExportRecordGenDTO fileRecord) {
+        this.fileRecord = fileRecord;
+        return this;
+    }
+
+    /**
+     * 每条数据解析都会来调用
+     */
+    @Override
+    public void invoke(PointConfigFormDTO data, AnalysisContext context) {
+        int rowIndex = context.readRowHolder().getRowIndex();
+        if(StringUtils.isBlank(data.getBrandCode())||StringUtils.isBlank(data.getCategoryCode())){
+            failMessageMap.put(rowIndex,"品牌编码、品类编码必填");
+            //context.readRowHolder().getCellMap().put(10, new CellData("品牌编码、品类编码必填"));
+            return;
+        }
+        // 检验品牌、品类的正确性
+
+        // 查询模板id
+        Long templateId = Optional.ofNullable(templateMap.get(data.getTemplateName())).orElseGet(()->{
+            PointTemplateConfig one = pointTemplateConfigService.getOne(new QueryWrapper<PointTemplateConfig>()
+                    .select(PointTemplateConfig.ID)
+                    .eq(PointTemplateConfig.TENANT_CODE, tenantCode).eq(PointTemplateConfig.TEMPLATE_NAME, data.getTemplateName())
+                    .last("limit 1"));
+            return Optional.ofNullable(one).map(r->r.getId()).orElse(null);
+        });
+        if(Objects.isNull(templateId)){
+            failMessageMap.put(rowIndex,"当前租户没配置模板："+data.getTemplateName());
+            return;
+        }
+        templateMap.put(data.getTemplateName(),templateId);
+        data.setTemplateId(templateId);
+        // 现在每读一条数据保存一次，因为要获取成功失败信息
+        configList.add(data);
+        try{
+            pointConfigService.addBatch(tenantCode,userCode,configList);
+        }catch (Exception e){
+            failMessageMap.put(rowIndex,e.getMessage());
+        }
+        configList.clear();
+    }
+
+    /**
+     * 所有数据解析完后调用
+     */
+    @SneakyThrows
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext context) {
+        // 每条记录的导入结果更新到原文件
+        RccExcelUtils.updateMessage4Excel(workbook,failMessageMap);
+        // 文件上传OSS
+        excelService.uploadFile(workbook,fileRecord);
+        // 更新文件记录
+        this.fileRecord.setCostTime(System.currentTimeMillis()-startTime);
+        excelService.updateFileRecord(fileRecord,3);
+        // 一定要关闭文件流
+        workbook.close();
+    }
+
+    /**
+     * 每条数据转换时的异常处理，默认会抛出异常，停止读取，这里不抛异常，将异常信息保存下来，继续读取下一行
+     * @param exception
+     * @param context
+     * @throws Exception
+     */
+    @Override
+    public void onException(Exception exception, AnalysisContext context) throws Exception {
+        failMessageMap.put(context.readRowHolder().getRowIndex(),"数据解析异常"+exception.getMessage());
+    }
+}
+```
+
+工具类`RccExcelUtils`
+
+```java
+public class RccExcelUtils {
+      @SneakyThrows
+    public static Workbook getWorkBook(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        if(null == originalFilename){
+            throw new BussinessException(ErrorEnum.FAIL, "excel文件名称不能为空");
+        }
+        String fileName = originalFilename.toLowerCase();
+        if(fileName.endsWith(".xls")){
+            return new HSSFWorkbook(file.getInputStream());
+        }else if(fileName.endsWith(".xlsx")){
+            return new XSSFWorkbook(file.getInputStream());
+        }
+        throw new RuntimeException("excel文件格式错误");
+    }
+
+    public static void updateMessage4Excel(Workbook workbook, Map<Integer, String> map) {
+        Sheet sheet = workbook.getSheetAt(0);
+        int columnIndex = 0;
+        // 第一行是标题
+        Row row = sheet.getRow(sheet.getFirstRowNum());
+        columnIndex = row.getLastCellNum();
+        Cell cell = row.createCell(columnIndex);
+        cell.setCellValue("提示");
+        for (int i = sheet.getFirstRowNum() + 1; i < sheet.getLastRowNum() + 1; i++) {
+            row = sheet.getRow(i);
+            cell = row.createCell(columnIndex);
+            cell.setCellValue(StringUtils.defaultString(map.get(i), "success"));
+        }
+    }
+}
+```
+
+## 6、异步分页导出
+
+1、Controller层接口
+
+```java
+@Api(tags = "电商对账-销售发票核对")
+@RestController
+@RequestMapping("/reconciliation/saleInvoice")
+public class SaleInvoiceRecController {
+      @ApiOperation("导出对账明细,返回导出的任务id")
+    @PostMapping("/exportDetails.do")
+    public Result<String> exportDetails(@RequestBody PaginationRequest<FindSaleInvoiceDetailReqDTO> pageRequest){
+        String downloadId = saleInvoiceRecFacade.exportDetails(pageRequest);
+        return Result.getSuccessResult(downloadId);
+    }
+}
+```
+
+2、业务层实现类
+
+```java
+@Slf4j
+@Service
+public class SaleInvoiceRecFacadeImpl implements SaleInvoiceRecFacade {
+    @Override
+    public String exportDetails(PaginationRequest<FindSaleInvoiceDetailReqDTO> pageRequest) {
+        String tenantCode = pageRequest.getHeadParams().getTenantCode();
+        Assert.isTrue(StringUtils.isNotBlank(tenantCode) &&
+                StringUtils.isNotBlank(pageRequest.getRestParams().getPeriod()),"租户编码与账期必填");
+        ExcelServiceImpl.ExcelParam param = new ExcelServiceImpl.ExcelParam("销售发票核对明细导出", "租户编码"+tenantCode);
+        param.addHead("checkBatchNum","核对批次号");
+        param.addHead("period","账期");
+        param.addHead("merchantCode","商户编码");
+        param.addHead("merchantName","商户名称");
+        param.addHead("customerCode","客户编码");
+        param.addHead("customerName","客户名称");
+        param.addHead("shopCode","店铺编码");
+        param.addHead("shopName","店铺名称");
+        param.addHead("outTradeNo","订单号");
+        param.addHead("settleAmount","本期结算金额");
+        param.addHead("settleTaxAmount","本期结算税额");
+        param.addHead("invoiceAmount","本期开票金额");
+        param.addHead("invoiceTaxAmount","本期开票税额");
+        param.addHead("diffAmount","本期差异");
+        param.addHead("taxDiffAmount","本期税额差异");
+        param.addHead("startDiffAmount","期初差异");
+        param.addHead("startTaxDiffAmount","期初税额差异");
+        param.addHead("endDiffAmount","期末差异");
+        param.addHead("endTaxDiffAmount","期末税额差异");
+        param.addHead("diffJudgeTypeName","差异判断");
+
+        String downloadId = excelService.asyncExport(pr ->{
+            List<SaleInvoiceDetailRespDTO> list = listDetails(pr);
+            list.parallelStream().forEach(dto->{
+                dto.setDiffJudgeTypeName(getDiffJudgeTypeName(dto.getDiffJudgeType()));
+            });
+            return PaginationResult.getSuccessResult(list,pr.getPagination());
+        },pageRequest,param);
+        return downloadId;
+    }
+}
+```
+
+主要工具类`ExcelServiceImpl`
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+@Lazy
+@Service
+public class ExcelServiceImpl {
+    private static final Logger log = LoggerFactory.getLogger(ExcelServiceImpl.class);
+    @Resource
+    private ComExportRecordGenFeign exportRecordGenFeign;
+    @Resource
+    private ExportRecordAtoFeign exportRecordAtoFeign;
+    private static final String EXCEL_SUFFIX = ".xlsx";
+    private static final int COUNT_PER_PERSON = 5;
+    private static final int PROGRESS_TIMEOUT = 3600;
+    private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    @Value("${server.tomcat.basedir:/tmp/}")
+    private String tempDir;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+  
+    public String asyncExport(Function<PaginationRequest, PaginationResult<List>> function, PaginationRequest request, ExcelServiceImpl.ExcelParam param) {
+        this.initParam(param, false);
+        ExecutorConfig.TASK_EXECUTOR.execute(() -> {
+            try {
+                String fileName = this.exportEasy(function, request, param);
+                this.exportEasySuccess(param, fileName);
+            } catch (InterruptedException var10) {
+                log.warn("导出取消，任务ID: [{0}]", param.record.getId());
+                this.exportCancel(param, "手动取消任务");
+                Thread.currentThread().interrupt();
+            } catch (NullPointerException var11) {
+                log.error("导出失败：空指针异常", var11);
+                this.exportFail(param, "空指针异常");
+            } catch (Exception var12) {
+                log.error("导出失败：", var12);
+                this.exportFail(param, StringUtils.substring(this.getExceptionMessage(var12), 0, 1000));
+            } finally {
+                ExportProgressHelper.clearProgress(param.record.getId());
+            }
+
+        });
+        return param.record.getId().toString();
+    }
+  
+    private void initParam(ExcelServiceImpl.ExcelParam param, boolean async) {
+        param.async = async;
+        param.startTime = System.currentTimeMillis();
+        param.fileName = param.docName + "-" + LocalDateTime.now().format(DF) + ".xlsx";
+        param.record = (ComExportRecordGenDTO)this.exportRecordAtoFeign.lockExportRecord(CommonRequest.build(this.getRecord(param.docName, param.fileName, 5))).getData();
+        if (param.record == null) {
+            throw new BussinessException(ModuleErrorEnum.EXCEL_PROGRESS_LIMIT, new Object[0]);
+        } else {
+          // 初始文件导出进度到redis
+            ExportProgressHelper.setProgress(param.record.getId(), "0", 3600L, TimeUnit.SECONDS);
+        }
+    }
+  
+  public String exportEasy(Function<PaginationRequest, PaginationResult<List>> function, PaginationRequest request, ExcelServiceImpl.ExcelParam param) throws InterruptedException {
+        Pagination pagination = request.getPagination(1, 5000, true);
+        String fileName = this.tempDir + "/" + param.fileName;
+        String sheetName = param.sheetName;
+        Long progress = 0L;
+        int lineCount = 0;
+        int sheetNum = 0;
+        String[] keys = (String[])param.head.keySet().toArray(new String[param.head.size()]);
+        ExcelWriter excelWriter = EasyExcel.write(fileName).build();
+        WriteSheet writeSheet = ((ExcelWriterSheetBuilder)EasyExcel.writerSheet(sheetNum, sheetName).needHead(false)).build();
+        List<List<String>> headList = new LinkedList();
+        headList.add(new ArrayList(param.head.values()));
+        excelWriter.write(headList, writeSheet);
+
+        while(progress < 100L && !Thread.currentThread().isInterrupted()) {
+            request.setPagination(pagination);
+            PaginationResult<List> result = (PaginationResult)function.apply(request);
+            if (CollectionUtils.isEmpty((Collection)result.getData())) {
+                ExportProgressHelper.setProgress(param.record.getId(), "100", 3600L, TimeUnit.SECONDS);
+                break;
+            }
+
+            if (lineCount + ((List)result.getData()).size() > 1000000) {
+                ++sheetNum;
+                sheetName = param.sheetName + "-" + sheetNum;
+                writeSheet = ((ExcelWriterSheetBuilder)EasyExcel.writerSheet(sheetNum, sheetName).needHead(false)).build();
+                excelWriter.write(headList, writeSheet);
+                lineCount = 0;
+            }
+          // 导出数据写入文件
+            lineCount = writeDataEasy(excelWriter, writeSheet, keys, (ArrayNode)objectMapper.valueToTree(result.getData()), lineCount);
+            if (pagination.getCount() == 0L) {
+                pagination.setCount(result.getPagination().getCount());
+            }
+
+            if (pagination.getCount() > 0L) {
+                progress = (long)(pagination.getPageNo() * pagination.getPageSize() * 100) / pagination.getCount();
+                ExportProgressHelper.setProgress(param.record.getId(), progress.toString(), 3600L, TimeUnit.SECONDS);
+            }
+
+            pagination.setCountFlag(false);
+            pagination.next();
+            Thread.sleep(5L);
+        }
+
+        excelWriter.finish();
+        return fileName;
+    }
+  
+      public static int writeDataEasy(ExcelWriter excelWriter, WriteSheet writeSheet, String[] keys, ArrayNode datas, int lineCount) {
+        List<List> dataList = new LinkedList();
+
+        for(int i = 0; i < datas.size(); ++i) {
+            List list = new LinkedList();
+
+            for(int j = 0; j < keys.length; ++j) {
+                String key = keys[j];
+                String value = getValue(key, datas.get(i));
+                list.add(value);
+            }
+
+            dataList.add(list);
+        }
+
+        excelWriter.write(dataList, writeSheet);
+        return lineCount + datas.size();
+    }
+  
+      public void exportEasySuccess(ExcelServiceImpl.ExcelParam param, String fileName) {
+        File file = new File(fileName);
+        try {
+            UploadMediaRequest request = new UploadMediaRequest();
+            request.setSystem(OssSystem.PASS_OSS.getSystemSign());
+            request.setBucket(StringUtils.isBlank(param.bucket) ? "mcsp-public-store" : param.bucket);
+            UploadResponse response = MediaUploadHelper.upload(file, request);
+            param.record.setDownload(response == null ? "" : response.getUrl());
+            param.record.setFileSize(file.length());
+            param.record.setCostTime(System.currentTimeMillis() - param.startTime);
+            param.record.setExportStatus(null == response ? ExportStatus.FAIL.getStatus() : ExportStatus.COMPLETED.getStatus());
+            param.record.setRemark(param.getRemark());
+            this.exportRecordGenFeign.updateComExportRecord(CommonRequest.build(param.record));
+        } finally {
+            FileUtil.delteTempFile(file);
+        }
+    }
+  
+      public void exportCancel(ExcelServiceImpl.ExcelParam param, String msg) {
+        param.record.setCostTime(System.currentTimeMillis() - param.startTime);
+        param.record.setExportStatus(ExportStatus.CANCEL.getStatus());
+        param.record.setRemark(msg);
+        this.exportRecordGenFeign.updateComExportRecord(CommonRequest.build(param.record));
+    }
+  
+      public void exportFail(ExcelServiceImpl.ExcelParam param, String msg) {
+        param.record.setCostTime(System.currentTimeMillis() - param.startTime);
+        param.record.setExportStatus(ExportStatus.FAIL.getStatus());
+        param.record.setRemark(msg);
+        this.exportRecordGenFeign.updateComExportRecord(CommonRequest.build(param.record));
+    }
+  
+  public static class ExcelParam {
+        private String docName;
+        private String sheetName;
+        private LinkedHashMap<String, String> head;
+        private String bucket;
+        private String remark;
+        private Long startTime;
+        private String fileName;
+        private ComExportRecordGenDTO record;
+        private boolean async;
+
+        public ExcelParam(String docName, String sheetName) {
+            this.docName = docName;
+            this.sheetName = sheetName;
+        }
+
+        public ExcelServiceImpl.ExcelParam setDocName(String docName) {
+            this.docName = docName;
+            return this;
+        }
+
+        public ExcelServiceImpl.ExcelParam setSheetName(String sheetName) {
+            this.sheetName = sheetName;
+            return this;
+        }
+
+        public ExcelServiceImpl.ExcelParam setBucket(String bucket) {
+            this.bucket = bucket;
+            return this;
+        }
+
+        public ExcelServiceImpl.ExcelParam setRemark(String remark) {
+            this.remark = remark;
+            return this;
+        }
+
+        public String getRemark() {
+            return this.remark;
+        }
+
+        public ExcelServiceImpl.ExcelParam addHead(String colunm, String name) {
+            this.head = (LinkedHashMap)Optional.ofNullable(this.head).orElse(new LinkedHashMap());
+            this.head.put(colunm, name);
+            return this;
+        }
+    }
+} 
+```
+
+用到了EasyExcel 依赖与 jackson-databind依赖
+
+![](\assets\images\2021\springcloud\jackson-databind.png)
+
+DTO对象
+
+```java
+public class ComExportRecordGenDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private Long id;
+    private String filePrefix;
+    private String fileName;
+    private String download;
+    private Long fileSize;
+    private Long costTime;
+    private Integer exportStatus;
+}
+```
+
+微服务Feign接口`ExportRecordAtoFeign`
+
+```java
+@Component
+@FeignClient(
+    value = "base-atomic-service",
+    path = "/base-atomic"
+)
+public interface ExportRecordAtoFeign {
+    @PostMapping({"/export/lockExportRecord.ato.do"})
+    Result<ComExportRecordGenDTO> lockExportRecord(@RequestBody CommonRequest<LockExportRequest> request);
+
+    @PostMapping({"/export/exportRecordList.ato.do"})
+    PaginationResult<List<ExportRecordAtoRespDTO>> exportRecordList(@RequestBody PaginationRequest<ExportQueryAtoReqDTO> request);
+}
+
+@Component
+@FeignClient(
+    value = "base-atomic-service",
+    path = "/base-atomic"
+)
+public interface ComExportRecordGenFeign {
+      @PostMapping({"/comExportRecord/updateComExportRecord.gen.do"})
+    Result<Boolean> updateComExportRecord(@RequestBody CommonRequest<ComExportRecordGenDTO> request);
+}
+```
+
+导出文件进度工具类`ExportProgressHelper`
+
+```java
+public class ExportProgressHelper {
+    private static final String EXPORT_PROGRESS_PREFIX = "EXPORT_PROGRESS:";
+
+    public ExportProgressHelper() {
+    }
+
+    public static void clearProgress(Long id) {
+        InitRedisConfig.BASE_REDIS_TEMPLATE.delete("EXPORT_PROGRESS:" + id);
+    }
+
+    public static void setProgress(Long id, String progress, long timeout, TimeUnit timeUnit) {
+        InitRedisConfig.BASE_REDIS_TEMPLATE.opsForValue().set("EXPORT_PROGRESS:" + id, "0", timeout, TimeUnit.SECONDS);
+    }
+
+    public static String getProgress(Long jobId) {
+        return (String)InitRedisConfig.BASE_REDIS_TEMPLATE.opsForValue().get("EXPORT_PROGRESS:" + jobId);
+    }
+
+    public static Map<Long, String> listProgress(List<Long> jobIds) {
+        Map<Long, String> result = new HashMap();
+        List<String> keys = new ArrayList();
+        Iterator var3 = jobIds.iterator();
+
+        while(var3.hasNext()) {
+            Long jobId = (Long)var3.next();
+            keys.add("EXPORT_PROGRESS:" + jobId);
+        }
+
+        Map<String, String> data = mget(keys);
+        Iterator var7 = jobIds.iterator();
+
+        while(var7.hasNext()) {
+            Long jobId = (Long)var7.next();
+            result.put(jobId, data.getOrDefault("EXPORT_PROGRESS:" + jobId, ""));
+        }
+
+        return result;
+    }
+
+    private static Map<String, String> mget(List<String> keys) {
+        Map<String, String> result = new HashMap();
+        List<String> data = InitRedisConfig.BASE_REDIS_TEMPLATE.opsForValue().multiGet(keys);
+
+        for(int i = 0; i < keys.size(); ++i) {
+            result.put(keys.get(i), data.get(i));
+        }
+
+        return result;
+    }
+}
+```
+
+美的云上传OSS工具类`MediaUploadHelper`
+
+```java
+public class MediaUploadHelper {
+    private static final Logger log = LoggerFactory.getLogger(MediaUploadHelper.class);
+    private static final Map<String, OssUploadInterface> EXECUTOR_MAP = new ConcurrentHashMap();
+
+    public MediaUploadHelper() {
+    }
+  
+      public static UploadResponse upload(File file, UploadMediaRequest req) {
+        UploadResponse response = null;
+
+        try {
+            if (StringUtils.isBlank(req.getSystem())) {
+                throw new BussinessException(ModuleErrorEnum.UPLOAD_EXECUTOR_EMPTY, new Object[0]);
+            } else {
+                List<OssUploadInterface> executors = getExecutors(req.getSystem());
+
+                OssUploadInterface executor;
+                for(Iterator var4 = executors.iterator(); var4.hasNext(); response = executor.upload(file, (String)null, req.getBucket())) {
+                    executor = (OssUploadInterface)var4.next();
+                }
+
+                return response;
+            }
+        } catch (IllegalAccessException | InstantiationException var6) {
+            throw new SystemException("OssUploadInterface init error");
+        }
+    }
+}
+```
 
 
 
