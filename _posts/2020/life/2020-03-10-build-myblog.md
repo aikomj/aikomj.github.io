@@ -1,12 +1,4 @@
----
-layout: post
-title: Jekyll搭建自己的个人博客
-category: life
-tags: [java]
-keywords: blog
-excerpt: Jekyll静态博客
-lock: noneed
----
+
 
 ## 前言
 
@@ -63,7 +55,18 @@ export PATH
 
 > 建议用rvm安装ruby，
 
-
+```sh
+_安装rvm_
+$ curl -sSL https://raw.githubusercontent.com/rvm/rvm/master/binscripts/rvm-installer | bash -s stable
+_添加rvm到系统path_
+$ source /Users/xjw/.rvm/scripts/rvm
+\_列出安装包
+$ rvm list known
+\_安装ruby，如果安装失败，再执行一次。我执行了三次才成功
+$ rvm install ruby-2.6.3
+\_安装成功,查看版本
+$ ruby -v
+```
 
 **安装gcc**
 
@@ -101,6 +104,12 @@ jekyll serve --port 80
 >  如果出现依赖冲突时可以通过 bundle update 更新 Gemfile.lock。
 >
 > gemfile.lock已有的情况，应该用bundle update更新，Jekyll serve 启动时就不会老报gem包缺失了
+
+安装相关gem包
+
+```sh
+[root@aliserver aikomj.github.io]# gem install jekyll-geo-pattern
+```
 
 
 
@@ -477,8 +486,6 @@ git remote rename aikomj.github.io gitee
 ![](/assets/images/2020/blog/jekyll-blog-github-to-gitee-4.jpg)
 
 由于我是新增的gitee远程仓库地址，所以本地git并没有它的提交记录，所以会显示之前全部的github记录给你，让你提交，但没必要提交历史的push，只提交最新的push，因为gitee上的仓库初始化已与github上的仓库一致，所以只需提交最新的。
-
-
 
 还有另外一种方式，在gitee上的仓库点击“强制“同步gitee和github上的代码
 
