@@ -1258,9 +1258,3 @@ CustomProperties addCustomProperties(){
  //...
 }
 ```
-
-部分注解说明：
-
-作者 | 谭朝红
-
-链接 | ramostear.com
