@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 川崎高彦-OAuth2最简向导
+title: 飞天班第31节：川崎高彦-OAuth2最简向导
 category: icoding-edu
 tags: [icoding-edu]
 keywords: springcloud、oauth2
