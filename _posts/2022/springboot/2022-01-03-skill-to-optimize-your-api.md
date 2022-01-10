@@ -4,7 +4,7 @@ title: 接口性能优化的11个小技巧
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 添加索引，让索引生效，sql优化，远程调用使用并行、redis缓存数据异构方案，避免重复调用如循环查询数据库、无限递归，异步处理，避免大事务，synchronzied和redis分布式锁控制好锁粒度
+excerpt: 添加索引，让索引生效，sql优化，远程调用使用并行、redis缓存数据异构方案，避免重复调用如循环查询数据库、无限递归，异步处理，避免大事务，synchronzied和redis分布式锁控制好锁粒度,远程调用分页查询数据，redis缓存与二级缓存的使用，分库分表解决数据库连接资源不足、磁盘IO的性能瓶颈、检索数据耗时和消耗cpu资源等问题，辅助功能开启慢查询日志、prometheus普罗米修斯监控、skywalking接口链路跟踪快速定位耗时问题
 lock: noneed
 ---
 
@@ -436,3 +436,310 @@ mysql数据库中主要有三种锁：
 所以数据库锁的优化方向是：
 
 优先使用`行锁`，其次使用`间隙锁`，再其次使用`表锁`。
+
+## 8、分页处理
+
+有时候我会调用某个接口批量查询数据，比如：通过用户id批量查询出用户信息，然后给这些用户送积分。
+
+但如果你一次性查询的用户数量太多了，比如一次查询2000个用户的数据。参数中传入了2000个用户的id，远程调用接口，会发现该用户查询接口经常超时。
+
+```java
+List<User> users = remoteCallUser(ids);
+```
+
+调用接口从数据库获取数据，是需要经过网络传输的。如果数据量太大，无论是获取数据的速度，还是网络传输受限于带宽，都会导致耗时时间比较长。
+
+这种情况要如何优化？<mark>分页处理</mark>
+
+将一次获取所有的数据的请求，改成分多次获取，每次只获取一部分用户的数据，最后进行合并和汇总。
+
+处理这个问题，我们要分两种场景：同步调用 和 异步调用
+
+### 同步调用
+
+如果在`job`中需要获取2000个用户的信息，它要求只要能正确获取到数据就好，对获取数据的总耗时要求不太高。
+
+但对每一次远程接口调用的耗时有要求，不能大于500ms，不然会有邮件预警。
+
+这时，我们可以同步分页调用批量查询用户信息接口。代码如下：
+
+```java
+List<List<Long>> allIds = Lists.partition(ids,200);
+
+for(List<Long> batchIds:allIds) {
+   List<User> users = remoteCallUser(batchIds);
+}
+```
+
+代码中我用的`google`的`guava`工具中的`Lists.partition`方法，用它来做分页简直太好用了。
+
+### 异步调用
+
+如果是在`某个接口`中需要获取2000个用户的信息，它考虑的就需要更多一些。
+
+除了需要考虑远程调用接口的耗时之外，还需要考虑该接口本身的总耗时，也不能超时500ms。只能使用异步调用了，代码如下：
+
+```java
+List<List<Long>> allIds = Lists.partition(ids,200);
+
+final List<User> result = Lists.newArrayList();
+allIds.stream().forEach((batchIds) -> {
+   CompletableFuture.supplyAsync(() -> {
+        result.addAll(remoteCallUser(batchIds));
+        return Boolean.TRUE;
+    }, executor);
+})
+```
+
+使用CompletableFuture类，多个线程异步调用远程接口，最后汇总结果统一返回。executor是自定义的线程池。
+
+## 9、加缓存
+
+解决接口性能问题，`加缓存`是一个非常高效的方法。
+
+但不能为了缓存而缓存，还是要看具体的业务场景。毕竟加了缓存，会导致接口的复杂度增加，同时也会带来数据不一致的问题。
+
+比如商城首页显示商品分类的地方，假设分类的调用接口获取的数据，就可以使用缓存。
+
+### redis缓存
+
+通常情况下，我们使用最多的缓存可能是：`redis`和`memcached`。后者适合单体应用，
+
+由于在关系型数据库，比如：mysql中，菜单是有上下级关系的。某个四级分类是某个三级分类的子分类，这个三级分类，又是某个二级分类的子分类，而这个二级分类，又是某个一级分类的子分类。
+
+这种存储结构决定了，想一次性查出这个分类树，并非是一件非常容易的事情。这就需要使用程序递归查询了，如果分类多的话，这个递归是比较耗时的。
+
+所以，如果每次都直接从数据库中查询分类树的数据，是一个非常耗时的操作。
+
+这时我们可以使用缓存，大部分情况，接口都直接从缓存中获取数据。操作redis可以使用成熟的框架，比如：jedis和redisson等。
+
+伪代码如下：
+
+```java
+String json = jedis.get(key);
+if(StringUtils.isNotEmpty(json)) {
+   CategoryTree categoryTree = JsonUtil.toObject(json);
+   return categoryTree;
+}
+return queryCategoryTreeFromDb();
+```
+
+先从redis中根据某个key查询是否有菜单数据，如果有则转换成对象，直接返回。如果redis中没有查到菜单数据，则再从数据库中查询菜单数据，有则返回。
+
+此外，我们还需要有个job每隔一段时间，从数据库中查询菜单数据，更新到redis当中，这样以后每次都能直接从redis中获取菜单的数据，而无需访问数据库了。如果菜单修改了，应该删除缓存，
+
+![](/assets/images/2022/redis-cache-2.jpg)
+
+### 二级缓存
+
+上面的方案基于redis缓存的，虽说redis访问速度很快。但毕竟是一个远程调用，而且菜单树的数据很多，在网络传输的过程中，是有些耗时的。
+
+有没有办法，不经过请求远程，就能直接获取到数据呢？
+
+使用<mark>二级缓存，基于内存的缓存</mark>
+
+目前使用比较多的内存缓存框架有：guava、Ehcache、caffine等。
+
+我们在这里以`caffeine`为例，它是spring官方推荐的。
+
+1、引入依赖包
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.github.ben-manes.caffeine</groupId>
+    <artifactId>caffeine</artifactId>
+    <version>2.6.0</version>
+</dependency>
+```
+
+2、配置CacheManager，开启EnableCaching
+
+```java
+@Configuration
+@EnableCaching
+public class CacheConfig {
+    @Bean
+    public CacheManager cacheManager(){
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        //Caffeine配置
+        Caffeine<Object, Object> caffeine = Caffeine.newBuilder()
+                //最后一次写入后经过固定时间过期
+                .expireAfterWrite(10, TimeUnit.SECONDS)
+                //缓存的最大条数
+                .maximumSize(1000);
+        cacheManager.setCaffeine(caffeine);
+        return cacheManager;
+    }
+}
+```
+
+3、使用Cacheable注解获取数据
+
+```java
+@Service
+public class CategoryService {
+   
+   @Cacheable(value = "category", key = "#categoryKey")
+   public CategoryModel getCategory(String categoryKey) {
+      String json = jedis.get(categoryKey);
+      if(StringUtils.isNotEmpty(json)) {
+         CategoryTree categoryTree = JsonUtil.toObject(json);
+         return categoryTree;
+      }
+      return queryCategoryTreeFromDb();
+   }
+}
+```
+
+调用categoryService.getCategory()方法时，先从caffine缓存中获取数据，如果能够获取到数据，则直接返回该数据，不进入方法体。
+
+如果不能获取到数据，则再从redis中查一次数据。如果查询到了，则返回数据，并且放入caffine中。
+
+具体流程图如下：
+
+![](/assets/images/2022/caffine-cache.jpg)
+
+该方案的性能更好，但有个缺点就是，如果数据更新了，不能及时刷新缓存。此外，如果有多台服务器节点，可能存在各个节点上数据不一样的情况。上面的代码中，caffine 缓存的过期时间是10秒，也就是说可能存在10秒内的数据不一致的情况。
+
+由此可见，二级缓存给我们带来性能提升的同时，也带来了数据不一致的问题。使用二级缓存一定要结合实际的业务场景，并非所有的业务场景都适用。
+
+但上面我列举的分类场景，是适合使用二级缓存的。因为它属于用户不敏感数据，即使出现了短暂的有点数据不一致也没有关系，用户有可能都没有察觉出来。
+
+## 10、分库分表
+
+有时候，接口性能受限的不是别的，而是数据库。
+
+当系统发展到一定的阶段，用户并发量大，会有大量的数据库请求，需要占用大量的数据库连接，同时会带来磁盘IO的性能瓶颈问题。
+
+此外，随着用户数量越来越多，产生的数据也越来越多，一张表有可能存不下。由于数据量太大，sql语句查询数据时，即使走了索引也会非常耗时。
+
+这时该怎么办呢？
+
+需要做<mark>分库分表</mark>，如下图所示：
+
+![](/assets/images/2022/distribute-db-tables.jpg)
+
+图中将用户库拆分成了三个库，每个库都包含了四张用户表。
+
+如果有用户请求过来的时候，先根据用户id路由到其中一个用户库，然后再定位到某张表。
+
+路由的算法挺多的：
+
+- `根据id取模`，比如：id=7，有4张表，则7%4=3，模为3，路由到用户表3。
+- `给id指定一个区间范围`，比如：id的值是0-10万，则数据存在用户表0，id的值是10-20万，则数据存在用户表1。
+- `一致性hash算法`
+
+分库分表主要有两个方向：`垂直`和`水平`。肯定是先垂直后水平的，垂直就是将表结构拆分为多个表，减少大表的字段数。可以这样总结：
+
+- 垂直方向，即根据业务拆分表结构
+- 水平方向，数据方向上进行切分，把数据切分到多个数据库多个表上，所有的表数据才是一个完整的数据。
+
+目的：
+
+- **分库**：是为了解决数据库连接资源不足问题，和磁盘IO的性能瓶颈问题。
+- **分表**：是为了解决单表数据量太大，sql语句查询数据时，即使走了索引也非常耗时问题。此外还可以解决消耗cpu资源问题。
+- **分库分表**：可以解决 数据库连接资源不足、磁盘IO的性能瓶颈、检索数据耗时 和 消耗cpu资源等问题。
+
+<mark>场景使用：</mark>
+
+如果在有些业务场景中，用户并发量很大，但是需要保存的数据量很少，这时可以只分库，不分表。
+
+如果在有些业务场景中，用户并发量不大，但是需要保存的数量很多，这时可以只分表，不分库。
+
+如果在有些业务场景中，用户并发量大，并且需要保存的数量也很多时，可以分库分表。
+
+## 11、辅助功能
+
+优化接口性能问题，除了上面提到的这些常用方法之外，还需要配合使用一些辅助功能，因为它们真的可以帮我们提升查找问题的效率。
+
+### 开启慢查询日志
+
+通常情况下，为了定位sql的性能瓶颈，我们需要开启mysql的慢查询日志。把超过指定时间的sql语句，单独记录下来，方面以后分析和定位问题。
+
+开启慢查询日志需要重点关注三个参数：
+
+- `slow_query_log` 慢查询开关
+- `slow_query_log_file` 慢查询日志存放的路径
+- `long_query_time` 超过多少秒才会记录日志
+
+通过mysql的`set`命令可以设置
+
+```sh
+set global slow_query_log='ON'; 
+set global slow_query_log_file='/usr/local/mysql/data/slow.log';
+set global long_query_time=2;
+```
+
+设置完之后，如果某条sql的执行时间超过了2秒，会被自动记录到slow.log文件中。
+
+当然也可以直接修改配置文件`my.cnf`
+
+```sh
+[mysqld]
+slow_query_log = ON
+slow_query_log_file = /usr/local/mysql/data/slow.log
+long_query_time = 2
+```
+
+但这种方式需要重启mysql服务。
+
+### 加监控
+
+为了出现sql问题时，能够让我们及时发现，我们需要对系统做`监控`。
+
+目前业界使用比较多的开源监控系统是：`Prometheus`。
+
+它提供了 `监控` 和 `预警` 的功能。架构图如下：
+
+![](/assets/images/2022/prometheus-1.jpg)
+
+我们可以用它监控如下信息：
+
+- 接口响应时间
+- 调用第三方服务耗时
+- 慢查询sql耗时
+- cpu使用情况
+- 内存使用情况
+- 磁盘使用情况
+- 数据库使用情况
+
+它的界面大概长这样子：
+
+![](/assets/images/2022/prometheus-2.jpg)
+
+可以看到mysql当前qps，活跃线程数，连接数，缓存池的大小等信息。
+
+如果发现数据量连接池占用太多，对接口的性能肯定会有影响。
+
+这时可能是代码中开启了连接忘了关，或者并发量太大了导致的，需要做进一步排查和系统优化。
+
+截图中只是它一小部分功能，如果你想了解更多功能，可以访问Prometheus的官网：[https://prometheus.io/](https://prometheus.io/)
+
+### 链路跟踪
+
+有时候某个接口涉及的逻辑很多，比如：查数据库、查redis、远程调用接口，发mq消息，执行业务代码等等。
+
+该接口一次请求的链路很长，如果逐一排查，需要花费大量的时间，这时候，我们已经没法用传统的办法定位问题了。
+
+有没有办法解决这问题呢？
+
+用分布式链路跟踪系统：`skywalking`。
+
+它的架构图如下：
+
+![](/assets/images/2022/skywalking.jpg)
+
+通过skywalking定位性能问题：
+
+![](/assets/images/2022/skywalking-2.jpg)
+
+在skywalking中可以通过`traceId`（全局唯一的id），串联一个接口请求的完整链路。可以看到整个接口的耗时，调用的远程服务的耗时，访问数据库或者redis的耗时等等，功能非常强大。
+
+之前没有这个功能的时候，为了定位线上接口性能问题，我们还需要在代码中加日志，手动打印出链路中各个环节的耗时情况，然后再逐一排查。
+
+如果你用过skywalking排查接口性能问题，不自觉的会爱上它的。如果你想了解更多功能，可以访问skywalking的官网：[https://skywalking.apache.org/](https://skywalking.apache.org/)
+
