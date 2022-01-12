@@ -4,7 +4,7 @@ title: Mysql表数据量很大，SQL变慢，有什么优化方案
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: sql执行较慢的3个原因,使用子查询优化，使用id限定优化，使用临时表优化，关联更新删除的优化，排序值作为查询条件，避免隐式转换，union all 代替混合排序，inner join代替exists语句避免嵌套查询，提前缩小范围，with语句缩小中间结果集，SQL查找是否存在，别再count了
+excerpt: 分页查询使用子查询优化、使用id限定优化、使用临时表优化，limit分页使用上一页的最大creat_time作为查询条件，字段类型匹配避免隐式转换，使用关联更新、删除，使用union all解决混合排序降低sql执行时间，inner join代替exists语句即用连接查询代替子查询，提前缩小范围，with语句缩小中间结果集，SQL判断否存在使用limit 1,
 lock: noneed
 ---
 
@@ -299,7 +299,7 @@ AND n.topic_type <> 5
 
 ![](\assets\images\2021\mysql\exists-dependent-subquery.png)
 
-使用了嵌套子查询，去掉exists 更改为 join，将执行时间从1.93秒降低为1毫秒
+dependent subquery 表示使用了嵌套子查询，去掉exists 更改为 join连接，将执行时间从1.93秒降低为1毫秒，修改如下：
 
 ```sql
 SELECT * FROM my_neighbor n 
@@ -311,7 +311,7 @@ AND n.topic_type <> 5
 
 新的执行计划
 
-![](D:\jacob\code\aikomj.github.io\assets\images\2021\mysql\exists-to-inner-join.png)
+![](\assets\images\2021\mysql\exists-to-inner-join.png)
 
 看来 exists不一定是优化sql，有时候反而使sql变慢，看执行计划
 
@@ -395,10 +395,10 @@ from a left join (
 根据某一条件从数据库表中查询 『有』与『没有』，只有两种状态，没必要用select count(*)，很多人的写法是这样的：
 
 ```java
-##### SQL写法:  
+// SQL写法:  
 SELECT count(*) FROM table WHERE a = 1 AND b = 2  
   
-##### Java写法:  
+// Java写法:  
 int nums = xxDao.countXxxxByXxx(params);  
 if ( nums > 0 ) {  
   //当存在时，执行这里的代码  
@@ -412,7 +412,7 @@ if ( nums > 0 ) {
 ```java
 SELECT 1 FROM table WHERE a = 1 AND b = 2 LIMIT 1  
   
-##### Java写法:  
+// Java写法:  
 Integer exist = xxDao.existXxxxByXxx(params);  
 if ( exist != NULL ) {  
   //当存在时，执行这里的代码  
@@ -423,143 +423,3 @@ if ( exist != NULL ) {
 
 SQL不再使用`count`，而是改用`LIMIT 1`，让数据库查询时遇到一条就返回，不要再继续查找还有多少条了，业务代码中直接判断是否非空即可，根据查询条件查出来的条数越多，性能提升的越明显。
 
-## 7、SQL语句执行较慢的3个原因
-
-### 没建立索引或索引失效
-
-在这千万级别的数据中查找你想要的内容，如果没有索引，那简直是在肉搏
-
-- mysql索引遵循“最左匹配”原则，查询的时候，like通配符在最前面，让索引失效，
-
-- 组合条件不按照组合索引的顺序，让索引失效。
-- or前后条件，有一个条件列没索引都会让索引失效，使用union all 替代 or
-
-查看执行计划，看查询有没有用到索引
-
-```sql
-EXPLAIN SELECT * FROMtableWHERE id < 100 ORDER BY a;
-```
-
-[飞天班第49节：数据库高级应用-2](http://139.199.13.139/blog/icoding-edu/2020/06/20/icoding-note-049.html)
-
-### 锁等待
-
-常用的存储引擎主要有 InnoDB 和 MyISAM 这两种了，前者支持行锁和表锁，后者就只支持表锁
-
-- 如果对一张表进行大量的更新操作， mysql 就觉得你这样用会让事务的执行效率降低，到最后还是会导致性能下降，这样的话，会将<mark>行锁升级成表锁</mark>。看下面这个案例
-
-  [insert into select语句把生产服务器炸了](http://139.199.13.139/blog/mysql/2020/05/01/insert-into-select.html)
-
-- 行锁可是基于索引加的锁，在执行更新操作时，条件索引都失效了，那么这个锁也会执行从行锁升级为表锁
-
-### 不恰当的SQL语句
-
-这个也比较常见了，啥是不恰当的 SQL 语句呢？就比如，明明你需要查找的内容是 name ， age ，但是呢，为了省事，直接 `select *`，<mark>或者在 order by 时，后面的条件不是索引字段，这就是不恰当的 SQL 语句</mark>
-
-## 8、测试优化SQL语句
-
-### 建表
-
-```sql
-CREATE TABLE t_demo(
- id int(11) NOT NULL,
- a int(11) DEFAULT 0,
- b int(11) DEFAULT 0,
- PRIMARY KEY(id)
-) ENGINE = INNODB
-```
-
-插入10万条数据
-
-```sql
-DROP PROCEDURE IF EXISTS demo_insert;
-CREATE PROCEDURE demo_insert()
-BEGIN
-    DECLARE i INT; 
-  SET i = 1;
-    WHILE i <= 100000 DO
-        INSERT INTO t_demo VALUES (i, i, i);
-        SET i = i + 1 ;
-    END WHILE;
-END;
-CALL demo_insert();
-```
-
-发现调用存储过程insert很慢，产生间隙锁竞争吗，锁等待
-
-### Explain
-
-只要说 SQL 调优，那就离不开 EXPLAIN
-
-```sql
-EXPLAIN SELECT * FROMtableWHERE id < 100 ORDER BY a;
-```
-
-![](\assets\images\2021\mysql\explain.jpg)
-
-1、id :每个执行计划都会有一个 id ，如果是一个联合查询的话，这里就会显示好多个 id
-
-2、select_type :表示的是 select 查询类型，常见的就是 SIMPLE (普通查询，也就是没有联合查询/子查询), PRIMARY (主查询), UNION ( UNION 中后面的查询), SUBQUERY (子查询)
-
-3、table :执行查询计划的表，在这里我查的就是 table ，所以显示的是 table， 那如果我给 table 起了别名 a ，在这里显示的就是 a
-
-4、type :查询所执行的方式，这是咱们在分析 SQL 优化的时候一个非常重要的指标，这个值从好到坏依次是: system > const > eq_ref > ref > range > index > ALL
-
-- system/const :说明表中只有一行数据匹配，这个时候根据索引查询一次就能找到对应的数据
-
-- eq_ref :使用唯一索引扫描，这个经常在多表连接里面，使用主键和唯一索引作为关联条件时可以看到
-
-- ref :非唯一索引扫描，也可以在唯一索引最左原则匹配扫描看到
-
-- range :索引范围扫描，比如查询条件使用到了 < ， > ， between 等条件
-
-- index :索引全表扫描，这个时候会遍历整个索引树
-
-- ALL :表示全表扫描，也就是需要遍历整张表才能找到对应的行
-
-5、possible_keys :表示可能使用到的索引
-
-6、key :实际使用到的索引
-
-7、key_len :使用的索引长度
-
-8、ref :关联 id 等信息
-
-9、rows :找到符合条件时，所扫描的行数，在这里虽然有 10 万条数据，但是因为索引的缘故，所以扫描了 99 行的数据
-
-10、Extra :额外的信息，常见的有以下几种
-
-- Using where :不用读取表里面的所有信息，只需要通过索引就可以拿到需要的数据，这个过程发生在对表的全部请求列都是同一个索引部分时
-- Using temporary :表示 mysql 需要使用临时表来存储结果集，常见于 group by / order by
-- Using filesort :当查询的语句中包含 order by 操作的时候，而且 order by 后面的内容不是索引，这样就没有办法利用索引完成排序，就会使用"文件排序",就像例子中给出的，建立的索引是 id ， 但是我的查询语句 order by 后面是 a ，没有办法使用索引
-- Using join buffer :使用了连接缓存
-- Using index :使用了覆盖索引
-
-### Show profile
-
-可以通过 `SHOW PROFILES;` 语句来查询最近发送给服务器的 SQL 语句，默认情况下是记录最近已经执行的 15 条记录，如下图我们可以看到:
-
-![](\assets\images\2021\mysql\show-profile.jpg)
-
-我想看具体的一条语句，看到 Query_ID 了嘛？然后运行下 `SHOW PROFILE FOR QUERY 82;` 这条命令就可以了:
-
-![](\assets\images\2021\mysql\show-profile-2.jpg)
-
-可以看到，在结果中， Sending data 耗时是最长的，这是因为此时 mysql 线程开始读取数据并且把这些数据返回到客户端，在这个过程中会有大量磁盘 I/O 操作
-
-通过这样的分析，我们就能知道， SQL 语句在查询过程中，到底是 磁盘 I/O 影响了查询速度，还是 System lock 影响了查询速度，知道了病症所在，接下来对症下药就容
-
-### 正确的 select 打开方式
-
-在查询时，有时为了省事，直接使用 `select * from table where id = 1` 这样的 SQL 语句，但是这样的写法在一些环境下是会存在一定的性能损耗的。所以最好的 select 查询就是，需要什么字段就查询什么字段
-
-一般在查询时，都会有条件，按照条件查找，这个时候正确的 select 打开方式是什么呢？
-
-如果可以通过主键索引的话， where 后面的条件，优先选择主键索引。为什么呢？跟 MySQL 的存储规则有关
-
-MySQL 常用的存储引擎有 MyISAM 和 InnoDB ， InnoDB 会创建主键索引，而主键索引属于聚簇索引，即存储数据时，索引是基于 B+ 树构成的，具体的行数据则存储在叶子节点。
-
-- 如果是通过主键索引查询的，会直接搜索 B+ 树，从而查询到数据。
-- 如果不是通过主键索引查询的，需要先搜索索引树，得到在 B+ 树上的值，再到 B+ 树上搜索符合条件的数据，这个过程就是“回表”
-
-很显然，回表会产生时间损耗。
