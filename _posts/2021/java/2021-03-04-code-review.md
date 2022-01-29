@@ -4,20 +4,20 @@ title: 代码Review的那些事儿
 category: java
 tags: [java]
 keywords: java
-excerpt: 代码Review的好处，做好一场合格的代码 Review
+excerpt: 代码Review的好处，做好一场合格的代码评审
 lock: noneed
 ---
 
 坚持执行代码 Review 对团队，对公司是很有好处的，特别是对写代码的同事！每个一起阅读代码的同事都会提出一些自己的建议 ，这些建议都是很宝贵的资源，往往都会有很大的收获。
 
-## 角色
+## 1、角色
 
 1. 代码的作者 Author；
 2. 阅读代码的同事 Reviewer；
 3. 主持人 Host；
 4. 记录员 Recorder。
 
-### 流程
+## 2、流程
 
 1. 提前一天发送 Review 代码邮件给相关人员，确定 Host 和 Recorder；
 2. 由 Host 主持 Review 会议；
@@ -26,7 +26,7 @@ lock: noneed
 
 在做代码 Review 之前 Author 需要提前一天需要发正式邮件给相关人员，并且将需要被 Review 的代码通过邮件附件的方式，发送给相关的 Reviewer 让他们提前阅读，这样有助于 Review 的时候可以更高效的进行。并且提前沟通好代码 Review 的会议 Host 和 Recorder。Host 在会议过程中负责组织大家发言和维护秩序，让代码 Review 更高效；Recorder 则负责将整个 Review 过程中提到的需要优化和改进的点进行文档形式的记录，记录的信息需要言简意赅，将哪个文件哪一行代码，问题是什么，建议怎么优化都需要记下来，并且在会议结束过后以邮件的形式发送给 Author 和抄送大家。
 
-### Review
+## 3、Review
 
 在进行代码 Review 的时候 Author 需要从文件的第一行开始进行一行行的代码走读，对每一行的代码进行描述，这里需要注意的是不要认为某个功能很简单，就可以一句带过，往往很多线上 Bug 都是因为这种忽略导致的。走读代码的时候 Author 需要解释清楚每一行代码的含义，说明这行代码是干嘛的，为什么要这样写。Reviewer 则需要根据 Author 的描述再结合自己之前阅读代码的理解进行提问或者改进方案。
 
