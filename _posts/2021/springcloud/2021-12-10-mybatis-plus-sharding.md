@@ -62,14 +62,13 @@ private String sexText;
 ```java
 @Component
 public class DataDict implements IDataDict {
-
     /**
      * 从数据库或缓存中获取
      */
-    private Map<String, String> SEX_MAP = new ConcurrentHashMap<String, String>() {{
+    private Map<String, String> SEX_MAP = new ConcurrentHashMap<String, String>(){
         put("0", "女");
         put("1", "男");
-    }};
+    };
 
     @Override
     public String getNameByCode(FieldDict fieldDict, String code) {

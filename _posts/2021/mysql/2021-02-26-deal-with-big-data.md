@@ -45,9 +45,9 @@ lock: noneed
 - 谨慎使用模糊查询
 - 优先使用UNION ALL，避免使用UNION
 
-[飞天班第49节：数据库高级应用-2](http://139.199.13.139/blog/icoding-edu/2020/06/20/icoding-note-049.html)
+[飞天班第49节：数据库高级应用-2](/icoding-edu/2020/06/20/icoding-note-049.html)
 
-[Mysql表数据量很大，分页查询很慢，有什么优化方案](http://139.199.13.139/blog/mysql/2020/08/05/resolve-page-query-slow.html)
+[Mysql表数据量很大，分页查询很慢，有什么优化方案](/mysql/2020/08/05/resolve-page-query-slow.html)
 
 2.数据库表结构设计
 
@@ -65,14 +65,14 @@ lock: noneed
 - 垂直切分
 - 水平切分
 
-[飞天班第51节：数据切分设计方案Mycat-1](http://139.199.13.139/blog/icoding-edu/2020/06/24/icoding-note-051.html)
+[飞天班第51节：数据切分设计方案Mycat-1](/icoding-edu/2020/06/24/icoding-note-051.html)
 
 分区分表会出现哪些弊端？
 
 - <mark>事务一致性</mark>
 
-  [飞天班第56节：分布式事务](http://139.199.13.139/blog/icoding-edu/2020/07/06/icoding-note-056.html)
-  [飞天班第57节：Alibaba-Seata分布式事务框架实战](http://139.199.13.139/blog/icoding-edu/2020/07/08/icoding-note-057.html)
+  [飞天班第56节：分布式事务](/icoding-edu/2020/07/06/icoding-note-056.html)
+  [飞天班第57节：Alibaba-Seata分布式事务框架实战](/icoding-edu/2020/07/08/icoding-note-057.html)
 
 - <mark>跨节点分页、排序、函数问题</mark>
 
@@ -82,7 +82,7 @@ lock: noneed
 
 5.数据库索引
 
-[Mysql表数据量很大，分页查询很慢，有什么优化方案](http://139.199.13.139/blog/mysql/2020/08/05/resolve-page-query-slow.html)
+[Mysql表数据量很大，分页查询很慢，有什么优化方案](/mysql/2020/08/05/resolve-page-query-slow.html)
 
 ### 分离活跃数据
 

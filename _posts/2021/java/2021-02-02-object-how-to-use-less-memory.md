@@ -69,7 +69,7 @@ Retained Size = 当前对象的大小+当前对象的引用大小(直接或者�
 
 > 一次JVM内存溢出的案例分析
 
-[http://139.199.13.139/blog/java/2020/09/21/prod-oom-event.html](http://139.199.13.139/blog/java/2020/09/21/prod-oom-event.html)
+[/java/2020/09/21/prod-oom-event.html](/java/2020/09/21/prod-oom-event.html)
 
 ![](\assets\images\2020\java\jvm-oom-mat3.jpg)
 

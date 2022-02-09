@@ -10,7 +10,7 @@ lock: noneed
 
 ## 前言
 
-使用javassist做动态代理，请移步[http://139.199.13.139/blog/java-design/2020/05/03/3-java-proxy-mode.html](http://139.199.13.139/blog/java-design/2020/05/03/3-java-proxy-mode.html)。javassist是一个编辑创建java字节码的类库，由一位日本人创建的。前段时间有个项目是基于JDK6开发的，不是maven项目，要手动导入依赖的jar包，这个jar包的class文件都是jdk6的，如果换成一个jdk8的class文件，那么项目就会因为class文件的jdk版本不兼容启动失败。所以使用javassist修改jdk6的class文件。
+使用javassist做动态代理，请移步[/java-design/2020/05/03/3-java-proxy-mode.html](/java-design/2020/05/03/3-java-proxy-mode.html)。javassist是一个编辑创建java字节码的类库，由一位日本人创建的。前段时间有个项目是基于JDK6开发的，不是maven项目，要手动导入依赖的jar包，这个jar包的class文件都是jdk6的，如果换成一个jdk8的class文件，那么项目就会因为class文件的jdk版本不兼容启动失败。所以使用javassist修改jdk6的class文件。
 
 ![](\assets\images\2021\javabase\jdk6-class-file.png)
 

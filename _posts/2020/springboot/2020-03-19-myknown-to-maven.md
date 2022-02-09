@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 对maven的笔记
+title: 对maven的认识
 category: springboot
 tags: [java]
 keywords: maven
-excerpt: 记录maven 相关的知识点
+excerpt: 记录maven相关的知识点
 lock: noneed
 ---
 
@@ -459,7 +459,7 @@ System.out.println(split.toString());
 
 guava提供的 Cache 和 java8的ConcurrentMap 很相似，但也不完全一样。最基本的区别是 ConcurrentMap 会一直保存所有添加的元素，直到显式地移除。相对地，我提供的 Cache 为了限制内存占用，通常都设定为**自动回收元素**。
 
-[spring缓存管理](http://139.199.13.139/springboot/2021/02/23/spring-skill-001.html)
+[spring缓存管理](/springboot/2021/02/23/spring-skill-001.html)
 
 如果你愿意消耗一些内存空间来提升速度，你能预料到某些键会被查询一次以上，缓存中存放的数据总量不会超出内存容量，就可以使用 Cache。
 

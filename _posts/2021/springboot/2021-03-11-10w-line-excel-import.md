@@ -167,7 +167,7 @@ lock: noneed
 
 第二版采用 EasyPOI 之后，对于几千、几万的 Excel 数据已经可以轻松导入了，不过耗时有点久(5W 数据 10分钟左右写入到数据库)不过由于后来导入的操作基本都是开发在一边看日志一边导入，也就没有进一步优化。但是好景不长，有新小区需要迁入，票据 Excel 有 41w 行，这个时候使用 EasyPOI 在开发环境跑直接就 OOM 了，增大 JVM 内存参数之后，虽然不 OOM 了，但是 CPU 占用 100% 20 分钟仍然未能成功读取全部数据。故在读取大 Excel 时需要再优化速度。莫非要我这个渣渣去深入 POI 优化了吗？别慌，先上 GITHUB 找找别的开源项目。这时阿里 EasyExcel 映入眼帘：
 
-飞天班相关文章[http://139.199.13.139/blog/icoding-edu/2020/04/12/icoding-note-021.html](http://139.199.13.139/blog/icoding-edu/2020/04/12/icoding-note-021.html)
+[飞天班21节-企业项目研发poi实际应用](/icoding-edu/2020/04/12/icoding-note-021.html)
 
 ![](\assets\images\2021\javabase\easyexcel.png)
 

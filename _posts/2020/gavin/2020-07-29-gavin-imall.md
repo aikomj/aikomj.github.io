@@ -349,7 +349,7 @@ http://localhost:8090
 
 可以使用eureka和nacos,
 
-Eureka 的高可用看我这篇文章：[http://139.199.13.139/blog/springcloud/2019/11/12/springcloud-ha-eureka.html](http://139.199.13.139/blog/springcloud/2019/11/12/springcloud-ha-eureka.html)
+Eureka 的高可用看我这篇文章：[/springcloud/2019/11/12/springcloud-ha-eureka.html](/springcloud/2019/11/12/springcloud-ha-eureka.html)
 
 eureka集群：CAP？CP/AP，是AP
 

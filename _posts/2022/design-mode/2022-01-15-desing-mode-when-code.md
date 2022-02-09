@@ -1,5 +1,5 @@
 ---
-·layout: post
+layout: post
 title: 实战！工作中常用到哪些设计模式
 category: design-mode
 tags: [design-mode]
@@ -354,7 +354,7 @@ check rule
 
 假设我们有这么一个业务场景：内部系统不同商户，调用我们系统接口，去跟外部第三方系统交互http方式，流程大概如下：
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/template-method.jpg)
+![](/assets/images/2022/template-method.jpg)
 
 这里，有的商户可能是走代理出去的，有的是走直连，假设当前有A,B商户接入，有小伙伴可能会这么写，伪代码如下：
 

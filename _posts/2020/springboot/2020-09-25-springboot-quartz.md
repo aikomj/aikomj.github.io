@@ -1305,7 +1305,7 @@ public static void main(String[] args) throws SchedulerException {
 
 > 3、cron表达式
 
-在我这篇文章[http://139.199.13.139/blog/icoding-edu/2020/03/22/icoding-note-012.html](http://139.199.13.139/blog/icoding-edu/2020/03/22/icoding-note-012.html)  @schedule注解也有使用cron表达式
+在我这篇文章[/icoding-edu/2020/03/22/icoding-note-012.html](/icoding-edu/2020/03/22/icoding-note-012.html)  @schedule注解也有使用cron表达式
 
 ```sh
 .---------------------- seconds(0 - 59)

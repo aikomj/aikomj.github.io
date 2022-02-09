@@ -8,7 +8,7 @@ excerpt: 避免使用select*,union all代替union,小表驱动大表in/exists,�
 lock: noneed
 ---
 
-这篇文章从15个方面，分享了sql优化的一些小技巧，希望对你有所帮助。
+这篇文章从15个方面，分享了sql优化的一些小技巧，希望对你有所帮助，前面写过相似的内容：[sql变慢，有什么优化方案](/mysql/2020/08/05/resolve-page-query-slow.html)
 
 <img src="/assets/images/2021/mysql/optimize-sql.jpg" style="zoom:80%;" />
 
@@ -493,13 +493,13 @@ sql语句没有走索引，排除没有建索引之外，最大的可能性是�
 EXPLAIN SELECT * FROMtableWHERE id < 100 ORDER BY a;
 ```
 
-[飞天班第49节：数据库高级应用-2](http://139.199.13.139/blog/icoding-edu/2020/06/20/icoding-note-049.html)
+[飞天班第49节：数据库高级应用-2](/icoding-edu/2020/06/20/icoding-note-049.html)
 
 ### 锁等待
 
 常用的存储引擎主要有 InnoDB 和 MyISAM 这两种了，前者支持行锁和表锁，后者就只支持表锁
 
-- 如果对一张表进行大量的更新操作， mysql 就觉得你这样用会让事务的执行效率降低，到最后还是会导致性能下降，这样的话，会将<mark>行锁升级成表锁</mark>。案例：[insert into select语句把生产服务器炸了](http://139.199.13.139/blog/mysql/2020/05/01/insert-into-select.html)
+- 如果对一张表进行大量的更新操作， mysql 就觉得你这样用会让事务的执行效率降低，到最后还是会导致性能下降，这样的话，会将<mark>行锁升级成表锁</mark>。案例：[insert into select语句把生产服务器炸了](/mysql/2020/05/01/insert-into-select.html)
 
 - 行锁可是基于索引加的锁，在执行更新操作时，条件索引都失效了，那么这个锁也会执行从行锁升级为表锁
 

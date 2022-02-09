@@ -149,7 +149,7 @@ Arrays.asList(1,2,3,4).forEach(num -> System.out.println(num));
 
 我们都接触过函数式接口，Runnable 接口
 
-[飞天班第4节：JUC并发编程（2）](http://139.199.13.139/blog/icoding-edu/2020/03/04/icoding-note-004.html)
+[飞天班第4节：JUC并发编程（2）](/icoding-edu/2020/03/04/icoding-note-004.html)
 
 Lambda 的设计者们为了让现有的功能与 Lambda 表达式良好兼容，考虑了很多方法，于是产生了**函数接口**这个概念。
 

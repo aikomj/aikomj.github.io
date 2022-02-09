@@ -722,5 +722,5 @@ public class RabbitController {
 - rabbitMQ消费者端开启手动签收模式，通过NACK将消息重回队尾变成Ready状态然后再次消费
 - 如果重试次数超过最大值，会将异常消息存储到数据库，然后人工介入排查问题，进行手工重试
 
-[消费端消息可靠性消费](http://139.199.13.139/blog/icoding-gavin/2020/03/01/gavin-note-044.html)
+[消费端消息可靠性消费](/icoding-gavin/2020/03/01/gavin-note-044.html)
 

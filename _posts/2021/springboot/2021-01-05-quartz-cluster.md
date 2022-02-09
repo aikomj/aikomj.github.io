@@ -1682,13 +1682,13 @@ Elastic-Job 最开始只有一个 elastic-job-core 的项目，定位轻量级�
 
 `elastic-job-lite`，是直接依赖 zookeeper 的，因此在开发之前我们需要先准备好对应的 zookeeper 环境，关于 zookeeper 的安装过程，就不多说了，非常简单，网上都有教程！之前做kafka集群和Mycat集群时都有搭建zookeeper集群。
 
-[http://139.199.13.139/blog/icoding-edu/2020/06/27/icoding-note-052.html](http://139.199.13.139/blog/icoding-edu/2020/06/27/icoding-note-052.html)
+[飞天班第52节：数据切分设计方案Mycat-2](/icoding-edu/2020/06/27/icoding-note-052.html)
 
 > 2、安装elastic-job-lite-console
 
 elastic-job-lite-console就是控制台，一个任务作业可视化界面管理系统。可以单独部署，与平台不关，通过配置注册中心和数据源来抓取数据可视化。
 
-这点跟阿里的流量卫兵控制台相似，通过java -jar启动的，参考文章 [http://139.199.13.139/blog/icoding-edu/2020/07/04/icoding-note-055.html](http://139.199.13.139/blog/icoding-edu/2020/07/04/icoding-note-055.html)
+这点跟阿里的流量卫兵控制台相似，通过java -jar启动的，参考 [飞天班第55节：SpringCloud Aibaba-Sentinel流量卫兵](/icoding-edu/2020/07/04/icoding-note-055.html)
 
 Github：[https://github.com/apache/shardingsphere-elasticjob](https://github.com/apache/shardingsphere-elasticjob)
 

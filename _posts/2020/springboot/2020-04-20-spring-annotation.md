@@ -363,7 +363,7 @@ Spring Boot 使用注解 @EnableTransactionManagement 开启事务支持后，�
 - unchecked异常：派生于Error或者RuntimeException的异常
 - checked异常：所有其他的异常
 
-编程式事务：[http://139.199.13.139/blog/springboot/2021/02/24/spring-skill-002.html](http://139.199.13.139/blog/springboot/2021/02/24/spring-skill-002.html)
+编程式事务：[/springboot/2021/02/24/spring-skill-002.html](/springboot/2021/02/24/spring-skill-002.html)
 
 >  @EnableTransactionManagement 源码分析
 
@@ -919,7 +919,7 @@ AOP是Spring框架面向切面的编程思想，它将涉及多业务流程的**
 
 ![](\assets\images\2020\java\spring-aop.png)
 
-具体看我的另外一篇文章：[Spring AOP 切面编程](http://139.199.13.139/blog/java/2020/11/27/spring-aop.html)
+具体看我的另外一篇文章：[Spring AOP 切面编程](/java/2020/11/27/spring-aop.html)
 
 ## 10、@JsonFormat 日期格式化
 

@@ -16,7 +16,7 @@ lock: noneed
 
 ![](\assets\images\2021\redis\redis-pipeline.png)
 
-[http://139.199.13.139/blog/icoding-edu/2020/05/13/icoding-note-034.html](http://139.199.13.139/blog/icoding-edu/2020/05/13/icoding-note-034.html)
+[pipeline管道的介绍](/icoding-edu/2020/05/13/icoding-note-034.html)
 
 以jedis为连接池，使用pipeline命令
 
