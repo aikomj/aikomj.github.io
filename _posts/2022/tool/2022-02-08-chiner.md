@@ -1,0 +1,80 @@
+---
+layout: post
+title: 体验chinner，国人开源的数据库设计工具，干掉powerdesigner
+category: tool
+tags: [tool]
+keywords: chiner
+excerpt: chiner支持windows、mac、linux，安装chiner，维护数据类型，维护数据表，维护关系图
+lock: noneed
+---
+
+## 前言
+
+下面是我们用powerDesigner设计DB的效果，
+
+![](\assets\images\tools\powerdesigner-db.png)
+
+终于也有一款开源的国产产品可替代powerDesigner，chiner，发音：[kaɪˈnər]，使用React+Electron+Java技术体系构建的一款元数建模平台。
+
+### 安装chiner
+
+chiner 支持 Windows、macOS 和 Linux，下载地址
+
+[https://gitee.com/robergroup/chiner/releases](https://gitee.com/robergroup/chiner/releases)
+
+我这里使用window免安装版为例，安装完成后首次打开的样子是这样的。
+
+![](\assets\images\tools\chiner-1.png)
+
+chiner 提供了非常贴心的操作手册和参考模板，如果时间比较充分的话，可以先把操作手册过一遍，写得非常详细
+
+[元建模操作手册](https://www.yuque.com/chiner/docs/manual)
+
+### 上手chiner
+
+打开参考模板“教学管理系统”，数据模型设计主要有数据表、视图、关系图、数据字典4部分
+
+![image-20220208165503175](\assets\images\tools\chiner-2.png)
+
+新建一个项目，它支持导入PowerDesigner文件，也支持连接数据库，从数据库导入表，先添加一个数据库连接：
+
+![](\assets\images\tools\chiner-3.png)
+
+如果需要用到数据库说明文档的话，也可以直接通过导出到 Word 文档来完成。
+
+![](\assets\images\tools\chiner-4.png)
+
+### 维护数据类型
+
+chiner 自带了6个数据类型、10个数据域，可以自定义添加
+
+![](\assets\images\tools\chiner-5.png)
+
+数据域是在数据类型的基础上，基于当前项目定义的有一定业务含义的数据类型，比如说我这里维护了一个长度为 90 的名称数据域。
+
+![](\assets\images\tools\chiner-6.png)
+
+当我需要把某个数据字段的数据域设置成「名称」的时候，长度就会自动填充为 90，不需要手动再去设置。
+
+![](\assets\images\tools\chiner-7.png)
+
+### 维护数据表
+
+当我们右键新增数据表，chiner 会帮我们自动生成一些常见常用的字段，比如说创建人、创建时间、更新人、更新时间、是否删除标记等，这些在【设置】新增默认字段可以设置的
+
+![](\assets\images\tools\chiner-8.png)
+
+一般来说，我们更习惯字段小写命名，因此可以直接选中一列，然后选择大小写转换。
+
+![](\assets\images\tools\chiner-9.png)
+
+### 维护关系图
+
+第一步，选择「关系图」，右键选择「新增关系图」
+
+第二步，把需要关联的表拖拽到右侧的面板当中，然后按照字段进行连线，非常的方便。比如说班级和学院表、班级和专业表的关系，就如下图所示
+
+![](\assets\images\tools\chiner-10.png)
+
+
+
