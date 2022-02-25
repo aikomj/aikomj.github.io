@@ -162,8 +162,6 @@ lock: noneed
 
    ```java
    public interface UserMapper {
-   
-   
        /**
         * 查询所有的信息
         * @return
@@ -177,7 +175,7 @@ lock: noneed
        void insert(UserEntity user);
    }
    ```
-
+   
    实体类
 
    ```java
@@ -201,7 +199,7 @@ lock: noneed
    
    }
    ```
-
+   
 5. 运行测试
 
    启动类
