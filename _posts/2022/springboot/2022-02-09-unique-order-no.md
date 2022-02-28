@@ -4,7 +4,7 @@ title: 订单号重复？一招搞定它
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: @PostConstruct注解和redis实现分布式流水号，自定义雪花算法工具类生成分布式唯一id
+excerpt: PostConstruct注解和redis实现分布式流水号，自定义雪花算法工具类生成分布式唯一id
 lock: noneed
 ---
 
