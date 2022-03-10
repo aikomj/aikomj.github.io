@@ -4,9 +4,11 @@ title: java 中那些持久化对象persistant object
 category: java
 tags: [java]
 keywords: java
-excerpt: PO,BO,VO,DTO,Query
+excerpt: PO,BO,VO,DTO,DAO
 lock: noneed
 ---
+
+## 1、持久化对象介绍
 
 - PO(Persistant Object) 持久对象
 
@@ -57,3 +59,233 @@ DAO：数据库增删改查方法；
 BO：业务基本操作。
 
 可以看到，进行 POJO 划分后，我们得到了一个设计良好的架构，各层数据对象的修改完全可以控制在有限的范围内。
+
+## 2、BO举例
+
+之前在xx公司做图表指标分析，就是用BO类建立模型对象进行业务指标统计的
+
+```java
+/** 
+ * @author 作者 : aknb206
+ * @version 创建时间：2017年8月17日 上午8:34:25 
+ * 碎片率，返工率的模型类
+ */
+public class SuipMap {
+	private Map<String, GroupMap> suipMap = new LinkedHashMap<String, GroupMap>(4);
+	private String company;
+	private List<GroupCategories> categories= new ArrayList<GroupCategories>();// 分组类别
+	private Map<String, GroupCategories> categoriesMap = new LinkedHashMap<String, GroupCategories>();
+	private List<Object> seriesDatas= new ArrayList<Object>();        // 分组类数据
+	
+	public List<Object> getSeriesDatas() {
+		return seriesDatas;
+	}
+	public void setSeriesDatas(List<Object> seriesDatas) {
+		this.seriesDatas = seriesDatas;
+	}
+	public Map<String, GroupCategories> getCategoriesMap() {
+		return categoriesMap;
+	}
+	public void setCategoriesMap(Map<String, GroupCategories> categoriesMap) {
+		this.categoriesMap = categoriesMap;
+	}
+	
+	public void setSuipMap(Map<String, GroupMap> suipMap) {
+		this.suipMap = suipMap;
+	}
+	public List<GroupCategories> getCategories() {
+		return categories;
+	}
+	public void setCategories(List<GroupCategories> categories) {
+		this.categories = categories;
+	}
+	
+	public Map<String, GroupMap> getSuipMap() {
+		return suipMap;
+	}
+	
+	public String getCompany() {
+		return company;
+	}
+
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+
+	public void groupByLevel(List<SuipData> ls,String level){
+		SuipData data=null;
+		for (int i = 0, len = (ls == null ? 0 : ls.size()); i < len; i++) {
+			data = ls.get(i);
+			// 对该行数据进行分组计算
+			if(level.equals("company")){
+				add2GroupMap(data.getCompany(),data,false);
+			}else if(level.equals("factory")){
+				add2GroupMap(data.getFactory(),data,false);
+			}else if(level.equals("dept")){
+				add2GroupMap(data.getDept(), data,false);
+			}else if(level.equals("line")){
+				add2GroupMap(data.getLine(), data,false);
+			}else if(level.equals("gongxu")){
+				add2GroupMap(data.getGongxu()+"-"+data.getGongxuName(), data,true);
+			}else if(level.equals(KpiConstant.product)){
+				add2GroupMapProduct(data.getProduct(),data);
+			}else if(level.equals(KpiConstant.suppliers)){
+				add2GroupMapProduct(data.getSupplier(),data);
+			}else if(level.equals(KpiConstant.worknum)){
+				add2GroupMapWN(data.getWorkNum(),data);
+			}else if(level.equals(KpiConstant.batch)){
+				add2GroupMapBC(data.getSupplier(),data);
+			}
+		}
+	}
+	
+	public void add2GroupMap(String groupName,SuipData data,Boolean gongxu){
+		if(data!=null && groupName != null && groupName.length() > 0){
+			GroupMap groupMap=suipMap.get(groupName);
+			if(groupMap==null){
+				groupMap=new GroupMap();
+				suipMap.put(groupName,groupMap);
+			}
+			if(gongxu){
+				groupMap.addSpDataGx(data);	
+			}else{
+				groupMap.addSpData(data,data.getProduct(),true);
+			}	
+		}
+	}
+	
+	public void add2GroupMapProduct(String groupName,SuipData data){
+		if(data!=null && groupName != null && groupName.length() > 0){
+			GroupMap groupMap=suipMap.get(groupName);
+			if(groupMap==null){
+				groupMap=new GroupMap();
+				suipMap.put(groupName,groupMap);
+			}
+			if("1000".equals(data.getCompany())){
+				groupMap.addSpData(data,"",false);
+			}else if("2000".equals(data.getCompany())){
+				groupMap.addSpData(data,data.getProduct(),true);
+			}
+							
+		}
+	}
+	//二级模板(工单视点)
+	public void add2GroupMapWN(String groupName,SuipData data){
+		if(data!=null && groupName != null && groupName.length() > 0){
+			GroupMap groupMap=suipMap.get(groupName);
+			if(groupMap==null){
+				groupMap=new GroupMap();
+				suipMap.put(groupName,groupMap);
+			}
+			groupMap.addSpData(data,data.getWorkNum(),true);
+		}
+	}
+	
+	//二级模板(批次视点)
+	public void add2GroupMapBC(String groupName,SuipData data){
+		if(data!=null && groupName != null && groupName.length() > 0){
+			GroupMap groupMap=suipMap.get(groupName);
+			if(groupMap==null){
+				groupMap=new GroupMap();
+				suipMap.put(groupName,groupMap);
+			}
+			groupMap.addSpData(data,data.getBatch(),true);
+		}
+	}
+	
+	public void groupByLevelQs(List<SuipData> ls,String[] dates,String level){
+		SuipData data=null;
+		for (int i = 0, len = (ls == null ? 0 : ls.size()); i < len; i++) {
+			data = ls.get(i);
+			// 对该行数据进行分组计算
+			if(level.equals("company")){
+				add2GroupMapQs(data.getCompany(),data,dates,false);
+			}else if(level.equals("factory")){
+				add2GroupMapQs(data.getFactory(),data,dates,false);
+			}else if(level.equals("dept")){
+				add2GroupMapQs(data.getDept(), data,dates,false);
+			}else if(level.equals("line")){
+				add2GroupMapQs(data.getLine(), data,dates,false);
+			}else if(level.equals("gongxu")){
+				add2GroupMapQs(data.getGongxu()+"-"+data.getGongxuName(),data,dates,true);
+			}else if(level.equals(KpiConstant.product)){
+				add2GroupMapQs(data.getProduct(), data,dates,false);
+			}else if(level.equals(KpiConstant.suppliers)){
+				add2GroupMapQs(data.getSupplier(), data,dates,false);
+			}			
+		}
+	}
+	
+	public void add2GroupMapQs(String groupName,SuipData data,String[] dates,boolean gongxu){
+		if(data!=null && groupName != null && groupName.length() > 0){
+			GroupMap groupMap=suipMap.get(groupName);
+			if(groupMap==null){
+				groupMap=new GroupMap();
+				suipMap.put(groupName,groupMap);
+			}
+			groupMap.addSpDataQs(data,dates,gongxu);
+		}
+	}
+	
+	public void createCategories(String spulierCode, GroupMap groupMap) {
+		// TODO Auto-generated method stub
+		if(spulierCode!=null && groupMap!=null){
+			GroupCategories gcs=categoriesMap.get(spulierCode);
+			if(gcs==null){
+				gcs= new GroupCategories();
+				gcs.setName(groupMap.getName());
+				categoriesMap.put(spulierCode, gcs);
+				//List<String> cgs=new ArrayList<String>();
+				
+				for(Iterator<Map.Entry<String, ProductMap>> iter=groupMap.getpMap().entrySet().iterator();iter.hasNext();){
+					Map.Entry<String, ProductMap> entry=iter.next();
+					ProductMap pMap=entry.getValue();
+					String pKey=entry.getKey();
+					//cgs.add(pKey);
+					gcs.addCategory(pKey);
+					if (pMap.getTotalSize() == 0) {
+						seriesDatas.add(0d);
+					}else {
+						Double percent = (double)(pMap.getSuipSize()) / (double)(pMap.getTotalSize()) * 100;
+						seriesDatas.add(percent);
+					}
+				}	
+				//gcs.setCategories(cgs);
+				categories.add(gcs);
+			}
+		}
+	}
+}
+```
+
+PO类
+
+```java
+public class SuipData {
+	private String company;     // 公司编码
+	private String companyName; // 公司名称
+	private String factory;//工厂编码
+	private String factoryName;//工厂名称
+	private String dept;        // 部门编码
+	private String deptName;    // 部门名称
+	private String line;        // 产线编码
+	private String lineName;    // 产线名称
+	private String gongxu;		//工序编号
+	private String gongxuName;	//工序描述
+	private String product;     // 产品
+	private String supplier;   //供应商编码
+	private String supplierName;//供应商名称
+	private String date;        // 日期
+	private int zcSuipSize; //制程碎片数
+	private int rkSuipSize; //入库碎片数（O级）
+	private int rkTotalSize;  // 入库总数
+	private int totalSize; //总数
+	private int suipSize; //碎片数
+	private double percent;     //碎片率
+	private String workNum;//工单号
+	private String batch;//批次
+}
+```
+

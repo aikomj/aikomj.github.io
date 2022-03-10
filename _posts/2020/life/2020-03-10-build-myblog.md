@@ -1,4 +1,12 @@
-
+---
+layout: post
+title: Jekyll搭建自己的个人博客
+category: life
+tags: [java]
+keywords: blog
+excerpt: Jekyll静态博客
+lock: noneed
+---
 
 ## 前言
 
