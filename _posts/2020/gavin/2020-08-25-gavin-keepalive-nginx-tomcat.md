@@ -22,17 +22,17 @@ lock: noneed
 
 打开[news.163.com](news.163.com)
 
-![](/assets/images/2020/icoding/nginx-gzip.jpg)
+![](/assets/images/2020/icoding/keepalived/nginx-gzip.jpg)
 
 gzip是浏览器端的一个网页的压缩技术，它是在网络传输过程中，服务器对文本数据进行一定算法的压缩，然后传递给前台（浏览器），前台知道你压缩过就进行解压，从而减少网络传输的消耗，加快网页的访问速度，因为网络是不稳定的总有阻塞的时候 。当我们的js，c s s,html文件过大的时候。我们通过network看到163这个网页的大小是42.6kb
 
-![](/assets/images/2020/icoding/nginx-gzip2.jpg)
+![](/assets/images/2020/icoding/keepalived/nginx-gzip2.jpg)
 
 **修改nginx.conf**
 
 反向代理
 
-![](/assets/images/2020/icoding/nginx-upstream.jpg)
+![](/assets/images/2020/icoding/keepalived/nginx-upstream.jpg)
 
 ```sh
 # reload 重新加载配置文件，使用新配置文件开启一个新的工作进程（worker progress），然后平滑的关闭原来的工作进程。
@@ -45,19 +45,19 @@ ps -ef|grep nginx
 kill -HUP 进程id
 ```
 
-![](/assets/images/2020/icoding/nginx-kill.jpg)
+![](/assets/images/2020/icoding/keepalived/nginx-kill.jpg)
 
 ## 2、实战设计
 
 > F5硬件级别的负载均衡
 
-![](/assets/images/2020/icoding/f5.jpg)
+![](/assets/images/2020/icoding/keepalived/f5.jpg)
 
 价格贵，大型的系统才会用到，如银行、保险公司的大型项目
 
 > 阿里云的SLB 负载均衡器
 
-![](/assets/images/2020/icoding/ali-slb.jpg)
+![](/assets/images/2020/icoding/keepalived/ali-slb.jpg)
 
 创建负载均衡后，阿里会给你一个SLB的公网ip，按流量收费
 

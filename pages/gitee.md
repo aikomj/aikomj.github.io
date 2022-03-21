@@ -7,6 +7,12 @@ menu: Gitee
 permalink: /gitee
 ---
 
+> HowToCook
+
+程序员在家做饭方法指南。
+
+GitHub:[https://github.com/Anduin2017/HowToCook](https://github.com/Anduin2017/HowToCook)
+
 > Hutool  
 
 Hutool是一个小而全的Java工具类库，使Java拥有函数式语言般的优雅，让Java语言也可以“甜甜的”。   
