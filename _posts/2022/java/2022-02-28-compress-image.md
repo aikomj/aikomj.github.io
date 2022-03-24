@@ -4,7 +4,7 @@ title: 1M图片压缩优化到100kb
 category: java
 tags: [java]
 keywords: java
-excerpt: JDK 原生 API 在压缩图像 与其他开源库
+excerpt: JDK原生API压缩图像实战与其他开源库介绍
 lock: noneed
 ---
 
