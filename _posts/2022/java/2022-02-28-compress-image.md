@@ -14,9 +14,9 @@ lock: noneed
 
 图像压缩是数据压缩技术在数字图像上的应用，目的是减少图像数据中的冗余信息，从而用更加高效的格式存储和传输数据。图像压缩可以是有损数据压缩，也可以是无损数据压缩。
 
-<img src="/assets/images/2022/compress-image-1.jpg" style="zoom:50%;" />
+<img src="/assets/images/2022/java/compress-image-1.jpg" style="zoom:50%;" />
 
-<img src="/assets/images/2022/compress-image-2.jpg" style="zoom:67%;" />
+<img src="/assets/images/2022/java/compress-image-2.jpg" style="zoom:67%;" />
 
 更多关于图像压缩的资料可参考以下链接:
 
@@ -26,7 +26,7 @@ lock: noneed
 
 数字图像处理（Digital Image Processing）是通过计算机对图像进行去除噪声、增强、复原、分割、提取特征等处理的方法和技术。
 
-![](/assets/images/2022/compress-image-3.jpg)
+![](/assets/images/2022/java/compress-image-3.jpg)
 
 输入的是图像信号，然后经过 DIP 进行有效的算法处理后，输出为数字信号。
 
@@ -34,7 +34,7 @@ lock: noneed
 
 刚好我本地有一张之前用过的封面图，离 1M 只差 236 KB，可以拿来作为测试用。
 
-![](/assets/images/2022/compress-image-5.jpg)
+![](/assets/images/2022/java/compress-image-5.jpg)
 
 这其中要用到 ImageIO 类，这是一个静态类，提供了一系列方法用来读和写图像，同时还可以对图像进行简单的编码和解码。
 
@@ -111,11 +111,11 @@ public class Demo {
 
 执行压缩后，可以看到图片的大小压缩到了 19 KB：
 
-![](/assets/images/2022/compress-image-6.jpg)
+![](/assets/images/2022/java/compress-image-6.jpg)
 
 可以看得出，质量因子为 0.01f 的时候图片已经有些失真了，可以适当提高质量因子比如说 0.5f，再来看一下
 
-![](/assets/images/2022/compress-image-7.jpg)
+![](/assets/images/2022/java/compress-image-7.jpg)
 
 图片质量明显提高了，但大小依然只有 64 KB，压缩效果还是值得信赖的。
 
@@ -123,17 +123,13 @@ public class Demo {
 
 接下来，推荐一些可以轻松集成到项目中的图像处理库吧，它们全都是免费的。
 
-1）ImageJ，用 Java 编写的，可以编辑、分析、处理、保存和打印图像。
+1 )Apache Commons Imaging，一个读取和写入各种图像格式的库，包括快速解析图像信息（如大小，颜色，空间，ICC配置文件等）和元数据
 
-<img src="/assets/images/2022/java/compress-image.jpg" style="zoom:67%;" />
+![](/assets/images/2022/java/commons-imaging.jpg)
 
-2 )Apache Commons Imaging，一个读取和写入各种图像格式的库，包括快速解析图像信息（如大小，颜色，空间，ICC配置文件等）和元数据
+2）OpenCV，由BSD许可证发布，可以免费学习和商业使用，提供了包括 C/C++、Python 和 Java 等主流编程语言在内的接口。OpenCV 专为计算效率而设计，强调实时应用，可以充分发挥多核处理器的优势。
 
-![](/assets/images/2022/java/compress-image-2.jpg)
-
-4）OpenCV，由BSD许可证发布，可以免费学习和商业使用，提供了包括 C/C++、Python 和 Java 等主流编程语言在内的接口。OpenCV 专为计算效率而设计，强调实时应用，可以充分发挥多核处理器的优势。
-
-![](/assets/images/2022/java/compress-image-3.jpg)
+![](/assets/images/2022/java/opencv-1.jpg)
 
 这里就以 OpenCV 为例，来演示一下图像压缩。当然了，OpenCV 用来压缩图像属于典型的大材小用。
 
@@ -170,10 +166,6 @@ MatOfInt 的构造参数是一个可变参数，第一个参数 IMWRITE_JPEG_QUA
 
 借这个机会，来对比下 OpenCV 和 JDK 原生 API 在压缩图像时所使用的时间。
 
-这是我本机的配置情况，早年买的顶配 iMac，也是我的主力机。一开始只有 16 G 内存，后来加了一个 16 G 内存条，不过最近半年电脑突然死机重启的频率明显提高了，不知道是不是 Big Sur 这个操作系统的问题还是电脑硬件老了。
-
-![](/assets/images/2022/java/compress-image-4.jpg)
-
 结果如下：
 
 ```java
@@ -183,7 +175,7 @@ jdkCompress压缩完成，所花时间：322
 
 压缩后的图片大小差不多，都是 19 KB，并且质量因子都是最低值。
 
-![](/assets/images/2022/java/compress-image-5.jpg)
+![](/assets/images/2022/java/opencv-3.jpg)
 
 
 

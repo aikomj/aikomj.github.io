@@ -12,7 +12,7 @@ lock: noneed
 
 平时我们写代码，多数情况都是流水线式的写代码，基本就可以实现业务逻辑了。**如何在写代码中找乐趣？**我觉得最好的方式是：**使用设计模式优化自己的业务代码**，今天来聊聊，我工作中，都用过哪些设计模式：
 
-![](/assets/images/2022/design-mode-used-on-work.jpg)
+![](/assets/images/2022/design-mode/design-mode-used-on-work.jpg)
 
 ## 1、策略模式
 
@@ -203,7 +203,7 @@ public class Order{
 
 责任链模式实际上是一种处理请求的模式，它让多个处理器节点都有机会处理该请求，直到某个处理成功为止，它把请求串成链，然后让请求在链上传递，如下图：
 
-<img src="/assets/images/2022/chain.jpg" style="zoom:67%;" />
+<img src="/assets/images/2022/design-mode/chain.jpg" style="zoom:67%;" />
 
 ### 责任链模式使用
 
@@ -346,15 +346,13 @@ public class ChainPatternDemo{
 check rule
 ```
 
-
-
 ## 3、模板方式模式
 
 ### 业务场景
 
 假设我们有这么一个业务场景：内部系统不同商户，调用我们系统接口，去跟外部第三方系统交互http方式，流程大概如下：
 
-![](/assets/images/2022/template-method.jpg)
+![](/assets/images/2022/design-mode/template-method.jpg)
 
 这里，有的商户可能是走代理出去的，有的是走直连，假设当前有A,B商户接入，有小伙伴可能会这么写，伪代码如下：
 

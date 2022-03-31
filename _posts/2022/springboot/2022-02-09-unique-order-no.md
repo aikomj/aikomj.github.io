@@ -113,7 +113,7 @@ public class IdWorkerUtil{
 
 这个数字使用64位的二进制来表示，了解 [全局分布式id的设计](/icoding-edu/2020/06/28/icoding-note-053-2-global-id.html)
 
-![](\assets\images\2022\snowflake-1.png)
+![](\assets\images\2022\springboot\snowflake-1.png)
 
 - 41-bit的时间可以表示`（1L<<41）/(1000L360024*365)=69`年的时间
 - 10-bit机器可以分别表示1024台机器。如果我们对IDC（机房）划分有需求，还可以将10-bit分5-bit给IDC，分5-bit给工作机器。这样就有32个IDC，每个IDC下可以有32台机器

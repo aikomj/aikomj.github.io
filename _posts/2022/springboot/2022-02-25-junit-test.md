@@ -14,7 +14,7 @@ lock: noneed
 
 需要本地配置tomcat启动的项目，需要配置springMVC.xml与webapp/WEB-INF/web.xml的项目，配置目录结构如下：
 
-![image-20220225095503743](\assets\images\2022\springmvc-web.jpg)
+![image-20220225095503743](\assets\images\2022\springboot\springmvc-web.jpg)
 
 maven项目，pom.xml导入依赖
 
@@ -29,7 +29,7 @@ maven项目，pom.xml导入依赖
 
 src/test/java目录下新建测试类
 
-![](\assets\images\2022\springmvc-jtest.jpg)
+![](\assets\images\2022\springboot\springmvc-jtest.jpg)
 
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)

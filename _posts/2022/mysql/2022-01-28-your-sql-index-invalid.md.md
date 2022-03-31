@@ -12,7 +12,7 @@ lock: noneed
 
 前面苏三发表了 [sql优化的15个技巧](/mysql/2021/11/11/sql-optimization.html)，索引作为优化sql的一个常用手段，我们要让索引生效就要避开一些坑，下面举10种场景聊聊
 
-![](\assets\images\2022\index-invalid-ten-scene.png)
+![](\assets\images\2022\mysql\index-invalid-ten-scene.png)
 
 ## 准备工作
 
@@ -69,7 +69,7 @@ mysql的版本号是 8.0.21
 
   执行结果
 
-  ![](\assets\images\2022\index-invalid-left-1.png)
+  ![](\assets\images\2022\mysql\index-invalid-left-1.png)
 
   type = ref 代表使用的是非唯一索引扫描，explain执行计划的每个字段解析可以看 [sql优化的15个技巧](/mysql/2021/11/11/sql-optimization.html)，我做了总结。
 
@@ -81,7 +81,7 @@ mysql的版本号是 8.0.21
 
   执行结果：
 
-  ![](\assets\images\2022\index-invalid-left-2.png)
+  ![](\assets\images\2022\mysql\index-invalid-left-2.png)
 
   发现4种情况都会有code字段，它是最左边的字段，只要有这个字段在，那么联合索引就会生效。
 
@@ -99,7 +99,7 @@ mysql的版本号是 8.0.21
 
   执行结果：
 
-  ![](\assets\images\2022\index-invalid-left-3.png)
+  ![](\assets\images\2022\mysql\index-invalid-left-3.png)
 
   type = all ，表示全表扫描，也就是需要遍历整张表才能找到对应的行
 
@@ -111,7 +111,7 @@ mysql的版本号是 8.0.21
 explain select * from user where name = '周星驰';
 ```
 
-![](\assets\images\2022\index-invalid-left-3.png)
+![](\assets\images\2022\mysql\index-invalid-left-3.png)
 
 从执行结果可以看到，type=all 走了全表扫描，没有用的索引，如果查询我们真正需要的列，同时那些列是有索引的，结果会怎样
 
@@ -121,7 +121,7 @@ explain select code,name from user where name = '周星驰';
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-select-all.png)
+![](\assets\images\2022\mysql\index-invalid-select-all.png)
 
 type=index，`索引全表扫描`，比type = all 全表扫描效率更高，但是比前面的type=ref 效率要低一些。注意 Extra字段`Using where;Using index`
 
@@ -142,7 +142,7 @@ explain select * from user where id+1=2;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-calculate-column.png)
+![](\assets\images\2022\mysql\index-invalid-calculate-column.png)
 
 type= all , 该id字段的主键索引，在有计算的情况下失效了。
 
@@ -156,7 +156,7 @@ explain select * from user  where height=17;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-column-function.png)
+![](\assets\images\2022\mysql\mysql\index-invalid-column-function.png)
 
 没问题使用了 `idx_height`索引，但是对于身高是174的人就没办法查出来，为了满足需求，sql语句改造成这样：
 
@@ -166,7 +166,7 @@ explain select * from user  where substr(height,1,2)=17;
 
 用到了截取函数，执行结果：
 
-![](\assets\images\2022\index-invalid-column-function-2.png)
+![](\assets\images\2022\mysql\index-invalid-column-function-2.png)
 
 sql语句走了全表扫描，索引失效了。
 
@@ -190,7 +190,7 @@ explain select * from user where code=101;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-column-type-error.png)
+![](\assets\images\2022\mysql\index-invalid-column-type-error.png)
 
 sql语句走全表扫描，索引失效。
 
@@ -204,7 +204,7 @@ explain select * from user where height='175';
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-column-function.png)
+![](\assets\images\2022\mysql\index-invalid-column-function.png)
 
 依然可以走索引，为什么会这样？
 
@@ -238,7 +238,7 @@ explain select * from user where code like '10%';
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-like.png)
+![](\assets\images\2022\mysql\index-invalid-like.png)
 
 type=range 表示走了范围索引
 
@@ -250,7 +250,7 @@ explain select * from user where code like '%1';
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-like-1.png)
+![](\assets\images\2022\mysql\index-invalid-like-1.png)
 
 type=all，全表扫描，索引失效。
 
@@ -272,7 +272,7 @@ explain select * from user where id=height;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-two-column-compare.png)
+![](\assets\images\2022\mysql\index-invalid-two-column-compare.png)
 
 type=all 索引失效，惊不惊喜，为什么出现这种结果？
 
@@ -288,7 +288,7 @@ explain select * from user where id=1 or height=175
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-or-query.png)
+![](\assets\images\2022\mysql\index-invalid-or-query.png)
 
 还好确实走了索引，因为刚好id和height字段都建好了索引。
 
@@ -300,7 +300,7 @@ explain select * from user where id=1 or height=175 or address='成都';
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-or-query-2.png)
+![](\assets\images\2022\mysql\index-invalid-or-query-2.png)
 
 结果悲剧了，type=all 索引失效了，为什么会这样？
 
@@ -332,7 +332,7 @@ explain select * from user where height not in (173,174,175);
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-not-in-1.png)
+![](\assets\images\2022\mysql\index-invalid-not-in-1.png)
 
 没错，索引失效了。
 
@@ -344,7 +344,7 @@ explain select * from user where id not in (1,2,3);
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-not-in-2.png)
+![](\assets\images\2022\mysql\index-invalid-not-in-2.png)
 
 惊奇的发现，索引生效了。
 
@@ -361,7 +361,7 @@ where  not exists (select 1 from user t2 where t2.height=173 and t1.id=t2.id)
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-not-exists.png)
+![](\assets\images\2022\mysql\index-invalid-not-exists.png)
 
 可以看出t1表走了全表扫描，t1与t2表是通过主键字段关联的，换成exists 关键字的话，就会走主键索引
 
@@ -372,7 +372,7 @@ where  exists (select 1 from user t2 where t2.height=173 and t1.id=t2.id)
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-exists.png)
+![](\assets\images\2022\mysql\index-invalid-exists.png)
 
 可以看到t1 使用了 主键索引扫描表。
 
@@ -399,7 +399,7 @@ order by code,age,name limit 100;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-order-by.png)
+![](\assets\images\2022\mysql\index-invalid-order-by.png)
 
 使用了联合索引idx_code_age_name，
 
@@ -415,7 +415,7 @@ order by age;
 
 发现 limit 关键字没有了，但是有where关键字，看执行结果
 
-![](\assets\images\2022\index-invalid-order-by-where.png)
+![](\assets\images\2022\mysql\index-invalid-order-by-where.png)
 
 使用了联合索引idx_code_age_name，where条件中使用了code联合索引的第一个字段，order by 关键字使用了age联合索引的第二个字段。
 
@@ -429,7 +429,7 @@ order by name;
 
 看执行结果
 
-![](\assets\images\2022\index-invalid-order-by2.png)
+![](\assets\images\2022\mysql\index-invalid-order-by2.png)
 
 依然走索引，看Extra字段=filesort，只是order by的时候需要走一次 filesort 排序效率降低了。
 
@@ -443,7 +443,7 @@ explain select * from user order by code desc,age desc limit 10;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-order-by-3.png)
+![](\assets\images\2022\mysql\index-invalid-order-by-3.png)
 
 > 4、where和limit关键字都有
 
@@ -468,7 +468,7 @@ order by code, name;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-order-by-4.png)
+![](\assets\images\2022\mysql\index-invalid-order-by-4.png)
 
 type=all全表扫描，索引真的失效了
 
@@ -482,7 +482,7 @@ explain select * from user order by code,height limit 100;
 
 执行结果：
 
-![](\assets\images\2022\index-invalid-order-by-5.png)
+![](\assets\images\2022\mysql\index-invalid-order-by-5.png)
 
 可以看出type=all 索引失效了，code字段有联合索引，height字段也有索引，同时在order by 使用，索引就会失效。
 

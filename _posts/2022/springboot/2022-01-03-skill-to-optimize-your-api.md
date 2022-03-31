@@ -63,15 +63,15 @@ explain select * from order where code = '002';
 
 结果：
 
-![](/assets/images/2022/mysql-explain.jpg)
+![](/assets/images/2022/springboot/mysql-explain.jpg)
 
 执行计划包含列的含义如下图所示：
 
-![](/assets/images/2022/mysql-explain-2.jpg)
+![](/assets/images/2022/springboot/mysql-explain-2.jpg)
 
 sql语句没有走索引，排除没有建索引之外，最大的可能性就是索引失效了，索引失效的常见原因：
 
-![](/assets/images/2022/mysql-explain-3.jpg)
+![](/assets/images/2022/springboot/mysql-explain-3.jpg)
 
 > 1.3 mysql选错索引
 
@@ -89,7 +89,7 @@ sql语句没有走索引，排除没有建索引之外，最大的可能性就�
 
 ![](/assets/images/2021/mysql/optimize-sql.jpg)
 
-看博客文章《sql优化的15个技巧》
+看博客文章[《sql优化的15个技巧》](/mysql/2021/11/11/sql-optimization.html)
 
 ## 3、远程调用
 
@@ -109,7 +109,7 @@ sql语句没有走索引，排除没有建索引之外，最大的可能性就�
 
 调用过程如下图所示：
 
-![](/assets/images/2022/feign-other-service.jpg)
+![](/assets/images/2022/springboot/feign-other-service.jpg)
 
 调用远程接口总耗时 530ms = 200ms + 150ms + 180ms
 
@@ -119,7 +119,7 @@ sql语句没有走索引，排除没有建索引之外，最大的可能性就�
 
 ### 并行调用
 
-![](/assets/images/2022/feign-other-service-2.jpg)
+![](/assets/images/2022/springboot/feign-other-service-2.jpg)
 
 调用远程接口总耗时 200ms = 200ms（即耗时最长的那次远程接口调用）
 
@@ -162,11 +162,11 @@ public UserInfo getUserInfo(Long id) throws InterruptedException, ExecutionExcep
 
 如果在高并发的场景下，为了提升接口性能，远程接口调用大概率会被去掉，而改成保存冗余数据的数据异构方案。
 
-![](/assets/images/2022/redis-cache.jpg)
+![](/assets/images/2022/springboot/redis-cache.jpg)
 
 <mark>注意：</mark>可能会出现数据库与缓存不一致的问题，一般是先更新数据库后删除缓存，redis要设置一个过期时间，
 
-mysql与redis如何保证数据一致性，[http://47.113.95.179/jk-blog/mysql/2021/03/25/update-db-or-cache-first.html](http://47.113.95.179/jk-blog/mysql/2021/03/25/update-db-or-cache-first.html)
+mysql与redis如何保证数据一致性，[/mysql/2021/03/25/update-db-or-cache-first.html](/mysql/2021/03/25/update-db-or-cache-first.html)
 
 
 
@@ -259,7 +259,7 @@ public void printCategory(Category category) {
 
 有时候，我们接口性能优化，需要重新梳理一下业务逻辑，看看是否有设计上的不太合理的地方，比如有个用户请求接口中，需要做业务操作，发站内通知，和记录操作日志。为了实现起来比较方便，通常我们会将这些逻辑放在接口中同步执行，势必会对接口性能造成一定的影响。
 
-![](/assets/images/2022/async.jpg)
+![](/assets/images/2022/springboot/async.jpg)
 
 仔细梳理一下，发现只有业务操作才是`核心逻辑`,其他功能都是`非核心逻辑`
 
@@ -271,7 +271,7 @@ public void printCategory(Category category) {
 
 使用`线程池`改造之后，接口逻辑如下：
 
-![](/assets/images/2022/async-2.jpg)
+![](/assets/images/2022/springboot/async-2.jpg)
 
 发站内通知和用户操作日志功能，被提及到两个单独的线程池中。
 
@@ -288,7 +288,7 @@ public void printCategory(Category category) {
 
 使用`MQ`改造之后，接口逻辑如下
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/ibJZVicC7nz5hq0iaKg80FgbtoMf7wY5zmvQ3FrvLJETJGpgeUfCjqWXymLqtl89avXvfc3QjRxJQupxLQd2n5Mqg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)![](/assets/images/2022/async-mq.jpg)
+![图片](https://mmbiz.qpic.cn/mmbiz_png/ibJZVicC7nz5hq0iaKg80FgbtoMf7wY5zmvQ3FrvLJETJGpgeUfCjqWXymLqtl89avXvfc3QjRxJQupxLQd2n5Mqg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)![](/assets/images/2022/springboot/async-mq.jpg)
 
 对于发站内通知和用户操作日志功能，在接口中并没真正实现，它只发送了mq消息到mq服务器。然后由mq消费者消费消息时，才真正的执行这两个功能。
 
@@ -302,7 +302,7 @@ public void printCategory(Category category) {
 
 但也容易造成大事务，引发其他的问题。下面用一张图看看大事务引发的问题。
 
-![](/assets/images/2022/big-transaction-problem.jpg)
+![](/assets/images/2022/springboot/big-transaction-problem.jpg)
 
 从图中能够看出，大事务问题可能会造成接口超时，我们该如何优化大事务？
 
@@ -528,7 +528,7 @@ return queryCategoryTreeFromDb();
 
 此外，我们还需要有个job每隔一段时间，从数据库中查询菜单数据，更新到redis当中，这样以后每次都能直接从redis中获取菜单的数据，而无需访问数据库了。如果菜单修改了，应该删除缓存，
 
-![](/assets/images/2022/redis-cache-2.jpg)
+![](/assets/images/2022/springboot/redis-cache-2.jpg)
 
 ### 二级缓存
 
@@ -601,7 +601,7 @@ public class CategoryService {
 
 具体流程图如下：
 
-![](/assets/images/2022/caffine-cache.jpg)
+![](/assets/images/2022/springboot/caffine-cache.jpg)
 
 该方案的性能更好，但有个缺点就是，如果数据更新了，不能及时刷新缓存。此外，如果有多台服务器节点，可能存在各个节点上数据不一样的情况。上面的代码中，caffine 缓存的过期时间是10秒，也就是说可能存在10秒内的数据不一致的情况。
 
@@ -621,7 +621,7 @@ public class CategoryService {
 
 需要做<mark>分库分表</mark>，如下图所示：
 
-![](/assets/images/2022/distribute-db-tables.jpg)
+![](/assets/images/2022/springboot/distribute-db-tables.jpg)
 
 图中将用户库拆分成了三个库，每个库都包含了四张用户表。
 
@@ -695,7 +695,7 @@ long_query_time = 2
 
 它提供了 `监控` 和 `预警` 的功能。架构图如下：
 
-![](/assets/images/2022/prometheus-1.jpg)
+![](/assets/images/2022/springboot/prometheus-1.jpg)
 
 我们可以用它监控如下信息：
 
@@ -709,7 +709,7 @@ long_query_time = 2
 
 它的界面大概长这样子：
 
-![](/assets/images/2022/prometheus-2.jpg)
+![](/assets/images/2022/springboot/prometheus-2.jpg)
 
 可以看到mysql当前qps，活跃线程数，连接数，缓存池的大小等信息。
 
@@ -731,11 +731,11 @@ long_query_time = 2
 
 它的架构图如下：
 
-![](/assets/images/2022/skywalking.jpg)
+![](/assets/images/2022/springboot/skywalking.jpg)
 
 通过skywalking定位性能问题：
 
-![](/assets/images/2022/skywalking-2.jpg)
+![](/assets/images/2022/springboot/skywalking-2.jpg)
 
 在skywalking中可以通过`traceId`（全局唯一的id），串联一个接口请求的完整链路。可以看到整个接口的耗时，调用的远程服务的耗时，访问数据库或者redis的耗时等等，功能非常强大。
 

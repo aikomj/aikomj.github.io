@@ -4,7 +4,7 @@ title: Bean自动映射工具
 category: java
 tags: [java]
 keywords: java
-excerpt: 常用的get/set,spring 的beanutils.copyProperties,MapStruct
+excerpt: 常用的get/set,spring的beanutils.copyProperties,推荐MapStruct
 lock: noneed
 ---
 
