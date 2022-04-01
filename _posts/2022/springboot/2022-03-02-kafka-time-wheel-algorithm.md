@@ -2,8 +2,8 @@
 layout: post
 title: Kafka看时间轮算法设计
 category: springboot
-tags: [springboot]
-keywords: MessageQueue
+tags: [MessageQueue]
+keywords: Kafka
 excerpt: Kafka 基于时间轮实现了延时操作，时间轮算法的插入删除操作都是 O(1) 的时间复杂度，满足了 Kafka 对于性能的要求
 lock: noneed
 ---

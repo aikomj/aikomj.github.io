@@ -3,7 +3,7 @@ layout: post
 title: 分库分表解决高并发
 category: architect
 tags: [architect]
-keywords: architect,springcloud
+keywords: springcloud
 excerpt: 拆分多个服务，每个服务独立一个数据库，这就是分库了，架构是一步一步演进的，表结构优化，redis缓存,读写分离，数据库依然瓶颈，最后才考虑分库分表的方案
 lock: noneed
 ---

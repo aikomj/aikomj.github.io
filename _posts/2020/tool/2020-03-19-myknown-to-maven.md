@@ -1,8 +1,8 @@
 ---
 layout: post
-title: 对maven的认识
-category: springboot
-tags: [java]
+title: maven的总结
+category: tool
+tags: [maven]
 keywords: maven
 excerpt: 记录maven相关的知识点
 lock: noneed

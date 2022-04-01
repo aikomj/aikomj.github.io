@@ -2,8 +2,8 @@
 layout: post
 title: 项目实战：购物平台
 category: icoding-gavin
-tags: [icoding-gavin]
-keywords: imall,架构
+tags: [architect]
+keywords: mall
 excerpt: 产品需求梳理，系统流量分析，应用架构设计，后台管理应用搭建，微服务的拆分原则
 lock: noneed
 ---

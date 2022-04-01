@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 体验分布式系统的监控工具Skywalking
-category: springcloud
+category: tool
 tags: [springcloud]
 keywords: skywalking
 excerpt: Skywalking是一个分布式系统的应用程序性能监视工具，专为微服务、云原生架构和基于容器（Docker、K8s、Mesos）架构而设计

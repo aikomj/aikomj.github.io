@@ -3,7 +3,7 @@ layout: post
 title: 对高并发的理解
 category: architect
 tags: [architect]
-keywords: architect,mysql
+keywords: architect
 excerpt: 高并发意味着大流量衍生出的一些技术问题，设计目标高性能、高可用、高扩展，使用缓存减少IO次数，使用并发或者异步的方式增加吞吐量，按垂直业务做微服务化，存储层使用各种异构数据库，多级缓存、读写分离、分库分表和索引优化、异步化、并发处理，通过多线程将串行逻辑并行化
 lock: noneed
 ---

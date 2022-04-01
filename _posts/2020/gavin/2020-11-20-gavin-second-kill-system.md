@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 如何设计一个秒杀系统
-category: architect
-tags: [icoding-gavin]
+category: icoding-gavin
+tags: [architect]
 keywords: architect
 excerpt: 设计秒杀系统的几个关键点
 lock: noneed

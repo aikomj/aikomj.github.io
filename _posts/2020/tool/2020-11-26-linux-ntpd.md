@@ -2,7 +2,7 @@
 layout: post
 title: ntpdate和ntpd两种同步时间方式
 category: linux
-tags: [linux]
+tags: [tool]
 keywords: linux
 excerpt: 开机的时候，使用ntpdate强制同步时间，其他时候使用ntpd服务来同步时间
 lock: noneed

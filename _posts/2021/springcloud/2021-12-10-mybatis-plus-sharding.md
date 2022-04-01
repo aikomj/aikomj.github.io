@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Mybatis-plus支持分库分表
+title: Mybatis-plus支持分库分表啦
 category: springcloud
 tags: [springcloud]
 keywords: spring cloud

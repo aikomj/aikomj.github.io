@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 谈谈京东对Elasticsearch的使用，解决日均5亿订单查询
-category: icoding-gavin
-tags: [icoding-gavin]
+category: springcloud
+tags: [elasticSearch]
 keywords: elasticSearch
 excerpt: Elasticsearch 分布式搜索引擎，支持对大量数据的快速查询，需要思考如何将业务数据放进ES
 lock: noneed

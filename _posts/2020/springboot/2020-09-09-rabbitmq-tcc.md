@@ -1,8 +1,8 @@
 ---
 layout: post
 title: SpringBoot整合RabbitMQ实现事务补偿
-category: icoding-gavin
-tags: [icoding-gavin]
+category: springboot
+tags: [MessageQueue]
 keywords: MessageQueue
 excerpt: 与阿里的Setta框架提供的强一致性事务补偿相对，MQ提供的是弱一致性事务补偿
 lock: noneed

@@ -1,8 +1,8 @@
 ---
 layout: post
 title: ElasticSearch怎样保存我们的冷热数据？
-category: icoding-gavin
-tags: [icoding-gavin]
+category: springcloud
+tags: [elasticSearch]
 keywords: elasticSearch
 excerpt: 使用热数据节点、冷数据节点部署ES集群
 lock: noneed

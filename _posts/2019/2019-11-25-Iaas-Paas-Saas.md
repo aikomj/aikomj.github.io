@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 谈Iaas、Paas、Saas云计算服务
-category: arch
-tags: [arch]
-keywords: 架构
+category: architect
+tags: [architect]
+keywords: architect
 excerpt: 一张图看懂三种云服务
 lock: noneed
 ---

@@ -2,7 +2,7 @@
 layout: post
 title: Navicat做数据库设计
 category: tool
-tags: [tool]
+tags: [navicat]
 keywords: navicat
 excerpt: 我用起来顺手的数据库设计工具
 lock: noneed

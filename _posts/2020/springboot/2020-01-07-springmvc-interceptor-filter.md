@@ -3,7 +3,7 @@ layout: post
 title: SpringMVC的拦截器Interceptor和过滤器的区别联系
 category: springboot
 tags: [springboot]
-keywords: springboot
+keywords: springmvc
 excerpt: 理解客户端发起一个请求经过Filter和Interceptor，dispatch路由到控制层然后经过视图解析器，Interceptor和Filter，视图页面渲染，最终在客户端加载视图的过程
 lock: noneed
 ---

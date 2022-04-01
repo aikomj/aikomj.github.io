@@ -2,7 +2,7 @@
 layout: post
 title: 架构师敏捷管理思想Scrum框架
 category: icoding-gavin
-tags: [icoding-gavin]
+tags: [architect]
 keywords: architect
 excerpt: Scrum敏捷具体落地实现的框架，就好像spring是落地实现java MVC的框架一样，推崇的价值观是自管理
 lock: noneed

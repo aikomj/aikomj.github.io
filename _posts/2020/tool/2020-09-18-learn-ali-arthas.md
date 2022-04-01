@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 体验阿里开源的Java诊断工具Arthas阿尔萨斯
-category: springcloud
-tags: [springcloud]
+category: tool
+tags: [tool]
 keywords: arthas
 excerpt: 服务器安装arthas实时监控JVM运行状态，快速定位应用的热点，生成火焰图
 lock: noneed

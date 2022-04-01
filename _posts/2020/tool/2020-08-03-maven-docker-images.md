@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 使用Maven插件构建Docker镜像 
-category: docker
+category: tool
 tags: [docker]
-keywords: docker
+keywords: docker, maven
 excerpt: Docker Registry 服务器镜像仓库，项目工程的pom.xml文件中添加docker-maven-plugin的依赖
 lock: noneed
 ---
