@@ -37,7 +37,7 @@ lock: noneed
 
    这里我们可以使用注册中心的元数据metadata来区分，可以通过项目的applicaiton.properties配置`spring.cloud.nacos.discovery.metadata.version = dev`指定，也可以在nacos服务列表中直接添加元数据信息:
 
-   ![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/nacos-metadata-vesion.jpg)
+   ![](/assets/images/2022/springcloud/nacos-metadata-vesion.jpg)
 
 2. 实现自定义的负载均衡规则，通过自定义规则让负载均衡器能找到我们需要的服务实例
 
@@ -311,13 +311,13 @@ SpringCloud 项目使用的版本是SpringCloud alibaba推荐的毕业版本
 
 1. 启动多个AccountService实例，对于58302端口的实例配置元数据version = dev
 
-   ![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/accountservice-application-dev.jpg)
+   ![](/assets/images/2022/springcloud/accountservice-application-dev.jpg)
 
-   ![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/nacos-metadata-vesion-2.jpg)
+   ![](/assets/images/2022/springcloud/nacos-metadata-vesion-2.jpg)
 
 2. postman 调用接口时指定请求头
 
-   ![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/nacos-metadata-vesion-3.jpg)
+   ![](/assets/images/2022/springcloud/nacos-metadata-vesion-3.jpg)
 
 3. 通过debug模式观察两种实现逻辑，观察结果是否符合预期。
 
