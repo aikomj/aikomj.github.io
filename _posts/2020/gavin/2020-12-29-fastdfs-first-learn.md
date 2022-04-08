@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 分布式文件系统FastDFS从0到1了解它
-category: FastDFS
+category: icoding-gavin
 tags: [FastDFS]
 keywords: FastDFS
 excerpt: 需要搭建一个高性能的分布式文件系统，试试FastDFS

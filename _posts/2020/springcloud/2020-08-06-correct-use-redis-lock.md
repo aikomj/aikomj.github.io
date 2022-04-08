@@ -1,16 +1,14 @@
 ---
 layout: post
-title: 记一次由Redis分布式锁造成的重大事故，避免以后踩坑！
-category: redis
+title: 不正确使用Redis做分布式锁造成的造成事故
+category: springcloud
 tags: [redis]
 keywords: redis
-excerpt: 本篇文章主要是基于我们实际项目中因为redis分布式锁造成的事故分析及解决方案。
+excerpt: 本篇文章主要是基于我们实际项目中因为不正确使用redis分布式锁造成的事故分析及解决方案。
 lock: noneed
 ---
 
 ### 前言
-
-基于Redis使用分布式锁在当今已经不是什么新鲜事了。本篇文章主要是基于我们实际项目中因为redis分布式锁造成的事故分析及解决方案。
 
 背景：我们项目中的抢购订单采用的是分布式锁来解决的。
 
@@ -85,7 +83,7 @@ SeckillActivityRequestVO response;
 
   库存校验严重依赖了分布式锁，如果分布式锁锁不住了，库存校验的服务又是多实例的情况，即使在单例下库存校验加了synchronized和ReentrantLock 同步锁，它只能锁住本服务器JVM的原子性操作，别的服务器上的服务实例它还是管不住的，所以根本在于redis分布式锁要变得可靠。
 
-建议使用Redisson分布式锁，同时考虑分布式锁的核心
+<mark>建议使用Redisson分布式锁，同时考虑分布式锁的核心</mark>
 
 - 加锁
 - 锁删除：一定不能因为锁提前超时导致删除非自己的锁

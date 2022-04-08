@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Redis pipeline 命令，解决真实的生产问题
+title: Redis pipeline 命令，减少传输命令带来的网络IO耗时
 category: redis
 tags: [redis]
 keywords: redis

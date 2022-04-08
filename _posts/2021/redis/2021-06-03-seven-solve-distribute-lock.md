@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 七种方案！探讨Redis分布式锁的正确使用姿势
-category: springcloud
+title: 七种方案！Redis分布式锁的正确使用姿势
+category: redis
 tags: [redis]
 keywords: redis
 excerpt: Redis分布式锁的解决方案，你会用哪种，redis单实例使用redisson实现分布式锁，redis集群部署使用Redlock+Redisson实现分布式锁

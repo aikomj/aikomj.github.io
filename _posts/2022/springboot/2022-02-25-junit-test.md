@@ -31,9 +31,11 @@ src/test/java目录下新建测试类
 
 ![](\assets\images\2022\springboot\springmvc-jtest.jpg)
 
+![](\assets\images\2022\springmvc-jtest-2.jpg)
+
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:applicationContext.xml"})
+@ContextConfiguration({"classpath:applicationContextTest.xml"})
 @Slf4j
 public class SpringTest {
     @Autowired
