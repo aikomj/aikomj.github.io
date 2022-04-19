@@ -335,7 +335,7 @@ public enum CacheType {
 
 ```java
 public static String parse(String elString, TreeMap<String,Object> map){
-    elString=String.format("#{%s}",elString);
+    elString=String.format("#\{\%s\}",elString);
     //创建表达式解析器
     ExpressionParser parser = new SpelExpressionParser();
     //通过evaluationContext.setVariable可以在上下文中设定变量。

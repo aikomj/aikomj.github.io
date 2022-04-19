@@ -3,7 +3,7 @@ layout: post
 title: Spring Security 中的Bcrypt加密算法
 category: springcloud
 tags: [springcloud]
-keywords: springcloud
+keywords: security
 excerpt: bcrypt算法使用慢哈希，降低密码暴力破解攻击
 lock: noneed
 ---
