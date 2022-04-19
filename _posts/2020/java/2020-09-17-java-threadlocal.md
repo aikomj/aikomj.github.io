@@ -2,8 +2,8 @@
 layout: post
 title: ThreadLocal使用与内存泄漏
 category: java
-tags: [springboot]
-keywords: springboot
+tags: [java]
+keywords: juc
 excerpt: threadLocal线程局部变量为我们解决了多线程访问变量的安全问题,key是弱引用，只能生存到下次GC前，如果很多线程使用Threadlocal可能会引起内存泄露，不同的请求获取相同的ThreadLocal值如何解决，InheritableThreadLocal可继承线程变量在线程池中执行被获取相同值的原因，因为线程变量没有被重新set值
 lock: noneed
 ---
