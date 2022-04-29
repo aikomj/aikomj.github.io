@@ -3,8 +3,8 @@ layout: post
 title: Redis+Caffeine 两级缓存实战
 category: redis
 tags: [redis]
-keywords: redis
-excerpt: 两级缓存的访问流程，spring项目让我们通过注解的方式来操作缓存，我们也可以选择自定义注解，然后在切面中处理缓存
+keywords: springboot
+excerpt: 两级缓存的访问流程，springboot项目通过注解的方式来操作缓存，推荐使用自定义注解，然后在切面中处理缓存，减少对原业务代码的入侵
 lock: noneed
 ---
 
@@ -316,12 +316,12 @@ public void deleteOrder(Long id) {
 public @interface DoubleCache {
     String cacheName();
     String key(); //支持springEl表达式
-    long l2TimeOut() default 120;
+    long timeOut() default 120;
     CacheType type() default CacheType.FULL;
 }
 ```
 
-我们使用`cacheName + key`作为缓存的真正`key`（仅存在一个`Cache`中，不做`CacheName`隔离），`l2TimeOut`为可以设置的二级缓存`Redis`的过期时间，`type`是一个枚举类型的变量，表示操作缓存的类型，枚举类型定义如下：
+我们使用`cacheName + key`作为缓存的真正`key`（仅存在一个`Cache`中，不做`CacheName`隔离），`timeOut`为可以设置的二级缓存`Redis`的过期时间，`type`是一个枚举类型的变量，表示操作缓存的类型，枚举类型定义如下：
 
 ```java
 public enum CacheType {
