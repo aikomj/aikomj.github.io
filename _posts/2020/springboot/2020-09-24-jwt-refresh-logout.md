@@ -74,71 +74,73 @@ spring boot微服务里经常用到 oauth2 和 jwt整合，做用户鉴权，难
 
 ## 2、JWT 注销
 
-百度的一些注销方案，个人觉得还是可行的
+### 将JWT存储在数据库中
 
-- **将JWT存储在数据库中**。您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的（把JWT 变成有状态的，中心化）。用过的renren_fast 框架的确是这么做的，用来对接APP端，注销就把token 从数据库删除
+您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的，因为它把JWT 变成有状态了，中心化了
 
-  renren框架使用shiro+token做登录认证
+开源的renren_fast框架也是这么做的，用来对接APP端，注销就把token 从数据库删除
 
-  Shiroconfig配置类
+renren框架使用shiro+token做登录认证
 
-  ```java
-  @Configuration
-  public class ShiroConfig {
-      @Bean("securityManager")
-      public SecurityManager securityManager(OAuth2Realm oAuth2Realm) {
-          DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-          securityManager.setRealm(oAuth2Realm);
-          securityManager.setRememberMeManager(null);
-          return securityManager;
-      }
-  
-      @Bean("shiroFilter")
-      public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
-          ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
-          shiroFilter.setSecurityManager(securityManager);
-  
-          //oauth过滤
-          Map<String, Filter> filters = new HashMap<>();
-          filters.put("oauth2", new OAuth2Filter());
-          shiroFilter.setFilters(filters);
-  
-          Map<String, String> filterMap = new LinkedHashMap<>();
-          filterMap.put("/webjars/**", "anon");
-          filterMap.put("/druid/**", "anon");
-          filterMap.put("/app/**", "anon");
-          filterMap.put("/sys/login", "anon");
-          filterMap.put("/swagger/**", "anon");
-          filterMap.put("/v2/api-docs", "anon");
-          filterMap.put("/swagger-ui.html", "anon");
-          filterMap.put("/swagger-resources/**", "anon");
-          filterMap.put("/captcha.jpg", "anon");
-          filterMap.put("/images/**", "anon");
-          filterMap.put("/upload/**", "anon");
-          filterMap.put("/temp/**", "anon");
-          filterMap.put("/sys/pay/success", "anon");
-          filterMap.put("/sys/pay/cancel","anon");
-          filterMap.put("/**", "oauth2");
-          shiroFilter.setFilterChainDefinitionMap(filterMap);
-  
-          return shiroFilter;
-      }
-  
-      @Bean("lifecycleBeanPostProcessor")
-      public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
-          return new LifecycleBeanPostProcessor();
-      }
-  
-      @Bean
-      public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
-          AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
-          advisor.setSecurityManager(securityManager);
-          return advisor;
-      }
-  }
-  ```
+Shiroconfig配置类
 
-登录时就生成token保存到数据库，登出就删除token
+```java
+@Configuration
+public class ShiroConfig {
+    @Bean("securityManager")
+    public SecurityManager securityManager(OAuth2Realm oAuth2Realm) {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(oAuth2Realm);
+        securityManager.setRememberMeManager(null);
+        return securityManager;
+    }
+
+    @Bean("shiroFilter")
+    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
+        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
+        shiroFilter.setSecurityManager(securityManager);
+
+        //oauth过滤
+        Map<String, Filter> filters = new HashMap<>();
+        filters.put("oauth2", new OAuth2Filter());
+        shiroFilter.setFilters(filters);
+
+        Map<String, String> filterMap = new LinkedHashMap<>();
+        filterMap.put("/webjars/**", "anon");
+        filterMap.put("/druid/**", "anon");
+        filterMap.put("/app/**", "anon");
+        filterMap.put("/sys/login", "anon");
+        filterMap.put("/swagger/**", "anon");
+        filterMap.put("/v2/api-docs", "anon");
+        filterMap.put("/swagger-ui.html", "anon");
+        filterMap.put("/swagger-resources/**", "anon");
+        filterMap.put("/captcha.jpg", "anon");
+        filterMap.put("/images/**", "anon");
+        filterMap.put("/upload/**", "anon");
+        filterMap.put("/temp/**", "anon");
+        filterMap.put("/sys/pay/success", "anon");
+        filterMap.put("/sys/pay/cancel","anon");
+        filterMap.put("/**", "oauth2");
+        shiroFilter.setFilterChainDefinitionMap(filterMap);
+
+        return shiroFilter;
+    }
+
+    @Bean("lifecycleBeanPostProcessor")
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
+
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager);
+        return advisor;
+    }
+}登录时就生成token保存到数据库，登出就删除token	
+```
+
+登录与登出操作
 
 ```java
 	/**
@@ -180,31 +182,39 @@ spring boot微服务里经常用到 oauth2 和 jwt整合，做用户鉴权，难
 	}
 ```
 
+### 从客户端删除令牌
 
+前端把token从cookie中删除，这将阻止客户端进行经过身份验证的请求，但如果令牌仍然有效且其他人可以访问它，则仍可以使用该令牌。
 
-- **从客户端删除令牌**（前端把token从cookie中删除），这将阻止客户端进行经过身份验证的请求，但如果令牌仍然有效且其他人可以访问它，则仍可以使用该令牌。这引出了我的下一点。
-- **刷新令牌**。当用户登录时，为他们提供JWT和刷新令牌ref_token。将刷新令牌存储在数据库中。对于经过身份验证的请求，客户端可以使用JWT，但是当令牌过期（或即将过期）时，让客户端使用刷新令牌发出请求以换取新的JWT。这样，您只需在用户登录或要求新的JWT时访问数据库。当用户注销时，您需要使存储的刷新令牌无效。否则，即使用户已经注销，有人在监听连接时仍然可以获得新的JWT。但注销到JWT过期仍然有一个时间窗口，JWT是依然可用的。这里只是解决了用户无感刷新JWT的问题，客户端携带刷新令牌获取新的JWT。
-- **创建JWT黑名单**。根据过期时间，当客户端删除其令牌时，它可能仍然有效一段时间。如果令牌生存期很短，则可能不是问题，但如果您仍希望令牌立即失效，则可以创建令牌黑名单。当后端收到注销请求时，从请求中获取JWT并将其存储在内存数据库（Redis,并设置过期时间等于JWT的剩余存活时间）中。对于每个经过身份验证的请求，您需要检查内存数据库(Redis)以查看令牌是否已失效。为了保持较小的搜索空间，您可以从黑名单中删除已经过期的令牌。（根据令牌剩余有效期设置内存数据失效时间，达到自动清除的目的，JWT中携带一个UUID,作为黑名单中JWT的key，該key带有redis的过期时间）
+### 刷新令牌
 
-<mark>小结：</mark>个人觉得JWT黑名单是较好的JWT注销方案。
+当用户登录时，为他们提供JWT和刷新令牌ref_token。将刷新令牌存储在数据库中。
+
+对于经过身份验证的请求，客户端可以使用JWT，但是当令牌过期（或即将过期）时，让客户端使用刷新令牌发出请求以换取新的JWT。这样，您只需在用户登录或要求新的JWT时访问数据库。当用户注销时，您需要使存储的刷新令牌无效。否则，即使用户已经注销，有人在监听连接时仍然可以获得新的JWT。但注销到JWT过期仍然有一个时间窗口，JWT是依然可用的。这里只是解决了用户无感刷新JWT的问题，客户端携带刷新令牌获取新的JWT。
+### 创建JWT黑名单
+
+当后端收到注销请求时，将JWT存储在redis，并设置过期时间等于JWT的剩余存活时间。
+
+对于每个经过身份验证的请求，您需要检查Redis查看令牌是否已失效。根据令牌剩余有效期设置内存数据失效时间，达到自动清除的目的，JWT可以携带一个UUID，作为黑名单中JWT的key，該key对应的value就是redis的过期时间，redis可以使用Map的数据类型存储。
+
+个人觉得JWT黑名单是较好的JWT注销方案。
 
 ## 3、JWT 刷新
 
-jwt token刷新方案可以分为两种：一种是校验token前刷新，第二种是校验失败后刷新。
+刷新方案有两种：
 
-1、jwt为什么要刷新?
+- 一种是校验token前刷新
+- 第二种是校验失败后刷新。
 
-因为jwt并不具有续期的功能，所以在判断token过期后，立刻使用refresh_token刷新。并且在response的header里面添加标识告诉前端你的token实际上已经过期了需要更新。
+**为什么要刷新?**
 
-其他的类似memory token、redis token可以延期的，更新策略就没这么复杂：直接延长过期时间并且不需要更新token。
+因为JWT并不具有续期的功能，所以在判断token过期后，立刻使用refresh_token刷新。并且在response的header里面添加标识告诉前端你的token实际上已经过期了需要更新。其他的类似memory token、redis token可以延期的，直接延长过期时间并且不需要更新token。
 
 ### 方案一校验token前刷新
 
-兼容其他token刷新方案，如memory token
-
 springboot 版本是2.2.x
 
-0、pom.xml导入依赖
+pom.xml导入依赖
 
 ```xml
 <!-- spring security + OAuth2 + JWT    start  -->
@@ -229,7 +239,7 @@ springboot 版本是2.2.x
 </dependency>
 ```
 
-1、重写JwtAccessTokenConverter的enhance方法，把refresh_token、client_id、client_secret放入到access_token中，以便刷新
+1、重写`JwtAccessTokenConverter`的enhance方法，把refresh_token、client_id、client_secret放入到access_token中，以便刷新
 
 ```java
 public class OauthJwtAccessTokenConverter extends JwtAccessTokenConverter {
@@ -305,16 +315,14 @@ public class OauthJwtAccessTokenConverter extends JwtAccessTokenConverter {
 }
 ```
 
-2、重写DefaultTokenServices的loadAuthentication方法，开始处理刷新
+2、重写`DefaultTokenServices`的loadAuthentication方法，开始处理刷新
 
 ```java
 public class OauthTokenServices extends DefaultTokenServices {
     private static final Logger logger = LoggerFactory.getLogger(OauthTokenServices.class);
- 
     private TokenStore tokenStore;
     // 自定义的token刷新处理器
     private TokenRefreshExecutor executor;
- 
     public OauthTokenServices(TokenStore tokenStore, TokenRefreshExecutor executor) {
         super.setTokenStore(tokenStore);
         this.tokenStore = tokenStore;
@@ -345,15 +353,19 @@ public class OauthTokenServices extends DefaultTokenServices {
 }
 ```
 
-自定义的token刷新处理器接口TokenRefreshExecutor executor 是重点，主要有两个方法
+自定义的token刷新处理器接口TokenRefreshExecutor主要有两个方法
 
 - shouldRefresh：是否需要刷新
 - refresh：刷新
 
-TokenRefreshExecutor .java
-
 ```java
 public interface TokenRefreshExecutor {
+  /**
+     * 是否需要刷新
+     * @return
+     */
+    boolean shouldRefresh();
+  
     /**
      * 执行刷新
      * @return
@@ -361,17 +373,58 @@ public interface TokenRefreshExecutor {
      */
     String refresh() throws Exception;
  
-    /**
-     * 是否需要刷新
-     * @return
-     */
-    boolean shouldRefresh();
- 
     void setTokenStore(TokenStore tokenStore);
  
     void setAccessToken(OAuth2AccessToken accessToken);
  
     void setClientService(ClientDetailsService clientService);
+}
+```
+
+3、配置类TokenConfig
+
+```java
+@Configuration
+public class TokenConfig {
+    @Bean
+    public TokenStore tokenStore(AccessTokenConverter converter) {
+        return new JwtTokenStore((JwtAccessTokenConverter) converter);
+        // return new InMemoryTokenStore();
+    }
+    @Bean
+    public AccessTokenConverter accessTokenConverter(SecurityUserService userService) {
+        JwtAccessTokenConverter accessTokenConverter = new OauthJwtAccessTokenConverter(userService);
+        accessTokenConverter.setSigningKey("sign_key");
+        return accessTokenConverter;
+        /*DefaultAccessTokenConverter converter = new DefaultAccessTokenConverter();
+        DefaultUserAuthenticationConverter userTokenConverter = new DefaultUserAuthenticationConverter();
+        userTokenConverter.setUserDetailsService(userService);
+        converter.setUserTokenConverter(userTokenConverter);
+        return converter;*/
+    }
+    @Bean
+    public TokenRefreshExecutor tokenRefreshExecutor(TokenStore tokenStore,
+                                                     ClientDetailsService clientService) {
+        TokenRefreshExecutor executor = new OauthJwtTokenRefreshExecutor();
+        // TokenRefreshExecutor executor = new OauthTokenRefreshExecutor();
+        executor.setTokenStore(tokenStore);
+        executor.setClientService(clientService);
+        return executor;
+    }
+    @Bean
+    public AuthorizationServerTokenServices tokenServices(TokenStore tokenstore,
+                                                          AccessTokenConverter accessTokenConverter,
+                                                          ClientDetailsService clientService,
+                                                          TokenRefreshExecutor executor) {
+ 
+        OauthTokenServices tokenServices = new OauthTokenServices(tokenstore, executor);
+        // 非jwtConverter可注释setTokenEnhancer
+        tokenServices.setTokenEnhancer((TokenEnhancer) accessTokenConverter);
+        tokenServices.setSupportRefreshToken(true);
+        tokenServices.setClientDetailsService(clientService);
+        tokenServices.setReuseRefreshToken(true);
+        return tokenServices;
+    }
 }
 ```
 
@@ -428,54 +481,7 @@ public class OauthJwtTokenRefreshExecutor extends AbstractTokenRefreshExecutor {
 }
 ```
 
-3、配置类TokenConfig
-
-```java
-@Configuration
-public class TokenConfig {
-    @Bean
-    public TokenStore tokenStore(AccessTokenConverter converter) {
-        return new JwtTokenStore((JwtAccessTokenConverter) converter);
-        // return new InMemoryTokenStore();
-    }
-    @Bean
-    public AccessTokenConverter accessTokenConverter(SecurityUserService userService) {
-        JwtAccessTokenConverter accessTokenConverter = new OauthJwtAccessTokenConverter(userService);
-        accessTokenConverter.setSigningKey("sign_key");
-        return accessTokenConverter;
-        /*DefaultAccessTokenConverter converter = new DefaultAccessTokenConverter();
-        DefaultUserAuthenticationConverter userTokenConverter = new DefaultUserAuthenticationConverter();
-        userTokenConverter.setUserDetailsService(userService);
-        converter.setUserTokenConverter(userTokenConverter);
-        return converter;*/
-    }
-    @Bean
-    public TokenRefreshExecutor tokenRefreshExecutor(TokenStore tokenStore,
-                                                     ClientDetailsService clientService) {
-        TokenRefreshExecutor executor = new OauthJwtTokenRefreshExecutor();
-        // TokenRefreshExecutor executor = new OauthTokenRefreshExecutor();
-        executor.setTokenStore(tokenStore);
-        executor.setClientService(clientService);
-        return executor;
-    }
-    @Bean
-    public AuthorizationServerTokenServices tokenServices(TokenStore tokenstore,
-                                                          AccessTokenConverter accessTokenConverter,
-                                                          ClientDetailsService clientService,
-                                                          TokenRefreshExecutor executor) {
- 
-        OauthTokenServices tokenServices = new OauthTokenServices(tokenstore, executor);
-        // 非jwtConverter可注释setTokenEnhancer
-        tokenServices.setTokenEnhancer((TokenEnhancer) accessTokenConverter);
-        tokenServices.setSupportRefreshToken(true);
-        tokenServices.setClientDetailsService(clientService);
-        tokenServices.setReuseRefreshToken(true);
-        return tokenServices;
-    }
-}
-```
-
-认证服务器相关代码，相当于SpringSecurity的鉴权
+4、认证服务器相关代码，相当于SpringSecurity的鉴权
 
 ```java
 @Configuration
@@ -521,7 +527,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 }
 ```
 
-4、前端使用axios请求
+5、前端使用axios请求
 
 ```javascript
 // 拦截后端请求的返回
@@ -541,8 +547,6 @@ service.interceptors.response.use(res => {
 
 
 
-
-
 ### 方案二校验失败后刷新
 
 验证失效后，Oauth2框架会把异常信息发送到OAuth2AuthenticationEntryPoint类里处理。这时候我们可以在这里做jwt token刷新并跳转。失效后，使用refresh_token获取新的access_token。并将新的access_token设置到response.header然后跳转，前端接收并无感更新access_token。
@@ -555,13 +559,9 @@ service.interceptors.response.use(res => {
 
   github: [https://github.com/xuchao6969/springsecurity-oauth2-jwt](https://github.com/xuchao6969/springsecurity-oauth2-jwt)
 
-  
-
 - [https://blog.csdn.net/m0_37834471/article/details/83213002](https://blog.csdn.net/m0_37834471/article/details/83213002)
 
-
-
-> 問題
+> 问题
 
 使用第二种方案并且jwt token刷新功能正常使用后，想换一种token方案做兼容。
 
@@ -589,8 +589,6 @@ InvalidTokenException {
 看下面截图，可以看到JwtTokenStore的removeAccessToken：它是一个空方法，什么也没做。所以我们在OAuth2AuthenticationEntryPoint依然能拿到旧的token并作处理。
 
 ![](\assets\images\2020\springcloud\jwt-1.png)
-
-
 
 ## 4、Memory token的刷新
 
@@ -629,7 +627,3 @@ public class OauthTokenRefreshExecutor extends AbstractTokenRefreshExecutor {
 ```
 
 然后修改TokenConfig相关bean注册即可。
-
-
-
-> 此文章为转载文章，也有个人百度学习的观点
