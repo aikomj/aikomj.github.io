@@ -8,7 +8,7 @@ excerpt: 带你认识主流解决方案，避免重复下单，订单快照，�
 lock: noneed
 ---
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-1.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-1.jpg)
 
 以下文章来源于微观技术 ，作者微观技术
 
@@ -27,7 +27,7 @@ lock: noneed
 
 **那么，电商领域的技术架构有哪些常见问题？**
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-2.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-2.jpg)
 
 ## 1、避免重复下单
 
@@ -57,7 +57,7 @@ lock: noneed
 
 ```html
 <form action="/add-name-v2" method="post">
-    {% csrf_token %}
+    \{\% csrf_token \%\}
     <input type="text" name="name">
     <input type="submit" value="提交">
 </form>
@@ -192,7 +192,7 @@ where order_id= 1111 and version = #{version}
 
 互联网业务大部分都是 `读多写少`，为了提升数据库集群的吞吐性能，我们通常会采用 `主从架构`、`读写分离`
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-4.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-4.jpg)
 
 部署一个主库实例，客户端请求`所有写操作`全部写到主库，然后借助 MySQL 自带的 `主从同步` 功能，做一些简单配置，可以近乎实时的将主库的数据同步给 `多个从库实例`，主从延迟非常小，一般**不超过 1 毫秒**。
 
@@ -210,15 +210,15 @@ where order_id= 1111 and version = #{version}
 
 在下单确认页面，点击购买按钮，进入了支付页面
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-5.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-5.jpg)
 
 输入支付宝支付密码，进入**支付成功页面**，页面有查看订单详情的入口。
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-6.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-6.jpg)
 
 点击 `查看交易详情` ，才跳到真正的 订单详情页，可以查看订单的支付状态（订单数据取自从库）
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-7.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-7.jpg)
 
 **看懂了吗？**
 
@@ -275,7 +275,7 @@ where order_id= 1111 and version = #{version}
 
 我们一般是基于买家维度来设计，下图是 `淘宝` 的订单列表：
 
-![](/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/mall-concurrent-8.jpg)
+![](/assets/images/2022/springcloud/mall-concurrent-8.jpg)
 
 一个订单号 19 位，我们会发现同一个用户不同订单的最后 6 位都是一样的，没错，那是用户id的后6位。
 
