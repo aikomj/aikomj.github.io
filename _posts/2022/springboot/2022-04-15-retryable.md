@@ -4,7 +4,7 @@ title: 一个注解，在Spring Boot中优雅实现循环重试！
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: Retryable注解
+excerpt: @Retryable注解
 lock: noneed
 ---
 
