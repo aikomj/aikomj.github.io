@@ -172,6 +172,124 @@ RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性�
 
 ![](\assets\images\2021\springcloud\rocketmq-feature-3.jpg)
 
+提供有序消息，官方例子：[https://rocketmq.apache.org/docs/order-example/](https://rocketmq.apache.org/docs/order-example/)
+
+发送方使用FIFO顺序提供有序消息
+
+**发送消息示例代码**
+
+```java
+public class OrderedProducer {
+    public static void main(String[] args) throws Exception {
+        //Instantiate with a producer group name.
+        MQProducer producer = new DefaultMQProducer("example_group_name");
+        //Launch the instance.
+        producer.start();
+        String[] tags = new String[] {"TagA", "TagB", "TagC", "TagD", "TagE"};
+        for (int i = 0; i < 100; i++) {
+            int orderId = i % 10;
+            //Create a message instance, specifying topic, tag and message body.
+            Message msg = new Message("TopicTest", tags[i % tags.length], "KEY" + i,
+                    ("Hello RocketMQ " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
+            SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
+            @Override
+            public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
+                Integer id = (Integer) arg;
+                int index = id % mqs.size();
+                return mqs.get(index);
+            }
+            }, orderId); // orderId就是arg，根据orderId取模得到存储的具体队列，实现同一个订单id的消息都放到同一队列里
+
+            System.out.printf("%s%n", sendResult);
+        }
+        //server shutdown
+        producer.shutdown();
+    }
+}
+```
+
+RocketMQTemplate发送顺序消息的写法
+
+```java
+rocketMQTemplate.sendOneWayOrderly("settlement-test:test",jmap,jmap.get("orderId").toString());
+```
+
+进入RocketMQTemplate的源码，查看该方法
+
+![](\assets\images\2022\springcloud\rocketmqtemplate.png)
+
+方法里调用默认生产者`this.producer`发送消息，参数`this.messageQueueSelector`队列选择器是`SelectMessageQueueByHash`
+
+![](\assets\images\2022\springcloud\rocketmqtemplate-2.png)
+
+进入方法`this.producer.sendOneWay`
+
+![](\assets\images\2022\springcloud\rocketmqtemplate-3.png)
+
+进入到方法`DefaultMQProducerImpl.sendSelectImpl`
+
+![](\assets\images\2022\springcloud\rocketmqtemplate-4.png)
+
+`selector.select(messageQueueList,userMessage,arg)`就是`SelectMessageQueueByHash`的select
+
+```java
+public class SelectMessageQueueByHash implements MessageQueueSelector {
+    public SelectMessageQueueByHash() {
+    }
+
+    public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
+        int value = arg.hashCode() % mqs.size();
+        if (value < 0) {
+            value = Math.abs(value);
+        }
+        return (MessageQueue)mqs.get(value);
+    }
+}
+```
+
+**订阅消息示例代码**
+
+```java
+public class OrderedConsumer {
+    public static void main(String[] args) throws Exception {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("example_group_name");
+
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+
+        consumer.subscribe("TopicTest", "TagA || TagC || TagD");
+
+        consumer.registerMessageListener(new MessageListenerOrderly() {
+
+            AtomicLong consumeTimes = new AtomicLong(0);
+            @Override
+            public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs,
+                                                       ConsumeOrderlyContext context) {
+                context.setAutoCommit(false);
+                System.out.printf(Thread.currentThread().getName() + " Receive New Messages: " + msgs + "%n");
+                this.consumeTimes.incrementAndGet();
+                if ((this.consumeTimes.get() % 2) == 0) {
+                    return ConsumeOrderlyStatus.SUCCESS;
+                } else if ((this.consumeTimes.get() % 3) == 0) {
+                    return ConsumeOrderlyStatus.ROLLBACK;
+                } else if ((this.consumeTimes.get() % 4) == 0) {
+                    return ConsumeOrderlyStatus.COMMIT;
+                } else if ((this.consumeTimes.get() % 5) == 0) {
+                    context.setSuspendCurrentQueueTimeMillis(3000);
+                    return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
+                }
+                return ConsumeOrderlyStatus.SUCCESS;
+
+            }
+        });
+
+        consumer.start();
+        System.out.printf("Consumer Started.%n");
+    }
+}
+```
+
+正常消费消息就好。
+
 ### 分布式事务消息
 
 分布式事务消息（确保数据的最终一致性，大量引入 MQ 的分布式事务，既可以实现系统之间的解耦，又可以保证最终的数据一致性，减少系统间的交互）
