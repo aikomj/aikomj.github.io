@@ -1154,7 +1154,24 @@ public interface InitializingBean {
 
 ![](\assets\images\2021\mq\default-rocketmq-listener-container-2.jpg)
 
-initRocketMQPushConsumer()方法是一个核心方法，它设置了每个@RocketMQMessageListener 消费者向rocketMQ broker组成自己的消费者信息，如nameServer地址、一个消费者的最大消费线程数consumeThreadMax、 消费者连接超时时间consumeTimeout、消费模式consumerMode、选择消息的类型SelectorType（默认是TAG类型，即根据tag表达式取选择消息）、TAG表达式selectorExpression、消息模式messageModel（默认集群消费）
+initRocketMQPushConsumer()方法是一个核心方法，它设置了每个@RocketMQMessageListener 消费者向rocketMQ broker组成自己的消费者信息，如nameServer地址、一个消费者的最大消费线程数consumeThreadMax、 消费者连接超时时间consumeTimeout、消费模式consumerMode、选择消息的类型SelectorType（默认是TAG类型，即根据tag表达式取选择消息）、TAG表达式selectorExpression、消息模式messageModel（默认集群消费）、消费模式consumeMode(默认并发消费)
+
+```java
+public enum MessageModel {
+    BROADCASTING("BROADCASTING"), // 广播消息，一个消费组内的每一个消费者都会消费topic的所有队列，使用场景刷新本地缓存，一个队列对应每一个消费者
+    CLUSTERING("CLUSTERING");  // 集群消息，一个消费组内的每一个消费者只消费topic的部分队列，一个队列只对应一个消费者，
+
+    private final String modeCN;
+
+    private MessageModel(String modeCN) {
+        this.modeCN = modeCN;
+    }
+
+    public String getModeCN() {
+        return this.modeCN;
+    }
+}
+```
 
 里面有一段代码会选择消费模式，顺序消费还是并发消费，会创建对应的消费类：
 

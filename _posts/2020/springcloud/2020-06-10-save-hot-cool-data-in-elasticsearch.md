@@ -162,8 +162,6 @@ GET jd_goods/_settings
 
 参考： https://elasticsearch.cn/article/6127#tip3
 
-
-
 ## 4、索引生命周期管理
 
 index-lifecycle-managemen，ILM
@@ -196,11 +194,14 @@ index-lifecycle-managemen，ILM
 ### RollOver的定义
 
 当现有索引被认为太大或太旧时，滚动索引API将别名滚动到新索引。该API接受一个别名和一个条件列表。别名必须只指向一个索引。如果索引满足指定条件，则创建一个新索引，并将别名切换到指向新索引的位置。
-ES6.X版本Rollover支持的三种条件是：
+ES6.X版本Rollover支持的条件是：
 
-1）索引存储的最长时间。如： “max_age”: “7d”,
-2）索引支持的最大文档数。如：“max_docs”: 1000,
-3）索引最大磁盘空间大小。“max_size”: “5gb”。
+| 参数名                  | 说明                                                         |
+| ----------------------- | ------------------------------------------------------------ |
+| max_age                 | 指定索引存在的最大周期，如10s,1h,7d,1m,1y                    |
+| max_docs                | 存放的索引文档数（不包括副本）                               |
+| max_size                | 索引大小                                                     |
+| max_parimary_shard_size | 索引主分片大小，索引数据一般写入到多个分片，其中一个分片达到设定的大小，则索引触发滚动，官方建议分片大小控制在30gb~50gb |
 
 下面是ES 6.x版本的Rollover API调用方式：
 
@@ -217,27 +218,7 @@ PUT /logs-00001
 }
 ```
 
-2、指定RollOver规则
-
-```json
-PUT /logs_write/_rollover
-{
-    "conditions": {
-        "max_age": "7d",
-        "max_doc": 5,
-        // "max_size": "5gb"
-        "max_primary_shard_size": "50gb"
-    }
-}
-```
-
-- "max_age": "7d", 最长期限 7d，超过7天，索引会实现滚动。
-- "max_docs": 5, 最大文档数 5，超过 5个文档，索引会实现滚动（测试需要，设置的很小）。
-- "max_primary_shard_size": "50gb"，主分片最大存储容量 50GB，超过50GB，索引就会滚动。
-
-注意，三个条件是或的关系，满足其中一个，索引就会滚动。
-
-3、批量插入数据
+2、批量插入数据
 
 ```json
 POST logs_write/logs/_bulk
@@ -249,12 +230,27 @@ POST logs_write/logs/_bulk
 { "text": "333"}
 { "create": {"_id":4}}
 { "text": "4444"}
-
 ```
 
-4、重复步骤2
+3、指定RollOver规则
 
-返回结果
+```json
+PUT /logs_write/_rollover
+{
+    "conditions": {
+        "max_age": "7d",
+        "max_docs": 5,
+        // "max_size": "5gb"
+        "max_primary_shard_size": "50gb"
+    }
+}
+```
+
+- "max_age": "7d", 最长期限 7d，超过7天，索引会实现滚动。
+- "max_docs": 5, 最大文档数 5，超过 5个文档，索引会实现滚动（测试需要，设置的很小）。
+- "max_primary_shard_size": "50gb"，主分片最大存储容量 50GB，超过50GB，索引就会滚动。
+
+注意，三个条件是或的关系，满足其中一个，索引就会滚动。
 
 ```json
 {
@@ -272,7 +268,7 @@ POST logs_write/logs/_bulk
 }
 ```
 
-这样以后，后续插入的数据索引就自动变为logs-000002，logs-000003…..logs-00000N
+索引不会自动滚动，每次需要手动触发_rollover请求去检查索引是否满足滚动条件，满足则进行滚动，索引别名指向新创建的索引。
 
 > 方式二，基于时间的索引管理
 
@@ -313,7 +309,7 @@ PUT logs_write/_bulk
 {"title":"testing 05"}
 ```
 
-3、指定别名索引的RollOver规则
+3、指定索引别名的RollOver规则
 
 ```java
 POST /logs_write/_rollover 
@@ -321,12 +317,12 @@ POST /logs_write/_rollover
   "conditions": {
     "max_age": "7d",
     "max_docs": 5,
-    "max_primary_shard_size": "50gb"
+    "max_primary_shard_size": "50gb"  // 最大分片大小，官方建议30gb-50gb
   }
 }
 ```
 
-返回结果
+满足max_docs=5 返回结果
 
 ```java
 {
@@ -342,7 +338,7 @@ POST /logs_write/_rollover
 }
 ```
 
-如果24小时候后执行，new_index的名字就是+1天后的日期：logs-2018.08.06-000002。
+如果24小时候后执行，new_index的名字就是+1天后的日期：logs-2018.08.06-000002，序号会自增，跟日期没有关系
 
 4、插入数据，*在满足滚动条件的前提下滚动索引*
 
@@ -358,7 +354,7 @@ PUT my-alias/_bulk
 GET log_write/_search
 ```
 
-理论上，id=2的文档会放到第二个索引上
+前面执行_rollover时已满足max_docs=5的条件触发了滚动创建新索引`logs-2018.08.05-000002`，所以id=6的文档会放到新索引上
 
 ### 7.9版本后
 
@@ -367,11 +363,9 @@ GET log_write/_search
 Elasitcsearch 7.9 之前早期版本，需要配置分片分配策略机制。举例如下：
 
 ```json
-"allocate": 
- {
-      "require": 
-      {
-      "box_type": "warm"
+"allocate": {
+     "require": {
+      	"box_type": "warm"
       }
  }
 ```
@@ -424,7 +418,7 @@ PUT _ilm/policy/my_custom_policy_filter
           "rollover": {
             "max_age": "3d",
             "max_docs": 5,
-            "max_size": "50gb"
+            "max_size": "50gb"  // 数据写入达到50gb，即索引大小
           },
           "set_priority": {
             "priority": 100
@@ -432,11 +426,14 @@ PUT _ilm/policy/my_custom_policy_filter
         }
       },
       "warm": {
-        "min_age": "15s",
+        "min_age": "30s",
         "actions": {
           "forcemerge": {
             "max_num_segments": 1
           },
+           "shrink": {
+                "number_of_shards":1
+           },
           "allocate": {
             "require": {
               "box_type": "warm"
@@ -449,18 +446,18 @@ PUT _ilm/policy/my_custom_policy_filter
         }
       },
       "cold": {
-        "min_age": "30s",
+        "min_age": "70s",
         "actions": {
           "allocate": {
             "require": {
               "box_type": "cold"
             }
           },
-          "freeze": {}
+         # "freeze": {}
         }
       },
       "delete": {
-        "min_age": "45s",
+        "min_age": "120s",
         "actions": {
           "delete": {}
         }
@@ -469,19 +466,27 @@ PUT _ilm/policy/my_custom_policy_filter
   }
 }
 
-# step3:创建模板，关联配置的ilm_policy
-PUT _index_template/timeseries_template
+# step3:创建模板，关联配置的ilm_policy ,ES版本7.4
+PUT _template/timeseries_template
 {
   "index_patterns": ["timeseries-*"],                 
-  "template": {
     "settings": {
-      "number_of_shards": 1,
-      "number_of_replicas": 0,
-      "index.lifecycle.name": "my_custom_policy_filter",      
-      "index.lifecycle.rollover_alias": "timeseries",
-      "index.routing.allocation.require.box_type": "hot"
+    	"index": {
+        	"number_of_shards": 3,
+      		"number_of_replicas": 1,
+      		"lifecycle": {
+      			"name": "my_custom_policy_filter",
+      			"rollover_alias": "timeseries"
+      		},
+      		"routing": {
+      			"allocation": {
+      				"require":{
+      				   "box_type": "hot" # 数据写入存储到hot节点
+      				}
+      			}
+      		}
+    	}
     }
-  }
 }
 
 # step4:创建起始索引（便于滚动）
@@ -516,12 +521,54 @@ PUT timeseries/_bulk
 {"title":"testing 06"}
 ```
 
+| 参数   | 说明                                                         |
+| :----- | :----------------------------------------------------------- |
+| hot    | 该策略设置索引只要满足其中任一条件：数据写入达到50GB、使用超过3天、doc数超过5，就会触发索引滚动更新。此时系统将创建一个新索引，该索引将重新启动策略，而旧索引将在滚动更新后等待30秒进入warm阶段，这30秒索引其实还是hot阶段，处于一个等待状态 |
+| warm   | 索引进入warm阶段后，ILM会将索引收缩到1个分片，强制合并为1个段，数据迁移到warm(温数据)节点。完成该操作后，索引将在70秒（从滚动更新时算起）后进入cold阶段，70-30=40，即索引处于warm阶段40秒 |
+| cold   | 索引进入cold阶段后，ILM将索引从warm节点移动到cold（冷数据）节点。完成操作后，索引将在120秒（从滚动更新时算起）后进入delete阶段，120-70=50，即索引处于cold阶段50秒 |
+| delete | 索引进入delete阶段后被删除。                                 |
+
 **核心步骤**总结如下：
 
 - 第一步：创建生周期 policy。
 - 第二步：创建索引模板，模板中关联 policy 和别名。
 - 第三步：创建符合模板的起始索引，并插入数据。
 - 第四步: 索引基于配置的 ilm 滚动
+
+<mark>min_age定义</mark>
+
+在 ILM 中，索引基于 min_age 参数进入一个阶段（phrase）。
+
+min_age通常是指从索引被`创建时算起的时间`。在索引生命周期管理检查min_age并过渡到下一个阶段之前，前一个阶段的操作必须完成。min_age的单位 s秒，h小时，d天，y年，举例子
+
+```json
+PUT _ilm/policy/my_policy
+{
+  "policy": {
+    "phases": {
+      "warm": {
+        "min_age": "1d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {}
+        }
+      }
+    }
+  }
+}
+```
+
+- 索引创建在 1 天后将移动到 warm 暖阶段。在此之前，索引处于等待状态。
+- 进入 warm 暖阶段后，它将等到 30 天后才进入删除 delete 阶段并删除索引。
+
+![](\assets\images\2022\springcloud\es-ilm-min-age.png)
 
 ### Kibana  界面实战索引生命周期管理
 
@@ -565,3 +612,5 @@ PUT time_base-000001 { "aliases": { "timebase_alias": { "is_write_index": true }
 https://mp.weixin.qq.com/s/Px5Eo7_aGy8cDLrhToSn_w
 
 https://mp.weixin.qq.com/s/7VQd5sKt_PH56PFnCrUOHQ
+
+https://www.alibabacloud.com/help/zh/elasticsearch/latest/use-ilm-to-separate-hot-data-and-cold-data
