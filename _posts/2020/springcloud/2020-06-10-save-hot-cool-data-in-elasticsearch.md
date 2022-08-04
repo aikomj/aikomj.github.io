@@ -235,7 +235,7 @@ POST logs_write/logs/_bulk
 3、指定RollOver规则
 
 ```json
-PUT /logs_write/_rollover
+POST /logs_write/_rollover
 {
     "conditions": {
         "max_age": "7d",
@@ -514,11 +514,13 @@ PUT timeseries/_bulk
 PUT timeseries/_bulk
 {"index":{"_id":5}}
 {"title":"testing 05"}
-
 # 下一个索引数据写入
 PUT timeseries/_bulk
 {"index":{"_id":6}}
 {"title":"testing 06"}
+
+# 查看索引的ILM是否生效
+GET /timeseries/_ilm/explain
 ```
 
 | 参数   | 说明                                                         |
@@ -570,6 +572,156 @@ PUT _ilm/policy/my_policy
 
 ![](\assets\images\2022\springcloud\es-ilm-min-age.png)
 
+> 统一APP消息中心，待办消息索引使用ILM管理
+
+step1，设置rollover的检查频率
+
+```json
+PUT _cluster/settings
+{
+  "persistent": {
+    "indices.lifecycle.poll_interval": "30s"  // 30秒检查一次rollover，默认10分钟
+  }
+}
+```
+
+step2: 创建ILM策略
+
+```json
+PUT _ilm/policy/index_toread_policy_filter
+{
+  "policy": {
+    "phases": {
+      "hot": {      // 热阶段
+        "actions": {
+          "rollover": {
+            "max_age": "1y",  // 索引创建1年后
+            "max_docs": 20000000, // 索引最大文档数（不包含副本）2000万
+            "max_size": "50gb" // 索引大小50GB
+          },
+          "set_priority": {
+            "priority": 100  // 值越大，优先级越高
+          }
+        }
+      },
+      "warm": {         // 温阶段
+        "min_age": "10d", // 索引滚动更新10天后进入warm阶段
+        "actions": {
+            "forcemerge": {     // 实现段合并
+                "max_num_segments": 1  // 每个分片强制合并为1个段，即每个分片下只有1个段
+            },
+            "number_of_replicas": 0  // 分片的副本数为0，没有副本
+          },
+          "set_priority": {
+            "priority": 50  // 优先级设为50
+          }
+        }
+      },
+      "delete": {           // 删除阶段
+        "min_age": "1y", // 索引滚动更新1年后，进入删除阶段
+        "actions": {
+             "delete": {} // 删除索引
+        }
+      }
+    }
+  }
+}
+```
+
+step3，创建索引模板，关联ILM策略
+
+```json
+PUT _template/index_toread_template
+{
+  "index_patterns": ["index_toread-*"],                
+   "settings": {
+        "index": {
+            "number_of_shards": 3,  // 创建的索引有3个分片
+            "number_of_replicas": 1, // 每个分片，1个副本
+            "lifecycle":{
+                "name": "index_toread_policy_filter", // 关联ILM策略
+                "rollover_alias": "index_toread"  // 滚动索引别名
+            }
+            /*"routing": {
+                "allocation":{
+                    "require":{
+                        "box_type": "hot"  // 路由的ES的hot节点，这里注释掉
+                    }
+                }
+            }*/
+        }
+    },
+    "mappings": {
+        "properties": {
+            "sourceAppName": {              // 来源系统
+                "type": "keyword"
+            },
+            "pushAppName": {                // 推送的目标应用
+                "type": "keyword"
+            },
+            "subject": {                    // 主标题
+                "type": "text"
+            },
+            "title": {                  // 副标题
+                "type": "text"             
+            },
+            "link": {                   //  待办的链接地址
+                "type": "keyword",
+                "index": false          // 不支持搜索
+            },
+            "mobileLink": {
+                "type": "keyword",
+                "index": false
+            },
+            "modelId": {                    // 来源系统待办消息业务id，
+                "type": "keyword"
+            },
+            "docCreator": {
+                "type": "keyword"           // 发起人账号
+            },
+            "target": {                     // 接受人账号
+                "type": "keyword"
+            },
+            "createTime": {     // 创建时间
+                "type": "date",
+                "index": false
+            }，
+            "endTime": {        // 处理时间
+                "type": "date",
+                "index": false
+            }，
+            "extra": {          // 额外字段属性
+                "type": "object"
+            }
+        }
+    }
+ }
+```
+
+stpe4，创建起始索引
+
+```json
+
+// PUT /<index_toread-{now/d}-000001>
+PUT /%3Cindex_toread-%7Bnow%2Fd%7D-000001%3E
+{
+ "aliases": {
+    "index_toread": {
+      "is_write_index": true  // 通过索引别名进行数据写入
+    }
+  }
+}
+```
+
+step5，检查索引IML配置是否生效
+
+```json
+GET 索引名称/_ilm/explain
+GET /index_toread/_ilm/explain
+```
+
+插入数据，观察索引滚动。
+
 ### Kibana  界面实战索引生命周期管理
 
 1、创建policy策略
@@ -614,3 +766,60 @@ https://mp.weixin.qq.com/s/Px5Eo7_aGy8cDLrhToSn_w
 https://mp.weixin.qq.com/s/7VQd5sKt_PH56PFnCrUOHQ
 
 https://www.alibabacloud.com/help/zh/elasticsearch/latest/use-ilm-to-separate-hot-data-and-cold-data
+
+### 自动滚动失败
+
+ILM触发索引滚动后，旧索引会添加两个设置，通过别名进行写操作会被阻塞（新增、更新、删除）
+
+```json
+// 查询索引相关信息
+GET /index_todo-2022.07.31-000002
+```
+
+![](\assets\images\2022\springcloud\es-ilm-block.png)
+
+索引 index_todo-2022.07.31-000002 不支持删除文档请求了，不支持删除待处理消息的业务场景，我把索引的`blocks.write`属性设置为false，就支持delete请求了
+
+```json
+PUT /index_todo-2022.07.31-000002/_settings
+{
+    "index":{
+        "blocks": {
+                "write": "false"
+            },
+    }
+}
+```
+
+但也导致了ILM 自动滚动索引失败，索引满足滚动条件也不会自动滚动，查看索引的ILM信息
+
+```json
+GET /index_todo/_ilm/explain
+```
+
+![](\assets\images\2022\springcloud\es-ilm-rollover-error.png)
+
+因为修改索引 index_todo-2022.07.31-000002 允许删除导致。
+
+那我们就手动触发rollover请求
+
+```json
+POST /index_todo/_rollover
+```
+
+滚动后创建了新的索引 `index_todo-2022.08.03-000004`，已被ILM管理了
+
+```json
+GET /index_todo/_ilm/explain
+```
+
+![](\assets\images\2022\springcloud\es-ilm-check-rollover-ready.png)
+
+而旧索引`index_todo-2022.08.01-000003`没有被加上`blocks.write=true`的属性，
+
+![](\assets\images\2022\springcloud\es-is-write-index-false.png)
+
+`is_write_index=false`不支持新增文档，但没有了`blocks.write=true`，应该支持删除文档，这是与ILM自动滚动的不同点，测试一下
+
+经过测试确实支持删除文档操作，
+
