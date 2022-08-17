@@ -481,13 +481,16 @@ CompanyBServiceImpl extends AbstractMerchantService{
 
 ```java
 void register(User user){
+  // 插入注册记录
   insertRegister(user);
+  // 发消息
   sendMessage(user);
+  // 发邮件
   sendEmail(user);
 }
 ```
 
-如果产品加需求： 用户注册成功，再给用户发一条短信通知，于是你又去register方法，这就违法了**开闭原则**
+如果产品加需求： 用户注册成功，再给用户发一条短信通知，于是你又修改register方法，这就违法了**开闭原则**
 
 如果调**发短信的接口失败了**，又影响到用户注册了，所以的加个异步方法发短信
 
@@ -510,7 +513,7 @@ void register(User user){
 使用起来还是比较简单的：
 
 1. 一个被观察者的类Observerable
-2. 多个观察者Observerable
+2. 多个观察者Observer
 3. 观察者的差异化实现
 4. 经典观察者模式封装：EventBus
 
@@ -528,7 +531,8 @@ public class Observerable{
    public void setState(int state) {
       notifyAllObservers(state);
    }
- //添加观察者
+  
+ 	//添加观察者
    public void addServer(Observer observer){
       observers.add(observer);      
    }
@@ -537,13 +541,13 @@ public class Observerable{
    public void removeServer(Observer observer){
       observers.remove(observer);      
    }
-   //通知
+   
+  //通知
    public void notifyAllObservers(int state){
       if(state!=1){
          System.out.println(“不是通知的状态”);
          return ;
       }
-   
       for (Observer observer : observers) {
          observer.doEvent();
       }
@@ -554,7 +558,7 @@ public class Observerable{
 > 观察者的差异化实现
 
 ```java
- //观察者
+ //观察者接口
 interface Observer {  
     void doEvent();  
 }  
@@ -564,7 +568,6 @@ IMMessageObserver implements Observer{
        System.out.println("发送IM消息");
     }
 }
-
 //手机短信
 MobileNoObserver implements Observer{
     void doEvent（）{

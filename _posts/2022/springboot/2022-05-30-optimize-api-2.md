@@ -12,6 +12,10 @@ lock: noneed
 
 ## 36个技巧：
 
+![](/assets/images/2022/springboot/optimize-api-1.jpg)
+
+![](/assets/images/2022/springboot/optimize-api-2.png)
+
 ### 1.接口参数校验
 
 入参出参校验是每个程序员必备的基本素养。你设计的接口，必须先校验参数。比如入参是否允许为空，入参长度是否符合你的预期长度。这个要养成习惯哈，日常开发中，很多低级bug都是不校验参数导致的。

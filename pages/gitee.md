@@ -40,13 +40,23 @@ Github：[https://hollischuang.github.io/toBeTopJavaer/#/menu](https://hollischu
 
   链接：https://pan.baidu.com/s/1EuHjUclvnkr8h-o7pCCynw 提取码：nsim 
 
+  weixin专栏：https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU3MDAzNDg1MA==&action=getalbum&album_id=1500819225232343046&scene=21#wechat_redirect
+
 - SpringBoot 进阶
 
   链接：https://pan.baidu.com/s/1MDJuQXwhfMKnSyEM9X9tZw 提取码：o0vg
 
+  weixin专栏：https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU3MDAzNDg1MA==&action=getalbum&album_id=1532834475389288449&scene=21#wechat_redirect
+
 - SpringCloud 进阶
 
   链接：https://pan.baidu.com/s/1s17ge3m_XXSl2KeHHX4qQQ 提取码：lacj
+  
+  weixin专栏：https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU3MDAzNDg1MA==&action=getalbum&album_id=2042874937312346114&scene=21#wechat_redirect
+
+- ShardingSphere分库分表进阶
+
+  weixin专栏：https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzU3MDAzNDg1MA==&action=getalbum&album_id=2389616635193393153&scene=21#wechat_redirect
 
 > HowToCook
 
