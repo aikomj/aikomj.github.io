@@ -4,7 +4,7 @@ title: 一款自动生成单元测试的IDEA插件SquareTest
 category: tool
 tags: [tool]
 keywords: tool
-excerpt: 
+excerpt: 简单的单元测试类可使用该插件
 lock: noneed
 ---
 
