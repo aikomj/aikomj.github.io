@@ -381,7 +381,7 @@ public class OrderProducer{
   }
 
   /**
-     * 发送带tag的消息,直接在topic后面加上":tag"
+     * 发送带tag的消息,直接在topic后面加上":tag",看源码RocketMQUtil会把第一入参destination转为topic与tag
      */
   public void sendTagMsg(String msgBody){    rocketMQTemplate.syncSend("queue_test_topic:tag1",MessageBuilder.withPayload(msgBody).build());
   }
@@ -391,6 +391,24 @@ public class OrderProducer{
   }
 }
 ```
+
+![](\assets\images\2021\mq\rocketmq-destination.png)
+
+rocketMQTemplate的方法注释上也说明destination入参是合并了topic和tag
+
+![](\assets\images\2021\mq\rocketmq-syncsend-destination.png)
+
+知道了设置tag，哪如何设置key，继续看RocketMQUtil的源码，就会发现答案
+
+![](\assets\images\2021\mq\rocketmq-syncsend-header-keys.png)
+
+所以rocketMQTemplate设置发送消息的tag和key的写法是
+
+```java
+rocketMQTemplate.syncSend("RetryPushTodo:Tag1", MessageBuilder.withPayload(pushEntity).setHeader(RocketMQHeaders.KEYS,firstEntity.getModelId()).build());
+```
+
+
 
 导入测试依赖
 

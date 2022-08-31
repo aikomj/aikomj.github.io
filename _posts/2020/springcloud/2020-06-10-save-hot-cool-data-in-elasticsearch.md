@@ -601,7 +601,7 @@ node.roles: [ data_hot, data_content, master, ingest ]
 策略不一定需要配置每个阶段，始终使用索引模板来定义具有滚动操作的策略
 
 ```sh
-# step1: 前提：演示刷新需要,默认是10分钟检查
+# step1: 前提：演示刷新需要,默认是10分钟检查索引是否满足rollover条件
 # 检查是否满足 rollover 的周期频率值
 PUT _cluster/settings
 {
@@ -979,6 +979,8 @@ https://mp.weixin.qq.com/s/7VQd5sKt_PH56PFnCrUOHQ
 https://www.alibabacloud.com/help/zh/elasticsearch/latest/use-ilm-to-separate-hot-data-and-cold-data
 
 https://www.csdn.net/tags/MtTagg0sNDM2NjgtYmxvZwO0O0OO0O0O.html
+
+[ElasticSearch索引容量管理实践](https://zhuanlan.zhihu.com/p/154339421)
 
 ### 滚动踩坑
 
