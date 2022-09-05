@@ -112,3 +112,8 @@ public class UserTest {
 直接执行带@Test注解的方法就可以进行单元测试了
 
 发现都是使用`@RunWith(SpringJUnit4ClassRunner.class)`,都需要指定生效的配置文件，springboot项目还需要指定启动类 `@SpringBootTest(classes = ShardingSphereApplication.class)`
+
+@Test注解扩展：
+
+- @BeforeTestMethod 预执行方法，可以提前给全局变量赋值
+- @AfterTestMethod 后执行方法

@@ -360,11 +360,166 @@ IDEA 还可以在调试代码的时候，动态修改当前方法栈中变量的
 
 ![](\assets\images\tools\idea-debug-evaluate-expression-4.jpg)
 
-## 5、插件方面
+## 5、提升开发效率的插件
 
 插件安装，File -> Setting -> Plugin，可以在线搜索插件，对于网络不好的用户，可以登录官方插件仓库地址：https://plugins.jetbrains.com...，下载压缩包之后，选择`install plugin from disk`
 
 ![](\assets\images\tools\idea-install-plugin-from-disk.jpg)
+
+> 1、Alibaba Java Coding Guidelines
+
+阿里巴巴的《java开发手册》，从事java开发的小伙伴，肯定看过。通过该插件，能直接查出不合规范的代码，安装：
+
+![](\assets\images\tools\idea-plugins-alibaba-java-coding.png)
+
+安装了该插件之后，按下快捷键：`Ctrl+Alt+Shift+J`，可以可对整个项目或单个文件进行编码规约扫描。
+
+扫描后会将不规范的代码按从高到低。目前有三个等级显示在下方：
+
+- Blocker 崩溃
+- Critical 严重
+- Major 重要
+
+![](\assets\images\tools\idea-plugin-alibaba-java.png)
+
+点击左边其中一个不规范的代码行，右边窗口会立刻显示不规范的详细代码，便于我们快速定位问题。
+
+> 2、lombok
+
+它可以帮我写少很多代码，entity、DTO、VO、BO中的，在类上添加相关注解就可生成、getter/setter、构造方法、equals、hashcode等。
+
+```java
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class User {
+
+    private Long id;
+    private String name;
+    private Integer age;
+    private String address;
+}
+```
+
+在idea2020.3之后，已经内置了lombok的功能
+
+> 3、MyBatis Log Plugin
+
+把 Mybatis 输出的sql日志还原成完整的sql语句，看起来更直观。
+
+![](\assets\images\tools\idea-mybatis-sql-log.jpg)
+
+> 4、Free Mybatis plugin
+
+free-idea-mybatis是一款增强idea对mybatis支持的插件，主要功能如下：
+
+- 生成mapper xml文件
+- 快速从mapper与xml之间自有切换
+- mybatis自动补全及语法错误提示
+- 集成mybatis generator gui界面
+
+> GenerateAllSetter
+
+![](\assets\images\tools\idea-generator-setter.gif)
+
+> GenerateSerialVersionUID
+
+`Alt` + `Insert` 快速生成SerialVersionUID，rpc传输对象都要做序列化
+
+![](\assets\images\tools\idea-generate-serial-version-uid.gif)
+
+> Translation
+
+翻译插件，阅读源码必备。
+
+![](\assets\images\tools\idea-plugin-translation.png)
+
+安装完`Translation`插件之后，在other settings中多了一个Translation菜单。
+
+![](\assets\images\tools\idea-plugin-translation-2.png)
+
+在右边的窗口中，可以选择翻译软件。
+
+选中需要翻译的英文文档：
+
+![](\assets\images\tools\idea-plugin-translation-3.png)
+
+> SequenceDiagram
+
+我们平时在阅读源码时，为了梳理清楚内部逻辑，经常需要画一些`时序图`。如果我们直接画，会浪费很多时间，而且画的图不一定正确。这时可以使用：`SequenceDiagram`插件。
+
+安装后，选择具体某个方法，右键选择：sequence diagram选项：
+
+![](\assets\images\tools\idea-plugin-sequence.png)
+
+之后，会出现时序图
+
+![](\assets\images\tools\idea-plugin-sequence-2.png)
+
+> CheckStyle-IDEA
+
+`CheckStyle-IDEA`是一个检测代码格式是否满足规范的工具，其中用得比较多的是`Google`规范和`Sun`规范，可以帮助我们检测无用导入、没写注释、语法错误等
+
+安装完插件后，在idea的下方会出现：CheckStyle选项：
+
+![](\assets\images\tools\idea-plugin-checkStyle.png)
+
+点击左边的绿色按钮，可以扫描代码。在中间位置，会显示不符合代码规范的原因。双击代码，即可直接跳转到具体代码。
+
+> JRebel and XRebel
+
+使用`JRebel and XRebel`插件，每次修改一个类或者接口，不用重启代码，立即生效
+
+![](\assets\images\tools\idea-plugin-jrebel.png)
+
+安装完成之后，这里会有两个绿色的按钮，并且在右边多了一个选项Select Rebel Agents：
+
+![](\assets\images\tools\idea-plugin-jrebel-2.png)
+
+其中一个绿色的按钮，表示热部署启动项目，另外一个表示用debug默认热部署启动项目。Select Rebel Agents选项中包含三个值：
+
+- JRebel：修改完代码，不重启服务，期望代码直接生效。
+- XRebel：请求过程中，各个部分代码性能监控。例如：方法执行时间，出现的异常，SQL行时间，输出的Log，MQ执行时间等。
+- JRebel+XRebel：修改完代码，不重启服务，并且监控代码。
+
+> Codota
+
+idea的代码提示功能已经很强大，使用`Codota`插件，则更上一层楼
+
+![](\assets\images\tools\idea-plugin-codota.png)
+
+它的提示语都是通过ai统计出来，非常有参考价值
+
+![](\assets\images\tools\idea-plugin-codota-2.png)
+
+> GsonFormat
+
+帮助我们可以从json参数转换成实体对象，或者把实体对象转换为json
+
+安装完插件之后，创建一个Order空类
+
+```java
+public class Order{
+    
+}
+```
+
+按下快捷键：`alt + s`，会弹出下面这个窗口
+
+![](\assets\images\tools\idea-plugin-gsonformat.png)
+
+在该窗口中，录入json数据。点击确定按钮，就会自动生成这些代码
+
+![](\assets\images\tools\idea-gsonformat.gif)
+
+> InnerBuilder
+
+builder模式快速生成
+
+![](\assets\images\tools\idea-plugin-innerbuilder.jpg)
 
 > FindBugs
 
@@ -378,60 +533,17 @@ IDEA 还可以在调试代码的时候，动态修改当前方法栈中变量的
 
 ![](\assets\images\tools\idea-plugin-findbugs-3.jpg)
 
-> InnerBuilder
-
-builder模式快速生成
-
-![](\assets\images\tools\idea-plugin-innerbuilder.jpg)
-
-> lombok plugin
-
-maven helper
-
-maven 依赖管理助手 ，解析maven pom结构，分析冲突；
-
 > Rainbow brackets
 
-让代码中的括号更具标识性
+让代码中的括号更具标识性，对颜色过敏的就不要安装了。
 
 ![](\assets\images\tools\idea-plugin-rainbow-brackets.jpg)
 
-> String Manipulation
+> CodeGlance
 
-String相关辅助简化，搭配 CTRL+W 、ALT+J等文本选择快捷键使用
+安装完插件，在代码的右侧看到的缩略图，通过它我们能够非常快速的切换代码块。
 
-> Translation
-
-翻译插件，阅读源码必备
-
-> GenerateAllSetter
-
-![](\assets\images\tools\idea-generator-setter.gif)
-
-> GenerateSerialVersionUID
-
-`Alt` + `Insert` 快速生成SerialVersionUID，rpc传输对象都要做序列化
-
-![](\assets\images\tools\idea-generate-serial-version-uid.gif)
-
-> GsonFormat
-
-![](\assets\images\tools\idea-gson-format.gif)
-
-> MyBatis Log Plugin
-
-把 Mybatis 输出的sql日志还原成完整的sql语句，看起来更直观。
-
-![](\assets\images\tools\idea-mybatis-sql-log.jpg)
-
-> Free Mybatis plugin
-
-free-idea-mybatis是一款增强idea对mybatis支持的插件，主要功能如下：
-
-- 生成mapper xml文件
-- 快速从代码跳转到mapper及从mapper返回代码
-- mybatis自动补全及语法错误提示
-- 集成mybatis generator gui界面
+![](1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\assets\images\tools\idea-plugin-codeglance.png)
 
 
 
