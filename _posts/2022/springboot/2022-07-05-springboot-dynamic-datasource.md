@@ -4,7 +4,7 @@ title: SpringBoot优雅动态切换多数据源
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 基于Spring的AbstractRoutingDataSource抽象类，使得能够在多数据源情况下任意切换，相当于动态路由的作用
+excerpt: 基于Spring的AbstractRoutingDataSource抽象类，使得能够在多数据源情况下任意切换，相当于动态路由的作用，根据传参指定数据源，没有则选择默认数据源
 lock: noneed
 ---
 
