@@ -4,7 +4,7 @@ title: ElasticSearch怎样保存我们的冷热数据？
 category: springcloud
 tags: [elasticSearch]
 keywords: elasticSearch
-excerpt: 使用热数据节点、冷数据节点部署ES集群，索引数据读写分离，Rolover滚动索引，索引生命周期管理
+excerpt: 使用热数据节点、冷数据节点部署ES集群，索引数据读写分离，Rolover滚动索引，索引生命周期管理，滚动踩坑
 lock: noneed
 ---
 

@@ -370,7 +370,7 @@ IDEA 还可以在调试代码的时候，动态修改当前方法栈中变量的
 
 阿里巴巴的《java开发手册》，从事java开发的小伙伴，肯定看过。通过该插件，能直接查出不合规范的代码，安装：
 
-![](\assets\images\tools\idea-plugins-alibaba-java-coding.png)
+![](\assets\images\tools\idea-plugin-alibaba-java-1.png)
 
 安装了该插件之后，按下快捷键：`Ctrl+Alt+Shift+J`，可以可对整个项目或单个文件进行编码规约扫描。
 
@@ -380,7 +380,7 @@ IDEA 还可以在调试代码的时候，动态修改当前方法栈中变量的
 - Critical 严重
 - Major 重要
 
-![](\assets\images\tools\idea-plugin-alibaba-java.png)
+![](\assets\images\tools\idea-plugin-alibaba-java-2.png)
 
 点击左边其中一个不规范的代码行，右边窗口会立刻显示不规范的详细代码，便于我们快速定位问题。
 
