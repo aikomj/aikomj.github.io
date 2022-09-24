@@ -495,6 +495,16 @@ idea的代码提示功能已经很强大，使用`Codota`插件，则更上一�
 
 ![](\assets\images\tools\idea-plugin-codota-2.png)
 
+> RestfulToolkit
+
+- 根据 URL 直接跳转到对应的方法定义
+- 提供了一个 Services tree 的显示窗口
+- 一个简单的 http 请求工具
+- 在请求方法上添加了有用功能: 复制生成 URL;,复制方法参数
+- 其他功能: java 类上添加 Convert to JSON 功能，格式化 json 数据 ( Windows: Ctrl + Enter; Mac: Command + Enter )。
+
+![](/assets/images/tools/idea-plugin-restfultoolkit.jpg)
+
 > GsonFormat
 
 帮助我们可以从json参数转换成实体对象，或者把实体对象转换为json
@@ -515,6 +525,38 @@ public class Order{
 
 ![](\assets\images\tools\idea-gsonformat.gif)
 
+> CodeGlance
+
+安装完插件，在代码的右侧看到的缩略图，通过它我们能够非常快速的切换代码块。
+
+![](\assets\images\tools\idea-plugin-codeglance.png)
+
+> Maven Helper 分析依赖冲突的插件
+
+此插件可用来方便显示maven的依赖树，和显示冲突，在我们梳理依赖时帮助很大
+
+![](/assets/images/tools/idea-plugin-maven-helper.jpg)
+
+> Key Promoter X
+
+Key Promoter X可以帮助你快速记住常用的快捷键。当你在idea中用鼠标点击菜单，它可以显示对应的快捷键以及点击次数。使用一段时间后有助于过渡到更快、无鼠标的开发。
+
+>JavaDoc
+
+在项目中经常要求写代码注释，否则不能通过代码门禁，JavaDoc工具可以一键生成注释。
+
+插件安装成功后在菜单栏 code -> JavaDocs可以找到，自动生成注释效果如下
+
+<img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/tools/idea-plugin-javadoc.jpg" style="zoom:67%;" />
+
+> Sonarlint 代码质量检查插件
+
+> Stopcoding 防沉迷
+
+![](/assets/images/tools/idea-plugin-stopcoding-1.jpg) 
+
+![](/assets/images/tools/idea-plugin-stopcoding-2.jpg)
+
 > InnerBuilder
 
 builder模式快速生成
@@ -533,17 +575,7 @@ builder模式快速生成
 
 ![](\assets\images\tools\idea-plugin-findbugs-3.jpg)
 
-> Rainbow brackets
 
-让代码中的括号更具标识性，对颜色过敏的就不要安装了。
-
-![](\assets\images\tools\idea-plugin-rainbow-brackets.jpg)
-
-> CodeGlance
-
-安装完插件，在代码的右侧看到的缩略图，通过它我们能够非常快速的切换代码块。
-
-![](1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\assets\images\tools\idea-plugin-codeglance.png)
 
 
 
