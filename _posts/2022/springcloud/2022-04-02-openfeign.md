@@ -30,12 +30,27 @@ Feign集成了Ribbon、RestTemplate实现了负载均衡的执行Http调用，�
 
 官网地址：https://docs.spring.io/spring-cloud-openfeign/docs/2.2.10.BUILD-SNAPSHOT/reference/html
 
+### feignClient
+
+指定服务地址有三个属性：name,value,url
+
+- `name`/`value`属性：这两个的作用是一样的,指定的是调用服务的微服务名称
+- `url`：指定调用服务的全路径,经常用于本地测试
+- 如果同时指定`name`和`url`属性: 则以url属性为准,name属性指定的值便当做客户端的名称
+
 ### openFeign的动态代理
 
 FeignClient 注解所声明的接口
 
 ```java
 @FeignClient(value = "hello-world-serv") 
+public interface HelloWorldService { 
+    @PostMapping("/sayHello") 
+    String hello(String guestName); 
+}
+
+// 如果同时指定name/value和url属性，则以url属性为准
+@FeignClient(value = "hello-world-serv"，url="",path="/v1") 
 public interface HelloWorldService { 
     @PostMapping("/sayHello") 
     String hello(String guestName); 
