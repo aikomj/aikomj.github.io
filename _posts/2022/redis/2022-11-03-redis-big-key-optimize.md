@@ -101,7 +101,11 @@ key3: hset(user.3,678912345,value)  hget(user.3,678912345)
 
 ![](\assets\images\2022\redis\bitmap-02.png)
 
-有同学可能会问，通过这样拆分后，相当于Bitmap变小了，会不会增加布隆过滤器的误判率？实际上是不会的，布隆过滤器的误判率是哈希函数个数k，集合元素个数n，以及Bitmap大小m所决定的，其约等于![图片](https://mmbiz.qpic.cn/mmbiz_png/j65LNUfAhtpuRflkjfqZeVYOg4yCTGpxRsVjiarmfRd1ibOPOwQcLlKISbnSe7KBxkUXmKhciaYJInibodiaAZuOJZQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)。因此如果我们在第一步，也就是在分配key给不同Bitmap时，能够尽可能均匀的拆分，那么n／m的值几乎是一样的，误判率也就不会改变。具体的误判率推导可以参考wiki：Bloom_filter
+有同学可能会问，通过这样拆分后，相当于Bitmap变小了，会不会增加布隆过滤器的误判率？实际上是不会的，布隆过滤器的误判率是哈希函数个数k，集合元素个数n，以及Bitmap大小m所决定的，其约等于:
+
+![](/assets/images/2022/redis/bitmap-03.png)
+
+因此如果我们在第一步，也就是在分配key给不同Bitmap时，能够尽可能均匀的拆分，那么n／m的值几乎是一样的，误判率也就不会改变。具体的误判率推导可以参考wiki：Bloom_filter
 
 同时，客户端也提供便利的api （>=2.3.4版本）， setBits/ getBits 用于一次操作同一个key的多个bit值 。
 

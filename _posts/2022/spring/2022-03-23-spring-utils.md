@@ -1,9 +1,9 @@
 ---
 layout: post
 title: spring自带的工具类推荐
-category: springboot
-tags: [springboot]
-keywords: springboot
+category: spring
+tags: [spring]
+keywords: spring
 excerpt: 断言，对象工具类，集合工具类，文件资源工具类，反射AOP工具类
 lock: noneed
 ---

@@ -8,9 +8,9 @@ excerpt: activity工作流引擎的的相关表act_id_*身份信息表，act_hi_
 lock: noneed
 ---
 
-## 1、Activity项目
+## 1、Activiti项目
 
-### 什么是Activity工作流引擎
+### 什么是Activiti工作流引擎
 
 什么是工作流，比如说，我们在公司请假，可能要走审批的流程，从你自己到 Leader,然后从 Leader 到部门经理，然后部门经理再到人事部门，这一系列的流程实际上就相当于是一个工作流程，而这个就是一个工作流的最容易理解的模型。官方[https://www.activiti.org/](https://www.activiti.org/)是这样解析的：
 
