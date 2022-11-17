@@ -490,7 +490,7 @@ sql语句没有走索引，排除没有建索引之外，最大的可能性是�
 查看执行计划，看查询有没有用到索引
 
 ```sql
-EXPLAIN SELECT * FROMtableWHERE id < 100 ORDER BY a;
+EXPLAIN SELECT * FROM table WHERE id < 100 ORDER BY a;
 ```
 
 [飞天班第49节：数据库高级应用-2](/icoding-edu/2020/06/20/icoding-note-049.html)

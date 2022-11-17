@@ -4,7 +4,7 @@ title: 写sql语句使用到的那些sql函数
 category: mysql
 tags: [mysql]
 keywords: mysql
-excerpt: 
+excerpt: 聚合函数group_concat将同一分组的某列值进行拼接新的一列，find_in_set在集合中搜索该值，并返回该值的位置,使用场景按指id顺序排序
 lock: noneed
 ---
 

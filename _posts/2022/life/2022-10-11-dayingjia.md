@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 轴 的人未必傻
+title: 轴的人未必傻
 category: life
 tags: [life]
 keywords: life

@@ -769,7 +769,11 @@ public class UController {
 
    ![](/assets/images/2021/spring/resource-autowired-4.jpg)
 
+@Autowired**是**Spring**提供的，它是**特定IoC提供的特定注解**，这就导致了应用与框架的**强绑定**，一旦换用了其他的IoC框架，是**不能够支持注入的。
 
+而 **@Resource**是**JSR-250**提供的，它是**Java标准**，我们使用的IoC容器应当去兼容它，这样即使更换容器，也可以正常工作。
+
+基于这个原因，我们推荐使用@Resource注解，不使用@Autowired注解
 
 ## 7、@Slf4j
 
