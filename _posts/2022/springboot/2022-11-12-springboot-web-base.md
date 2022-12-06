@@ -372,6 +372,9 @@ public class FilterConfig {
 
 过滤器内容相对简单些，但是在实际开发中不可或缺，比如常用的权限控制框架 Shiro ， Spring Security ，内部都是使用过滤器，了解一下对以后的深入学习有着固本的作用
 
-参考另一篇文章：[/springboot/2020/01/07/springmvc-interceptor-filter.html](/springboot/2020/01/07/springmvc-interceptor-filter.html)
+参考：
 
-[icoding-edu/2020/03/25/icoding-note-013.html](icoding-edu/2020/03/25/icoding-note-013.html)
+[/jk-blog/springboot/2020/01/07/springmvc-interceptor-filter.html](/jk-blog/springboot/2020/01/07/springmvc-interceptor-filter.html)
+
+[/jk-blog/icoding-edu/2020/03/25/icoding-note-013.html](/jk-blog/icoding-edu/2020/03/25/icoding-note-013.html)
+

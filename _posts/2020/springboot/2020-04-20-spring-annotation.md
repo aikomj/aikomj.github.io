@@ -900,7 +900,9 @@ GET     /url/{page}/{limit}  查看
 
 - multipart/form-data
 
-  使用表单上传文件时，必须设置form元素的enctyped 属性为该值
+  使用表单上传文件时，必须设置form元素的enctyped 属性为该值。
+
+  前端接口上传文件的时候，通常会将请求header的content-type设置为:multipart/form-data, 或者form表单提交的时候将enctype设置为"multipart/form-data" 。
 
 - application/json
 

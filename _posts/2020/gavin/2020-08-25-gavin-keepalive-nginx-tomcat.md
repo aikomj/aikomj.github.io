@@ -14,8 +14,6 @@ lock: noneed
 
 什么是服务有状态，比如你一个论坛应用，如果把图片头像保存到本地磁盘，那么当论坛应用做服务集群化，请求不同的服务节点是，你的图片头像就会很大概率显示不出来。通过HDFS、FastDFS、NFS把图片数据中心化。
 
-
-
 > jdk+tomcat
 
 **gzip**
@@ -24,9 +22,13 @@ lock: noneed
 
 ![](/assets/images/2020/icoding/keepalived/nginx-gzip.jpg)
 
-gzip是浏览器端的一个网页的压缩技术，它是在网络传输过程中，服务器对文本数据进行一定算法的压缩，然后传递给前台（浏览器），前台知道你压缩过就进行解压，从而减少网络传输的消耗，加快网页的访问速度，因为网络是不稳定的总有阻塞的时候 。当我们的js，c s s,html文件过大的时候。我们通过network看到163这个网页的大小是42.6kb
+F12控制台，查看响应头Response-Header的Content-Encoding:gzip，证明已开启gzip
 
-![](/assets/images/2020/icoding/keepalived/nginx-gzip2.jpg)
+gzip是浏览器端的一个网页的压缩技术，它是在网络传输过程中，服务器对文本数据进行一定算法的压缩，然后传递给前台（浏览器），前台知道你压缩过就进行解压，从而减少网络传输的消耗，加快网页的访问速度，因为网络是不稳定的总有阻塞的时候 。当我们的js，css，html文件过大的时候，经过gzip压缩再传输，如何查看压缩前后效果，
+
+![](/assets/images/2020/icoding/keepalived/nginx-gzip2.png)
+
+可以看到，网页压缩前是331K，压缩后是86.9K
 
 **修改nginx.conf**
 

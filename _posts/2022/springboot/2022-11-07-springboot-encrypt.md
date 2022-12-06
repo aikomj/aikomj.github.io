@@ -16,7 +16,7 @@ lock: noneed
 
 以前都是手动将加密之后的配置写入到配置文件中，提取的时候再手动解密，当然这是一种思路，也能解决问题，但是每次都要手动加密、解密不觉得麻烦吗？
 
-今天介绍一种方案，让你在无感知的情况下实现配置文件的加密、解密。利用一款开源插件： `jasypt- spring-boot` 。项目地址
+今天介绍一种方案，让你在无感知的情况下实现配置文件的加密、解密。利用一款开源插件： `jasypt-spring-boot` 项目地址
 
 如下：[https://github.com/ulisesbocchio/jasypt-spring-boot](https://github.com/ulisesbocchio/jasypt-spring-boot)
 
@@ -58,7 +58,8 @@ public class SpringbootJasyptApplicationTests {
   
   /*** 手动生成密文，此处演示了url，user，password */ 
   @Test public void encrypt() { 
-    String url = encryptor.encrypt("jdbc\\:mysql\\://127.0.0.1\\:3306/test? useUnicode\\=true&characterEncoding\\=UTF- 8&zeroDateTimeBehavior\\=convertToNull&useSSL\\=false&allowMultiQueries\\=true&serverTimezone=Asia/Shang hai"); 		 String name = encryptor.encrypt("root");
+    String url = encryptor.encrypt("jdbc\\:mysql\\://127.0.0.1\\:3306/test? useUnicode\\=true&characterEncoding\\=UTF- 8&zeroDateTimeBehavior\\=convertToNull&useSSL\\=false&allowMultiQueries\\=true&serverTimezone=Asia/Shang hai"); 		 
+    String name = encryptor.encrypt("root");
     String password = encryptor.encrypt("123456"); 
     System.out.println("database url: " + url); 
     System.out.println("database name: " + name); 
@@ -135,7 +136,208 @@ jasypt还有许多高级用法，比如可以自己配置加密算法，具体�
 - 整合Jackson，在序列化阶段对特定字段进行脱敏
 - 基于 Sharding Sphere 实现数据脱敏，官网上有文档
 
-### Mybatis 插件加解密
+### Mybatis 插件拦截加解密
+
+介绍使用springboot+mybatis拦截器+自定义注解的形式对敏感数据进行<mark>存储前拦截加密</mark>的详细过程。
+
+**什么是mybatis plugin**
+
+MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用。默认情况下，MyBatis 允许使用插件来拦截的方法调用包括：
+
+```java
+//语句执行拦截
+Executor (update, query, flushStatements, commit, rollback, getTransaction, close, isClosed)
+
+// 参数获取、设置时进行拦截
+ParameterHandler (getParameterObject, setParameters)
+
+// 对返回结果进行拦截
+ResultSetHandler (handleResultSets, handleOutputParameters)
+
+//sql语句拦截
+StatementHandler (prepare, parameterize, batch, update, query)
+```
+
+简而言之，即在执行sql的整个周期中，我们可以任意切入到某一点对sql的参数、sql执行结果集、sql语句本身等进行切面处理。基于这个特性，我们便可以使用其对我们需要进行加密的数据进行切面统一加密处理了（分页插件 pageHelper 就是这样实现数据库分页查询的）。
+
+> 1、实现思路
+
+对于数据的加密与解密，应当存在两个拦截器对数据进行拦截操作参照官方文档，此处我们应当使用ParameterHandler拦截器对入参进行加密使用ResultSetHandler拦截器对出参进行解密操作。
+
+<img src="\assets\images\2022\springboot\mybatis-plugin.png" style="zoom:80%;" />
+
+目标需要加密、解密的字段可能需要灵活变更，此时我们定义一个注解，对需要加密的字段进行注解，那么便可以配合拦截器对需要的数据进行加密与解密操作了。mybatis的interceptor接口有以下方法需要实现
+
+```java
+public interface Interceptor {
+//主要参数拦截方法
+Object intercept(Invocation invocation) throws Throwable;
+//mybatis插件链
+default Object plugin(Object target) {return Plugin.wrap(target, this);}
+//自定义插件配置文件方法
+default void setProperties(Properties properties) {}
+}
+```
+
+> 2、定义需要加密解密的敏感信息注解
+
+定义注解敏感信息类（如实体类POJO\PO）的注解
+
+```java
+/**
+* 注解敏感信息类的注解
+*/
+@Inherited
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SensitiveData {
+}
+
+/**
+* 注解敏感信息类中敏感字段的注解
+*/
+@Inherited
+@Target({ ElementType.Field })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SensitiveField {
+}
+```
+
+> 3、定义加密接口及其实现类
+
+定义加密接口，方便以后拓展加密方法（如AES加密算法拓展支持PBE算法，只需要注入时指定一下便可）
+
+```java
+public interface EncryptUtil {
+/**
+* 加密
+* @param declaredFields paramsObject所声明的字段
+* @param paramsObject mapper中paramsType的实例
+* @return T
+* @throws IllegalAccessException 字段不可访问异常
+*/
+<T> T encrypt(Field[] declaredFields, T paramsObject) throws IllegalAccessException;
+}
+```
+
+EncryptUtil 的AES加密实现类，此处AESUtil为自封装的AES加密工具，需要的小伙伴可以自行封装，本文不提供。
+
+```java
+@Component
+public class AESEncrypt implements EncryptUtil {
+@Autowired
+AESUtil aesUtil;
+/**
+* 加密
+* @param declaredFields paramsObject所声明的字段
+* @param paramsObject mapper中paramsType的实例
+* @return T
+* @throws IllegalAccessException 字段不可访问异常
+*/
+@Override
+public <T> T encrypt(Field[] declaredFields, T paramsObject) throws IllegalAccessException {
+    for (Field field : declaredFields) {
+        //取出所有被EncryptDecryptField注解的字段
+        SensitiveField sensitiveField = field.getAnnotation(SensitiveField.class);
+        if (!Objects.isNull(sensitiveField)) {
+            field.setAccessible(true);
+            Object object = field.get(paramsObject);
+            //暂时只实现String类型的加密
+            if (object instanceof String) {
+                String value = (String) object;
+                //加密 这里我使用自定义的AES加密工具
+                field.set(paramsObject, aesUtil.encrypt(value));
+            }
+        }
+    }
+	return paramsObject;
+}
+}
+```
+
+> 4、实现入参加密拦截器
+
+Myabtis包中的org.apache.ibatis.plugin.Interceptor拦截器接口要求我们实现以下三个方法
+
+```java
+public interface Interceptor {
+    //核心拦截逻辑
+    Object intercept(Invocation invocation) throws Throwable;
+    //拦截器链
+    default Object plugin(Object target) {return Plugin.wrap(target, this);}
+    //自定义配置文件操作
+    default void setProperties(Properties properties) { }
+}
+```
+
+参考官方文档的示例，我们自定义一个入参加密拦截器。
+
+```java
+/**
+* 加密拦截器
+* 注意@Component注解一定要加上
+*/
+@Slf4j
+@Component
+@Intercepts({@Signature(type = ParameterHandler.class, method = "setParameters", args =PreparedStatement.class)})
+public class EncryptInterceptor implements Interceptor {
+private final EncryptDecryptUtil encryptUtil;
+    @Autowired
+	public EncryptInterceptor(EncryptDecryptUtil encryptUtil) {
+		this.encryptUtil = encryptUtil;
+	}
+	
+    @Override
+	@Override
+	public Object intercept(Invocation invocation) throws Throwable {
+		//@Signature 指定了 type= parameterHandler 后，这里的 invocation.getTarget() 便是	parameterHandler
+		//若指定ResultSetHandler ，这里则能强转为ResultSetHandler
+ParameterHandler parameterHandler = (ParameterHandler) invocation.getTarget();
+// 获取参数对像，即 mapper 中 paramsType 的实例
+Field parameterField = parameterHandler.getClass().getDeclaredField("parameterObject");
+parameterField.setAccessible(true);
+//取出实例
+Object parameterObject = parameterField.get(parameterHandler);
+if (parameterObject != null) {
+Class<?> parameterObjectClass = parameterObject.getClass();
+//校验该实例的类是否被@SensitiveData所注解
+SensitiveData sensitiveData = AnnotationUtils.findAnnotation(parameterObjectClass,
+SensitiveData.class);
+if (Objects.nonNull(sensitiveData)) {
+//取出当前当前类所有字段，传入加密方法
+Field[] declaredFields = parameterObjectClass.getDeclaredFields();
+encryptUtil.encrypt(declaredFields, parameterObject);
+}
+}
+return invocation.proceed();
+}
+/**
+* 切记配置，否则当前拦截器不会加入拦截器链
+*/
+@Override
+public Object plugin(Object o) {
+return Plugin.wrap(o, this);
+}
+//自定义配置写入，没有自定义配置的可以直接置空此方法
+@Override
+public void setProperties(Properties properties) {
+}
+}
+```
+
+@Intercepts 注解开启拦截器，@Signature 注解定义拦截器的实际类型：
+
+- type 属性指定当前拦截器使用StatementHandler 、ResultSetHandler、ParameterHandler，Executor的一种
+- method 属性指定使用以上四种类型的具体方法（可进入class内部查看其方法）
+- args 属性指定预编译语句
+
+此处我们使用了 ParameterHandler.setParamters()方法，拦截mapper.xml中paramsType的实例
+
+（即在每个含有paramsType属性mapper语句中，都执行该拦截器，对paramsType的实例进行拦截处
+
+理）
+
+> 5、定义解密接口及其实现类
 
 
 
@@ -271,8 +473,8 @@ public class TestController {
   public Person test(){ 
     Person user = new Person(); 
     user.setRealName("不才陈某"); 
-    user.setPhoneNumber("19796328206"); 
     user.setAddress("浙江省杭州市温州市...."); 
+    user.setPhoneNumber("19796328206");   
     user.setIdCard("4333333333334334333"); 
     return user; 
   } 

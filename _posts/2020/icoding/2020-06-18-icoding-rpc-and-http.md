@@ -10,6 +10,8 @@ lock: noneed
 
 ## 1、OSI网络七层模型
 
+全球统一的网络模型标准
+
 - 第一层：应用层。定义了用于在网络中进行通信和传输数据的接口；
 - 第二层：表示层。定义不同的系统中数据的传输格式，编码和解码规范等；
 - 第三层：会话层。管理用户的会话，控制用户间逻辑连接的建立和中断；
@@ -20,39 +22,77 @@ lock: noneed
 
 ![](\assets\images\2020\springcloud\osi-seven-layer.gif)
 
+![](\assets\images\2022\springboot\osi-1.png)
+
+数据传输示例：
+
+![](\assets\images\2022\springboot\osi-2.png)
+
 ## 2、RPC与HTTP
 
 <strong style="color:red">常见的远程调用方式有以下2种：</strong>
 
-1、RPC：Remote Produce Call远程过程调用，
+### RPC 远程过程调用
 
-**RPC基于Socket，工作在会话层。自定义数据格式**，速度快，效率高。早期的webservice，现在热门的dubbo，都是RPC的典型代表。服务器端的通讯，对语言的高度统一是非常高.
+Remote Produce Call 
+
+基于Socket，工作在会话层，自定义数据格式，速度快，效率高。早期的webservice，现在热门的dubbo，都是RPC的典型代表。服务器端的通讯，对语言的高度统一是非常高的
 
 ![](/assets/images/2020/springcloud/rpc.jpg)
 
-2、HTTP
+### HTTP 超文本传输协议 
 
-HTTP其实是**一种网络传输协议，基于TCP，工作在应用层，规定了数据传输的格式**。现在客户端浏览器与服务端通信基本都是采用Http协议，也可以用来进行远程服务调用。缺点是消息封装臃肿，优势是对服务的提供和调用方没有任何技术限定，自由灵活，更符合微服务理念。
+HyperText Transfer Protocol
+
+Http 是一个在计算机世界里专门在两点之间传输文字、图片、音频、视频等超文本数据的约定规范协议，基于TCP，工作在应用层，规定了数据传输的格式
+
+![](\assets\images\2022\springboot\http-1.png)
+
+现在客户端浏览器与服务端通信基本都是采用Http协议，也可以用来进行远程服务调用。
+
+- 缺点是消息封装臃肿
+- 优势是对服务的提供和调用方没有任何技术限定，自由灵活，更符合微服务理念，Rest风格
 
 ![](/assets/images/2020/springcloud/http-restful.jpg)
 
-现在热门的Rest风格，就可以通过http协议来实现。
+> URI、URL、URN
 
-**区别**：RPC的机制是根据语言的API（language API）来定义的，而不是根据基于网络的应用来定义的。
+URI 统一资源标识符 Uniform Resource Identifier ,包含URL 和 URN两个部分
 
-如果你们公司全部采用Java技术栈，那么使用Dubbo作为微服务架构是一个不错的选择。效率上来说，RPC比HTTP少了两层，会更快。
+URL 统一资源定位符 Uniform Resource Locator 定位唯一的资源
 
-相反，如果公司的技术栈多样化，而且你更青睐Spring家族，那么Spring Cloud搭建微服务是不二之选。在我们的项目中，会选择Spring Cloud套件，因此会使用Http方式来实现服务间调用。
+URN 统一资源名称 Uniform Resource Name
+
+常见状态码
+
+![](\assets\images\2022\springcloud\http-status.png)
+
+![](\assets\images\2022\springcloud\http-status-2.png)
+
+HTTP的传输数据没有加密，是不安全的，诞生了HTTPS
+
+HTTP = HTTP over SSL，语义是HTTP，直接下层协议由TCP换成了TLS
+
+
+
+### 区别
+
+- RPC的机制是根据语言的API来定义的，而不是根据基于网络的应用来定义的。如果你们公司全部采用Java技术栈，那么使用Dubbo作为微服务架构是一个不错的选择
+- 效率上来说，RPC比HTTP少了两层，会更快。相反，如果公司的技术栈多样化，而且你更青睐Spring家族，那么Spring Cloud搭建微服务是不二之选。在我们的项目中，会选择Spring Cloud套件，因此会使用Http方式来实现服务间调用。
 
 ## 3、三次握手和四次挥手
 
 ### 什么是TCP
 
-TCP协议，简单称呼一下的话，那就是传输控制协议，为什么这么称呼它呢，因为这个协议就是用来对数据的传输进行控制的一个协议。
+TCP协议，传输控制协议Transfer Control Protocol，为什么这么称呼它呢，因为这个协议就是用来对数据的传输进行控制的一个协议。
 
-TCP有时候你会在很多书中看它们称之为“套接字”，其实这就是翻译，在原著中的意思可能就是 `a place on a surface or machine with holes for connecting a piece of electrical equipment.`,然后经过翻译的手，翻译过来就是套接字的意思。
+TCP有时候你会在很多书中看它们称之为“套接字”，其实这就是翻译，在原著中的意思可能就是 
 
-我们也都知道网络协议是分层的，7层(5层)，可以分为不标准的7层，也可以分为标准的五层
+`a place on a surface or machine with holes for connecting a piece of electrical equipment.`,
+
+翻译过来就是套接字的意思。
+
+我们也都知道网络协议是分层的，7层或者5层，如下图：
 
 ![](\assets\images\2021\springcloud\osi.jpg)
 
@@ -96,7 +136,7 @@ TCP数据被封装在一个IP数据报中，就像上图所示，而我们需要
 - 16位紧急指针：主要是看什么数据是紧急的
 - 16位检验和：16位检验和覆盖了整个的TCP报文段：TCP首部和TCP数据。这是一个强制性的字段，一定是由发端计算和存储，并由收端进行验证。
 
-### 握手连接
+### 三次握手
 
 ![](\assets\images\2021\springcloud\osi-5.jpg)
 

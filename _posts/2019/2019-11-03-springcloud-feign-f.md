@@ -150,6 +150,6 @@ Feign源码解析：http://blog.csdn.net/forezp/article/details/73480304
 
 http://cloud.spring.io/spring-cloud-static/Finchley.RELEASE/single/spring-cloud.html
 
-> 本文为转载文章 ，原文链接：https://www.fangzhipeng.com/springcloud/2018/08/03/sc-f3-feign.html
+本文为转载文章 ，原文链接：https://www.fangzhipeng.com/springcloud/2018/08/03/sc-f3-feign.html
 
 感谢原作者的付出。

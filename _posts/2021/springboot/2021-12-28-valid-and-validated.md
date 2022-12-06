@@ -392,7 +392,77 @@ public Validator validator() {
 | 标注位置 | METHOD,FIELD,CONSTRUCTOR,PARAMETER,TYPE_USE | TYPE,METHOD,PARAMETER |
 | 嵌套校验 | 支持                                        | 不支持                |
 
+### 正则表达式
 
+- 字符串只能有数字和大小写字母组成，并且这三者都要有，长度在6~20位
+
+  ```sh
+  /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/
+  ```
+
+  相关解释：
+
+  ```sh
+  ^ 匹配一行的开头位置。
+  
+  (?![0-9]+$)：断言此位置之后，字符串结尾之前，所有的字符不能全部由数字组成。
+  
+  (?![a-zA-Z]+$)：断言此位置之后，字符串结尾之前，所有的字符不能全部由26个英文字母组成。
+  
+  [0-9A-Za-z] {6,20} 由6-20位数字或这字母组成。
+  
+  $ 匹配行结尾位置。
+  ```
+
+  简单的表示方式
+
+  ```sh
+  ^[a-z0-9A-Z]+$
+  ```
+
+  相关解释：
+
+  ```sh
+  ^：表示字符串开始的位置
+  a-z：字符范围，表示小写字母abcdefghijklmnopqrstuvwxyz
+  0-9：字符范围，表示数字0123456789
+  A-Z：字符范围，表示大写字母ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  []：表示匹配包含的任一字符，这里[a-z0-9A-Z]表示匹配任一数字或大小写字母
+  +：一次或多次匹配前面的字符或子表达式
+  $：表示字符串结尾的位置
+  ```
+
+  valid框架的话使用@Param注解，在方法中可直接使用
+
+  ```java
+  public static boolean isLetterDigit(String str) {
+      String regex = "^[a-z0-9A-Z]+$";
+      return str.matches(regex);
+  }
+  或者
+  public static boolean isLetterDigit(String str) {
+      String regex = "^[a-z0-9A-Z]+$";
+      return Pattern.matches(regex, str);
+  }
+  ```
+
+- 中文，字母，数字，下划线组成
+
+  ```sh
+  ^[\u4E00-\u9FA5A-Za-z0-9_]+$
+  ```
+
+- 有两位小数的正实数：^[0-9]+(.[0-9]{2})?$
+
+- n位的数字：^\d{n}$
+
+  参考：https://blog.csdn.net/JeterPong/article/details/107078542
+
+- 版本号必须是三位 x.x.x的格式，每位x的范围分别为1-99,0-99,0-99，不允许的情况 0.x.x；01.x.x; x.0x.x; x.00.x； x.x.00; x.x.0x
+
+  ```sh
+  ^([1-9]\d|[1-9])(.([1-9]\d|\d)){2}$
+  ```
 
 ## 3、实现原理
 
