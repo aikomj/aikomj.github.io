@@ -378,3 +378,336 @@ public class FilterConfig {
 
 [/jk-blog/icoding-edu/2020/03/25/icoding-note-013.html](/jk-blog/icoding-edu/2020/03/25/icoding-note-013.html)
 
+## 4、过滤gzip请求解压数据
+
+Controller层
+
+```java
+@RestController
+@RequestMapping("/v1/log")
+public class LogbackController implements LogbackApi {
+    @Resource
+    LogbackService logbackService;
+
+    /**
+     * 发送日志到kafka
+     * @param list
+     */
+    @Override
+    @PostMapping("")
+    public void saveBatch(@RequestBody @Valid List<LogAppendDTO> list) {
+        logbackService.saveBatch(list);
+    }
+}
+```
+
+上传的是json数组
+
+业务实现层
+
+```java
+@Slf4j
+@Service
+public class LogbackServiceImpl implements LogbackService {
+    @Value("${spring.profiles.active}")
+    String profile;
+
+    @Resource
+    KafkaTemplate<String,Object> kafkaTemplate;
+
+    @Override
+    public void saveBatch(List<LogAppendDTO> logAppends) {
+        if(CollectionUtils.isEmpty(logAppends)){
+            return;
+        }
+
+        SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String suffix = MessageFormat.format("-{0}-client-log",profile);
+
+        logAppends.stream().filter(logAppend-> StringUtils.isNotBlank(logAppend.getSystemCode())).forEach(logAppend->{
+            LogMsgDTO logMsg=new LogMsgDTO();
+            BeanCopyUtil.copy(logAppend,logMsg);
+
+            //ELK中时间必须为字符型
+            logMsg.setTime(dateFormat.format(logAppend.getTime()));
+            //ELK中使用serviceName作为索引名称的一部份,因此必须具备该字段值
+            logMsg.setServiceName(logAppend.getAppId());
+
+            String topic = MessageFormat.format("{0}{1}",logMsg.getSystemCode(),suffix);
+            ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(topic, logMsg);
+            // ack回调
+            future.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
+                @Override
+                public void onFailure(Throwable throwable) {
+                    String msg=MessageFormat.format("日志发送kafka失败，topic:{},appId:{},modelId:{},deviceId:{}",topic,logMsg.getAppId(),logMsg.getModelId(),logMsg.getDeviceId());
+                    log.error(msg,throwable);
+                }
+
+                @Override
+                public void onSuccess(SendResult<String, Object> sendResult) {
+                    log.debug("日志发送kafka成功，topic:{},appId:{},modelId:{},deviceId:{}",topic,logMsg.getAppId(),logMsg.getModelId(),logMsg.getDeviceId());
+                }
+            });
+        });
+    }
+}
+```
+
+日志数据发送到kafka
+
+日志数据量大，未来减少网络传输的耗时，数据经过gzip压缩为字节流后再传输，经过nginx，如果nginx配置了自动解压，那么数据解压后才会流向后端服务，gzip请求对后端来说是无感的，否则压缩后数据流向后端服务，后端服务需要解压数据才能正常使用，为了不入侵原有代码，可以使用过滤器Filter将数据处理后再dispatch到Controlle层接口
+
+1、新增解压请求的包装类`UnZipRequestWrapper`继承`HttpServletRequestWrapper`，对请求体进行解压写回body
+
+```java
+@Slf4j
+public class UnZipRequestWrapper extends HttpServletRequestWrapper {
+    private final byte[] bytes;
+
+    public UnZipRequestWrapper(HttpServletRequest request) throws IOException {
+        super(request);
+        try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream());
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            final byte[] body;
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = bis.read(buffer)) > 0) {
+                baos.write(buffer, 0, len);
+            }
+            body = baos.toByteArray();
+            if (body.length == 0) {
+                log.info("Body无内容，无需解压");
+                bytes = body;
+                return;
+            }
+            // this.bytes = GZIPUtils.uncompressToByteArray(body); // 自定义的压缩工具类
+           this.bytes = ZipUtil.unGzip(body); // hutool的压缩工具类
+        } catch (IOException ex) {
+            log.info("解压缩步骤发生异常！");
+            ex.printStackTrace();
+            throw ex;
+        }
+    }
+
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        return new ServletInputStream() {
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public boolean isReady() {
+                return false;
+            }
+
+            @Override
+            public void setReadListener(ReadListener readListener) {
+
+            }
+
+            public int read() throws IOException {
+                return byteArrayInputStream.read();
+            }
+        };
+    }
+
+    @Override
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(this.getInputStream()));
+    }
+}
+```
+
+自定义的压缩工具类
+
+```java
+public class GZIPUtils {
+    public static final String GZIP_ENCODE_UTF_8 = "UTF-8";
+
+    /**
+     * 字符串压缩为GZIP字节数组
+     * @param str
+     * @return
+     */
+    public static byte[] compress(String str) {
+        return compress(str, GZIP_ENCODE_UTF_8);
+    }
+ 
+    /**
+     * 字符串压缩为GZIP字节数组
+     * @param str
+     * @param encoding
+     * @return
+     */
+    public static byte[] compress(String str, String encoding) {
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        GZIPOutputStream gzip;
+        try {
+            gzip = new GZIPOutputStream(out);
+            gzip.write(str.getBytes(encoding));
+            gzip.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return out.toByteArray();
+    }
+ 
+    /**
+     * GZIP解压缩
+     * @param bytes
+     * @return
+     */
+    public static byte[] uncompress(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        try {
+            GZIPInputStream ungzip = new GZIPInputStream(in);
+            byte[] buffer = new byte[256];
+            int n;
+            while ((n = ungzip.read(buffer)) >= 0) {
+                out.write(buffer, 0, n);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return out.toByteArray();
+    }
+ 
+    /**
+     * 解压并返回String
+     * @param bytes
+     * @return
+     */
+    public static String uncompressToString(byte[] bytes) throws IOException {
+        return uncompressToString(bytes, GZIP_ENCODE_UTF_8);
+    }
+
+    /**
+     *
+     * @param bytes
+     * @return
+     */
+    public static byte[] uncompressToByteArray(byte[] bytes) throws IOException {
+        return uncompressToByteArray(bytes, GZIP_ENCODE_UTF_8);
+    }
+ 
+    /**
+     * 解压成字符串
+     * @param bytes 压缩后的字节数组
+     * @param encoding 编码方式
+     * @return 解压后的字符串
+     */
+    public static String uncompressToString(byte[] bytes, String encoding) throws IOException {
+        byte[] result = uncompressToByteArray(bytes, encoding);
+        return new String(result);
+    }
+
+    /**
+     * 解压成字节数组
+     * @param bytes
+     * @param encoding
+     * @return
+     */
+    public static byte[] uncompressToByteArray(byte[] bytes, String encoding) throws IOException {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        try {
+            GZIPInputStream ungzip = new GZIPInputStream(in);
+            byte[] buffer = new byte[256];
+            int n;
+            while ((n = ungzip.read(buffer)) >= 0) {
+                out.write(buffer, 0, n);
+            }
+            return out.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("解压缩失败！");
+        }
+    }
+
+    /**
+     * 将字节流转换成文件
+     * @param filename
+     * @param data
+     * @throws Exception
+     */
+    public static void saveFile(String filename,byte [] data)throws Exception{
+        if(data != null){
+            String filepath ="/Users/algorix/Downloads/" + filename;
+            File file  = new File(filepath);
+            if(file.exists()){
+                file.delete();
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(data,0,data.length);
+            fos.flush();
+            fos.close();
+            System.out.println(file);
+        }
+    }
+```
+
+2、自定义过滤器GzipFilter
+
+```java
+@Slf4j
+@Component
+public class GzipFilter implements Filter {
+    private static final String CONTENT_ENCODING = "Content-Encoding";
+    private static final String CONTENT_ENCODING_TYPE = "gzip";
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        long start = System.currentTimeMillis();
+        HttpServletRequest httpServletRequest = (HttpServletRequest)request;
+        String encodeType = httpServletRequest.getHeader(CONTENT_ENCODING);
+        if (CONTENT_ENCODING_TYPE.equals(encodeType)) {
+            log.info("请求:{} 需要解压", httpServletRequest.getRequestURI());
+            UnZipRequestWrapper unZIPRequestWrapper = new UnZipRequestWrapper(httpServletRequest);
+            chain.doFilter(unZIPRequestWrapper,response);
+        } else {
+            log.info("请求:{} 无需解压", httpServletRequest.getRequestURI());
+            chain.doFilter(request,response);
+        }
+        log.info("耗时：{}ms", System.currentTimeMillis() - start);
+    }
+}
+```
+
+3、注册过滤器
+
+```java
+@Configuration
+public class FilterConfig {
+    @Resource
+    private GzipFilter gzipFilter;
+
+    @Bean
+    public FilterRegistrationBean filterGzip(){
+        FilterRegistrationBean registration = new FilterRegistrationBean<>();
+        //Filter可以new，也可以使用依赖注入Bean
+        registration.setFilter(gzipFilter);
+        //过滤器名称
+        registration.setName("gzipFilter");
+        //拦截路径
+        registration.addUrlPatterns("/v1/log/*");
+        //设置顺序
+        registration.setOrder(1);
+        return registration;
+    }
+}
+```
+
+完成，可以测试
