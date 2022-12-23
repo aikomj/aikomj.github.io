@@ -495,6 +495,8 @@ idea的代码提示功能已经很强大，使用`Codota`插件，则更上一�
 
 ![](\assets\images\tools\idea-plugin-codota-2.png)
 
+使用Tabnine替代Codota，下一代的AI代码提示产品
+
 > RestfulToolkit
 
 - 根据 URL 直接跳转到对应的方法定义

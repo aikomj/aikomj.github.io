@@ -4,7 +4,7 @@ title: SpringBoot Web开发基础
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: json格式化，拦截器设置，过滤器设置
+excerpt: json格式化，拦截器设置，过滤器设置，过滤gzip请求解压数据
 lock: noneed
 ---
 
