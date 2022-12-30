@@ -116,10 +116,6 @@ void insertOrderContent() {
 
 ![](/assets/images/2020/icoding/mysql/db213-uuid.jpg)
 
-
-
-
-
 ## 3. 通过雪花算法实现全局id
 
 ​	全局分布式ID方案总结：[https://www.cnblogs.com/haoxinyue/p/5208136.html](https://www.cnblogs.com/haoxinyue/p/5208136.html)
@@ -138,6 +134,8 @@ void insertOrderContent() {
   - 5位的机器id：5位机房和5位机器唯一标识机器的序列，可以配置2的10次方，也就是1024个机器在并发的情况下可以不重复
   - 12位的序号：同一时间同一机器并发可以生成2的12次方个序列，也就是说有4096个不同
   - 说明雪花支持<mark>毫秒级的并发是4096个</mark>
+
+  ![](\assets\images\2022\springcloud\snowflack.png)
 
 - <mark>时间回调会引起重复</mark>
 

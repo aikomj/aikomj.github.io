@@ -60,27 +60,27 @@ public class LogAspect {
 @Aspect
 public class LogAspect {
 	private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   
-  // 切点表达式
+  	// 切点表达式
 	@Pointcut("execution(public * com.xhx.springboot.controller.*.*(..))")
-  public void pointCut(){}
+  	public void pointCut(){}
 }
 ```
 
-![](/assets/images/2020/java/spring-aop-1.png)
-
 > execution(方法修饰符 返回类型 方法全限定名(参数))  
 
-**说明：**上面代码中的切点表达式,
+![](/assets/images/2020/java/spring-aop-1.png)
+
+上面代码中的切点表达式说明：
 
 1、..两个点表明多个，*代表一个
 
-2、上面表达式代表切入com.xhx.springboot.controller包下的所有类的所有方法，方法参数不限，返回类型不限。  其中访问修饰符可以不写，不能用\*，
+2、上面表达式代表切入com.xhx.springboot.controller包下的所有类的所有方法，方法参数不限，返回类型不限，其中访问修饰符public可以不写，不能用\*
 
 3、第一个\*代表返回类型不限，第二个\*表示所有类，第三个*表示所有方法，..两个点表示方法里的参数不限。 
 
-4、然后用@Pointcut切点注解，放在一个空方法上面，一会儿在Advice通知中，直接调用这个空方法就行了。 
+4、@Pointcut切点注解，放在一个空方法上面，一会儿在Advice通知中，直接调用这个空方法就行了。 
 
 ```java
 // 匹配所有get开头的，第一个参数是Long类型的方法
@@ -114,14 +114,14 @@ public void logAspect() {}
 
 
 
-### 通知增强
+### 通知注解
 
-主要包括五个注解：
+5种通知类型：
 
-- @Before 在切点方法之前执行
-- @After 在切点方法之后执行
-- @AfterReturning 切点方法返回后执行
-- @AfterThrowing 切点方法抛异常执行
+- @Before 该注解标注的方法在业务模块代码执行之前执行，其不能阻止业务模块的执行，除非抛出异常
+- @After 通知方法会在目标方法返回或异常后调用
+- @AfterReturning 该注解标注的方法在业务模块代码执行之后执行
+- @AfterThrowing 该注解标注的方法在业务模块抛出指定异常后执行
 - @Around 属于环绕增强，能控制切点执行前，执行后，用这个注解后，程序抛异常，会影响@AfterThrowing这个注解
 
 ## 3、AOP例子
@@ -141,25 +141,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 @Component
 @Aspect
 public class LogAspect {
-
   private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Pointcut("execution(public * com.xhx.springboot.controller.*.*(..))")
   public void pointCut(){}
 
-  // 1、在切点方法之前执行
+  /**
+  1、在切点方法之前执行
+  */
   @Before(value = "pointCut()")
   public void before(JoinPoint joinPoint){
     logger.info("@Before通知执行");
-    //获取目标方法参数信息
+    // 获取目标方法参数信息
     Object[] args = joinPoint.getArgs();
     Arrays.stream(args).forEach(arg->{ 
       try {
@@ -169,31 +169,25 @@ public class LogAspect {
       }
     });
 
-    //aop代理对象
+    // aop代理对象
     Object aThis = joinPoint.getThis();
-    logger.info(aThis.toString()); //com.xhx.springboot.controller.HelloController@69fbbcdd
-
+    logger.info(aThis.toString()); // com.xhx.springboot.controller.HelloController@69fbbcdd
     //被代理对象
     Object target = joinPoint.getTarget();
     logger.info(target.toString()); //com.xhx.springboot.controller.HelloController@69fbbcdd
-
     //获取连接点的方法签名对象
     Signature signature = joinPoint.getSignature();
     logger.info(signature.toLongString()); //public java.lang.String com.xhx.springboot.controller.HelloController.getName(java.lang.String)
     logger.info(signature.toShortString()); //HelloController.getName(..)
     logger.info(signature.toString()); //String com.xhx.springboot.controller.HelloController.getName(String)
     //获取方法名
-    logger.info(signature.getName()); //getName
+    logger.info(signature.getName());
     //获取声明类型名
     logger.info(signature.getDeclaringTypeName()); //com.xhx.springboot.controller.HelloController
     //获取声明类型  方法所在类的class对象
     logger.info(signature.getDeclaringType().toString()); //class com.xhx.springboot.controller.HelloController
     //和getDeclaringTypeName()一样
-    logger.info(signature.getDeclaringType().getName());//com.xhx.springboot.controller.HelloController
-
-    //连接点类型
-    String kind = joinPoint.getKind();
-    logger.info(kind);//method-execution
+  logger.info(signature.getDeclaringType().getName());//com.xhx.springboot.controller.HelloController
 
     //返回连接点方法所在类文件中的位置  打印报异常
     SourceLocation sourceLocation = joinPoint.getSourceLocation();
@@ -249,7 +243,9 @@ public class LogAspect {
     }
   }
 
-  // 4、在切点方法之后执行
+  /**
+  4、在切点方法之后执行
+  */
   @After(value = POINT_CUT)
   public void doAfterAdvice(JoinPoint joinPoint){
     logger.info("@After后置通知执行了!");
@@ -262,14 +258,14 @@ public class LogAspect {
      *   环绕通知第一个参数必须是org.aspectj.lang.ProceedingJoinPoint类型
      */
   @Around(value = POINT_CUT)
-  public Object doAroundAdvice(ProceedingJoinPoint proceedingJoinPoint){
-    logger.info("@Around环绕通知："+proceedingJoinPoint.getSignature().toString());
+  public Object doAroundAdvice(ProceedingJoinPoint joinPoint){
+    logger.info("@Around环绕通知："+joinPoint.getSignature().toString());
     Object obj = null;
     try {
       obj = proceedingJoinPoint.proceed(); //可以加参数
       logger.info(obj.toString());
-    } catch (Throwable throwable) {
-      throwable.printStackTrace();
+    } catch (Throwable t) {
+      t.printStackTrace();
     }
     logger.info("@Around环绕通知执行结束");
     return obj;
@@ -279,52 +275,48 @@ public class LogAspect {
 
 执行结果如下：
 
-```java
+```sh
 @Around环绕通知
 @Before通知执行
 @Before通知执行结束
 @Around环绕通知执行结束
 @After后置通知执行了!
-@AfterReturning第一个后置返回通知的返回值：18
+@AfterReturning第一个后置返回通知的返回值 18
 ```
 
 **参数对象**
 
-- JoinPoint joinPoint：连接点对象，它可以获取当前切入的方法的参数、代理类等信息
+1、JoinPoint ：连接点对象，它可以获取当前切入的方法的参数、代理类等信息
 
-  ```java
-  //aop代理对象
-  Object aThis = joinPoint.getThis();
-  logger.info(aThis.toString()); //com.xhx.springboot.controller.HelloController@69fbbcdd
-  
-  //被代理对象
-  Object target = joinPoint.getTarget();
-  logger.info(target.toString()); //com.xhx.springboot.controller.HelloController@69fbbcdd
-  ```
+```java
+// aop代理对象
+Object aThis = joinPoint.getThis();
+logger.info(aThis.toString()); //com.xhx.springboot.controller.HelloController@69fbbcdd
 
-  this表示当前切入点表达式所指代的方法的对象的实例;
+// 被代理对象
+Object target = joinPoint.getTarget();
+logger.info(target.toString()); //com.xhx.springboot.controller.HelloController@69fbbcdd
+```
 
-  target表示当前切入点表达式所指代的方法的目标对象的实例 ;
+this表示当前切入点表达式所指代的方法的对象实例;
 
-  生成代理对象时会有两种方法，一个是CGLIB一个是jdk动态代理。
+target表示当前切入点表达式所指代的方法的目标对象实例 ;
 
-  用下面三个例子进行说明：   
+生成代理对象有两种方法： cglib 和 jdk动态代理。
 
-  - this(SomeInterface)或target(SomeInterface)：这种情况下，无论是对于Jdk代理还是Cglib代理，其目标对象和代理对象都是实现SomeInterface接口的（Cglib生成的目标对象的子类也是实现了SomeInterface接口的），因而this和target语义都是符合的，此时这两个表达式的效果一样；
-  - this(SomeObject)或target(SomeObject)，这里SomeObject没实现任何接口：这种情况下，Spring会使用Cglib代理生成SomeObject的代理类对象，由于代理类是SomeObject的子类，子类的对象也是符合SomeObject类型的，因而this将会被匹配，而对于target，由于目标对象本身就是SomeObject类型，因而这两个表达式的效果一样；
-  - this(SomeObject)或target(SomeObject)，这里SomeObject实现了某个接口：对于这种情况，虽然表达式中指定的是一种具体的对象类型，但由于其实现了某个接口，因而Spring默认会使用Jdk代理为其生成代理对象，Jdk代理生成的代理对象与目标对象实现的是同一个接口，但代理对象与目标对象还是不同的对象，由于代理对象不是SomeObject类型的，因而此时是不符合this语义的，而由于目标对象就是SomeObject类型，因而target语义是符合的，此时this和target的效果就产生了区别；这里如果强制Spring使用Cglib代理，因而生成的代理对象都是SomeObject子类的对象，其是SomeObject类型的，因而this和target的语义都符合，其效果就是一致的。
+2、ProceedingJoinPoint 
 
-- ProceedingJoinPoint proceedingJoinPoint：JoinPoint的子类，多了两个方法
+JoinPoint的子类，多了两个方法
 
-  ```java
-  // 调用下一个advice或者执行目标方法，返回值为目标方法返回值，因此可以通过更改返回值来修改方法的返回值
-  public Object proceed() throws Throwable;
-  
-  // 参数为目标方法的参数  因此可以通过修改参数改变方法入参
-  public Object proceed(Object[] args) throws Throwable;
-  ```
+```java
+// 调用下一个advice或者执行目标方法，返回值为目标方法返回值，可以通过更改返回值来修改方法的返回值
+public Object proceed() throws Throwable;
 
-> 参考代码
+// 参数为目标方法的参数  因此可以通过修改参数改变方法入参
+public Object proceed(Object[] args) throws Throwable;
+```
+
+> 参考例子
 
 rcc 的SecurityUtils工具类使用了线程变量
 
@@ -445,11 +437,117 @@ public class RpcRequestInterceptor {
 }
 ```
 
+> renren的切面记录用户操作
 
+1、自定义日志记录注解
+
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface LogOperation {
+
+	String value() default "";
+}
+```
+
+2、操作日志切面处理类
+
+```java
+@Aspect
+@Component
+public class LogOperationAspect {
+    @Autowired
+    private SysLogOperationService sysLogOperationService;
+
+    // 切入点
+    @Pointcut("@annotation(io.renren.common.annotation.LogOperation)")
+    public void logPointCut() {
+    }
+
+    @Around("logPointCut()")
+    public Object around(ProceedingJoinPoint point) throws Throwable {
+        long beginTime = System.currentTimeMillis();
+        try {
+            //执行方法
+            Object result = point.proceed();
+
+            //执行时长(毫秒)
+            long time = System.currentTimeMillis() - beginTime;
+            //保存日志
+            saveLog(point, time, OperationStatusEnum.SUCCESS.value());
+
+            return result;
+        }catch(Exception e) {
+            //执行时长(毫秒)
+            long time = System.currentTimeMillis() - beginTime;
+            //保存日志
+            saveLog(point, time, OperationStatusEnum.FAIL.value());
+
+            throw e;
+        }
+    }
+
+    private void saveLog(ProceedingJoinPoint joinPoint, long time, Integer status) throws Exception {
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = joinPoint.getTarget().getClass().getDeclaredMethod(signature.getName(), signature.getParameterTypes());
+        LogOperation annotation = method.getAnnotation(LogOperation.class);
+
+        SysLogOperationEntity log = new SysLogOperationEntity();
+        if(annotation != null){
+            //注解上的描述
+            log.setOperation(annotation.value());
+        }
+
+        //登录用户信息
+        UserDetail user = SecurityUser.getUser();
+        if(user != null){
+            log.setCreatorName(user.getUsername());
+        }
+        log.setStatus(status);
+        log.setRequestTime((int)time);
+
+        //请求相关信息
+        HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
+        log.setIp(IpUtils.getIpAddr(request));
+        log.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
+        log.setRequestUri(request.getRequestURI());
+        log.setRequestMethod(request.getMethod());
+
+        //请求参数
+        Object[] args = joinPoint.getArgs();
+        try{
+            String params = JsonUtils.toJsonString(args[0]);
+            log.setRequestParams(params);
+        }catch (Exception e){
+
+        }
+
+        //保存到DB
+        sysLogOperationService.save(log);
+    }
+}
+```
+
+3、在Controller方法中使用
+
+```java
+@PutMapping
+@ApiOperation("修改")
+@LogOperation("修改")
+@RequiresPermissions("sys:schedule:update")
+public Result update(@RequestBody ScheduleJobDTO dto){
+    ValidatorUtils.validateEntity(dto, UpdateGroup.class, DefaultGroup.class);
+
+    scheduleJobService.update(dto);
+
+    return new Result();
+}
+```
 
 参考：
 
 [Spring AOP切点表达式用法总结](https://www.cnblogs.com/zhangxufeng/p/9160869.html)
 
-[https://www.cnblogs.com/suphowe/p/12098042.html](https://www.cnblogs.com/suphowe/p/12098042.html)
+[Spring AOP 使用示例](https://www.cnblogs.com/suphowe/p/12098042.html)
 
