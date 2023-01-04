@@ -1,11 +1,11 @@
 ---
 layout: page
-title: 钉钉认证部署学习
-titlebar: dingding
-subtitle: <span class="mega-octicon octicon-globe"></span> &nbsp;&nbsp; 钉钉OA生态下，创建业务表单发布
-menu: yida
+title: Go全栈系列文章
+titlebar: Go
+subtitle: <span class="mega-octicon octicon-clippy"></span>&nbsp;&nbsp; 不能改变自己，和咸鱼有什么区别
+menu: Go
 css: ['blog-page.css']
-permalink: /yida
+permalink: /go
 ---
 
 <div class="row">
@@ -14,7 +14,7 @@ permalink: /yida
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='yida' %}
+                {% if post.category=='go' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

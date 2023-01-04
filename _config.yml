@@ -117,10 +117,6 @@ menus:
     href: /link.html
     label: 友链
     target: _self
-  -
-    href: /yida.html
-    label: 钉钉
-    target: _self
 
   #   href: /about.html
   #   label: 关于
@@ -185,8 +181,8 @@ navs:
     label: Spring Cloud
     target: _self
   -
-    href: /dubbo.html
-    label: Dubbo    
+    href: /go.html
+    label: Go全栈
     target: _self
   -
     href: /archives.html
