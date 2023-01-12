@@ -5,7 +5,7 @@
     background: #4183c4;
 }
 .site-header #site-header-brand {
-    color: #fff;
+    color: #f73131;
 }
 
 .site-header .site-header-nav-item {
@@ -15,7 +15,12 @@
 .site-header a:hover {
     color: #fff;
 }
-.icon-logo{fill: #fff;}
+.icon-logo{
+    height: 40px;
+    min-width: 40px;
+    vertical-align: top;
+    border-radius: 50%;
+}
 
 .jumbotron {
     background: #4183c4;
