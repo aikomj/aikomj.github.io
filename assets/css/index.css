@@ -15,7 +15,8 @@
 .site-header a:hover {
     color: #fff;
 }
-.icon-logo{
+
+.logo{
     height: 40px;
     min-width: 40px;
     vertical-align: top;

@@ -930,7 +930,7 @@ public class DistributeDiscountReversalConsumer implements RocketMQListener<Mess
 
 那它是怎么确认消息是消费成功的？如果业务发生异常，消费者会重新拉取消息进行消费吗？会，只要你不catch异常处理掉，把它抛出去就可以，来分析源码
 
-### @RocketMQListener源码分析
+### RocketMQMessageListener源码分析
 
 分析@RocketMQMessageListener注解的源码，项目启动会扫描该注解创建消费者，配置类`org.apache.rocketmq.spring.autoconfigure.ListenerContainerConfiguration`会被`RocketMQAutoConfiguration` 自动配置@import引入创建Bean对象
 
@@ -987,7 +987,7 @@ public static RocketMQTransactionAnnotationProcessor transactionAnnotationProces
 private void registerContainer(String beanName, Object bean) {
         Class<?> clazz = AopProxyUtils.ultimateTargetClass(bean);
 
-  // 都需要继承RocketMQListener，否则抛异常
+  // 需要实现接口RocketMQListener，否则抛异常
         if (!RocketMQListener.class.isAssignableFrom(bean.getClass())) {
             throw new IllegalStateException(clazz + " is not instance of " + RocketMQListener.class.getName());
         }
@@ -1012,7 +1012,7 @@ private void registerContainer(String beanName, Object bean) {
         }
   // 校验
         validate(annotation);
-
+		// 监听者容器bean名称
         String containerBeanName = String.format("%s_%s", DefaultRocketMQListenerContainer.class.getName(),
             counter.incrementAndGet());
         GenericApplicationContext genericApplicationContext = (GenericApplicationContext)applicationContext;
@@ -1035,7 +1035,7 @@ private void registerContainer(String beanName, Object bean) {
     }
 ```
 
-如果你applicaiton.yml配置文件中，配置了不订阅的消费组和topic , 那么对应的消费者就不会被创建，属性配置看类`RocketMQProperties`的内部静态类`Consumer`
+如果在applicaiton.yml配置文件中，配置了不订阅的消费组和topic , 那么对应的消费者就不会被创建，属性配置看类`RocketMQProperties`的内部静态类`Consumer`
 
 ![](\assets\images\2021\mq\rocketmq-properties.jpg)
 
@@ -1087,14 +1087,16 @@ rocketmq:
         TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR: false
 ```
 
-下面这段代码创建消费者Bean
+继续回到`registerContainer`方法，下面这段代码创建消费者Bean
 
 ```java
  genericApplicationContext.registerBean(containerBeanName, DefaultRocketMQListenerContainer.class,
             () -> createRocketMQListenerContainer(containerBeanName, bean, annotation));
 ```
 
-注册Spring bean时会调用方法`createRocketMQListenerContainer()`，来提供一个bean实例放入spring ioc容器
+![](\assets\images\2021\mq\rocketmq-register-2.png)
+
+以后可以参考这种方式手动注册bean到spring ioc了，看到supplier 提供者函数式接口，所以注册Spring bean时会调用方法`createRocketMQListenerContainer()`，来提供一个bean实例放入spring ioc容器
 
 ```java
     private DefaultRocketMQListenerContainer createRocketMQListenerContainer(String name, Object bean,
@@ -1172,7 +1174,7 @@ public interface InitializingBean {
 
 ![](\assets\images\2021\mq\default-rocketmq-listener-container-2.jpg)
 
-initRocketMQPushConsumer()方法是一个核心方法，它设置了每个@RocketMQMessageListener 消费者向rocketMQ broker组成自己的消费者信息，如nameServer地址、一个消费者的最大消费线程数consumeThreadMax、 消费者连接超时时间consumeTimeout、消费模式consumerMode、选择消息的类型SelectorType（默认是TAG类型，即根据tag表达式取选择消息）、TAG表达式selectorExpression、消息模式messageModel（默认集群消费）、消费模式consumeMode(默认并发消费)
+initRocketMQPushConsumer()方法是一个核心方法，它设置了每个@RocketMQMessageListener 消费者向RocketMQ broker注册自己的消费者信息，如nameServer地址、一个消费者的最大消费线程数consumeThreadMax、 消费者连接超时时间consumeTimeout、消费模式consumerMode、选择消息的类型SelectorType（默认是TAG类型，即根据tag表达式取选择消息）、TAG表达式selectorExpression、消息模式messageModel（默认集群消费）、消费模式consumeMode(默认并发消费)
 
 ```java
 public enum MessageModel {
@@ -1237,6 +1239,377 @@ public class DefaultMessageListenerConcurrently implements MessageListenerConcur
 consumeMessage()就是消费方法啦，它把消息经过转换解析后再给到我们自定义的业务消费类，所以添加了注解@RocketMQMessageListener 的Service类都会创建一个消费者consumer，实现接口RocketMQListener，只需重写 onMessage() 消费消息，不要catch异常。
 
 那这个consumer是什么时候调用MessageListenerConcurrently对象的，要好好研究consumer.start()方法做了什么操作。
+
+
+
+### 集成多个rocketMQ集群
+
+统一APP的app-msg服务需要集成大公共消息中心的rocketmq集群和统一APP的rocketmq集群，下面是实现方案
+
+> 生产者
+
+1、application.yml 配置文件
+
+```yaml
+# 统一APP的rocketmq配置,RocketMQAutoConfiguration自动配置类默认读取该配置值，初始化RocketMQ客户端连接
+rocketmq:
+  name-server: ${ROCKETMQ_APP_NAME_SERVER} # 第一个业务rocketmq集群
+  producer:
+    group: pg_app_msg
+# 统一APP的rocketmq配置
+rocketmq-app:
+  name-server: ${ROCKETMQ_APP_NAME_SERVER} # 第二个业务rocketmqt集群
+  producer:
+    group: pg_app_msg
+```
+
+2、自定义配置类，创建另外一个RocketMQ集群的消息发送者模板类
+
+```java
+/**
+ * @author xiejinwei02
+ * @date 2022/7/14 17:21
+ * 配置统一APP的RocketMQ消息发送者，RocketMQAutoConfiguration自动配置类创建的RocketMQTemplate Bean是大公共消息平台的RocketMQ消息发送者
+ * 所以存在两个不同RocketMQ集群的消息发送者
+ */
+@Configuration
+//@ConditionalOnExpression("${push.enabled:false}==true")
+@EnableConfigurationProperties(RocketMQProperties.class)
+public class MqConfig {
+    @Value("${rocketmq-app.name-server}")
+    String nameServer;
+
+    @Value("${rocketmq-app.producer.group}")
+    String groupName;
+
+    /**
+     * 统一APP RocketMQ 消息发送模板类
+     * @param rocketMQMessageConverter
+     * @param rocketMQProperties
+     * @return
+     */
+    @Bean
+    public RocketMQTemplate appRocketMQTemplate(@Autowired RocketMQMessageConverter rocketMQMessageConverter,RocketMQProperties rocketMQProperties){
+        boolean isEnableMsgTrace = true;
+        String customizedTraceTopic = MixAll.RMQ_SYS_TRACE_TOPIC;
+        RocketMQTemplate appRocketMQTemplate = new RocketMQTemplate();
+        DefaultMQProducer producer = RocketMQUtil.createDefaultMQProducer(groupName, "", "", isEnableMsgTrace, customizedTraceTopic); // 参照自动配置类创建发送者
+        producer.setNamesrvAddr(nameServer);
+        RocketMQProperties.Producer producerConfig = rocketMQProperties.getProducer();
+        producer.setSendMsgTimeout(producerConfig.getSendMessageTimeout());
+        producer.setRetryTimesWhenSendFailed(producerConfig.getRetryTimesWhenSendFailed());
+        producer.setRetryTimesWhenSendAsyncFailed(producerConfig.getRetryTimesWhenSendAsyncFailed());
+        producer.setMaxMessageSize(producerConfig.getMaxMessageSize());
+        producer.setCompressMsgBodyOverHowmuch(producerConfig.getCompressMessageBodyThreshold());
+        producer.setRetryAnotherBrokerWhenNotStoreOK(producerConfig.isRetryNextServer());
+        producer.setInstanceName("AppMQProducer"); // 必须设置实例名称，根据实际业务名称设置
+        appRocketMQTemplate.setProducer(producer);
+        appRocketMQTemplate.setMessageConverter(rocketMQMessageConverter.getMessageConverter());
+        return appRocketMQTemplate;
+    }
+
+    /**
+     * 待办线程池，用于异步设置“待办列表更新”期望值、推送待办APP消息
+     * @return
+     */
+    @Bean
+    public ThreadPoolExecutor todoThreadPool(){
+        return new ThreadPoolExecutor(20,
+                200,
+                300,
+                TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(10000),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+}
+```
+
+3、Service业务层使用
+
+```java
+@Slf4j
+@Service
+public class MessageServiceImpl implements MessageService {
+    @Autowired
+    @Qualifier("rocketMQTemplate")
+    RocketMQTemplate rocketMQTemplate; // 第一个业务rocketmq集群的消息发送模板类Bean
+    
+    @Resource
+    RocketMQTemplate rocketMQTemplate; // 第一个业务rocketmq集群的消息发送模板类Bean
+    
+    @Autowired
+    @Qualifier("appRocketMQTemplate")
+    RocketMQTemplate appRocketMQTemplate; // 第二个业务rocketmq集群的消息发送模板类Bean
+    
+    @Resource
+  	RocketMQTemplate appRocketMQTemplate;  // 第二个业务rocketmq集群的消息发送模板类Bean  
+    
+    private void sendRetryPushTodo(DeviceInfoRetDTO device,TodoEntity todoEntity){
+        RePushTodoEntity rePushTodo = new RePushTodoEntity();
+        rePushTodo.setSourceAppName(todoEntity.getSourceAppName());
+        rePushTodo.setSubject(todoEntity.getSubject());
+        rePushTodo.setTitle(todoEntity.getTitle());
+        rePushTodo.setModelId(todoEntity.getModelId());
+        rePushTodo.setMobileLink(todoEntity.getMobileLink());
+        rePushTodo.setUserAccount(device.getUserAccount());
+        rePushTodo.setUserType(device.getUserType().getText());
+        rePushTodo.setSystemName(device.getOs().name().toLowerCase());
+        rePushTodo.setDeviceId(device.getPlatformDeviceId());
+        rePushTodo.setPushAppName(device.getAppName());
+        rePushTodo.setExtra(todoEntity.getExtra());
+        // 同步发送
+        SendResult sendResult = appRocketMQTemplate.syncSend(CommonConstant.RETRY_PUSH_TODO, MessageBuilder.withPayload(rePushTodo).setHeader(RocketMQHeaders.KEYS, todoEntity.getModelId()).build());
+        if(!sendResult.getSendStatus().equals(SendStatus.SEND_OK)){
+            log.error("发送MQ消息，重推APP待办消息提醒，失败,{}",rePushTodo);
+        }
+    }
+}
+```
+
+> 消费者
+
+1、application.yml 配置文件
+
+```yaml
+# 大公共消息平台的rocketmq集群
+rocketmq:
+  name-server: ${ROCKETMQ_NAME_SERVER}  # 第一个业务rocketmq集群
+  producer:
+    group: pg_app_msg_worker
+
+# 统一APP的rocketmq集群
+rocketmq-app:
+  name-server: ${ROCKETMQ_APP_NAME_SERVER}  # 第二个业务rocketmq集群
+  producer:
+    group: pg_app_msg_worker
+```
+
+2、自定义消费监听者
+
+根据业务创建
+
+- 待办， 第一个业务rocketmq集群的监听者，默认的`${rocketmq.name-server}`
+
+```java
+@Slf4j
+@Service
+@RocketMQMessageListener(topic = "Employee-Todo",selectorExpression = "*",consumerGroup = "EmployeeTodo-PT20090",consumeMode = ConsumeMode.ORDERLY)
+public class EmployeeTodoListener extends BaseTodoListener implements RocketMQListener<MessageExt> {
+
+    @SneakyThrows
+    @Override
+    public void onMessage(MessageExt payload) {
+        MessageBody.TodoBody todoBody = convertTodoBody(payload);
+        handleTodo(todoBody,payload.getTags(), UserTypeEnum.BIP.getText());
+    }
+}
+```
+
+- 通知置为已办， 第二个业务rocketmq集群的监听者，指定name-server地址是`${rocketmq-app.name-server}`，同时指定accessKey和secretKey值
+
+```java
+/**
+ * @author xiejinwei02
+ * @date 2022/9/27 16:44
+ * 降低消费线程数，避免高并发调用总线接口
+ */
+@Slf4j
+@Service
+@RocketMQMessageListener(topic = "${topic.todo}",selectorExpression = CommonConstant.TAG_DONE,nameServer = "${rocketmq-app.name-server:}",consumerGroup = "${consumerGroup.notifyTodoDone}",consumeThreadMax = 10,accessKey = "access",secretKey = "secret")
+public class NotifyTodoDoneListener implements RocketMQListener<SetTodoDoneEntity> {
+    @Autowired
+    MessageService messageService;
+
+    @SneakyThrows
+    @Override
+    public void onMessage(SetTodoDoneEntity entity) {
+        messageService.notifyBipSetTodoDone(entity);
+    }
+}
+```
+
+注意：accessKey 和 secretKey必须要设置值，否则不会向nameServer指定的rocketMQ集群注册client 连接，而是默认的
+
+`"${rocketmq.name-server:}"`集群注册client连接。上面源码分析中的配置类 `ListenerContainerConfiguration` 创建消费对象
+
+![](\assets\images\2021\mq\rocketmq-default-push-consumer.png)
+
+```java
+public static RPCHook getRPCHookByAkSk(Environment env, String accessKeyOrExpr, String secretKeyOrExpr) {
+    String ak, sk;
+    try {
+        ak = env.resolveRequiredPlaceholders(accessKeyOrExpr);
+        sk = env.resolveRequiredPlaceholders(secretKeyOrExpr);
+    } catch (Exception e) {
+        // Ignore it
+        ak = null;
+        sk = null;
+    }
+    // 不为空才创建rpc连接
+    if (!StringUtils.isEmpty(ak) && !StringUtils.isEmpty(sk)) {
+        return new AclClientRPCHook(new SessionCredentials(ak, sk));
+    }
+    return null;
+}
+```
+
+### RocketMQListener和RocketMQReplyListener
+
+在Springboot 集成RocketMQ的创建消费者的配置类`ListenerContainerConfiguration`（被RocketMQAutoConfiguration @import注解引入）, registerContainer()方法创建消费者的判断
+
+![](\assets\images\2021\mq\rocketmq-register-container.png)
+
+消费者实现类不能同时实现接口`RocketMQListener`和`RocketMQReplyListener`
+
+```java
+package org.apache.rocketmq.spring.core;
+
+public interface RocketMQListener<T> {
+    void onMessage(T message);
+}
+```
+
+```java
+package org.apache.rocketmq.spring.core;
+
+/**
+ * The consumer supporting request-reply should implement this interface.
+ *
+ * @param <T> the type of data received by the listener
+ * @param <R> the type of data replying to producer
+ */
+public interface RocketMQReplyListener<T, R> {
+    /**
+     * @param message data received by the listener
+     * @return data replying to producer
+     */
+    R onMessage(T message);
+}
+```
+
+`RocketMQReplyListener`多了一个返回值给消息生产者，这个应用在怎样的场景中？
+
+上面分析了@RocketMQMessageListener的消费者最终调用了`DefaultMessageListenerConcurrently`或者`DefaultMessageListenerOrderly`的 consumeMessage()方法
+
+```java
+public class DefaultMessageListenerConcurrently implements MessageListenerConcurrently {
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
+        for (MessageExt messageExt : msgs) {
+            log.debug("received msg: {}", messageExt);
+            try {
+                long now = System.currentTimeMillis();
+                handleMessage(messageExt);
+                long costTime = System.currentTimeMillis() - now;
+                log.debug("consume {} cost: {} ms", messageExt.getMsgId(), costTime);
+            } catch (Exception e) {
+                log.warn("consume message failed. messageExt:{}, error:{}", messageExt, e);
+                context.setDelayLevelWhenNextConsume(delayLevelWhenNextConsume);
+                return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+            }
+        }
+
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+}
+```
+
+进入handleMessage()方法
+
+```java
+private void handleMessage(
+    MessageExt messageExt) throws MQClientException, RemotingException, InterruptedException {
+    if (rocketMQListener != null) {
+        rocketMQListener.onMessage(doConvertMessage(messageExt));
+    } else if (rocketMQReplyListener != null) {
+        // 接收返回值
+        Object replyContent = rocketMQReplyListener.onMessage(doConvertMessage(messageExt));
+        // 创建MQ消息
+        Message<?> message = MessageBuilder.withPayload(replyContent).build();
+        // 第一个参数是消费者的入参消息
+        // 第二个参数是消费者的出参
+        org.apache.rocketmq.common.message.Message replyMessage = MessageUtil.createReplyMessage(messageExt, convertToBytes(message));
+        // 异步发送消息
+        consumer.getDefaultMQPushConsumerImpl().getmQClientFactory().getDefaultMQProducer().send(replyMessage, new SendCallback() {
+            @Override public void onSuccess(SendResult sendResult) {
+                if (sendResult.getSendStatus() != SendStatus.SEND_OK) {
+                    log.error("Consumer replies message failed. SendStatus: {}", sendResult.getSendStatus());
+                } else {
+                    log.info("Consumer replies message success.");
+                }
+            }
+
+            @Override public void onException(Throwable e) {
+                log.error("Consumer replies message failed. error: {}", e.getLocalizedMessage());
+            }
+        });
+    }
+}
+```
+
+发现 registerContainer() 要判断消费者只能实现接口`RocketMQListener`和`RocketMQReplyListener`其中一个的原因。
+
+如果是rocketMQReplyListener，用Object 类型接收任何数据类型的返回值，并封装成MQ消息体，发送给消息的生产者，那topic是多少？看MessageUtil.createReplyMessage()方法
+
+```java
+public class MessageUtil {
+    public static Message createReplyMessage(final Message requestMessage, final byte[] body) throws MQClientException {
+        if (requestMessage != null) {
+            Message replyMessage = new Message();
+            String cluster = requestMessage.getProperty(MessageConst.PROPERTY_CLUSTER);
+            String replyTo = requestMessage.getProperty(MessageConst.PROPERTY_MESSAGE_REPLY_TO_CLIENT);
+            String correlationId = requestMessage.getProperty(MessageConst.PROPERTY_CORRELATION_ID);
+            String ttl = requestMessage.getProperty(MessageConst.PROPERTY_MESSAGE_TTL);
+            replyMessage.setBody(body);
+            if (cluster != null) {
+                // 设置返回消息的topic
+                String replyTopic = MixAll.getReplyTopic(cluster);
+                replyMessage.setTopic(replyTopic);
+                MessageAccessor.putProperty(replyMessage, MessageConst.PROPERTY_MESSAGE_TYPE, MixAll.REPLY_MESSAGE_FLAG);
+                MessageAccessor.putProperty(replyMessage, MessageConst.PROPERTY_CORRELATION_ID, correlationId);
+                MessageAccessor.putProperty(replyMessage, MessageConst.PROPERTY_MESSAGE_REPLY_TO_CLIENT, replyTo);
+                MessageAccessor.putProperty(replyMessage, MessageConst.PROPERTY_MESSAGE_TTL, ttl);
+
+                return replyMessage;
+            } else {
+                throw new MQClientException(ClientErrorCode.CREATE_REPLY_MESSAGE_EXCEPTION, "create reply message fail, requestMessage error, property[" + MessageConst.PROPERTY_CLUSTER + "] is null.");
+            }
+        }
+        throw new MQClientException(ClientErrorCode.CREATE_REPLY_MESSAGE_EXCEPTION, "create reply message fail, requestMessage cannot be null.");
+    }
+
+    public static String getReplyToClient(final Message msg) {
+        return msg.getProperty(MessageConst.PROPERTY_MESSAGE_REPLY_TO_CLIENT);
+    }
+}
+```
+
+其中
+
+```java
+String cluster = requestMessage.getProperty(MessageConst.PROPERTY_CLUSTER);  // 常量值=CLUSTER
+String replyTopic = MixAll.getReplyTopic(cluster);
+replyMessage.setTopic(replyTopic);
+```
+
+`MixAll.getReplyTopic()`方法
+
+```java
+    public static String getReplyTopic(final String clusterName) {
+        return clusterName + "_" + REPLY_TOPIC_POSTFIX; // 常量值=REPLY_TOPIC
+    }
+```
+
+那么topic就是：原消息MessageExt的properties属性(HashMap)中key=CLUSTER的值 + 下划线+REPLY_TOPIC
+
+相当于消费者对生产者的每一个消息消费后的一个应答
+
+![](\assets\images\2021\mq\rocketmq-replylistener.png)
+
+
 
 
 

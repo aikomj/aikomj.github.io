@@ -60,6 +60,13 @@
     font-size: 20px;
 }
 
+.logo{
+    height: 40px;
+    min-width: 40px;
+    vertical-align: top;
+    border-radius: 50%;
+}
+
 /******* Scroll Start *******/
 .site-header {
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
@@ -78,7 +85,6 @@
 
 }
 
-
 /******* Scroll End *******/
 
 /******* Scroll Start on the phone *******/
@@ -86,12 +92,6 @@
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-.icon-logo{
-    height: 40px;
-    min-width: 40px;
-    vertical-align: top;
-    border-radius: 50%;
-}
 .icon-logo.site-header-nav-scrolled-ph {fill: #000;}
 
 .site-header.site-header-nav-scrolled-ph {

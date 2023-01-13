@@ -4,7 +4,7 @@ title: 提升开发效率的17个工具类
 category: java
 tags: [java]
 keywords: java
-excerpt: Collections,CollectionUtils,Objects,StringUtils,IOUtils,MDC,ClassUtils,BeanUtils,ReflectionUtils,Base64Utils,DigestUtils,SerializationUtils，HttpStatus
+excerpt: Collections,CollectionUtils,Objects,StringUtils,IOUtils,MDC,ClassUtils,BeanUtils,ReflectionUtils,Base64Utils,DigestUtils,SerializationUtils，HttpStatus,gson与map的转换
 lock: noneed
 ---
 
@@ -744,7 +744,45 @@ private int NOT_FOUND_CODE = 404;
 
 <img src="/assets/images/2022/java/httpstatus-interface.jpg" style="zoom:67%;" />
 
+> gson与map的转换
 
+```java
+private static void toJson(){
+        Map<String,Object> testMap = new HashMap<>();
+        testMap.put("a","a");
+        testMap.put("b",1);
+        testMap.put("c",true);
+
+        Map<String,Object> person = new HashMap<>();
+        person.put("name","kuangshen");
+        person.put("age",18);
+        testMap.put("person",person);
+
+        List<String> nameList = new ArrayList<>();
+        nameList.add("kuangshen");
+        nameList.add("feige");
+        person.put("nameList",nameList);
+
+        testMap.forEach((k,v)->{
+            if(v instanceof String){
+                log.info("String 类型：{}",v);
+            }else if(v instanceof Number){
+                log.info("Number类型：{}",v);
+            }else if(v instanceof Boolean){
+                log.info("Boolean 类型：{}",v);
+            } else {
+                Gson gson = new Gson();
+                String gsonStr = gson.toJson(v);
+                try {
+                    JsonObject json = JsonParser.parseString(gsonStr).getAsJsonObject();
+                    log.info("转换成JsonObject:{}",json);
+                }catch (IllegalStateException e){
+                    log.error("不支持该类型，请用JsonObject封装,{}:{}",k,v);
+                }
+            }
+        });
+    }
+```
 
 
 

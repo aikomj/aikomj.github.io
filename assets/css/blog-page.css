@@ -4,12 +4,11 @@
     padding-left: 30px;
     border-left: 8px solid #4183c4;
 }
-.icon-logo{
+.logo{
     height: 40px;
     min-width: 40px;
     vertical-align: top;
     border-radius: 50%;
-    /*fill: #000;*/
 }
 
 #posts-list li {
