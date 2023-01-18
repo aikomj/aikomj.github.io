@@ -14,7 +14,7 @@ permalink: /redis
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.category=='redis' or post.keywords contains 'redis' %}
+                {% if post.category=='redis' or post.tags contains 'redis' or post.keywords contains 'redis' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

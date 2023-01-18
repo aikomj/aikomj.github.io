@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 重学Java第44讲：ArrayList的扩容机制
-category: java-relearn
-tags: [java]
+category: java
+tags: [base]
 keywords: java
 excerpt: 添加元素时调用grow方法扩容原来1.5倍以上，移位运算与位权，添加元素到指定位置，set方法更新元素，remove方法删除元素，indexof方法查找元素，时间复杂度的概念，ArrayList 执行效率的时间复杂度
 lock: noneed
