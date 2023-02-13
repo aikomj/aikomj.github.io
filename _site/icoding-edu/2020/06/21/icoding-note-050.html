@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第50节：数据库高级应用-3 - 大伟的博客 </title>
+    <meta name="keywords" content="mysql">
+    <meta name="description"
+          content="高可用衡量标准，高可用的三种方式，主从实现的逻辑原理，mysql主从复制，双主互备">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/06/21/icoding-note-050.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第50节：数据库高级应用-3">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第50节：数据库高级应用-3</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/06/21
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1mysql主从复制实现高可用">1、MySQL主从复制实现高可用</h2>
+
+<h3 id="数据库永远是系统最脆弱的环节">数据库永远是系统最脆弱的环节</h3>
+
+<ul>
+  <li>
+    <p>80%都是查询（压垮数据库）</p>
+  </li>
+  <li>
+    <p>缓存来保护数据库：Redis、ElasticSearch</p>
+  </li>
+  <li>
+    <p>数据库系统要有一定的容灾能力</p>
+  </li>
+  <li>
+    <p>数据状态化明显，分布式、集群</p>
+  </li>
+</ul>
+
+<h3 id="高可用衡量标准">高可用衡量标准</h3>
+
+<p>一般是通过系统的可靠性和可维护性来衡量的，有3个标准：</p>
+
+<ul>
+  <li>
+    <p>MTTF：平均无故障时间 （衡量可靠性）</p>
+  </li>
+  <li>
+    <p>MTTR：衡量可维护性，HA = MTTF/(MTTF + MTTR) *100%</p>
+  </li>
+  <li>
+    <p>SLA（服务标准协议）：</p>
+
+    <p>99%，表示一年的故障时间和宕机时间不超过4天</p>
+
+    <p>99.9%，表示一年的故障时间和宕机时间不超过10个小时</p>
+
+    <p>99.99%，表示一年的故障时间和宕机时间不超过1个小时</p>
+
+    <p>99.999%，表示一年的故障时间和宕机时间不超过6分钟，阿里云上的很多服务承诺不超过这个时间</p>
+  </li>
+</ul>
+
+<h3 id="数据库高可用的三种方式">数据库高可用的三种方式</h3>
+
+<ul>
+  <li>
+    <p>主从（非对称）</p>
+
+    <p>master-slave，热数据备份，从库一般是用来实时备份，从机可以快速切换为主库，读写分离（数据的一致性问题，会一点延迟）（业务上的分割，写连接主库，读连接从库，进行压力的分摊），从库一般设置为只读，从库通过中继日志更新数据</p>
+
+    <p>数据的一致性问题的解决：前端应用走缓存（Redis，Elasticsearch）因为前端对数据的实时性要求不高，后端应用Report走从库查</p>
+  </li>
+  <li>
+    <p>对称方式</p>
+
+    <p>两个节点，互为主从，双主模式（两个数据库的主键如果是自动生成需要初始设置成不一样的，如A-1001，1003，1005，B-1002，1004，1006）初始值不一样。雪花算法生成主键，全局唯一</p>
+
+    <p>双主下数据同步一定要实时</p>
+  </li>
+  <li>
+    <p>多机方式</p>
+
+    <ul>
+      <li>MHA</li>
+      <li>MMM</li>
+      <li>MyCat（可以实现双主机热切）</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="主从实现的逻辑">主从实现的逻辑</h3>
+
+<p><img src="/assets/images/2020/icoding/mysql/mysql-master-slave.png" alt="" /></p>
+
+<ul>
+  <li>资源：两台数据库()</li>
+  <li>Master会将修改记录进binlog
+    <ul>
+      <li>
+        <p>Slave从主库binlog读取数据写入relaylog，会启动一个Io线程读取主库的binlog更新日志写入自己的relaylog中，然后进入sleep，等待下次主库再次唤醒。从库启动一个sql线程从relaylog中读取更新事件在从库中重放。</p>
+      </li>
+      <li>
+        <p>relaylog和binlog的格式一样，可以用mysqlbinlog读取relaylog</p>
+      </li>
+      <li>
+        <p>mysql&gt; show relaylog events in ‘relay-bin.000001’;  读取relaying</p>
+      </li>
+      <li>
+        <p>目前数据库有两种复制方式：1、binlog的postition方式，relaylog与binlog的position位置保持一致；2、GTID方式（global transaction id）：MySQL版本&gt;=5.7，需要开启GTID，xid是当个事务的id，可在binlog中查看</p>
+
+        <p><img src="/assets/images/2020/icoding/mysql/xid.jpg" alt="" /></p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看gtid_mode</span>
+mysql&gt; show variables like <span class="s1">'%gtid_mode%'</span><span class="p">;</span>
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| gtid_mode     | OFF   |
++---------------+-------+
+</code></pre></div></div>
+
+<h3 id="配置主从复制">配置主从复制</h3>
+
+<p>数据库版本要一致，或者从库版本比主库版本高</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql <span class="nt">-V</span>
+<span class="c"># mysql命令行查看版本信息</span>
+mysql <span class="nt">-u</span> root <span class="nt">-p</span>
+<span class="k">select </span>version<span class="o">()</span><span class="p">;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>1、Master服务器配置</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 慢查询开关</span>
+<span class="nv">slow_query_log</span><span class="o">=</span>ON
+<span class="nv">slow_query_log_file</span><span class="o">=</span>/usr/local/mysql/slow.log
+<span class="nv">slow_launch_time</span><span class="o">=</span>4
+<span class="nv">long_query_time</span><span class="o">=</span>3 <span class="c"># 慢查询时间</span>
+<span class="c"># chown -R mysql:mysql /usr/local/slowlog/ # slowlog目录授权给mysql用户</span>
+<span class="c"># 开启binlog </span>
+<span class="nv">server_id</span><span class="o">=</span>213
+<span class="nv">log_bin</span><span class="o">=</span>/usr/local/mysql/binlog/mysql-bin  <span class="c"># 只需要给名字前缀</span>
+<span class="nv">binlog_format</span><span class="o">=</span>row
+<span class="nv">expire_logs_days</span><span class="o">=</span>3  <span class="c"># 3天前的binlog过期不保留</span>
+<span class="nv">max_binlog_size</span><span class="o">=</span>200m <span class="c"># binlog日志最大200m</span>
+<span class="c"># 重启mysql让配置生效</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>2、Slave服务器配置</p>
+</blockquote>
+
+<p>我这里使用docker 安装从库mysql</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># mysql的配置文件挂载: /usr/local/mysql-slave/conf</span>
+<span class="c"># mysql的数据存储目录挂载: /usr/local/mysql-slave/data</span>
+<span class="c"># mysql的日志文件目录挂载: /usr/local/mysql-slave/logs</span>
+<span class="o">[</span>root@alibaba mysql-slave]# docker run <span class="nt">-d</span> <span class="nt">-p</span> 3307:3306 
+<span class="nt">-v</span> /usr/local/mysql/slave/conf:/etc/mysql/mysql.conf.d 
+<span class="nt">-v</span> /usr/local/mysql/slave/data:/var/lib/mysql 
+<span class="nt">-v</span> /usr/local/mysql/slave/logs:/var/log/mysql
+<span class="nt">-e</span> <span class="nv">MYSQL_ROOT_PASSWORD</span><span class="o">=</span>mysqlali#123 <span class="nt">--name</span> mysql-slave mysql:5.7
+<span class="o">[</span>root@alibaba mysql-slave]# <span class="nb">ls
+</span>conf  data logs
+
+<span class="c"># 挂载目录授权给mysql</span>
+<span class="o">[</span>root@alibaba ~]# <span class="nb">chown</span> <span class="nt">-R</span> mysql:mysql /usr/local/mysql-slave/
+</code></pre></div></div>
+
+<p>从库的主从设置</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 配置文件不要忽略这个</span>
+<span class="o">[</span>mysqld]
+<span class="nv">server_id</span><span class="o">=</span>214  <span class="c"># 与主库不一样就行 </span>
+<span class="c"># 慢查询开关</span>
+<span class="nv">slow_query_log</span><span class="o">=</span>ON
+<span class="nv">slow_query_log_file</span><span class="o">=</span>/usr/local/mysql/slow.log
+<span class="nv">slow_launch_time</span><span class="o">=</span>4
+<span class="nv">long_query_time</span><span class="o">=</span>3  <span class="c"># 慢查询时间</span>
+<span class="c"># chown -R mysql:mysql /usr/local/mysql/   # slowlog目录授权给mysql用户</span>
+
+<span class="nv">relay_log</span><span class="o">=</span>/usr/local/relaylog/relay-bin 
+<span class="nv">relay_log_recovery</span><span class="o">=</span>1 <span class="c"># 确保完整性,只有relaylog损坏，从库 就会从主库重新读取binlog到relaylog,再进行重放操作</span>
+<span class="c"># chown -R mysql:mysql /usr/local/relaylog/   # relaylog目录授权给mysql用户</span>
+
+<span class="nv">read_only</span><span class="o">=</span>on <span class="c"># 从服务器只读</span>
+<span class="nv">skip_slave_start</span><span class="o">=</span>on <span class="c"># slave重启后不会自己启动复制链路，需要手动启动，建议手动启动，好处是检查无误后启动</span>
+
+<span class="nv">master_info_repository</span><span class="o">=</span>TABLE <span class="c"># 将主从服务的信息保存进表</span>
+<span class="nv">relay_log_info_repository</span><span class="o">=</span>TABLE <span class="c"># 将主从服务的信息保存进表</span>
+
+replicate-do-db<span class="o">=</span>icoding_admin
+</code></pre></div></div>
+
+<p>在宿主机/usr/local/mysql-slave/conf 目录下新建配置文件myconfig.cnf</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/docker-slave-my-cnf.jpg" alt="" /></p>
+
+<p><mark>注意</mark>:</p>
+
+<p>不管你是docker安装mysql 还是非docker安装mysql，一定要赋权慢日志，中继日志的目录的写权限给mysql，或者直接将目录的owner改为mysql用户</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chown</span> <span class="nt">-R</span> mysql:mysql /usr/local/slowlog/ 
+</code></pre></div></div>
+
+<p>下面是我在mysql容器内将日志目录的owner改mysql，你只赋予w 写权限给mysql也是可以的</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mysql-logs- directory-privileges.jpg" alt="" /></p>
+
+<p>配置完毕重启从库</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/docker-restart-mysql-slave.jpg" alt="" /></p>
+
+<blockquote>
+  <p>3、主从指明不同步的数据库</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Master 的my.cnf配置，不配置的话默认同步所有数据库</span>
+<span class="c"># 不同步数据库</span>
+binlog-ignore-db<span class="o">=</span>mysql
+binlog-ignore-db<span class="o">=</span>information_schema
+<span class="c"># 只同步某一些数据库</span>
+binlog-do-db<span class="o">=</span>icoding_admin
+
+<span class="c"># Slave 的my.cnf配置，不配置的话默认复制所有数据库</span>
+<span class="c"># 复制哪些数据库</span>
+replicate-do-db<span class="o">=</span>icoding_admin
+replicate-do-db<span class="o">=</span>game
+<span class="c"># 不复制哪些数据库</span>
+replicate-ignore-db<span class="o">=</span>mysql
+replicate-ignore-db<span class="o">=</span>information_schema
+
+<span class="c"># 像极了爱情，master给不给数据是master的事，slave从库要不要数据也是slave的事，所以配置同步的数据库是很灵活的</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>4、在Master上建立授权账号</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Master授权给slave</span>
+mysql&gt; use mysql<span class="p">;</span>
+mysql&gt; grant replication slave on <span class="k">*</span>.<span class="k">*</span> to <span class="s1">'syncuser'</span>@<span class="s1">'172.17.0.2'</span> identified by <span class="s1">'sync#123456'</span><span class="p">;</span>
+mysql&gt; flush privileges<span class="p">;</span>
+</code></pre></div></div>
+
+<p>从库mysql 创建run时没有指定网络，默认在docker0里</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/docker0-inspect.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/docker0-mysql-slave-ip.jpg" alt="" /></p>
+
+<p>发现mysql-slave的ip是172.17.0.2，所以我这里赋予master的主从复制账号的登录host ip 是 172.17.0.2</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/docker-mysql-slave-syncuser.jpg" alt="" /></p>
+
+<blockquote>
+  <p>5、初始化Slave数据</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Master和Slave的数据库版本要一致，Master&lt;=Slave</span>
+<span class="c"># --flush-logs 刷新，生成新的binlog日志</span>
+mysqldump <span class="nt">-uroot</span> <span class="nt">-p123456</span> <span class="nt">-h127</span>.0.0.1 <span class="nt">--flush-logs</span> <span class="nt">--master-data</span><span class="o">=</span>2 <span class="nt">--routines</span> <span class="nt">--triggers</span> <span class="nt">--events</span> <span class="nt">--single-transaction</span> <span class="nt">--databases</span> icoding_admin <span class="o">&gt;</span> mydb.sql
+<span class="c"># 下面这段是mydb.sql文件里记录的position位置</span>
+<span class="c">#CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.000004', MASTER_LOG_POS=154; 就用导出的日志pos</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mysqldump-master.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看主库的数据库状态</span>
+mysql&gt; show master status<span class="p">;</span>
++------------------+----------+--------------+------------------+-------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++------------------+----------+--------------+------------------+-------------------+
+| mysql-bin.000004 |      154 |              |                  |                   |
++------------------+----------+--------------+------------------+-------------------+
+</code></pre></div></div>
+
+<p>把全量备份文件放到从库服务器上执行恢复</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba bak]# <span class="nb">cp </span>mydb.sql /usr/local/mysql-slave/data
+<span class="c"># 进入容器mysql从库</span>
+<span class="o">[</span>root@alibaba mysql-slave]# docker <span class="nb">exec</span> <span class="nt">-it</span> mysql-slave /bin/bash
+root@5340e71431d0:/# <span class="nb">cd</span> /var/lib/mysql
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mysql-slave-mydb.jpg" alt="" /></p>
+
+<p>进入mysql命令行初始化数据库</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># mysql容器内</span>
+root@5340e71431d0:/var/lib/mysql# mysql <span class="nt">-uroot</span> <span class="nt">-p</span>
+<span class="c"># 使用全量备份文件初始化数据库</span>
+mysql&gt; <span class="nb">source </span>mydb.sql<span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mysql-slave-icoding_admin.jpg" alt="" /></p>
+
+<blockquote>
+  <p>6、启动复制链路</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在Slave上执行，要注意binlog文件与position位置与上面第5步导出的mydb.sql里的一致，阿里云服务器的内网IP是172.18.196.184</span>
+mysql&gt; 
+change master to <span class="nv">master_host</span><span class="o">=</span><span class="s1">'172.18.196.184'</span>, 
+<span class="nv">master_port</span><span class="o">=</span>3306,
+<span class="nv">master_user</span><span class="o">=</span><span class="s1">'syncuser'</span>,
+<span class="nv">master_password</span><span class="o">=</span><span class="s1">'sync#123456'</span>,
+<span class="nv">master_log_file</span><span class="o">=</span><span class="s1">'mysql-bin.000004'</span>,
+<span class="nv">master_log_pos</span><span class="o">=</span>154<span class="p">;</span>
+Query OK, 0 rows affected, 2 warnings <span class="o">(</span>0.03 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><mark>注意事项</mark></li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>主从复制的时候主从数据库的UUID不能一样，如果是镜像方式，启动前将UUID文件删除，会重新创建
+<span class="nb">cd</span> /var/lib/mysql
+<span class="nb">cat </span>auto.cnf  <span class="c"># 将他删除</span>
+server-uuid<span class="o">=</span>890980d9-b072-11ea-8ab8-00163e03668d
+</code></pre></div></div>
+
+<blockquote>
+  <p>7、启动主从复制</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在Slave上执行</span>
+<span class="c"># 启动slave 复制</span>
+mysql&gt; start slave<span class="p">;</span>
+<span class="c"># 停止slave 复制</span>
+mysql&gt; stop slave<span class="p">;</span>
+<span class="c"># 查看主从复制的状态和日志错误</span>
+mysql&gt; show slave status <span class="se">\G</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>启动复制后，查看复制状态</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/slave-status.jpg" alt="" /></p>
+
+<p>要Slave_IO_Running 和Slave_SQL_Running都为Yes才算正常。</p>
+
+<p>主库插入数据</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>insert into ad_user values<span class="o">(</span>5,<span class="s1">'meimei'</span>,<span class="s1">'123123'</span><span class="o">)</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>从库查看数据，数据被同步过来了，再查看一下slave status;</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; <span class="k">select</span> <span class="k">*</span> from ad_user<span class="p">;</span>
++----+------------+----------+
+| <span class="nb">id</span> | username   | password |
++----+------------+----------+
+|  1 | arry       | 1234567  |
+|  2 | gavin      | 1234567  |
+|  3 | coding_qin | 1234567  |
+|  4 | allen      | 1234567  |
+|  5 | meimei     | 123123   |
++----+------------+----------+
+5 rows <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.01 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/slave_status2.jpg" alt="" /></p>
+
+<p>发现主库的binlog和从库的relaylog已经变化了，同步成功</p>
+
+<ul>
+  <li>使用GTID方式进行复制链路</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 默认GTID是不开启的</span>
+<span class="c"># 如果开启以下操作不可用</span>
+<span class="c"># create table ..... select * from xxx; 不可用</span>
+<span class="c"># 在一个事务里不能创建和删除表</span>
+<span class="c"># 在一个事务里更新innodb引擎和myisam引擎不可用</span>
+</code></pre></div></div>
+
+<h3 id="场景延时复制">场景延时复制</h3>
+
+<p>无意中删除了一个数据，可以做延时从库的复制</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 从库做备份就无法做到数据的及时恢复</span>
+<span class="c"># 让我的从库做到延时同步</span>
+mysql&gt; stop slave<span class="p">;</span>
+mysql&gt; change master to <span class="nv">master_delay</span><span class="o">=</span>10<span class="p">;</span> <span class="c"># 延时10秒,IO线程才从个主库的binlog更新数据到relaylog</span>
+mysql&gt; start slave<span class="p">;</span>
+mysql&gt; show slave status <span class="se">\G</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/slave_sql_delay.jpg" alt="" /></p>
+
+<blockquote>
+  <p>方案：master（一个实时slave做读写分离，一个延时slave做备份）</p>
+</blockquote>
+
+<h3 id="双主互备">双主互备</h3>
+
+<p>主从复制，从库不用开启binlog，如果互备的话就一定要开启。</p>
+
+<blockquote>
+  <p>1、配置</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 将上面的主从模式修改为双主模式 互相复制</span>
+<span class="c">#-------1、Master配置--------</span>
+<span class="o">[</span>mysqld]
+<span class="nv">server_id</span><span class="o">=</span>213
+<span class="nv">log_bin</span><span class="o">=</span>/usr/local/mysql/binlog/mysql-bin  <span class="c"># 开启binlog，只需要给名字前缀</span>
+<span class="nv">binlog_format</span><span class="o">=</span>row
+<span class="nv">expire_logs_days</span><span class="o">=</span>3  <span class="c"># 3天前的binlog过期不保留</span>
+<span class="nv">max_binlog_size</span><span class="o">=</span>200m <span class="c"># binlog日志最大200m</span>
+
+<span class="c"># 慢查询</span>
+<span class="nv">slow_query_log</span><span class="o">=</span>ON
+<span class="nv">slow_query_log_file</span><span class="o">=</span>/usr/local/mysql/slow.log
+<span class="nv">slow_launch_time</span><span class="o">=</span>4
+<span class="nv">long_query_time</span><span class="o">=</span>3 <span class="c"># 慢查询时间</span>
+<span class="c"># chown -R mysql:mysql /usr/local/mysql/ # mysql目录授权给mysql用户</span>
+
+<span class="nv">log_slave_updates</span><span class="o">=</span><span class="nb">true</span> <span class="c"># 双主互备必须开启，否则只是主从关系</span>
+<span class="nv">relay_log</span><span class="o">=</span>/usr/local/mysql/relaylog/relay-bin 
+<span class="nv">relay_log_recovery</span><span class="o">=</span>1 
+<span class="nv">master_info_repository</span><span class="o">=</span>TABLE <span class="c"># 将主从服务的信息保存进表</span>
+<span class="nv">relay_log_info_repository</span><span class="o">=</span>TABLE <span class="c"># 将主从服务的信息保存进表</span>
+<span class="nv">skip_slave_start</span><span class="o">=</span>on <span class="c"># slave重启后不会自己启动复制链路，需要手动启动，建议手动启动，好处是检查无误后启动</span>
+
+<span class="c"># 只同步的同步的数据库</span>
+binlog-do-db<span class="o">=</span>icoding_admin 
+
+<span class="c">#-----2、Slave配置-----------</span>
+<span class="o">[</span>mysqld]
+<span class="nv">server_id</span><span class="o">=</span>214  <span class="c"># 与主库不一样就行 </span>
+<span class="nv">log_bin</span><span class="o">=</span>/var/log/mysql/mysql-bin  <span class="c"># 开启binlog，只需要给名字前缀</span>
+<span class="nv">binlog_format</span><span class="o">=</span>row
+<span class="nv">expire_logs_days</span><span class="o">=</span>3  <span class="c"># 3天前的binlog过期不保留</span>
+<span class="nv">max_binlog_size</span><span class="o">=</span>200m <span class="c"># binlog日志最大200m</span>
+
+<span class="c"># 慢查询</span>
+<span class="nv">slow_query_log</span><span class="o">=</span>ON
+<span class="nv">slow_query_log_file</span><span class="o">=</span>/var/log/mysql/slow.log
+<span class="nv">slow_launch_time</span><span class="o">=</span>4
+<span class="nv">long_query_time</span><span class="o">=</span>3  <span class="c"># 慢查询时间</span>
+<span class="c"># chown -R mysql:mysql /usr/local/slowlog/   # slowlog目录授权给mysql用户</span>
+
+<span class="nv">log_slave_updates</span><span class="o">=</span><span class="nb">true</span> <span class="c"># 双主互备必须开启，否则只是主从关系</span>
+<span class="nv">relay_log</span><span class="o">=</span>/var/log/mysql/relay-bin 
+<span class="nv">relay_log_recovery</span><span class="o">=</span>1 <span class="c"># 确保完整性,只有relaylog损坏，从库 就会从主库重新读取binlog到relaylog,再进行重放操作</span>
+<span class="nv">master_info_repository</span><span class="o">=</span>TABLE <span class="c"># 将主从服务的信息保存进表</span>
+<span class="nv">relay_log_info_repository</span><span class="o">=</span>TABLE <span class="c"># 将主从服务的信息保存进表</span>
+<span class="c"># chown -R mysql:mysql /var/log/mysql   # relaylog目录授权给mysql用户</span>
+<span class="nv">skip_slave_start</span><span class="o">=</span>on <span class="c"># slave重启后不会自己启动复制链路，需要手动启动，建议手动启动，好处是检查无误后启动</span>
+
+binlog-do-db<span class="o">=</span>icoding_admin
+</code></pre></div></div>
+
+<p>master 与slave都重启一下mysql</p>
+
+<blockquote>
+  <p>2、Slave上建立授权账号</p>
+</blockquote>
+
+<p>上面的主从复制Master已经建立授权账号，同样Slave也要一个授权账号给Master</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Slave授权给Master</span>
+mysql&gt; use mysql<span class="p">;</span>
+mysql&gt; grant replication slave on <span class="k">*</span>.<span class="k">*</span> to <span class="s1">'syncuser'</span>@<span class="s1">'172.18.196.184'</span> identified by <span class="s1">'sync#123456'</span><span class="p">;</span>
+mysql&gt; flush privileges<span class="p">;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>3、分别启动复制链路</p>
+</blockquote>
+
+<p>第一步：开启Slave的复制</p>
+
+<p>登录master查看它的master status</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/master-master-status.jpg" alt="" /></p>
+
+<p>登录slave，开启复制</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; change master to <span class="nv">master_host</span><span class="o">=</span><span class="s1">'172.18.196.184'</span>, 
+<span class="nv">master_port</span><span class="o">=</span>3306,
+<span class="nv">master_user</span><span class="o">=</span><span class="s1">'syncuser'</span>,
+<span class="nv">master_password</span><span class="o">=</span><span class="s1">'sync#123456'</span>,
+<span class="nv">master_log_file</span><span class="o">=</span><span class="s1">'mysql-bin.000005'</span>,
+<span class="nv">master_log_pos</span><span class="o">=</span>154<span class="p">;</span>
+mysql&gt; start slave<span class="p">;</span>
+mysql&gt; show slave status <span class="se">\G</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/slave_status3.jpg" alt="" /></p>
+
+<p>第二步：开启Master的复制</p>
+
+<p>登录slave查看它的master status</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/slave-master-status.jpg" alt="" /></p>
+
+<p>登录master，开启复制</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; change master to <span class="nv">master_host</span><span class="o">=</span><span class="s1">'172.18.196.184'</span>, 
+<span class="nv">master_port</span><span class="o">=</span>3307,
+<span class="nv">master_user</span><span class="o">=</span><span class="s1">'syncuser'</span>,
+<span class="nv">master_password</span><span class="o">=</span><span class="s1">'sync#123456'</span>,
+<span class="nv">master_log_file</span><span class="o">=</span><span class="s1">'mysql-bin.000001'</span>,
+<span class="nv">master_log_pos</span><span class="o">=</span>154<span class="p">;</span>
+mysql&gt; start slave<span class="p">;</span>
+mysql&gt; show slave status <span class="se">\G</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/slave_status4.jpg" alt="" /></p>
+
+<blockquote>
+  <p>4、测试</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建测试用户</span>
+mysql&gt; grant SELECT, INSERT, UPDATE, DELETE on <span class="sb">`</span>icoding_admin<span class="sb">`</span>.<span class="k">*</span> to <span class="s1">'icoding'</span>@<span class="s1">'%'</span> identified by <span class="s1">'123456'</span><span class="p">;</span>
+mysql&gt; flush privileges<span class="p">;</span>
+</code></pre></div></div>
+
+<p>注意：mysql重启后，要手动开启复制</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; start slave<span class="p">;</span>
+mysql&gt; show slave status <span class="se">\G</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="常见问题">常见问题</h3>
+
+<p>1、<font color="red">**Fatal error : The slave I/O thread stops because master and slave have equal MySql server UUIDs**</font></p>
+
+<p>上面报错说的是replication架构中需要保证每个mysql实例UUID(UUID保存在datadir目录下的auto.cnf文件中)唯一，就跟server_id一样需要保证主从架构中所有mysql实例server_id唯一。</p>
+
+<p>解决：删除备库的auto.cnf文件，启动备库实例，此时备库就会产生一个新的auto.cnf文件(产生新的UUID)。</p>
+
+<p>2、<font color="red">**ERROR 1872 (HY000): Slave failed to initialize relay log info structure from the repository**</font></p>
+
+<p>mysql.slave_relay_log_info表中保留了以前的复制信息，导致新从库启动时无法找到对应文件</p>
+
+<p>解决：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、重置</span>
+mysql&gt; reset slave<span class="p">;</span>
+<span class="c"># 2、重新配置master</span>
+mysql&gt; change master to ......
+<span class="c"># 3、启动复制链路</span>
+mysql&gt; start slave<span class="p">;</span>
+</code></pre></div></div>
+
+<p>3、<font color="red">**Got fatal error 1236 from master when reading data from binary log: 'Could not open log file'**</font></p>
+
+<p>在master 方 flush logs</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ysql&gt; flush logs<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+ 
+mysql&gt; show master status<span class="p">;</span>
++------------------+----------+--------------+------------------+-------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++------------------+----------+--------------+------------------+-------------------+
+| mysql-bin.000003 |      154 | dcmp,test    |                  |                   |
++------------------+----------+--------------+------------------+-------------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+<p>在slave执行</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; reset slave<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+ 
+mysql&gt; change master to <span class="nv">master_host</span><span class="o">=</span><span class="s1">'10.200.132.168'</span>,master_user<span class="o">=</span><span class="s1">'root'</span>,master_password<span class="o">=</span><span class="s1">'123456'</span>,master_port<span class="o">=</span>3308, <span class="nv">master_log_file</span><span class="o">=</span><span class="s1">'mysql-bin.000003'</span>,master_log_pos<span class="o">=</span>154<span class="p">;</span> 
+Query OK, 0 rows affected, 2 warnings <span class="o">(</span>0.01 sec<span class="o">)</span>
+ 
+mysql&gt; start slave<span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/06/21/icoding-note-050.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

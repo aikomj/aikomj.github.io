@@ -2,13 +2,15 @@
 layout: post
 title: Java并发编程的注意事项，10个坑
 category: java
-tags: [java]
+tags: [juc]
 keywords: juc
 excerpt: SimpleDateFormat线程不安全，双重检查锁的漏洞，volatile不保证原子性，死锁，没释放锁，HashMap导致内存溢出，使用默认线程池，@Async注解的陷阱，自旋锁浪费CPU资源，ThreadLocal用完没清空导致内存泄漏
 lock: noneed
 ---
 
 <img src="\assets\images\2022\java\juc-1.png" style="zoom:60%;" />
+
+<img src="../../..\assets\images\2022\java\juc-1.png" style="zoom:60%;" />
 
 ## 1. SimpleDateFormat线程不安全
 
@@ -515,7 +517,7 @@ protected void doExecute(Runnable task) {
 
 如果在高并发的场景下，可能会产生大量的线程，从而导致OOM问题。
 
-<mark>建议大家在@Async注解开启的异步功能时，请别忘了定义一个`线程池`。</mark>
+<mark>建议大家在@Async注解开启的异步功能时，请别忘了定义一个线程池。</mark>
 
 ## 9、自旋锁浪费cpu资源
 

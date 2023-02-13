@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第32节：Linux快速上手（上） - 大伟的博客 </title>
+    <meta name="keywords" content="linux">
+    <meta name="description"
+          content="目录相关的命令，处理文件的常用命令，文件基本属性探究，文件内容查看，软链接硬链接，vim编辑器，常用命令">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/05/09/icoding-note-032.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第32节：Linux快速上手（上）">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第32节：Linux快速上手（上）</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/05/09
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <blockquote>
+  <p>快速上手路线</p>
+</blockquote>
+
+<p>1、Linux系统结构，常用的目录</p>
+
+<p>2、目录管理CRUD</p>
+
+<p>3、文件管理</p>
+
+<p>4、vim编辑器</p>
+
+<p>5、用户和用户组</p>
+
+<p>6、操作进程</p>
+
+<blockquote>
+  <p>守护进程</p>
+</blockquote>
+
+<p>linux开机会启动很多程序，在windows叫做服务service，linux叫做<mark>守护进程daemon</mark></p>
+
+<p>用户登录的三种方式：</p>
+
+<ul>
+  <li>命令行登录 root 123456 ，linux上，输入密码，是不会提示的，你就正常输入回车即可！</li>
+  <li>ssh 登录，远程连接使用，工具如xshell、SecureCRT</li>
+  <li>图型界面登录，和windows一样</li>
+</ul>
+
+<p>linux的最高账户权限为root，可以操作一切，包括 <mark>rm -rf /* </mark>，该命令会把所有一切都摧毁。</p>
+
+<blockquote>
+  <p>关机重启</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 关机前的良好习惯，就是先将数据从内存同步到硬盘上</span>
+<span class="nb">sync</span>
+<span class="c"># 关机指令</span>
+shutdown
+<span class="c"># 帮助命令，可以查看这个命令的帮助信息,不回某个命令用man查看</span>
+man shutdown
+shutdown <span class="nt">-h</span> 10 <span class="c"># 10分钟后关机</span>
+shutdown <span class="nt">-h</span> now <span class="c"># 立马关机</span>
+shutdown <span class="nt">-h</span> 22:00 <span class="c"># 晚上10点关机</span>
+shutdown <span class="nt">-r</span> now <span class="c"># 立马重启 等同reboot</span>
+shutdown <span class="nt">-r</span> 10 <span class="c"># 10分钟后重启</span>
+shutdown <span class="nt">-c</span> <span class="c"># 取消触发的shutdown命令，不包括 shutdown +0 shutdown now</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/linux/man-shutdown.gif" alt="" /></p>
+
+<h2 id="1目录结构">1、目录结构</h2>
+
+<p>linux的目录结构是树，最高的节点是 /</p>
+
+<p>ls命令，查看根目录下的所有文件</p>
+
+<p><img src="/assets/images/2020/linux/directory.gif" alt="" /></p>
+
+<p>基本的目录结构</p>
+
+<p><img src="/assets/images/2020/linux/directory-arch.gif" alt="" /></p>
+
+<font color="red">Linux中，一切皆文件，包括你外界的硬盘，设备都是文件</font>
+
+<font color="red">Linux中，如果没报错，就是执行成功</font>
+
+<p><strong>/ 下各目录的作用</strong>：</p>
+
+<ul>
+  <li>/bin：这里存放我们经常使用的命令</li>
+  <li>/boot：这里存放启动linux使用的一些核心文件，类似window C盘下的system32</li>
+  <li>/dev：存放linux的外部设备，如鼠标、键盘，本质上它们都是文件</li>
+  <li>
+    <font color="red">/etc：所有的配置文件，我们都放这里</font>
+  </li>
+  <li>/home：用户的主目录，在linux中，每个用户都会有自己的主目录，windows也是一样的</li>
+  <li>/lib：动态链接库，好比windows的DLL文件</li>
+  <li>/lost+found：假设系统非法关机，这里就会存放一些文件，默认空的。</li>
+  <li>/media：存放一些设备，如U盘，光驱，Linux识别后，就会放到media目录下</li>
+  <li>/mnt：临时挂载目录，将硬盘挂载在这个目录下，硬盘才可被根目录识别，使用。</li>
+  <li>/opt：让电脑安装的一些额外软件使用，如redis,mq</li>
+  <li>/root：系统管理员目录</li>
+  <li>/sbin：存放管理员才能使用的程序</li>
+  <li>/tmp：临时文件</li>
+  <li>
+    <font color="red">/usr：这是一很重要的目录，很多程序和文件都放在这个目录下</font>
+  </li>
+  <li>/usr/bin：普通用户的程序</li>
+  <li>/usr/sbin：管理员的程序</li>
+  <li>/var：进程修改的文件目录一般放在这里，包括日志文件，</li>
+  <li>/www：存放一些网站程序，如论坛、博客、项目之类</li>
+  <li>/www/server：存放一些服务器的环境 nginx,tomcat,mysql,redis,php</li>
+</ul>
+
+<p><strong>Linux中，用户的权限很重要，通过这个目录结构可以看出来，管理员和普通用户是分开放置的。</strong></p>
+
+<blockquote>
+  <p>cd 命令</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> ..  上一级目录
+<span class="nb">cd</span> / 回到根目录
+<span class="nb">cd</span> ~ 回到用户目录
+</code></pre></div></div>
+
+<h2 id="2处理文件常用命令">2、处理文件常用命令</h2>
+
+<ul>
+  <li>
+    <p>ls 列出文件</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-a</span> 全部文件 ，包括隐藏文件都会显示
+<span class="nt">-l</span> 列表格式化输出
+<span class="c"># 参数都是使用 -xxx拼接</span>
+<span class="o">[</span>root@iZwz996g0zi82g3p8a5i9mZ ~]# <span class="nb">ls</span> <span class="nt">-al</span>
+total 2000
+dr-xr-x---.  6 root root    4096 Feb 27 23:01 <span class="nb">.</span>
+dr-xr-xr-x. 18 root root    4096 Jan 27 15:29 ..
+<span class="nt">-rw-------</span>   1 root root   11227 May 13 15:45 .bash_history
+<span class="nt">-rw-r--r--</span><span class="nb">.</span>  1 root root      18 Dec 29  2013 .bash_logout
+<span class="nt">-rw-r--r--</span><span class="nb">.</span>  1 root root     176 Dec 29  2013 .bash_profile
+<span class="nt">-rw-r--r--</span><span class="nb">.</span>  1 root root     176 Dec 29  2013 .bashrc
+drwxr-xr-x   3 root root    4096 Jul 11  2019 .cache
+<span class="nt">-rw-r--r--</span><span class="nb">.</span>  1 root root     100 Dec 29  2013 .cshrc
+drwxr-xr-x   2 root root    4096 Jul 11  2019 .pip
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>pwd 显示当前目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 如果是链接，要显示它的真实位置，使用 -P 参数</span>
+<span class="o">[</span>root@kuangshen tmp]# <span class="nb">pwd</span> <span class="nt">-P</span>
+/var/tmp
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>mkdir 创建目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建单个目录</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">mkdir test</span>
+<span class="c"># 递归创建目录</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">mkdir</span> <span class="nt">-p</span> test1/test2/test3
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>rmdir 删除一个目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 移除单个目录</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">rmdir test</span>
+<span class="c"># 递归删除目录，一定要是空的。如果不是空的，就需要使用rm 命令</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">rmdir</span> <span class="nt">-p</span> test1/test2/test3
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>mv 移动文件或目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 移动一个文件到test目录</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">mv </span>install.sh <span class="nb">test</span>
+<span class="c"># 将源文件名 source_file 改为目标文件名 dest_file</span>
+<span class="nb">mv </span>source_file<span class="o">(</span>文件<span class="o">)</span> dest_file<span class="o">(</span>文件<span class="o">)</span>
+<span class="c"># 目录名 dest_directory 已存在，将 source_directory 移动到目录名 dest_directory 中；目录名 dest_directory 不存在则 source_directory 改名为目录名 dest_directory </span>
+<span class="nb">mv </span>source_directory<span class="o">(</span>目录<span class="o">)</span> dest_directory<span class="o">(</span>目录<span class="o">)</span>
+<span class="nb">sudo mv </span>mongodb-macos-x86_64-6.0.0 /usr/local 
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>rm 移除文件或目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-f</span>: force 强制删除，忽略不存在的文件，不会出现任何警告
+<span class="nt">-r</span>: 递归删除
+<span class="nt">-i</span>: 互动，删除前会提问你是否进行删除
+<span class="o">[</span>root@kuangshen home]# <span class="nb">rm</span> <span class="nt">-i</span> install.sh
+<span class="o">[</span>root@kuangshen home]# <span class="nb">rm</span> <span class="nt">-rf</span> <span class="nb">test</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>cp 复制文件或目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cp -[参数] 复制源文件地址，复制目标地址</span>
+<span class="nt">-r</span> 递归
+<span class="nt">-i</span> 询问
+<span class="o">[</span>root@kuangshen home]# <span class="nb">cp</span> <span class="nt">-r</span> /root/test2 /home
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>man 万能帮助命令</p>
+  </li>
+</ul>
+
+<h2 id="3文件基本属性">3、文件基本属性</h2>
+
+<p>Linux 是一个多用户系统，不同用户就处于不同的地位，拥有不同的权限</p>
+
+<p><mark>ll</mark> 可以显示一个文件的属性和这个文件x所属的用户（属主）和用户组（属组）：</p>
+
+<p><img src="/assets/images/2020/linux/ls-l.gif" alt="" /></p>
+
+<p>第一个字符告诉你这个文件是目录、文件、链接地址？</p>
+
+<ul>
+  <li>[d] 目录</li>
+  <li>[-] 文件</li>
+  <li>[l] link链接</li>
+  <li>[b] 存储设备</li>
+  <li>[c] 鼠标键盘之类的，一次性读取装置</li>
+</ul>
+
+<p>接下来的字符，如 rwxr-xr-x , 每个三个一组，代表权限。</p>
+
+<ul>
+  <li>r : read 可读</li>
+  <li>w: write 可写</li>
+  <li>x: execute 可执行</li>
+  <li>-：代表没有权限</li>
+</ul>
+
+<p><img src="/assets/images/2020/linux/rwx.gif" alt="" /></p>
+
+<p>位置1	 4 	7 表示读的权限</p>
+
+<p>位置2	 5 	8 表示写的权限</p>
+
+<p>位置3	 6 	9 表示执行的权限</p>
+
+<blockquote>
+  <p>修改文件的属性</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更改文件的属组</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">chgrp </span>rwx test2
+<span class="nb">chgrp</span>: invalid group: <span class="s1">'rwx'</span>
+
+<span class="c"># 更改文件的属主</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">chown </span>hhzz test2
+<span class="nb">chown</span>: invalid user: <span class="s1">'hhzz'</span>
+
+<span class="c"># 更改文件的九个属性，就是上面的属主、属组、其他用户的rwx权限</span>
+<span class="o">[</span>root@kuangshen home]# <span class="nb">chmod </span>777 test2
+<span class="o">[</span>root@kuangshen home]# ll
+total 8
+drwxrwxrwx 2 root root 4096 May 9 21:46 test2
+drwxr-xr-x 2 root root 4096 May 9 21:46 test-root
+
+own<span class="o">(</span>属主<span class="o">)</span>  grp<span class="o">(</span>属组<span class="o">)</span> other<span class="o">(</span>其他用户<span class="o">)</span>
+rwx       r-x	    r-x
+ 7        5         5
+ <span class="c"># 其中 rwx=4+2+1=7，r-x=4+1=5</span>
+ r 4
+ w 2
+ x 1
+ 我们平时使用这个进行快捷操作！
+</code></pre></div></div>
+
+<h2 id="4文件查看">4、文件查看</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@iZwz996g network-scripts]# <span class="nb">pwd</span>
+/etc/sysconfig/network-scripts
+<span class="o">[</span>root@iZwz996g network-scripts]# 
+
+<span class="c"># 1、cat 从第一行展示我们的文件内容（常用）</span>
+<span class="o">[</span>root@iZwz996g network-scripts]# <span class="nb">cat </span>ifcfg-eth0 
+<span class="nv">DEVICE</span><span class="o">=</span>eth0
+<span class="nv">BOOTPROTO</span><span class="o">=</span>dhcp
+<span class="nv">ONBOOT</span><span class="o">=</span><span class="nb">yes</span>
+
+<span class="c"># 2、tac 从最后一行逆向展示我们的文件内容</span>
+<span class="o">[</span>root@iZwz996g network-scripts]# <span class="nb">tac </span>ifcfg-eth0
+<span class="nv">ONBOOT</span><span class="o">=</span><span class="nb">yes
+</span><span class="nv">BOOTPROTO</span><span class="o">=</span>dhcp
+<span class="nv">DEVICE</span><span class="o">=</span>eth0
+
+<span class="c"># 3、显示行号</span>
+<span class="o">[</span>root@iZwz996g network-scripts]# <span class="nb">nl </span>ifcfg-eth0      
+1  <span class="nv">DEVICE</span><span class="o">=</span>eth0
+2  <span class="nv">BOOTPROTO</span><span class="o">=</span>dhcp
+3  <span class="nv">ONBOOT</span><span class="o">=</span><span class="nb">yes</span>
+     
+<span class="c"># 4、more 一页一页的翻动</span>
+more /etc/profile <span class="c"># 环境变量</span>
+<span class="c"># 查看的时候的指令说明</span>
+空格		代表向下面翻页
+回车		代表翻一行
+/字符串		要搜索这个字符串
+q		立刻离开more，不再显示
+b		往回翻页
+	
+<span class="c"># 5、less 一页一页的翻动</span>
+less /etc/profile
+<span class="c"># 查看的时候的指令说明</span>
+空格      代表向下面翻页
+/字符串   要搜索这个字符串<span class="o">(</span>向下搜索<span class="o">)</span>
+?字符串   要搜索这个字符串<span class="o">(</span>向上搜索<span class="o">)</span>
+n       向下重复搜索
+N       向上重复搜索
+q       退出
+  
+<span class="c"># 6、whereis 文件 全局搜索！</span>
+<span class="c"># | 管道符，将第一个命令的结果给第二个命令</span>
+<span class="nb">cat </span>文件名 | <span class="nb">grep</span> <span class="s1">'内容'</span>
+<span class="c"># -n 返回行号</span>
+<span class="nb">cat</span> <span class="nt">-n</span> mobileR_debug_2021-03-10-10.log | <span class="nb">grep</span> <span class="s1">'CIMS 开票信息:'</span>
+
+<span class="c"># 直接查看tar.gz压缩包里的内容可以使用</span>
+zcat xxx.tar.gz
+<span class="c"># 加上管道符，过滤内容</span>
+zcat vsftpd.tar.gz|grep <span class="nt">--binary-files</span><span class="o">=</span>text <span class="s1">'footbar.js'</span>
+<span class="c"># 或者</span>
+zgrep <span class="nt">-a</span> <span class="s1">'footbar.js'</span> vsftpd.tar.gz
+<span class="c"># 或者</span>
+zcat /home/downfile/test.tar.gz | <span class="nb">grep</span> <span class="nt">-a</span> <span class="s1">'key_name'</span>
+
+<span class="c"># 7、head 只看文件的前几行</span>
+<span class="nb">head</span> <span class="nt">-n</span> 20 profile	<span class="c"># 只显示文件的前20行</span>
+
+<span class="c"># 8、tail 只看文件的后面几行,-f 刷新输出</span>
+<span class="nb">tail</span> <span class="nt">-n</span> <span class="nt">-f</span> 100 profile <span class="c"># 只显示文件的后面100行</span>
+
+<span class="c"># 9、输出第70行到第75行的内容</span>
+<span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'70,75p'</span> date.log  
+<span class="c"># 输出第6行 和 260到400行</span>
+<span class="nb">sed</span> <span class="nt">-n</span> <span class="s1">'6p;260,400p; '</span> 文件名
+<span class="c"># 输出第5行</span>
+<span class="nb">sed</span> <span class="nt">-n</span> 5p 文件名
+</code></pre></div></div>
+
+<h2 id="5link-链接">5、Link 链接</h2>
+
+<p>link链接，分硬链接和软链接</p>
+
+<ul>
+  <li>
+    <p><strong>硬链接：</strong></p>
+
+    <p>相当于对源文件copy，Linux中，保存在磁盘分区中文件，不管是什么类型，都会给他分配一个编号，索引节点。多个文件名可以指向同一个索引节点</p>
+
+    <p>A 是 B的硬链接，代表A和B指向同一个索引节点。通过A或B都可以访问到这个文件，删除了A，B依旧可以访问。</p>
+
+    <font color="red">作用：允许一个文件有多个有效的路径名，可以建立硬链接，保护重要文件，防止误删！</font>
+  </li>
+  <li>
+    <p><strong>软链接</strong></p>
+
+    <p>符号链接，相当于快捷方式，删除源文件后，软链接就会失效</p>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建一个文件</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">touch </span>f1
+<span class="c"># 给f1创建一个硬链接f2</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">ln </span>f1 f2 
+<span class="c"># 给f1创建一个软链接f3</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">ln</span> <span class="nt">-s</span> f1 f3
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">ls
+</span>f1 f2 f3
+<span class="o">[</span>root@iZwz996g0zi82g3p8a5i9mZ home]# ll
+<span class="nt">-rw-r--r--</span> 2 root   root      0 May 13 18:19 f1
+<span class="nt">-rw-r--r--</span> 2 root   root      0 May 13 18:19 f2
+lrwxrwxrwx 1 root   root      2 May 13 18:20 f3 -&gt; f1
+<span class="o">[</span>root@iZwz996g0zi82g3p8a5i9mZ home]# <span class="nb">ls</span> <span class="nt">-li</span>
+total 4
+ 664705 <span class="nt">-rw-r--r--</span> 2 root   root      0 May 13 18:19 f1
+ 664705 <span class="nt">-rw-r--r--</span> 2 root   root      0 May 13 18:19 f2
+ 664706 lrwxrwxrwx 1 root   root      2 May 13 18:20 f3 -&gt; f1
+
+<span class="c"># 向f1中写入内容</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">echo</span> <span class="s2">"hello world"</span> <span class="o">&gt;&gt;</span> f1
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">cat </span>f1
+hello world
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">cat </span>f2
+hello world
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">cat </span>f3
+hello world
+<span class="c"># 删除源文件f1</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">rm </span>f1
+<span class="nb">rm</span>: remove regular file ‘f1’? y
+<span class="c"># 软链接f3失效</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">cat </span>f3
+<span class="nb">cat</span>: f3: No such file or directory
+<span class="c"># 硬链接f2正常</span>
+<span class="o">[</span>root@iZwz996g home]# <span class="nb">cat </span>f2
+hello world
+</code></pre></div></div>
+
+<p>如果创建了硬链接，所有都删除了，才算是真正的删除</p>
+
+<h2 id="6vim编辑器">6、VIM编辑器</h2>
+
+<p>vim核心，三种模式：</p>
+
+<ul>
+  <li>
+    <p>命令模式</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi f2
+vim f2
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>输入模式</p>
+
+    <p>在命令模式下输入i，进入输入模式，开始编辑</p>
+
+    <p>在输入模式下，按esc键退出输入模式，回到命令模式</p>
+  </li>
+  <li>
+    <p>底线模式</p>
+
+    <p>命令模式下，输入:</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>:wq
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="7常用命令">7、常用命令</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 验证服务器的应用端口是否能连接</span>
+<span class="c"># 默认的https端口是443，telnet一下看是否能访问</span>
+telnet msign.midea.com 443
+<span class="c"># 看9001端口是否能连接</span>
+telnet 10.18.31.26 9001
+
+<span class="c"># 1、lsof 查看端口占有</span>
+lsof <span class="nt">-i</span> tcp:6379
+<span class="c"># 安装lsof 支持</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> lsof
+
+<span class="c"># 2、wget 远程文件下载命令</span>
+wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.24-linux-glibc2.12-x86_64.tar.gz <span class="c"># 下载到当前目录</span>
+
+<span class="c"># 3、rz命令上传</span>
+当我们使用虚拟终端软件，如Xshell、SecureCRT或PuTTY来连接远程服务器后，使用rz命令可以上传本地文件到远程服务器。输入rz回车后，会出现文件选择对话框，选择需要上传文件，一次可以指定多个文件，上传到服务器的路径为当前执行rz命令的目录。
+
+<span class="c"># 4、sz命令下载</span>
+sz命令刚好相反，是将多个文件从远程服务器下载到本地，如
+sz file1 file2 file3
+<span class="c">#  不能使用rz/sz命令时，需要安装lrzsz</span>
+yum <span class="nb">install </span>lrzsz <span class="nt">-y</span>
+
+<span class="c"># 5、修改显示的hostname</span>
+ <span class="o">[</span>root@VM_0_3_centos <span class="nb">local</span><span class="o">]</span>
+ 怎么把VM_0_3_centos 修改为自定义的名称
+ vi /etc/hostname 
+ SecureCRT重新连接
+<span class="o">[</span>root@helloworld ~]# 
+
+<span class="c"># 6、结合 cat 命令用重定向 &gt; 实现创建一个多行文件</span>
+<span class="o">[</span>root@alibaba ~]# <span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; test.txt
+&gt; mac 2000 500
+&gt; win 2000 400
+&gt; bsd 1000 300
+&gt; EOF
+[root@alibaba ~]# cat test.txt 
+mac 2000 500
+win 2000 400
+bsd 1000 300
+
+# 7、wget命令下载
+wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.24-linux-glibc2.12-x86_64.tar.gz
+
+# 查看当前登录的用户
+whoami
+# 增加用户jude
+adduser jude
+# 切换到jude用户
+su jude 
+
+# 8、kill命令的三种方式
+# -1.从容停止
+ps -ef|grep nginx
+kill -QUIT master进程ID
+# -2.快速停止
+kill -TERM master进程ID
+# 或者
+kill -INT master进程ID
+# -3.强制停止
+pkill -9 nginx
+
+# 9、环境变量配置文件
+vi /etc/profile
+export KE_HOME=/usr/local/kafka-eagle
+export PATH=</span><span class="nv">$KE_HOME</span><span class="sh">/bin:</span><span class="nv">$JAVA_HOME</span><span class="sh">/bin:</span><span class="nv">$PATH</span><span class="sh">
+# 让配置生效
+source /etc/profile
+
+# 10、设置服务开机启动
+# mysql服务开机启动
+systemctl enable mysqld;
+# nginx服务开机启动
+systemctl enable nginx;
+# 查看开机启动的服务
+systemctl list-unit-files
+# 过滤，查看已启动的
+systemctl list-unit-files | grep enable
+# enabled是开机启动，disabled是开机不启动
+
+# 11、设置开机执行脚本
+参考搭建jekyll博客的文章，自己百度
+
+# 12、查看linux打开的文件句柄数限制
+ulimit -n 
+1024 # 默认
+ulimit -n 20000 # 把限制提升到20000
+
+# 帮助命令man，不会用某个命令，用它查看一下就好
+man shutdown
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>ulimit -a 查看shell的资源限制信息</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ulimit</span> <span class="nt">-a</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>free查看内存使用情况</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/linux/linux-free.png" alt="" /></p>
+
+<p><strong>total</strong>：表示实际物理内存的大小。可以看到约为32GiB。实际换算下来，内存大小其实是31.19GiB，略小于		本该有的32GiB。这是因为内核在启动时要永久占用一部分。
+ <strong>used</strong>：表示正在使用的内存大小，used=total-free-buffer-cache。
+ <strong>free</strong>：表示未被使用的内存大小。
+ <strong>shared</strong>：多数时候是被临时文件系统（tmpfs）所占用的内存。tmpfs是一种基于内存的文件系统。
+ <strong>buffer</strong>：被内核缓冲区所占用的内存。
+ <strong>cache</strong>：被page cache和slab所占用的内存。
+ <strong>buff/cache</strong>：buffer+cache
+ <strong>available</strong>：系统估计的可以用于启动新应用程序的内存大小，是一个估计值。available计算时考虑了page cache和slab，虽然这两者是可回收的，但如果正在使用的话，系统是无法回收的。因此available所展示的内存，并不是全部都可以回收使用的。available本身并没有很大的参考价值。
+ <strong>swap</strong>：交换分区，是Linux系统中的第二类内存。交换空间的主要功能是在真正的RAM满了之后，系统需要更多内存，将磁盘空间替换为RAM内存。速度比真正的内存要慢。</p>
+
+<h2 id="8web服务的默认端口">8、web服务的默认端口</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>1、HTTP服务器，默认端口号为80/tcp（木马Executor开放此端口）</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2、HTTPS（securely transferring web pages）服务器，默认端口号为443/tcp 443/udp</td>
+    </tr>
+    <tr>
+      <td>3、SOCKS代理协议服务器常用端口号：1080</td>
+    </tr>
+    <tr>
+      <td>4、FTP（文件传输）协议代理服务器常用端口号：21，远程连接服务器SSH端口号：22</td>
+    </tr>
+    <tr>
+      <td>5、Telnet（远程登录）协议代理服务器常用端口号：23</td>
+    </tr>
+    <tr>
+      <td>6、SSH（安全登录）、SCP（文件传输）、端口号重定向，默认的端口号为22/tcp</td>
+    </tr>
+    <tr>
+      <td>7、SMTP Simple Mail Transfer Protocol（E-mail），默认端口号为25/tcp（木马Antigen、Email  Password Sender、Haebu Coceda、Shtrilitz Stealth、WinPC、WinSpy都开放这个端口）</td>
+    </tr>
+    <tr>
+      <td>8、POP3 Post Office Protocol（E-mail），默认端口号为110/tcp</td>
+    </tr>
+    <tr>
+      <td>9、webshpere应用程序，默认端口号为9080</td>
+    </tr>
+    <tr>
+      <td>10、webshpere管理工具，默认端口号9090</td>
+    </tr>
+    <tr>
+      <td>11、TOMCAT，默认端口号为8080</td>
+    </tr>
+    <tr>
+      <td>12、Oracle 数据库，默认的端口号为1521</td>
+    </tr>
+    <tr>
+      <td>13、Mysql数据库，默认的端口号为3306</td>
+    </tr>
+    <tr>
+      <td>14、RabbitMQ，server端口5672，控制台端口15672</td>
+    </tr>
+    <tr>
+      <td>15、Redis默认端口6379</td>
+    </tr>
+    <tr>
+      <td>16、zookeeper 默认端口2181</td>
+    </tr>
+    <tr>
+      <td>17、RocketMQ的默认server端口9876，默认borker端口10911</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="9常见错误">9、常见错误</h2>
+
+<h3 id="e325attention错误解决">E325:ATTENTION错误解决</h3>
+
+<p>当用vim打开一个文件的时候，系统提示：
+E325:ATTENTION Found a swap by the name “.a.swp”</p>
+
+<p>owned by:……</p>
+
+<p>到所在目录删除swp文件</p>
+
+<p><img src="/assets/images/2020/linux/linux-delete-swpfile.png" alt="" /></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/05/09/icoding-note-032.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

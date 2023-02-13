@@ -8,7 +8,7 @@ excerpt: 配置文件数据脱敏，接口返回数据脱敏，日志文件数�
 lock: noneed
 ---
 
-转载不才陈某，github源码：[https://github.com/chenjiabing666/JavaFamily/tree/master/springboot-jasypt](https://github.com/chenjiabing666/JavaFamily/tree/master/springboot-jasypt)
+转载自不才陈某，github源码：[https://github.com/chenjiabing666/JavaFamily/tree/master/springboot-jasypt](https://github.com/chenjiabing666/JavaFamily/tree/master/springboot-jasypt)
 
 ## 1、配置文件如何脱敏
 

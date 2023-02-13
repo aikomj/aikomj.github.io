@@ -2,11 +2,17 @@
 layout: post
 title: ntpdate和ntpd两种同步时间方式
 category: linux
-tags: [tool]
+tags: [linux]
 keywords: linux
 excerpt: 开机的时候，使用ntpdate强制同步时间，其他时候使用ntpd服务来同步时间
 lock: noneed
 ---
+
+转载自：
+
+https://www.itread01.com/content/1545509702.html
+
+https://www.jianshu.com/p/efed5853bb40
 
 云服务器一般都会有时间同步机制，自己搭建的服务器就要考虑时间同步的问题
 
@@ -107,8 +113,3 @@ keys /etc/ntp/keys
 - server用来设置上层时间服务器
 - driftfile用来设置保存漂移时间的文件。
 
-来源以下两篇文章：
-
-> https://www.itread01.com/content/1545509702.html
->
-> https://www.jianshu.com/p/efed5853bb40

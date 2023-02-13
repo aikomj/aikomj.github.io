@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 高并发分布式环境下的高可用负载均衡方案 - 大伟的博客 </title>
+    <meta name="keywords" content="architect">
+    <meta name="description"
+          content="keepalive+nginx+tomcat 实现应用的高可用，nginx的高可用">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/08/25/gavin-keepalive-nginx-tomcat.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="高并发分布式环境下的高可用负载均衡方案">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>高并发分布式环境下的高可用负载均衡方案</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/08/25
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1负载均衡ha">1、负载均衡HA</h2>
+
+<p><img src="/assets/images/2020/icoding/keepalived/keepalived-nginx-ha.png" alt="" /></p>
+
+<p>什么是服务有状态，比如你一个论坛应用，如果把图片头像保存到本地磁盘，那么当论坛应用做服务集群化，请求不同的服务节点是，你的图片头像就会很大概率显示不出来。通过HDFS、FastDFS、NFS把图片数据中心化。</p>
+
+<blockquote>
+  <p>jdk+tomcat</p>
+</blockquote>
+
+<p><strong>gzip</strong></p>
+
+<p>打开<a href="news.163.com">news.163.com</a></p>
+
+<p><img src="/assets/images/2020/icoding/keepalived/nginx-gzip.jpg" alt="" /></p>
+
+<p>F12控制台，查看响应头Response-Header的Content-Encoding:gzip，证明已开启gzip</p>
+
+<p>gzip是浏览器端的一个网页的压缩技术，它是在网络传输过程中，服务器对文本数据进行一定算法的压缩，然后传递给前台（浏览器），前台知道你压缩过就进行解压，从而减少网络传输的消耗，加快网页的访问速度，因为网络是不稳定的总有阻塞的时候 。当我们的js，css，html文件过大的时候，经过gzip压缩再传输，如何查看压缩前后效果，</p>
+
+<p><img src="/assets/images/2020/icoding/keepalived/nginx-gzip2.png" alt="" /></p>
+
+<p>可以看到，网页压缩前是331K，压缩后是86.9K</p>
+
+<p><strong>修改nginx.conf</strong></p>
+
+<p>反向代理</p>
+
+<p><img src="/assets/images/2020/icoding/keepalived/nginx-upstream.jpg" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># reload 重新加载配置文件，使用新配置文件开启一个新的工作进程（worker progress），然后平滑的关闭原来的工作进程。</span>
+<span class="c"># 当nginx有访问的时候，会导致直接中断，用户体验不好</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-s</span> reload
+
+<span class="c"># 优雅中断</span>
+<span class="c"># 获取ningx进程id</span>
+ps <span class="nt">-ef</span>|grep nginx
+<span class="nb">kill</span> <span class="nt">-HUP</span> 进程id
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/keepalived/nginx-kill.jpg" alt="" /></p>
+
+<h2 id="2实战设计">2、实战设计</h2>
+
+<blockquote>
+  <p>F5硬件级别的负载均衡</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/keepalived/f5.jpg" alt="" /></p>
+
+<p>价格贵，大型的系统才会用到，如银行、保险公司的大型项目</p>
+
+<blockquote>
+  <p>阿里云的SLB 负载均衡器</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/keepalived/ali-slb.jpg" alt="" /></p>
+
+<p>创建负载均衡后，阿里会给你一个SLB的公网ip，按流量收费</p>
+
+<h2 id="3keepalivenginxtomcat的具体解决方案落地">3、keepalive+nginx+tomcat的具体解决方案落地</h2>
+
+<h3 id="分布式和集群的概念扫盲">分布式和集群的概念扫盲</h3>
+
+<p>生活例子，一个快餐店里</p>
+
+<p><strong>分布式：</strong>一个师傅炸鸡的时候，他要分割鸡肉、裹面粉、炸鸡、加调料4个步骤，来来回回折腾，这时候可以流水线化，分成4个人做这件事情，A分割鸡肉-&gt;B裹面粉-&gt;C炸鸡-&gt;D加调料，这就是分布式的概念，就是将业务横向拆开流水线化。如果每个步骤多个人去做如3个A分割鸡肉-&gt;3个B裹面粉-&gt;3个C炸鸡-&gt;3个D加调料，这就是分布式+集群的概念</p>
+
+<p><strong>集群：</strong>多个师傅进行炸鸡，干的同一样的事情，产出同样的结果。同样的业务事情多个服务去做，这叫集群。</p>
+
+<h3 id="vrrp协议">VRRP协议</h3>
+
+<p>keepalived 是一个基于 VRRP 协议来实现的服务高可用方案，从而可以避免 IP 单点故障。一般与其他负载均衡技术，如 LVS，Nginx 等一起来工作来达到集群高可用的目的</p>
+
+<blockquote>
+  <p>简介</p>
+</blockquote>
+
+<p>1、VRRP（Virtual Router Redundancy Protocol，虚拟路由器冗余协议）将可以承担网关功能的路由器加入到备份组中，形成一台虚拟路由器，由 VRRP 的选举机制决定哪台路由器承担转发任务，局域网内的主机只需将虚拟路由器配置为缺省网关。</p>
+
+<p>2、VRRP 是一种选择协议，它可以把一个虚拟路由器的责任动态分配到局域网上的 VRRP 路由器中的一台。控制虚拟路由器 IP 地址的 VRRP 路由器称为主路由器，它负责转发数据包到这些虚拟 IP 地址。一旦主路由器不可用，这种选择过程就提供了动态的故障转移机制，这就允许虚拟路由器的 IP 地址可以作为终端主机的默认第一跳路由器 3.VRRP是一种容错协议，在提高可靠性的同时，简化了主机的配置。在具有多播或广播能力的局域网（如以太网）中，借助 VRRP 能在某台设备出现故障时仍然提供高可靠的缺省链路，有效避免单一链路发生故障后网络中断的问题，而无需修改动态路由协议、路由发现协议等配置信息。</p>
+
+<p>3、VRRP 协议的实现有 VRRPv2 和 VRRPv3 两个版本， VRRPv2 基于 IPv4 ， VRRPv3 基于 IPv6</p>
+
+<p>4、VRRP 路由器：所有运行 VRRP 协议的路由器就叫做 VRRP 路由器</p>
+
+<p>5、VRRP 备份组：多台路由器被分到一个组中，在这个组中选举出一台主路由器，其他作为备份路由器。平常时候都是主路由器一个工作，备份路由器空闲，当主路由器故障后，从多台备份路由器中选举出一台替代故障的主路由器工作。这一组中的路由器构成了一个备份组。</p>
+
+<p>6、虚拟路由器：虚拟路由器是 VRRP 备份组中所有路由器的集合，它是一个逻辑概念，并不是正真存在的。从备份组外面看备份组中的路由器，感觉组中的所有路由器就像一个一样，你可以理解为在一个组中：主路由器 + 所有备份路由器=虚拟路由器。虚拟路由器有一个虚拟的 IP 地址和 MAC 地址。如果虚拟 IP 和备份组中的某台路由器的 IP 相同的话，那么这台路由器称为 IP 地址拥有者，并且作为备份组中的主路由器</p>
+
+<blockquote>
+  <p>状态</p>
+</blockquote>
+
+<p>VRRP 路由器在运行过程中有三种状态：</p>
+
+<ul>
+  <li>Initialize 状态：系统启动后就进入 Initialize ，此状态下路由器不对 VRRP 报文做任何处处理，可以理解为初始化</li>
+  <li>Master 状态：路由器会发送 VRRP 通告，发送免费 ARP 报文。</li>
+  <li>Backup状态：接受 VRRP 通告。</li>
+</ul>
+
+<p>一般主路由器处于 Master 状态，备份路由器处于 Backup 状态。</p>
+
+<blockquote>
+  <p>VRRP的工作过程如下</p>
+</blockquote>
+
+<p>1、路由器使用 VRRP 功能后，会根据优先级确定自己在备份组中的角色。优先级高的路由器成为 Master 路由器，优先级低的成为 Backup 路由器。Master 路由器定期发送 VRRP 通告报文，通知备份组内的其他设备自己工作正常；Backup 路由器则启动定时器等待通告报文的到来。</p>
+
+<p>2、在抢占方式下，当 Backup 路由器收到 VRRP 通告报文后，会将自己的优先级与通告报 文中的优先级进行比较。如果大于通告报文中的优先级，则成为 Master 路由器；否则将保持 Backup 状态</p>
+
+<p>3、在非抢占方式下，只要 Master 路由器没有出现故障，备份组中的路由器始终保持 Master 或 Backup 状态，Backup 路由器即使随后被配置了更高的优先级也不会成为 Master 路由器</p>
+
+<p>4、如果 Backup 路由器的定时器超时后仍未收到 Master 路由器发送来的 VRRP 通告报文，则认为 Master 路由器已经无法正常工作，此时 Backup 路由器会认为自己是 Master 路由器，并对外发送 VRRP 通告报文。备份组内的路由器根据优先级选举出 Master 路由器，承担报文的转发功能</p>
+
+<p><strong>在项目中的体现如下：</strong></p>
+
+<p><img src="\assets\images\2021\springcloud\keepalived-nginx-lvs.jpg" alt="" /></p>
+
+<p>如图，我们能够看到前端在请求后端时，我们并不是让它直接将请求打到实际的服务器上面来，而是去请求虚拟 IP ，此时如果 master 服务器没有出现故障的话，就会由它将前端的请求打到真实的服务器上面去。</p>
+
+<p>如果 master 不能工作的话，就会由 backup 服务器将前端请求打到真实的服务器上面（阿粉在图中拿虚线来表示当 master 宕掉时，由 backup 来负责转发请求），这样就实现了服务高可用。</p>
+
+<h3 id="keepalived和lvs的区别">keepalived和LVS的区别</h3>
+
+<p>keepalived和LVS都是软件级别的负载均衡高可用组件，它们的区别是</p>
+
+<ul>
+  <li>keepalived最初是为LVS负载均衡设计的，用来管理lvs集群中各个节点的状态的检查员</li>
+  <li>keepalived后来加入了实现高可用的VRRP功能（虚拟路由冗余协议virtual router redundancy protocal），就是为了解决路由中的单点故障，vrrp是基于优先级的机制来竞选候选节点来完成master节点的竞选，类似有redis的哨兵，但不同的是keepalived master是会一直向加入高可用的服务节点发广播包，keepalived slaver节点一开始是不参与服务的 它只监听这个广播包但不提供网络服务，当slave节点无法接受到master的广播包的时候，会再次竞选出一个新的master节点（如果只有一个master，一个slaver，那么当master宕了slaver会直接上岗）</li>
+</ul>
+
+<p><strong>结论</strong>1：<mark>keepalived的主要作用是用来做热备的</mark>，看上面的原理就知道只有keepalived的master节点参与网络服务转发</p>
+
+<p>插一句,activemq的基于zookeeper的主备集群模式，备份也是不参与负载均衡的，只做备份。</p>
+
+<ul>
+  <li>LVS是Linux Virtual Server的简称，Linux2.4后内核就直接集成了该服务  。</li>
+</ul>
+
+<p><strong>结论2:</strong></p>
+
+<ul>
+  <li>
+    <p><mark>keepalived + LVS结合在一起使用才是一个完整的高可用负载解决方案</mark></p>
+  </li>
+  <li>
+    <p>keepalived其实是运行在LVS之上的一个提供高可用的设施（故障隔离负载均衡的一个失败切换提高系统可用性的工具 ），</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>keepalived+LVS+Nginx</p>
+</blockquote>
+
+<p>因为nginx要做集群，但本身不支持集群化管理，所以要借助keepalived（第三方工具）来管理集群，提供一个nginx高可用的解决方案，一般可选择的方案是每个nginx的服务器上都安装一个keealived工具</p>
+
+<h3 id="安装keepalived">安装keepalived</h3>
+
+<p>官方网站：<a href="https://keepalived.org/index.html">https://keepalived.org/index.html</a></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更新gcc环境</span>
+yum <span class="nt">-y</span> update gcc
+yum <span class="nt">-y</span> <span class="nb">install </span>gcc+ gcc-c++
+<span class="c"># 下载</span>
+wget https://keepalived.org/software/keepalived-2.1.4.tar.gz
+<span class="c"># 解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> keepalived-2.1.4.tar.gz
+<span class="c"># 进入根目录,编译</span>
+<span class="nb">cd </span>keepalived-2.1.4
+./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/keepalived
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/keepalived/configure.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/keepalived/no-openssl.jpg" alt="" /></p>
+
+<p>安装openssl</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum <span class="nt">-y</span> <span class="nb">install </span>openssl-devel 
+</code></pre></div></div>
+
+<p>重新编译</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>keepalived-2.1.4
+./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/keepalived
+</code></pre></div></div>
+
+<p>修改配置文件,详情配置查看官方文档</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /etc/keepalived/keepalived.conf
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/keepalived/conf.jpg" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>global_defs <span class="o">{</span>
+  <span class="c"># keepalived节点名</span>
+	<span class="c"># String identifying the machine (doesn't have to be hostname).</span>
+  <span class="c"># (default: local host name)</span>
+  router_id &lt;STRING&gt;
+<span class="o">}</span>
+vrrp_script chk_nginx<span class="o">{</span>
+	script <span class="s2">"/etc/check.sh"</span> <span class="c"># 脚本文件路径，用来检测nginx是否还活着，如果发现nginx没有响应主动重启，</span>
+	interval 2 <span class="c"># 每2秒检测一次</span>
+	
+<span class="o">}</span>
+vrrp_instance V1_1 <span class="o">{</span>
+	state MASTER <span class="c"># 主节点</span>
+	interface eth0 <span class="c"># 外网卡号</span>
+	virtual_router_id 51 <span class="c"># 虚拟路由id号，keepalived节点（主备）设置一样，从1到255，used to differentiate multiple instances of vrrpd</span>
+	priority 100 <span class="c"># 竞选master的优先级，范围0-254，master节点的要比slave节点的高</span>
+	advert_int 1 <span class="c"># 单位秒，VRRP 广播间隔，keepalived节点（主备）设置一样，</span>
+	mcast_src_ip 172.105.120.105 <span class="c"># 外网IP</span>
+	
+  <span class="c"># Note: authentication was removed from the VRRPv2 specification by</span>
+  <span class="c"># RFC3768 in 2004.</span>
+  <span class="c">#   Use of this option is non-compliant and can cause problems; avoid</span>
+  <span class="c">#   using if possible, except when using unicast, where it can be helpful.</span>
+  authentication <span class="o">{</span>
+    <span class="c"># PASS|AH</span>
+    <span class="c"># PASS - Simple password (suggested)</span>
+    <span class="c"># AH - IPSEC (not recommended))</span>
+    auth_type PASS
+
+    <span class="c"># Password for accessing vrrpd.</span>
+    <span class="c"># should be the same on all machines.</span>
+    <span class="c"># Only the first eight (8) characters are used.</span>
+    auth_pass 1234
+	<span class="o">}</span>
+	<span class="c"># 虚拟ip地址</span>
+	virtual_ipaddress<span class="o">{</span>
+	
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>查看网卡号</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ifconfig
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/keepalived/ifconfig.jpg" alt="" /></p>
+
+<blockquote>
+  <p>启动关闭</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>service keepalived start
+service keepalived stop
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行思路</p>
+</blockquote>
+
+<p>提供服务的是nginx，而不是keepalived，所以当keepalived使用脚本检测nginx时，如果没有响应就主动重启nginx，如果nginx无法重启，直接killall keepalived进行ip转移（放弃该keepalived master节点，让备份节点选出新的master节点）</p>
+
+<blockquote>
+  <p>如何测试做了负载均衡的最大并发量</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>ab测试</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># ab是apache的测试工具</span>
+<span class="c"># -c 并发数</span>
+<span class="c"># -n 总的请求数</span>
+ab <span class="nt">-c</span> 2000 <span class="nt">-n</span> 100000 http://172.105.120.105/index.jsp  <span class="c"># 具体的请求url</span>
+  
+<span class="c"># 查看ab测试的帮助,可以看一下是如何带参数进行请求的 </span>
+ab <span class="nt">-h</span>
+  
+<span class="c"># 查看linux打开的文件句柄数限制</span>
+<span class="nb">ulimit</span> <span class="nt">-n</span> 
+1024 <span class="c"># 默认</span>
+<span class="nb">ulimit</span> <span class="nt">-n</span> 20000 <span class="c"># 把限制提升到20000</span>
+</code></pre></div>    </div>
+
+    <p><img src="/assets/images/2020/icoding/keepalived/ab-test.jpg" alt="" /></p>
+
+    <p><img src="/assets/images/2020/icoding/keepalived/ab-test-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>Jmeter压力测试</p>
+  </li>
+  <li>
+    <p>Roadrunner压力测试</p>
+  </li>
+</ul>
+
+<h3 id="应用">应用</h3>
+
+<blockquote>
+  <p>数据层</p>
+</blockquote>
+
+<p>没有加缓存层（redis、elasticsearch）的情况下，应用直达数据库</p>
+
+<p><img src="/assets/images/2020/icoding/keepalived/cache.jpg" alt="" /></p>
+
+<p>当数据表的量比较大时，可以考虑的解决方案分库分表：Mycat + sharding-jdbc，形成数据库的组件机制，将数据进行拆分</p>
+
+<blockquote>
+  <p>网络层</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/keepalived/network.jpg" alt="" /></p>
+
+<blockquote>
+  <p>避免过度设计</p>
+</blockquote>
+
+<p>分流例子：火车站的检票口，平时10个，大流量的时候检票口增加到20个，这就是分流</p>
+
+<p>降级例子：春运的时候人很多，把平时的不常用的窗口停掉，全部变成候车室，相当于把次要服务停掉，确保主业务服务的稳定</p>
+
+<p>限流例子：就是排队进火车站的长长的曲弯，限制进入的人流量</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/08/25/gavin-keepalive-nginx-tomcat.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

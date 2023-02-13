@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第35节：分布式搜索引擎ElasticSearch实战-1 - 大伟的博客 </title>
+    <meta name="keywords" content="elasticSearch">
+    <meta name="description"
+          content="什么是分布式搜索引擎，倒排索引，ElasticSearch的核心术语，数据类型，安装ElasticSearch、ElasticSeatch Head、Kibana，ES 配置用户密码验证和https加密通信，索引、文档CRUD,定义mappings, standard分词器、ik分词器，自定义词库dic文件">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/02/15/gavin-note-035.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第35节：分布式搜索引擎ElasticSearch实战-1">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第35节：分布式搜索引擎ElasticSearch实战-1</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/02/15
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1分布式搜索引擎">1、分布式搜索引擎</h2>
+
+<p><strong>分布式的两个基本点</strong></p>
+
+<ul>
+  <li>可以分摊负载</li>
+  <li>可以水平扩容节点，增强负载能力</li>
+</ul>
+
+<p><strong>什么是搜索引擎</strong>？</p>
+
+<p>比如网络爬虫，检索排序，网页处理，大数据技术相关，都要使用到搜索引擎，对于文件信息内容进行检索，通过搜索引擎提供快速，高相关性的信息服务。比如我们用百度搜索时，都是模糊搜索。</p>
+
+<p><strong>分布式存储与搜索</strong></p>
+
+<p>分布式就是通过多个节点构成的服务，可以横向扩张，所扩展的节点可以进行请求的分摊，以及存储的扩展</p>
+
+<h3 id="lucene---solr---elasticsearch">Lucene - Solr - ElasticSearch</h3>
+
+<ul>
+  <li>
+    <p>Lucene是一个基于Java开发的全文搜索引擎，不是一个应用程序而是一个类库，有很多的API可以调用来实现我们的业务需要，本质上就是一个jar包，<font color="red">本身就不具备分布式、集群、HA等服务特性</font>，如果你要自己通过Luncen实现分布式就比较复杂，基于 lucene 的 api 去开发，要对已有的数据建立索引，lucene 会在本地磁盘上面，给我们组织索引的数据结构。</p>
+  </li>
+  <li>
+    <p>Solr是基于Lucene开发的一个搜索引擎应用，是Apache开源项目，也是Java开发，需要独立部署在tomcat上，可以实现集群和分片，<font color="red">自身不支持集群结构，需要zookeeper来进行集群的支持提供服务注册</font>，进行分布式索引查询，也是可以自己实现故障转移的（3组节点，每组2个solr，互为主从）</p>
+
+    <ul>
+      <li>最大的问题是建立索引的过程中，索引效率下降的及其严重，实时搜索效率不高，使用中索引更新报502，503
+        <ul>
+          <li>搭建两套solr集群，用集群互相主备，升级A的时候，使用B，A升级完了切换到A再升级B</li>
+        </ul>
+      </li>
+      <li>如果不考虑索引创建的同时，索引更新频率不高的情况下，solr的查询速度是略高于ES</li>
+      <li>支持添加多种数据格式到引擎中的</li>
+    </ul>
+  </li>
+  <li>
+    <p>Elasticsearch是基于Lucene的分布式搜索引擎，对外提供了很多restful风格的接口，数据交互使用json格式</p>
+
+    <p>可以支持PB级别的搜索，提供近实时的查询，ELK（Elasticsearch、Logstash、Kibana）早期常用于进行日志分析系统的搭建</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>搜索引擎的选型</p>
+</blockquote>
+
+<ul>
+  <li>Solr或者ES都封装了Lucene，所以我不直接使用Lucene</li>
+  <li>Solr本身不支持集群结构，所以选择ElasticSearch</li>
+  <li>ElasticSearch 可以自己在不同服务器部署搭建服务，也可以购买ES云服务，不过目前云服务的ES版本还是v6.x，而官方ES最新的版本是v7.6，所以我选择自己搭建。</li>
+</ul>
+
+<h2 id="2elastchsearch简介">2、ElastchSearch简介</h2>
+
+<h3 id="概念术语">概念术语</h3>
+
+<p>1、索引index</p>
+
+<ul>
+  <li>可以和数据库去类比，整个的ES就相当于一个数据库服务</li>
+  <li>数据库中的表可以类比ES中的index 索引，存储的文档doc就相当于每行的记录。</li>
+</ul>
+
+<p>2、类型type</p>
+
+<ul>
+  <li>相当于一个逻辑类型，比如商品的分类：食品、服饰、电子产品</li>
+  <li>ESv7.x以后就不再使用type，默认使用doc，5.x/6.x还有</li>
+</ul>
+
+<p>3、文档document（doc）</p>
+
+<p>​	ES索引中一条一条的数据，相当于数据库表里的一行一行的数据</p>
+
+<p>4、字段field</p>
+
+<p>​	数据行的某一列</p>
+
+<p>5、Mappings</p>
+
+<p>​	相当于表结构的类型定义</p>
+
+<p>6、NRT （Near Real Time）</p>
+
+<p>​	ES中新的文档（doc）被加入后可查询的时间间隔非常微弱，接近实时</p>
+
+<p>7、shard</p>
+
+<ul>
+  <li>
+    <p>数据分片的概念，需要进行水平扩展服务节点只需要加入新的机器到集群中即可</p>
+  </li>
+  <li>
+    <p>集群的每个数据节点都是HA的</p>
+
+    <p>主分片：承担数据写入的访问的作用</p>
+
+    <p>replica备份分片：除了做备份以外，还承担了读数据的水平负载作用</p>
+  </li>
+</ul>
+
+<p>8、节点node</p>
+
+<p>​		一个ES实例</p>
+
+<p>一个正常的ES集群如下图：</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-nodes.png" alt="" /></p>
+
+<blockquote>
+  <p>它们的关系</p>
+</blockquote>
+
+<p>集群cluster,节点node,分片shard,索引index,备份分片replica的关系</p>
+
+<ul>
+  <li>
+    <p><strong>集群cluster</strong></p>
+
+    <p>一个ES集群由一个或多个节点（Node）组成，每个集群都有一个cluster name作为标识</p>
+  </li>
+  <li>
+    <p><strong>节点node</strong></p>
+
+    <p>一个ES实例就是一个node，一个机器可以有多个实例，所以并不能说一台机器就是一个node，大多数情况下每个node运行在一个独立的环境或虚拟机上。</p>
+  </li>
+  <li>
+    <p><strong>index</strong></p>
+
+    <p>索引，即一系列documents的集合</p>
+  </li>
+  <li>
+    <p><strong>shard</strong></p>
+
+    <p>分片，ES是分布式搜索引擎，每个索引有一个或多个分片，索引的数据被分配到各个分片上，相当于一桶水用了N个杯子装，分片有助于横向扩展，N个分片会被尽可能平均地（rebalance）分配在不同的节点上（例如你有2个节点，4个主分片(不考虑备份)，那么每个节点会分到2个分片，后来你增加了2个节点，那么你这4个节点上都会有1个分片，这个过程叫relocation，ES感知后自动完成)，分片是独立的，对于一个Search Request的行为，每个分片都会执行这个Request.另外，每个分片都是一个Lucene Index，所以一个分片只能存放  Integer.MAX_VALUE - 128 = 2,147,483,519 个docs。[<a href="file://link.zhihu.com/?target=https%3A//issues.apache.org/jira/browse/LUCENE-5843">LUCENE-5843] IndexWriter should refuse to create an index with more than INT_MAX docs</a></p>
+  </li>
+  <li>
+    <p><strong>replica</strong></p>
+
+    <p>复制，可以理解为备份分片，相应地有primary  shard（主分片），主分片和备分片不会出现在同一个节点上（防止单点故障），默认情况下一个索引创建5个分片一个备份（即5primary+5replica=10个分片），如果你只有一个节点，那么5个replica都无法分配（unassigned），此时cluster status会变成Yellow。replica的作用主要包括:</p>
+
+    <p>1.容灾：primary分片丢失，replica分片就会被顶上去成为新的主分片，同时根据这个新的主分片创建新的replica，集群数据安然无恙</p>
+
+    <p>2.提高查询性能：replica和primary分片的数据是相同的，所以对于一个query既可以查主分片也可以查备分片，在合适的范围内多个replica性能会更优（但要考虑资源占用也会提升[cpu/disk/heap]），另外index request只能发生在主分片上，replica不能执行index request。
+对于一个索引，除非重建索引（reindex）否则不能调整分片的数目（主分片数, number_of_shards），但可以随时调整replica数(number_of_replicas)。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>type为什么会去掉</p>
+</blockquote>
+
+<p>1、为什么会有type？</p>
+
+<p>​	 index库–&gt;type表–&gt;doc记录</p>
+
+<p>​	 如果要对记录进行分组，只需要给doc加一个分组的记录field即可，然后使用ES的分组桶来统计</p>
+
+<p>2、因此在7.x完全去掉type的概念了</p>
+
+<h3 id="数据类型">数据类型</h3>
+
+<p>原：<a href="https://www.cnblogs.com/chong-zuo3322/p/13699008.html">ElasticSearch字段类型介绍</a></p>
+
+<ul>
+  <li>
+    <p>string类型</p>
+
+    <p>由text与keyword替代，如果不指定类型，ElasticSearch字符串将默认被同时映射成text和keyword类型，会自动创建下面的动态映射(dynamic mappings)：</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"foo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"keyword"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"keyword"</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"ignore_above"</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>ignore_above忽略长度超过256字符串，也就是超过这个长度的字段text值没有对应的keyword类型的值。</p>
+
+    <p>没指定type类型，就是造成部分字段还会自动生成一个与之对应的“.keyword”字段的原因。</p>
+
+    <p>子字段可以使用不同的分词器进行查询：</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">POST</span><span class="w"> </span><span class="err">/index_customer/_mapping</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    	</span><span class="nl">"nickname"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"analyzer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ik_max_word"</span><span class="p">,</span><span class="w">
+          	</span><span class="nl">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              	</span><span class="nl">"pinyin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                	</span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+                	</span><span class="nl">"analyzer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pinyin"</span><span class="w">
+             	 </span><span class="p">},</span><span class="w">
+              	</span><span class="nl">"keyword"</span><span class="p">:{</span><span class="w">
+                	</span><span class="nl">"type"</span><span class="p">:</span><span class="s2">"keyword"</span><span class="p">,</span><span class="w">
+                	</span><span class="nl">"ignore_above"</span><span class="p">:</span><span class="w"> </span><span class="mi">256</span><span class="w">
+             	 </span><span class="p">}</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+    </span><span class="p">}</span><span class="w">    
+</span><span class="p">}</span><span class="w"> 
+</span></code></pre></div>    </div>
+
+    <p>搜索</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span><span class="w"> </span><span class="err">搜索的时候同时支持中文，拼音</span><span class="w">
+</span><span class="err">GET</span><span class="w"> </span><span class="err">/index_customer/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+	</span><span class="nl">"query"</span><span class="p">:{</span><span class="w">
+		</span><span class="nl">"multi_match"</span><span class="p">:{</span><span class="w">
+			</span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"chuanzhang"</span><span class="p">,</span><span class="w">
+			</span><span class="nl">"fields"</span><span class="p">:[</span><span class="s2">"nickname"</span><span class="p">,</span><span class="s2">"nickname.pinyin"</span><span class="p">]</span><span class="w">
+		</span><span class="p">}</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>array类型</p>
+
+    <p>在ElasticSearch中，没有专门的数组（Array）数据类型，但是，在默认情况下，任意一个字段都可以包含0或多个值，这意味着每个字段默认都是数组类型，只不过，数组类型的各个元素值的数据类型必须相同。在ElasticSearch中，数组是开箱即用的（out of box），不需要进行任何配置，就可以直接使用。</p>
+
+    <p>在同一个数组中，数组元素的数据类型是相同的，ElasticSearch不支持元素为多个数据类型：[ 10, “some string” ]，常用的数组类型是：</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>字符数组: <span class="o">[</span> “one”, “two” <span class="o">]</span>
+整数数组: productid:[ 1, 2 <span class="o">]</span>
+对象（文档）数组:
+“user”:[ <span class="o">{</span> “name”: “Mary”, “age”: 12 <span class="o">}</span>, <span class="o">{</span> “name”: “John”, “age”: 10 <span class="o">}]</span>，
+ElasticSearch内部把对象数组展开为
+<span class="o">{</span>“user.name”: <span class="o">[</span>“Mary”, “John”], “user.age”: <span class="o">[</span>12,10]<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>举例：</p>
+
+    <p>创建索引</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">put</span><span class="w"> </span><span class="err">/index_array_test</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"index"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"number_of_shards"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"number_of_replicas"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"mappings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    	</span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    		</span><span class="nl">"pushAppName"</span><span class="p">:{</span><span class="w">
+                </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"keyword"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+    	</span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>插入文档</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">post</span><span class="w"> </span><span class="err">/index_array_test/_doc</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"pushAppName"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"大运营平台"</span><span class="p">,</span><span class="s2">"投策系统"</span><span class="p">,</span><span class="s2">"统一APP"</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>date类型</p>
+
+    <p>日期类型表示一般有以下几种方式：</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1.日期格式的字符串，比如 “2018-01-13” 或 “2018-01-13 12:10:30”
+2.long类型的毫秒数<span class="o">(</span> milliseconds-since-the-epoch，epoch就是指UNIX诞生的UTC时间1970年1月1日0时0分0秒<span class="o">)</span>
+3.integer的秒数<span class="o">(</span>seconds-since-the-epoch<span class="o">)</span>
+</code></pre></div>    </div>
+
+    <p>ElasticSearch 内部会将日期数据转换为UTC，并存储为milliseconds-since-the-epoch的long型整数。</p>
+
+    <p>mapping结构设置日期格式</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"postdate"</span><span class="p">:{</span><span class="w">
+          </span><span class="nl">"type"</span><span class="p">:</span><span class="s2">"date"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>默认存储的是毫秒数</p>
+  </li>
+  <li>
+    <p>IP类型</p>
+
+    <p>ip类型的字段用于存储IPv4或者IPv6的地址</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">PUT</span><span class="w"> </span><span class="err">my-index</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="nl">"mappings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"ip_addr"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ip"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+  
+</span><span class="err">PUT</span><span class="w"> </span><span class="err">my-index/_doc/</span><span class="mi">1</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="nl">"ip_addr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.1.1"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>IPv4 的 IP 地址含有4个 bytes，而每个 byte 含有8个 digits。/16 即表示前面的 16 位的 digits，也即 192.168。我们可以这么说任何一个 IP 地址位于 192.168.0.0 至 192.168.255.255 都在这个范围内。</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">my-index/_search</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"term"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"ip_addr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"192.168.0.0/16"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="3什么是倒排索引">3、什么是倒排索引</h2>
+
+<p>场景概念</p>
+
+<p>我们不使用搜索引擎可不可以？</p>
+
+<p>Redis在查询的时候：key-value？是通过key来找到的value，是否可以通过value来找key？通过value找到和这个value相似度极高的内容？不可以，所以需要全文搜索引擎，引出倒排索引概念</p>
+
+<p>倒排索引（Inverted Index）：比如通过歌词来查歌名，通过内容检索名称，而这个名称在系统中其实就是一个索引，通过歌名来找歌词这是正排索引</p>
+
+<p>比如拿课程学习举例：</p>
+
+<p>文档编号     文档内容</p>
+
+<p>1                 艾编程架构师之路</p>
+
+<p>2     			艾编程Java成长之路		（分词：艾编程   Java  成长   之路）</p>
+
+<p>3				 ES成长学习入门</p>
+
+<p>得到以下倒排索引：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>搜索的关键词</th>
+      <th>这个分词在哪个文档中出现</th>
+      <th>文档编号:次数:位置</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>成长</td>
+      <td>2,3</td>
+      <td>2:1:&lt;3&gt;,3:1:&lt;2&gt;</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>倒排索引就是<mark>关键词到文档ID</mark>的映射，例子2：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">DocId</th>
+      <th style="text-align: left">Doc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">1</td>
+      <td style="text-align: left">谷歌地图之父跳槽 Facebook</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">2</td>
+      <td style="text-align: left">谷歌地图之父加盟 Facebook</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">3</td>
+      <td style="text-align: left">谷歌地图创始人拉斯离开谷歌加盟 Facebook</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">4</td>
+      <td style="text-align: left">谷歌地图之父跳槽 Facebook 与 Wave 项目取消有关</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">5</td>
+      <td style="text-align: left">谷歌地图之父拉斯加盟社交网站 Facebook</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>对文档进行分词之后，得到以下<strong>倒排索引</strong>。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">文档</th>
+      <th style="text-align: left">More Actions搜索的关键词</th>
+      <th style="text-align: left">关键词出现的文档</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">1</td>
+      <td style="text-align: left">谷歌</td>
+      <td style="text-align: left">1, 2, 3, 4, 5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">2</td>
+      <td style="text-align: left">地图</td>
+      <td style="text-align: left">1, 2, 3, 4, 5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">3</td>
+      <td style="text-align: left">之父</td>
+      <td style="text-align: left">1, 2, 4, 5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">4</td>
+      <td style="text-align: left">跳槽</td>
+      <td style="text-align: left">1, 4</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">5</td>
+      <td style="text-align: left">Facebook</td>
+      <td style="text-align: left">1, 2, 3, 4, 5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">6</td>
+      <td style="text-align: left">加盟</td>
+      <td style="text-align: left">2, 3, 5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">7</td>
+      <td style="text-align: left">创始人</td>
+      <td style="text-align: left">3</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">8</td>
+      <td style="text-align: left">拉斯</td>
+      <td style="text-align: left">3, 5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">9</td>
+      <td style="text-align: left">离开</td>
+      <td style="text-align: left">3</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">10</td>
+      <td style="text-align: left">与</td>
+      <td style="text-align: left">4</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>要注意倒排索引的两个重要细节：</p>
+
+<ul>
+  <li>倒排索引中的所有词项对应一个或多个文档；</li>
+  <li>倒排索引中的词项<strong>根据字典顺序升序排列</strong></li>
+</ul>
+
+<h2 id="4elasticsearch单机部署">4、ElasticSearch单机部署</h2>
+
+<h3 id="安装">安装</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载地址</span>
+<span class="c"># 官方网站进行下载：https://www.elastic.co/cn/downloads/elasticsearch</span>
+<span class="c"># https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.5.2-linux-x86_64.tar.gz</span>
+<span class="c"># 1、下载，解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> elasticsearch-7.5.2-linux-x86_64.tar.gz
+<span class="c"># elasticsearch-7.5.2-linux-x86_64.tar.gz</span>
+<span class="c"># ES整体的生态强依赖于ES的主版本，如果要安装logstash、kibana、中文分词器,版本必须一致</span>
+
+<span class="c"># 2、移动，创建数据文件夹、日志文件夹 </span>
+<span class="nb">cd</span> /usr/local
+<span class="o">[</span>root@helloworld <span class="nb">local</span><span class="o">]</span><span class="c"># mv elasticsearch-7.5.2 /usr/local/elasticsearch</span>
+<span class="o">[</span>root@helloworld <span class="nb">local</span><span class="o">]</span><span class="c"># mkdir /usr/local/elasticsearch/esdata</span>
+<span class="o">[</span>root@helloworld <span class="nb">local</span><span class="o">]</span><span class="c"># mkdir /usr/local/elasticsearch/eslogs</span>
+
+<span class="c"># 3、修改ES config目录下的elasticsearch.yml，注意格式是yaml</span>
+<span class="o">[</span>root@helloworld config]# vi elasticsearch.yml
+cluster.name: icoding-es <span class="c"># 给集群设置一个名字，如果是集群，所有在这个集群中的节点集群名都要一样</span>
+node.name: es-node-1 <span class="c"># 如果是集群，集群中每个节点的名字都不能一样</span>
+path.data: /usr/local/elasticsearc/esdata
+path.logs: /usr/local/elasticsearc/eslogs
+network.host: 0.0.0.0 <span class="c"># 不限制ip访问 ES，生产环境应该要设置可以访问的ip</span>
+http.port: 9200 <span class="c"># 访问 服务端口，节点通信的端口是9300</span>
+cluster.initial_master_nodes: <span class="o">[</span><span class="s2">"es-node-1"</span><span class="o">]</span> <span class="c"># master节点服务发现，和上面的节点名一致</span>
+
+<span class="c"># 4、改小java的堆内存,这个自己设置，默认是1g内存</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi jvm.options
+<span class="nt">-Xms512m</span>
+<span class="nt">-Xmx512m</span>
+</code></pre></div></div>
+
+<p><strong>启动elasticsearch</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在bin目录下</span>
+<span class="o">[</span>root@helloworld bin]# ./elasticsearch
+<span class="c"># ERROR: [1]</span>
+<span class="c"># org.elasticsearch.bootstrap.StartupException: java.lang.RuntimeException: can not run elasticsearch as root</span>
+<span class="c"># 1、不能用root启动，创建用户esuser，授权，重新启动</span>
+<span class="o">[</span>root@helloworld bin]# adduser esuser
+<span class="c"># 给esuser授权 /usr/local/elasticsearch 目录的权限，与mysql一样需要授权</span>
+<span class="o">[</span>root@helloworld bin]# <span class="nb">chown</span> <span class="nt">-R</span> esuser:esuser /usr/local/elasticsearch/
+<span class="o">[</span>root@helloworld bin]# su esuser
+<span class="o">[</span>root@helloworld bin]# ./elasticsearch
+<span class="c"># ERROR: [2] bootstrap checks failed</span>
+<span class="c"># [1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]</span>
+
+<span class="c"># 2、修改资源限制信息</span>
+<span class="c"># 查看</span>
+<span class="o">[</span>root@helloworld bin]# <span class="nb">ulimit</span> <span class="nt">-a</span>
+<span class="c"># 修改配置，需要root用户</span>
+<span class="o">[</span>root@helloworld bin]# vi /etc/secuirty/limits.conf
+<span class="c"># *代表所有用户</span>
+<span class="k">*</span> soft nofile 65536
+<span class="k">*</span> hard nofile 65536
+<span class="k">*</span> soft <span class="nb">nproc </span>2048
+<span class="k">*</span> hard <span class="nb">nproc </span>4096
+<span class="c"># 修改sysctl.conf文件</span>
+<span class="o">[</span>root@helloworld bin]# vi /etc/sysctl.conf
+vm.max_map_count<span class="o">=</span>262145
+<span class="c"># 修改后刷新生效</span>
+<span class="o">[</span>root@helloworld bin]# sysctl <span class="nt">-p</span>
+
+<span class="c"># 3、切回esuser,启动elasticsearch</span>
+su esuser
+./elasticsearch <span class="c">#在线启动</span>
+./elasticsearch <span class="nt">-d</span> <span class="c">#后台启动</span>
+</code></pre></div></div>
+
+<p>安装成功：</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/install-es-success.gif" alt="" /></p>
+
+<p>9200：http协议，用于外部通信，提供服务</p>
+
+<p>9300：Tcp协议，ES集群之间及内部服务通信的端口</p>
+
+<p>发现配置文件少了个空格，yml文件</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 少了个空格会报错,无法启动</span>
+cluster.name:icoding-es
+<span class="c"># 修改后</span>
+cluster.name: icoding-es
+</code></pre></div></div>
+
+<h3 id="配置用户名和密码">配置用户名和密码</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 切换到用户esuser</span>
+<span class="o">[</span>root@helloworld config]# su esuser
+
+<span class="c"># 修改elasticsearch的配置文件，开启xpack验证</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi elasticsearch.yml
+http.cors.enabled: <span class="nb">true
+</span>http.cors.allow-origin: <span class="s2">"*"</span>
+http.cors.allow-headers: Authorization,X-Requested-With,Content-Length,Content-Type <span class="c"># 避免es-header 无法连接</span>
+xpack.security.enabled: <span class="nb">true
+</span>xpack.security.transport.ssl.enabled: <span class="nb">true</span>
+
+<span class="c"># cd 到elasticsearch的bin目录下，重启es</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./elasticsearch <span class="nt">-d</span>
+
+<span class="c"># cd 到elasticsearch的bin目录下,执行设置用户名和密码的命令，</span>
+<span class="c"># 需要为4个用户分别设置密码：elastic、kibana、logstash_system、beats_system</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./elasticsearch-setup-passwords interactive
+
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-password.png" alt="" /></p>
+
+<p>Elasticsearch配置了用户密码，SpringBoot连接配置也要修改，<strong>SpringBoot2.2.x版本才开始支持ElasticSearch7.x</strong></p>
+
+<p>修改配置文件application.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">elasticsearch</span><span class="pi">:</span>
+    <span class="c1">#es配置</span>
+    <span class="na">rest</span><span class="pi">:</span>
+      <span class="c1">#最新配置方式使用restful风格，端口从9300 -&gt; 9200</span>
+      <span class="na">uris</span><span class="pi">:</span> <span class="s">xx.xx.xx.xx:9200</span>
+      <span class="na">username</span><span class="pi">:</span> <span class="s">elastic</span>
+      <span class="na">password</span><span class="pi">:</span> <span class="s">xxx</span>   
+</code></pre></div></div>
+
+<p>补充</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 导入依赖spring-boot-starter-data-elasticsearch连接ES</span>
+<span class="c1">// springboot 2.2.x 可以使用ElasticsearchTemplate 和 ElasticsearchRestTemplate 模版类操作es</span>
+<span class="c1">// springboot 2.3.x 建议使用ElasticsearchRestTemplate</span>
+<span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="nc">ElasticsearchRestTemplate</span> <span class="n">elasticsearchRestTemplate</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>如果es配置了用户验证，还使用https加密通信，springboot客户端连接需要做修改</p>
+
+<p>第一步，修改application.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">elasticsearch</span><span class="pi">:</span>
+    <span class="c1">#es配置</span>
+    <span class="na">rest</span><span class="pi">:</span>
+      <span class="c1">#最新配置方式使用restful风格，端口从9300 -&gt; 9200</span>
+      <span class="na">uris</span><span class="pi">:</span> <span class="s">https://xx.xx.xx.xx:9200</span>
+      <span class="na">username</span><span class="pi">:</span> <span class="s">elastic</span>
+      <span class="na">password</span><span class="pi">:</span> <span class="s">xxx</span>  
+</code></pre></div></div>
+
+<p>第二步，禁用掉SSL验证</p>
+
+<p>因为springboot客户端尝试在ssl握手的时候会验证es发来的证书，会报<code class="highlighter-rouge">unable to find valid certification path to requested target</code>异常，解决方法是禁用ssl验证</p>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- ES配置账号密码且开启https加密通信不验证SSL  --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>io.github.hakky54<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>sslcontext-kickstart<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>7.1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、增加配置类</p>
+
+<p>springboot 项目使用 <code class="highlighter-rouge">spring-boot-starter-data-elasticsearch</code>整合elasticsearch</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @author xiejinwei02
+ * @date 2022/8/22 17:02
+ */</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="nc">ElasticsearchRestClientProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ElasticsearchConfiguration</span> <span class="o">{</span>
+    <span class="nd">@Resource</span>
+    <span class="nc">RestClientBuilder</span> <span class="n">builder</span><span class="o">;</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">RestHighLevelClient</span> <span class="nf">restHighLevelClient</span><span class="o">(</span><span class="nc">ElasticsearchRestClientProperties</span> <span class="n">properties</span><span class="o">){</span>
+        <span class="nc">SSLFactory</span> <span class="n">sslFactory</span> <span class="o">=</span> <span class="nc">SSLFactory</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">withUnsafeTrustMaterial</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">withUnsafeHostnameVerifier</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+        <span class="kd">final</span> <span class="nc">CredentialsProvider</span> <span class="n">credentialsProvider</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BasicCredentialsProvider</span><span class="o">();</span>
+        <span class="n">credentialsProvider</span><span class="o">.</span><span class="na">setCredentials</span><span class="o">(</span><span class="nc">AuthScope</span><span class="o">.</span><span class="na">ANY</span><span class="o">,</span> <span class="k">new</span> <span class="nc">UsernamePasswordCredentials</span><span class="o">(</span><span class="n">properties</span><span class="o">.</span><span class="na">getUsername</span><span class="o">(),</span> <span class="n">properties</span><span class="o">.</span><span class="na">getPassword</span><span class="o">()));</span>
+
+        <span class="n">builder</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">setHttpClientConfigCallback</span><span class="o">(</span><span class="n">httpClientBuilder</span> <span class="o">-&gt;</span> <span class="n">httpClientBuilder</span><span class="o">.</span><span class="na">setDefaultCredentialsProvider</span><span class="o">(</span><span class="n">credentialsProvider</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setSSLContext</span><span class="o">(</span><span class="n">sslFactory</span><span class="o">.</span><span class="na">getSslContext</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">setSSLHostnameVerifier</span><span class="o">(</span><span class="n">sslFactory</span><span class="o">.</span><span class="na">getHostnameVerifier</span><span class="o">()));</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">RestHighLevelClient</span><span class="o">(</span><span class="n">builder</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>elasticsearch配置了用户密码和https加密通信，rest api 访问要修改，使用ApiPost访问如下：</p>
+
+<p><img src="\assets\images\2022\springcloud\es-https-rest-api-user-password-basicauth.png" alt="" /></p>
+
+<h2 id="5界面工具">5、界面工具</h2>
+
+<h3 id="elasticsearch-head">ElasticSearch Head</h3>
+
+<p>GitHub: https://github.com/mobz/elasticsearch-head</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 服务器要安装node 环境</span>
+<span class="c"># 在服务器上运行elasticsearch-head</span>
+git clone git://github.com/mobz/elasticsearch-head.git
+<span class="nb">cd </span>elasticsearch-head
+npm <span class="nb">install</span> <span class="nt">--registry</span><span class="o">=</span>https://registry.npm.taobao.org
+npm run start
+<span class="c"># 启动后本地访问及端口：http://localhost:9100</span>
+
+<span class="c"># 2、elasticsearch修改配置，开放访问ip</span>
+<span class="c"># No 'Access-Control-Allow-Origin'</span>
+<span class="c"># 在elasticsearch.yaml里加入</span>
+http.cors.enabled: <span class="nb">true</span>
+<span class="c"># 开放所有ip访问，线上这样设置不安全，建议head与elasticsearch在同一台服务器上</span>
+http.cors.allow-origin: <span class="s2">"*"</span>	
+</code></pre></div></div>
+
+<p>如果elasticsearch配置了用户名密码，访问连接要加上用户名和密码</p>
+
+<p>如：http://localhost:9100/?auth_user=elastic&amp;auth_password=elastic666</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-head-password-access.jpg" alt="" /></p>
+
+<h3 id="kibana">Kibana</h3>
+
+<p>更全，提供报表，安装到服务器上</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载地址</span>
+https://artifacts.elastic.co/downloads/kibana/kibana-7.5.2-linux-x86_64.tar.gz
+
+<span class="c"># 1、解压</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zxvf</span> kibana-7.6.1-linux-x86_64.tar.gz
+<span class="c"># 改名字</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">mv </span>kibana-7.6.1-linux-x86_64 kibana-7.6.1
+<span class="c"># 2、修改kibana的yaml配置，</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span><span class="nb">cd </span>kibana-7.6.1
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi kibana.yml
+server.port: 5601 <span class="c"># 默认端口5601,可以不修改</span>
+server.host: <span class="s2">"0.0.0.0"</span> <span class="c"># 开放ip访问，默认localhost</span>
+elasticsearch.hosts: <span class="o">[</span><span class="s2">"http://localhost:9200"</span><span class="o">]</span> <span class="c"># es实例节点，默认localhost:9200</span>
+<span class="c"># es集群</span>
+elasticsearch.hosts: <span class="o">[</span><span class="s2">"http://localhost:9200"</span>,<span class="s2">"http://localhost:9201"</span>,<span class="s2">"http://localhost:9202"</span><span class="o">]</span>
+i18n.locale: <span class="s2">"zh-CN"</span>  <span class="c"># 汉化</span>
+<span class="c"># 3、启动,cd到kibana的bin目录，不能用root用户启动</span>
+<span class="c"># 在线运行</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./kibana  
+<span class="c"># 后台运行</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span><span class="nb">nohup </span>kibana <span class="o">&gt;</span> kibana.log 2&gt;&amp;1 &amp; 
+<span class="c"># 注意，云服务器防火墙和安全组要开放5601端口，</span>
+</code></pre></div></div>
+
+<p>访问：http://localhost:5601/app/kibana#/home</p>
+
+<p>es配置了用户名和密码访问，需要修改kibana.yml</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#进入kibana安装目录</span>
+<span class="nb">cd</span> /usr/local/kibana-7.6.1/config
+<span class="c"># 1、修改配置文件,增加elastic的密码</span>
+vim kibana.yml
+elasticsearch.username: <span class="s2">"elastic"</span>
+elasticsearch.password: <span class="s2">"xxx"</span>
+
+<span class="c"># 2、重启kibana服务</span>
+ps <span class="nt">-ef</span>|grep kibana
+<span class="c"># 杀进程</span>
+<span class="nb">kill </span>pd
+<span class="c"># 启动</span>
+<span class="nb">nohup </span>kibana <span class="o">&gt;</span> kibana.log 2&gt;&amp;1 &amp; 
+</code></pre></div></div>
+
+<p>上面是填写明文密码，如果觉得不安全，可以使用通过keystore配置es的加密用户名和密码进行访问</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld kibana-7.6.1]<span class="nv">$ </span><span class="nb">cd </span>bin
+<span class="c"># 1、创建keystore</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./kibana-keystore create
+Created Kibana keystore <span class="k">in</span> /home/esuser/kibana-7.6.1/data/kibana.keystore
+
+<span class="c"># 2、设置kibana访问es的用户名</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./kibana-keystore add elasticsearch.username
+Enter value <span class="k">for </span>elasticsearch.username: <span class="k">*******</span>  <span class="c"># 输入用户名 elastic</span>
+
+<span class="c"># 3、设置kibana访问es的密码</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./kibana-keystore add elasticsearch.password
+Enter value <span class="k">for </span>elasticsearch.password: <span class="k">**********</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/weclome-to-kibana.png" alt="" /></p>
+
+<h2 id="6索引crud">6、索引CRUD</h2>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-nodes.png" alt="" /></p>
+
+<p>3节点，索引index_customer创建了5个分片，每个分片1个备份节点</p>
+
+<p>获取集群健康值</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET</span><span class="w"> </span><span class="err">http://</span><span class="mf">127.0</span><span class="err">.</span><span class="mf">0.1</span><span class="err">/_cluster/health</span><span class="w">
+
+</span><span class="p">{</span><span class="w">
+  </span><span class="nl">"cluster_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"icoding-es"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"green"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"timed_out"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"number_of_nodes"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"number_of_data_nodes"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"active_primary_shards"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"active_shards"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"relocating_shards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"initializing_shards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"unassigned_shards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"delayed_unassigned_shards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"number_of_pending_tasks"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"number_of_in_flight_fetch"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"task_max_waiting_in_queue_millis"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"active_shards_percent_as_number"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、创建索引，发起PUT请求</span>
+PUT /index_test
+<span class="o">{</span>
+    <span class="s2">"settings"</span>: <span class="o">{</span>
+        <span class="s2">"index"</span>: <span class="o">{</span>
+            <span class="s2">"number_of_shards"</span>: <span class="s2">"3"</span>,
+            <span class="s2">"number_of_replicas"</span>: <span class="s2">"0"</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c"># 2、删除索引,发起delete请求</span>
+DELETE /index_test
+
+<span class="c"># 3、查询索引的相关信息</span>
+GET http://39.100.156.225:9200/_cat/indices?v
+</code></pre></div></div>
+
+<h3 id="mappings自定义">mappings自定义</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PUT /index_test2
+<span class="o">{</span>
+    <span class="s2">"settings"</span>: <span class="o">{</span>
+        <span class="s2">"index"</span>: <span class="o">{</span>
+            <span class="s2">"number_of_shards"</span>: <span class="s2">"3"</span>,
+            <span class="s2">"number_of_replicas"</span>: <span class="s2">"0"</span>
+        <span class="o">}</span>
+    <span class="o">}</span>,
+    <span class="s2">"mappings"</span>: <span class="o">{</span>
+    	<span class="s2">"properties"</span>: <span class="o">{</span>
+    		<span class="s2">"username"</span>: <span class="o">{</span>
+    			<span class="s2">"type"</span>: <span class="s2">"text"</span>,
+    			<span class="s2">"index"</span>: <span class="nb">true</span>
+    		<span class="o">}</span>,
+    		<span class="s2">"password"</span>: <span class="o">{</span>
+    			<span class="s2">"type"</span>: <span class="s2">"keyword"</span>,
+    			<span class="s2">"index"</span>: <span class="nb">false</span>  <span class="c"># 否，不能被查询</span>
+    		<span class="o">}</span>
+    	<span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>字段type 的10种类型</p>
+
+<ul>
+  <li>text  文字类型，内容需要被分词被倒排索引</li>
+  <li>keyword 文字类型，不会被分词，精确匹配，比如qq号，微信号</li>
+  <li>long，integer，short，byte</li>
+  <li>double，float</li>
+  <li>boolean</li>
+  <li>date</li>
+</ul>
+
+<p>如果在创建完索引后没有创建mapping，可以后续添加，已有的字段properties不会修改。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /index_test3/_mapping
+<span class="o">{</span>
+    <span class="s2">"properties"</span>: <span class="o">{</span>
+        <span class="s2">"username"</span>: <span class="o">{</span>
+            <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+            <span class="s2">"index"</span>: <span class="nb">true</span>
+        <span class="o">}</span>,
+        <span class="s2">"password"</span>: <span class="o">{</span>
+            <span class="s2">"type"</span>: <span class="s2">"keyword"</span>,
+            <span class="s2">"index"</span>: <span class="nb">false</span>	 <span class="c"># 否，不能被查询</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="document文档">document文档</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 作为索引来讲，他更关心的是doc，而mapping没有，他会默认方式来添加</span>
+POST /index_test3/_doc/1001
+<span class="o">{</span>
+	<span class="s2">"id"</span>: 1001,
+	<span class="s2">"name"</span>: <span class="s2">"icoding-elasticsearch"</span>,
+	<span class="s2">"desc"</span>: <span class="s2">"艾编程非常不错，很好"</span>,
+	<span class="s2">"create_date"</span>: <span class="s2">"2020-2-15"</span>
+<span class="o">}</span>
+
+<span class="c"># 查询</span>
+GET /index_test3/_doc/2
+
+<span class="c"># 删除</span>
+DELETE /index_test3/_doc/2
+
+<span class="c"># 更新</span>
+POST /index_test3/_doc/1/_update
+<span class="o">{</span>
+    <span class="s2">"doc"</span>: <span class="o">{</span>
+        <span class="s2">"desc"</span>: <span class="s2">"架构师课程非常不错"</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>查询返回的元数据分析</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"_index"</span>: <span class="s2">"index_test3"</span>, <span class="c">#属于哪个索引</span>
+<span class="s2">"_type"</span>: <span class="s2">"_doc"</span>, <span class="c">#type类型，7.x固定是_doc</span>
+<span class="s2">"_id"</span>: <span class="s2">"1"</span>, <span class="c">#文档的唯一标识</span>
+<span class="s2">"_version"</span>: 2, <span class="c">#数据版本</span>
+<span class="s2">"_seq_no"</span>: 1, 
+<span class="s2">"_primary_term"</span>: 1,
+<span class="s2">"found"</span>: <span class="nb">true</span>, <span class="c">#是否查询到</span>
+_score: <span class="c">#查询的相关度</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 返回需要的数据列</span>
+GET /index_test3/_doc/1?_source<span class="o">=</span>name,id
+
+<span class="c"># Head请求，查询某个文档是否存在</span>
+HEAD /index_test3/_doc/1
+httpcode：200 存在 404不存在
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/head-404.png" alt="" /></p>
+
+<h3 id="乐观锁">乐观锁</h3>
+
+<p>doc默认带有version字段，支持乐观锁操作，我们在写入的时候比对一下version是否一致再更新</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /index_test3/_doc/1?version<span class="o">=</span>2
+<span class="c"># 通过version来进行处理</span>
+</code></pre></div></div>
+
+<h2 id="7es中的分词器">7、ES中的分词器</h2>
+
+<p>analyze分词器</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /index_test2/_analyze
+<span class="o">{</span>
+	<span class="s2">"field"</span>: <span class="s2">"text"</span>,
+	<span class="s2">"text"</span>: <span class="s2">"icoding is very well!"</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>分词器类型</p>
+</blockquote>
+
+<ul>
+  <li>standard：默认分词器，大写转小写，按照空格拆分</li>
+  <li>simple：按照非字母分词，大写转小写</li>
+  <li>whitespace：按照空格拆分，不进行大小写转换</li>
+  <li>stop：按照空格分词，去除无意义单词：a an is</li>
+  <li>keyword：不分词</li>
+</ul>
+
+<blockquote>
+  <p>standard 分词器</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 对内容进行分词</span>
+POST /_analyze
+<span class="o">{</span>
+	<span class="s2">"analyzer"</span>: <span class="s2">"standard"</span>,
+	<span class="s2">"text"</span>: <span class="s2">"Icoding is Very Well 1234 5678"</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>中文分词器：IK分词器</p>
+</blockquote>
+
+<p>Github地址：</p>
+
+<p><a href="https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.5.2/elasticsearch-analysis-ik-7.5.2.zip">https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.5.2/elasticsearch-analysis-ik-7.5.2.zip</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#安装unzip</span>
+yum <span class="nt">-y</span> <span class="nb">install </span>unzip
+<span class="c"># 下载完解压到elasticsearch的plugin/ik目录下</span>
+unzip elasticsearch-analysis-ik-7.5.2.zip <span class="nt">-d</span> /usr/local/elasticsearch/elasticsearch-7.5.2/plugins/ik
+<span class="c"># 重启elasticsearch</span>
+<span class="c"># 新增分词器后，先加的记录是不能被匹配出来的，要后加的记录才能匹配，因为文档在新增的时候就进行了分词，可以重建索引，对所有的文档记录重新分词，但相对会损耗些资源。</span>
+</code></pre></div></div>
+
+<ul>
+  <li>ik_max_word：最细粒度的分词，会在词上再次拆分</li>
+  <li>ik_smart：只拆分一次</li>
+</ul>
+
+<blockquote>
+  <p>自定义词库</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 自定义词库</span>
+<span class="nb">cd</span> /<span class="o">{</span>es-root<span class="o">}</span>/plugins/ik/config
+vi IKAnalyzer.cfg.xml 
+<span class="c"># 修改 &lt;entry key="ext_dict"&gt;customer.dic&lt;/entry&gt;</span>
+<span class="c"># 在同目录下创建customer.dic</span>
+<span class="c"># 可以添加自定义词语了</span>
+奋斗吧
+艾编程
+骚年
+<span class="c"># 加完重启Elasticsearch</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/02/15/gavin-note-035.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

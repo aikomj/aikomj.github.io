@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> spring oauth2+JWT后端自动刷新access_token - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="JWT 存储在客户端的认证字符串，无状态化，它可以存储当前登录的用户等认证信息,jwt的4种注销方法，jwt的刷新">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2020/09/24/jwt-refresh-logout.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="spring oauth2+JWT后端自动刷新access_token">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>spring oauth2+JWT后端自动刷新access_token</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/09/24
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1前言">1、前言</h2>
+
+<p>spring boot微服务里经常用到 oauth2 和 jwt整合，做用户鉴权，难点在于token的刷新和注销。</p>
+
+<h3 id="区别">区别</h3>
+
+<ul>
+  <li>
+    <p>spring security</p>
+
+    <p>用户认证（账号密码）与 授权验证（url请求接口权限）的 安全框架，基于RBAC(角色的权限控制)对用户的访问权限进行控制，核心思想是通过一系列的filter chain 来进行拦截过滤的。使用起来就是继承WebSecurityConfigurerAdapter进行权限配置</p>
+  </li>
+  <li>
+    <p>oauth2</p>
+
+    <p>一个关于授权token的开放标准，核心思路是通过各类认证手段（shiro、security）认证用户身份，并颁发token令牌，使得第三方应用可以使用该令牌在<strong>限定时间</strong>、<strong>限定范围</strong>访问指定资源。主要涉及的RFC规范有</p>
+
+    <ol>
+      <li>
+        <p><code class="highlighter-rouge">RFC6749</code>（整体授权框架）、</p>
+      </li>
+      <li>
+        <p><code class="highlighter-rouge">RFC6750</code>（令牌使用）、</p>
+      </li>
+      <li>
+        <p><code class="highlighter-rouge">RFC6819</code>（威胁模型）</p>
+      </li>
+    </ol>
+
+    <p>一般我们需要了解的就是<strong><code class="highlighter-rouge">RFC6749</code></strong>整体授权框架</p>
+
+    <p>获取令牌的方式主要有四种：授权码模式、简单模式、密码模式、客户端模式</p>
+
+    <p>想了解具体的oauth2授权步骤可以移步阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html">理解OAuth 2.0</a>，里面有非常详细的说明。</p>
+
+    <p>oauth2 要明确的几个角色概念</p>
+
+    <ol>
+      <li>客户应用</li>
+      <li>授权服务器，用来进行用户认证并颁发token</li>
+      <li>资源服务器，拥有被访问资源的服务器，需要通过token来确定是否有权限访问</li>
+    </ol>
+  </li>
+  <li>
+    <p>jwt</p>
+
+    <p>json web token 一种token格式，与普通token的区别是它携带了用户信息（状态化的东西），由三部分组成</p>
+
+    <ol>
+      <li>头部header</li>
+      <li>载体部分payload</li>
+      <li>签名signature（自定义一段secret 字符串，指定加密算法生成的签名字符串）</li>
+    </ol>
+
+    <p>jwt可以实现分布式的token验证功能，即资源服务器通过事先维护好的对称或者非对称密钥（非对称的话就是认证服务器提供的公钥），直接在本地验证token，去中心化的验证机制正适合分布式架构，它解决了两大痛点：</p>
+
+    <ol>
+      <li>通过验证签名，token的验证可以直接在本地完成，不需要连接认证服务器</li>
+      <li>在payload中可以定义用户相关信息，轻松实现了token和用户信息的绑定</li>
+    </ol>
+  </li>
+</ul>
+
+<h3 id="jwt的应用场景">JWT的应用场景</h3>
+
+<p>就像布鲁克斯在《人月神话》中所说的名言一样：“没有银弹”，jwt不能解决所有的认证问题。</p>
+
+<p>适用场景：充分发挥jwt无状态以及分布式验证的优势</p>
+
+<ul>
+  <li>一次性的身份认证</li>
+  <li>api的鉴权</li>
+</ul>
+
+<p>不适用的场景：单机应用没必要搞jwt</p>
+
+<ul>
+  <li>传统的基于session的用户会话保持</li>
+</ul>
+
+<p><strong>不要试图用jwt去代替session。</strong></p>
+
+<p>这种模式下其实传统的session+cookie机制工作的更好，jwt因为其无状态和分布式，事实上只要在有效期内，是无法作废的，用户的签退更多是一个客户端的签退，服务端token仍然有效，你只要使用这个token，仍然可以登陆系统。另外一个问题是续签问题，使用token，无疑令续签变得十分麻烦，当然你也可以通过redis去记录token状态，并在用户访问后更新这个状态，但这就是硬生生把jwt的无状态搞成有状态了，而这些在传统的session+cookie机制中都是不需要去考虑的。这种场景下，考虑高可用，我更加推荐采用分布式的session机制，现在已经有很多的成熟框架可供选择了（比如spring session）。</p>
+
+<h2 id="2jwt-注销">2、JWT 注销</h2>
+
+<h3 id="将jwt存储在数据库中">将JWT存储在数据库中</h3>
+
+<p>您可以检查哪些令牌有效以及哪些令牌已被撤销，但这在我看来完全违背了使用JWT的目的，因为它把JWT 变成有状态了，中心化了</p>
+
+<p>开源的renren_fast框架也是这么做的，用来对接APP端，注销就把token 从数据库删除</p>
+
+<p>renren框架使用shiro+token做登录认证</p>
+
+<p>Shiroconfig配置类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShiroConfig</span> <span class="o">{</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"securityManager"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">SecurityManager</span> <span class="nf">securityManager</span><span class="o">(</span><span class="nc">OAuth2Realm</span> <span class="n">oAuth2Realm</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DefaultWebSecurityManager</span> <span class="n">securityManager</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultWebSecurityManager</span><span class="o">();</span>
+        <span class="n">securityManager</span><span class="o">.</span><span class="na">setRealm</span><span class="o">(</span><span class="n">oAuth2Realm</span><span class="o">);</span>
+        <span class="n">securityManager</span><span class="o">.</span><span class="na">setRememberMeManager</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">securityManager</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"shiroFilter"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">ShiroFilterFactoryBean</span> <span class="nf">shirFilter</span><span class="o">(</span><span class="nc">SecurityManager</span> <span class="n">securityManager</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ShiroFilterFactoryBean</span> <span class="n">shiroFilter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ShiroFilterFactoryBean</span><span class="o">();</span>
+        <span class="n">shiroFilter</span><span class="o">.</span><span class="na">setSecurityManager</span><span class="o">(</span><span class="n">securityManager</span><span class="o">);</span>
+
+        <span class="c1">//oauth过滤</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Filter</span><span class="o">&gt;</span> <span class="n">filters</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="n">filters</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"oauth2"</span><span class="o">,</span> <span class="k">new</span> <span class="nc">OAuth2Filter</span><span class="o">());</span>
+        <span class="n">shiroFilter</span><span class="o">.</span><span class="na">setFilters</span><span class="o">(</span><span class="n">filters</span><span class="o">);</span>
+
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">filterMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/webjars/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/druid/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/app/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/sys/login"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/swagger/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/v2/api-docs"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/swagger-ui.html"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/swagger-resources/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/captcha.jpg"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/images/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/upload/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/temp/**"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/sys/pay/success"</span><span class="o">,</span> <span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/sys/pay/cancel"</span><span class="o">,</span><span class="s">"anon"</span><span class="o">);</span>
+        <span class="n">filterMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"/**"</span><span class="o">,</span> <span class="s">"oauth2"</span><span class="o">);</span>
+        <span class="n">shiroFilter</span><span class="o">.</span><span class="na">setFilterChainDefinitionMap</span><span class="o">(</span><span class="n">filterMap</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="n">shiroFilter</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"lifecycleBeanPostProcessor"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">LifecycleBeanPostProcessor</span> <span class="nf">lifecycleBeanPostProcessor</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LifecycleBeanPostProcessor</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">AuthorizationAttributeSourceAdvisor</span> <span class="nf">authorizationAttributeSourceAdvisor</span><span class="o">(</span><span class="nc">SecurityManager</span> <span class="n">securityManager</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">AuthorizationAttributeSourceAdvisor</span> <span class="n">advisor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AuthorizationAttributeSourceAdvisor</span><span class="o">();</span>
+        <span class="n">advisor</span><span class="o">.</span><span class="na">setSecurityManager</span><span class="o">(</span><span class="n">securityManager</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">advisor</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span><span class="err">登录时就生成</span><span class="n">token</span><span class="err">保存到数据库，登出就删除</span><span class="n">token</span>	
+</code></pre></div></div>
+
+<p>登录与登出操作</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="cm">/**
+	 * 登录
+	 */</span>
+	<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/sys/login"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="nf">login</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">SysLoginForm</span> <span class="n">form</span><span class="o">)</span><span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+		<span class="kt">boolean</span> <span class="n">captcha</span> <span class="o">=</span> <span class="n">sysCaptchaService</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">form</span><span class="o">.</span><span class="na">getUuid</span><span class="o">(),</span> <span class="n">form</span><span class="o">.</span><span class="na">getCaptcha</span><span class="o">());</span>
+		<span class="k">if</span><span class="o">(!</span><span class="n">captcha</span><span class="o">){</span>
+			<span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"验证码不正确"</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">//用户信息</span>
+		<span class="nc">SysUserEntity</span> <span class="n">user</span> <span class="o">=</span> <span class="n">sysUserService</span><span class="o">.</span><span class="na">queryByUserName</span><span class="o">(</span><span class="n">form</span><span class="o">.</span><span class="na">getUsername</span><span class="o">());</span>
+
+		<span class="c1">//账号不存在、密码错误</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">user</span><span class="o">.</span><span class="na">getPassword</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="k">new</span> <span class="nc">Sha256Hash</span><span class="o">(</span><span class="n">form</span><span class="o">.</span><span class="na">getPassword</span><span class="o">(),</span> <span class="n">user</span><span class="o">.</span><span class="na">getSalt</span><span class="o">()).</span><span class="na">toHex</span><span class="o">()))</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"账号或密码不正确"</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">//账号锁定</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getStatus</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">){</span>
+			<span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"账号已被锁定,请联系管理员"</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">//生成token，并保存到数据库</span>
+		<span class="no">R</span> <span class="n">r</span> <span class="o">=</span> <span class="n">sysUserTokenService</span><span class="o">.</span><span class="na">createToken</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getUserId</span><span class="o">());</span>
+		<span class="k">return</span> <span class="n">r</span><span class="o">;</span>
+	<span class="o">}</span>
+
+
+	<span class="cm">/**
+	 * 退出
+	 */</span>
+	<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/sys/logout"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="no">R</span> <span class="nf">logout</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">sysUserTokenService</span><span class="o">.</span><span class="na">logout</span><span class="o">(</span><span class="n">getUserId</span><span class="o">());</span>
+		<span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="从客户端删除令牌">从客户端删除令牌</h3>
+
+<p>前端把token从cookie中删除，这将阻止客户端进行经过身份验证的请求，但如果令牌仍然有效且其他人可以访问它，则仍可以使用该令牌。</p>
+
+<h3 id="刷新令牌">刷新令牌</h3>
+
+<p>当用户登录时，为他们提供JWT和刷新令牌refreshToken。将刷新令牌存储在数据库中。</p>
+
+<p>对于经过身份验证的请求，客户端可以使用JWT，但是当令牌过期（或即将过期）时，让客户端使用刷新令牌发出请求以换取新的JWT。这样，您只需在用户登录或要求新的JWT时访问数据库。当用户注销时，您需要使存储的刷新令牌无效。否则，即使用户已经注销，有人在监听连接时仍然可以获得新的JWT。但注销到JWT过期仍然有一个时间窗口，JWT是依然可用的。这里只是解决了用户无感刷新JWT的问题，客户端携带刷新令牌获取新的JWT。</p>
+<h3 id="创建jwt黑名单">创建JWT黑名单</h3>
+
+<p>当后端收到注销请求时，将JWT存储在Redis，并设置过期时间等于JWT的剩余存活时间。</p>
+
+<p>对于每个经过身份验证的请求，您需要检查Redis查看令牌是否已失效。根据令牌剩余有效期设置内存数据失效时间，达到自动清除的目的，JWT可以携带一个UUID，作为黑名单中JWT的key，該key对应的value就是redis的过期时间，redis可以使用Map的数据类型存储。</p>
+
+<p><mark>个人觉得JWT黑名单是较好的JWT注销方案。</mark></p>
+
+<h2 id="3jwt-刷新">3、JWT 刷新</h2>
+
+<p>刷新方案有两种：</p>
+
+<ul>
+  <li>一种是校验token前刷新</li>
+  <li>第二种是校验失败后刷新。</li>
+</ul>
+
+<p><strong>为什么要刷新?</strong></p>
+
+<p>因为JWT并不具有续期的功能，所以在判断token过期后，立刻使用refresh_token刷新。并且在response的header里面添加标识告诉前端你的token实际上已经过期了需要更新。其他的类似memory token、redis token可以延期的，直接延长过期时间并且不需要更新token。</p>
+
+<h3 id="方案一校验token前刷新">方案一校验token前刷新</h3>
+
+<p>springboot 版本是2.2.x</p>
+
+<p>pom.xml导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- spring security + OAuth2 + JWT    start  --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-security-jwt<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.9.RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.security.oauth<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-security-oauth2<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.2.1.RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>io.jsonwebtoken<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>jjwt<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.9.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-security<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>1、重写<code class="highlighter-rouge">JwtAccessTokenConverter</code>的enhance方法，把refresh_token、client_id、client_secret放入到access_token中，以便刷新</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OauthJwtAccessTokenConverter</span> <span class="kd">extends</span> <span class="nc">JwtAccessTokenConverter</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">JsonParser</span> <span class="n">objectMapper</span> <span class="o">=</span> <span class="nc">JsonParserFactory</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+ 
+    <span class="kd">public</span> <span class="nf">OauthJwtAccessTokenConverter</span><span class="o">(</span><span class="nc">SecurityUserService</span> <span class="n">userService</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 使用SecurityContextHolder.getContext().getAuthentication()能获取到User信息</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">setAccessTokenConverter</span><span class="o">(</span><span class="k">new</span> <span class="nc">OauthAccessTokenConverter</span><span class="o">(</span><span class="n">userService</span><span class="o">));</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">OAuth2AccessToken</span> <span class="nf">enhance</span><span class="o">(</span><span class="nc">OAuth2AccessToken</span> <span class="n">accessToken</span><span class="o">,</span> <span class="nc">OAuth2Authentication</span> <span class="n">authentication</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DefaultOAuth2AccessToken</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultOAuth2AccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">);</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;(</span><span class="n">accessToken</span><span class="o">.</span><span class="na">getAdditionalInformation</span><span class="o">());</span>
+        <span class="nc">String</span> <span class="n">tokenId</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">info</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="no">TOKEN_ID</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">info</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="no">TOKEN_ID</span><span class="o">,</span> <span class="n">tokenId</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">tokenId</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">info</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="no">TOKEN_ID</span><span class="o">);</span>
+        <span class="o">}</span>
+ 
+        <span class="c1">// access_token 包含自动刷新过期token需要的数据(client_id/secret/refresh_token)</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">details</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;)</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getUserAuthentication</span><span class="o">().</span><span class="na">getDetails</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nc">Objects</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">details</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">details</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">info</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_ID</span><span class="o">,</span>
+                    <span class="n">details</span><span class="o">.</span><span class="na">getOrDefault</span><span class="o">(</span><span class="s">"client_id"</span><span class="o">,</span> <span class="n">details</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_ID</span><span class="o">)));</span>
+ 
+            <span class="n">info</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_SECRET</span><span class="o">,</span>
+                    <span class="n">details</span><span class="o">.</span><span class="na">getOrDefault</span><span class="o">(</span><span class="s">"client_secret"</span><span class="o">,</span> <span class="n">details</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_SECRET</span><span class="o">)));</span>
+        <span class="o">}</span>
+ 
+        <span class="nc">OAuth2RefreshToken</span> <span class="n">refreshToken</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getRefreshToken</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">refreshToken</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">DefaultOAuth2AccessToken</span> <span class="n">encodedRefreshToken</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultOAuth2AccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">);</span>
+            <span class="n">encodedRefreshToken</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">refreshToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="c1">// Refresh tokens do not expire unless explicitly of the right type</span>
+            <span class="n">encodedRefreshToken</span><span class="o">.</span><span class="na">setExpiration</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">claims</span> <span class="o">=</span> <span class="n">objectMapper</span>
+                        <span class="o">.</span><span class="na">parseMap</span><span class="o">(</span><span class="nc">JwtHelper</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">refreshToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">()).</span><span class="na">getClaims</span><span class="o">());</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">claims</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="no">TOKEN_ID</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">encodedRefreshToken</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">claims</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="no">TOKEN_ID</span><span class="o">).</span><span class="na">toString</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IllegalArgumentException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span>
+            <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">refreshTokenInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;(</span>
+                    <span class="n">accessToken</span><span class="o">.</span><span class="na">getAdditionalInformation</span><span class="o">());</span>
+            <span class="n">refreshTokenInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="no">TOKEN_ID</span><span class="o">,</span> <span class="n">encodedRefreshToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="c1">// refresh token包含client id/secret, 自动刷新过期token时用到。</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="nc">Objects</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">details</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">details</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">refreshTokenInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_ID</span><span class="o">,</span>
+                        <span class="n">details</span><span class="o">.</span><span class="na">getOrDefault</span><span class="o">(</span><span class="s">"client_id"</span><span class="o">,</span> <span class="n">details</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_ID</span><span class="o">)));</span>
+ 
+                <span class="n">refreshTokenInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_SECRET</span><span class="o">,</span>
+                        <span class="n">details</span><span class="o">.</span><span class="na">getOrDefault</span><span class="o">(</span><span class="s">"client_secret"</span><span class="o">,</span> <span class="n">details</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_SECRET</span><span class="o">)));</span>
+            <span class="o">}</span>
+            <span class="n">refreshTokenInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="no">ACCESS_TOKEN_ID</span><span class="o">,</span> <span class="n">tokenId</span><span class="o">);</span>
+            <span class="n">encodedRefreshToken</span><span class="o">.</span><span class="na">setAdditionalInformation</span><span class="o">(</span><span class="n">refreshTokenInfo</span><span class="o">);</span>
+            <span class="nc">DefaultOAuth2RefreshToken</span> <span class="n">token</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultOAuth2RefreshToken</span><span class="o">(</span>
+                    <span class="n">encode</span><span class="o">(</span><span class="n">encodedRefreshToken</span><span class="o">,</span> <span class="n">authentication</span><span class="o">));</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">refreshToken</span> <span class="k">instanceof</span> <span class="nc">ExpiringOAuth2RefreshToken</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">Date</span> <span class="n">expiration</span> <span class="o">=</span> <span class="o">((</span><span class="nc">ExpiringOAuth2RefreshToken</span><span class="o">)</span> <span class="n">refreshToken</span><span class="o">).</span><span class="na">getExpiration</span><span class="o">();</span>
+                <span class="n">encodedRefreshToken</span><span class="o">.</span><span class="na">setExpiration</span><span class="o">(</span><span class="n">expiration</span><span class="o">);</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultExpiringOAuth2RefreshToken</span><span class="o">(</span><span class="n">encode</span><span class="o">(</span><span class="n">encodedRefreshToken</span><span class="o">,</span> <span class="n">authentication</span><span class="o">),</span> <span class="n">expiration</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">result</span><span class="o">.</span><span class="na">setRefreshToken</span><span class="o">(</span><span class="n">token</span><span class="o">);</span>
+            <span class="n">info</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_REFRESH_TOKEN</span><span class="o">,</span> <span class="n">token</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="n">result</span><span class="o">.</span><span class="na">setAdditionalInformation</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
+        <span class="n">result</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">encode</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">authentication</span><span class="o">));</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、重写<code class="highlighter-rouge">DefaultTokenServices</code>的loadAuthentication方法，开始处理刷新</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OauthTokenServices</span> <span class="kd">extends</span> <span class="nc">DefaultTokenServices</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="nc">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="nc">OauthTokenServices</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="nc">TokenStore</span> <span class="n">tokenStore</span><span class="o">;</span>
+    <span class="c1">// 自定义的token刷新处理器</span>
+    <span class="kd">private</span> <span class="nc">TokenRefreshExecutor</span> <span class="n">executor</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nf">OauthTokenServices</span><span class="o">(</span><span class="nc">TokenStore</span> <span class="n">tokenStore</span><span class="o">,</span> <span class="nc">TokenRefreshExecutor</span> <span class="n">executor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">setTokenStore</span><span class="o">(</span><span class="n">tokenStore</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">tokenStore</span> <span class="o">=</span> <span class="n">tokenStore</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">executor</span> <span class="o">=</span> <span class="n">executor</span><span class="o">;</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">OAuth2Authentication</span> <span class="nf">loadAuthentication</span><span class="o">(</span><span class="nc">String</span> <span class="n">accessTokenValue</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">AuthenticationException</span><span class="o">,</span> <span class="nc">InvalidTokenException</span> <span class="o">{</span>
+        <span class="nc">OAuth2AccessToken</span> <span class="n">accessToken</span> <span class="o">=</span> <span class="n">tokenStore</span><span class="o">.</span><span class="na">readAccessToken</span><span class="o">(</span><span class="n">accessTokenValue</span><span class="o">);</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">setAccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">);</span>
+        <span class="c1">// 是否刷新token</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">executor</span><span class="o">.</span><span class="na">shouldRefresh</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"refresh token."</span><span class="o">);</span>
+                <span class="nc">String</span> <span class="n">newAccessTokenValue</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="na">refresh</span><span class="o">();</span>
+                <span class="c1">// token如果是续期不做remove操作，如果是重新生成则删除旧的token</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">newAccessTokenValue</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">accessTokenValue</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">tokenStore</span><span class="o">.</span><span class="na">removeAccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="n">accessTokenValue</span> <span class="o">=</span> <span class="n">newAccessTokenValue</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"token refresh failed."</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+ 
+        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">loadAuthentication</span><span class="o">(</span><span class="n">accessTokenValue</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>自定义的token刷新处理器接口TokenRefreshExecutor主要有两个方法</p>
+
+<ul>
+  <li>shouldRefresh：是否需要刷新</li>
+  <li>refresh：刷新</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">TokenRefreshExecutor</span> <span class="o">{</span>
+  <span class="cm">/**
+     * 是否需要刷新
+     * @return
+     */</span>
+    <span class="kt">boolean</span> <span class="nf">shouldRefresh</span><span class="o">();</span>
+  
+    <span class="cm">/**
+     * 执行刷新
+     * @return
+     * @throws Exception
+     */</span>
+    <span class="nc">String</span> <span class="nf">refresh</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">;</span>
+ 
+    <span class="kt">void</span> <span class="nf">setTokenStore</span><span class="o">(</span><span class="nc">TokenStore</span> <span class="n">tokenStore</span><span class="o">);</span>
+ 
+    <span class="kt">void</span> <span class="nf">setAccessToken</span><span class="o">(</span><span class="nc">OAuth2AccessToken</span> <span class="n">accessToken</span><span class="o">);</span>
+ 
+    <span class="kt">void</span> <span class="nf">setClientService</span><span class="o">(</span><span class="nc">ClientDetailsService</span> <span class="n">clientService</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、配置类TokenConfig</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TokenConfig</span> <span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">TokenStore</span> <span class="nf">tokenStore</span><span class="o">(</span><span class="nc">AccessTokenConverter</span> <span class="n">converter</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">JwtTokenStore</span><span class="o">((</span><span class="nc">JwtAccessTokenConverter</span><span class="o">)</span> <span class="n">converter</span><span class="o">);</span>
+        <span class="c1">// return new InMemoryTokenStore();</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">AccessTokenConverter</span> <span class="nf">accessTokenConverter</span><span class="o">(</span><span class="nc">SecurityUserService</span> <span class="n">userService</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">JwtAccessTokenConverter</span> <span class="n">accessTokenConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OauthJwtAccessTokenConverter</span><span class="o">(</span><span class="n">userService</span><span class="o">);</span>
+        <span class="n">accessTokenConverter</span><span class="o">.</span><span class="na">setSigningKey</span><span class="o">(</span><span class="s">"sign_key"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">accessTokenConverter</span><span class="o">;</span>
+        <span class="cm">/*DefaultAccessTokenConverter converter = new DefaultAccessTokenConverter();
+        DefaultUserAuthenticationConverter userTokenConverter = new DefaultUserAuthenticationConverter();
+        userTokenConverter.setUserDetailsService(userService);
+        converter.setUserTokenConverter(userTokenConverter);
+        return converter;*/</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">TokenRefreshExecutor</span> <span class="nf">tokenRefreshExecutor</span><span class="o">(</span><span class="nc">TokenStore</span> <span class="n">tokenStore</span><span class="o">,</span>
+                                                     <span class="nc">ClientDetailsService</span> <span class="n">clientService</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">TokenRefreshExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OauthJwtTokenRefreshExecutor</span><span class="o">();</span>
+        <span class="c1">// TokenRefreshExecutor executor = new OauthTokenRefreshExecutor();</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">setTokenStore</span><span class="o">(</span><span class="n">tokenStore</span><span class="o">);</span>
+        <span class="n">executor</span><span class="o">.</span><span class="na">setClientService</span><span class="o">(</span><span class="n">clientService</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">executor</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">AuthorizationServerTokenServices</span> <span class="nf">tokenServices</span><span class="o">(</span><span class="nc">TokenStore</span> <span class="n">tokenstore</span><span class="o">,</span>
+                                                          <span class="nc">AccessTokenConverter</span> <span class="n">accessTokenConverter</span><span class="o">,</span>
+                                                          <span class="nc">ClientDetailsService</span> <span class="n">clientService</span><span class="o">,</span>
+                                                          <span class="nc">TokenRefreshExecutor</span> <span class="n">executor</span><span class="o">)</span> <span class="o">{</span>
+ 
+        <span class="nc">OauthTokenServices</span> <span class="n">tokenServices</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OauthTokenServices</span><span class="o">(</span><span class="n">tokenstore</span><span class="o">,</span> <span class="n">executor</span><span class="o">);</span>
+        <span class="c1">// 非jwtConverter可注释setTokenEnhancer</span>
+        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setTokenEnhancer</span><span class="o">((</span><span class="nc">TokenEnhancer</span><span class="o">)</span> <span class="n">accessTokenConverter</span><span class="o">);</span>
+        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setSupportRefreshToken</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setClientDetailsService</span><span class="o">(</span><span class="n">clientService</span><span class="o">);</span>
+        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setReuseRefreshToken</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">tokenServices</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>实现类OauthJwtTokenRefreshExecutor.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OauthJwtTokenRefreshExecutor</span> <span class="kd">extends</span> <span class="nc">AbstractTokenRefreshExecutor</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="nc">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="nc">OauthJwtTokenRefreshExecutor</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">shouldRefresh</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 旧token过期才刷新</span>
+        <span class="k">return</span> <span class="nf">getAccessToken</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">getAccessToken</span><span class="o">().</span><span class="na">isExpired</span><span class="o">();</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">refresh</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+        <span class="nc">HttpServletRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="nc">ServletUtil</span><span class="o">.</span><span class="na">getRequest</span><span class="o">();</span>
+        <span class="nc">HttpServletResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="nc">ServletUtil</span><span class="o">.</span><span class="na">getResponse</span><span class="o">();</span>
+        <span class="nc">MultiValueMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">parameters</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedMultiValueMap</span><span class="o">&lt;&gt;();</span>
+        <span class="c1">// OauthJwtAccessTokenConverter中存入access_token中的数据，在这里使用</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"client_id"</span><span class="o">,</span> <span class="nc">TokenUtil</span><span class="o">.</span><span class="na">getStringInfo</span><span class="o">(</span><span class="n">getAccessToken</span><span class="o">(),</span> <span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_ID</span><span class="o">));</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"client_secret"</span><span class="o">,</span> <span class="nc">TokenUtil</span><span class="o">.</span><span class="na">getStringInfo</span><span class="o">(</span><span class="n">getAccessToken</span><span class="o">(),</span> <span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_CLIENT_SECRET</span><span class="o">));</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"refresh_token"</span><span class="o">,</span> <span class="nc">TokenUtil</span><span class="o">.</span><span class="na">getStringInfo</span><span class="o">(</span><span class="n">getAccessToken</span><span class="o">(),</span> <span class="nc">OauthConstant</span><span class="o">.</span><span class="na">OAUTH_REFRESH_TOKEN</span><span class="o">));</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"grant_type"</span><span class="o">,</span> <span class="s">"refresh_token"</span><span class="o">);</span>
+        <span class="c1">// 发送刷新的http请求</span>
+        <span class="nc">Map</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">RestfulUtil</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="n">getOauthTokenUrl</span><span class="o">(</span><span class="n">request</span><span class="o">),</span> <span class="n">parameters</span><span class="o">);</span>
+ 
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">result</span><span class="o">)</span> <span class="o">||</span> <span class="n">result</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="o">!</span><span class="n">result</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="s">"access_token"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">"refresh token failed."</span><span class="o">);</span>
+        <span class="o">}</span>
+ 
+        <span class="nc">String</span> <span class="n">accessToken</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"access_token"</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+        <span class="nc">OAuth2AccessToken</span> <span class="n">oAuth2AccessToken</span> <span class="o">=</span> <span class="n">getTokenStore</span><span class="o">().</span><span class="na">readAccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">);</span>
+        <span class="nc">OAuth2Authentication</span> <span class="n">auth2Authentication</span> <span class="o">=</span> <span class="n">getTokenStore</span><span class="o">().</span><span class="na">readAuthentication</span><span class="o">(</span><span class="n">oAuth2AccessToken</span><span class="o">);</span>
+        <span class="c1">// 保存授权信息，以便全局调用</span>
+        <span class="nc">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">setAuthentication</span><span class="o">(</span><span class="n">auth2Authentication</span><span class="o">);</span>
+ 
+        <span class="c1">// 前端收到该event事件时，更新access_token</span>
+        <span class="n">response</span><span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="s">"event"</span><span class="o">,</span> <span class="s">"token-refreshed"</span><span class="o">);</span>
+        <span class="n">response</span><span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="s">"access_token"</span><span class="o">,</span> <span class="n">accessToken</span><span class="o">);</span>
+        <span class="c1">// 返回新的token信息</span>
+        <span class="k">return</span> <span class="n">accessToken</span><span class="o">;</span>
+    <span class="o">}</span>
+ 
+    <span class="kd">private</span> <span class="nc">String</span> <span class="nf">getOauthTokenUrl</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"%s://%s:%s%s%s"</span><span class="o">,</span>
+                <span class="n">request</span><span class="o">.</span><span class="na">getScheme</span><span class="o">(),</span>
+                <span class="n">request</span><span class="o">.</span><span class="na">getLocalAddr</span><span class="o">(),</span>
+                <span class="n">request</span><span class="o">.</span><span class="na">getLocalPort</span><span class="o">(),</span>
+                <span class="nc">Strings</span><span class="o">.</span><span class="na">isNotBlank</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">())</span> <span class="o">?</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()</span> <span class="o">:</span> <span class="s">""</span><span class="o">,</span>
+                <span class="s">"/oauth/token"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4、认证服务器相关代码，相当于SpringSecurity的鉴权</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="nd">@EnableAuthorizationServer</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthorizationServerConfiguration</span> <span class="kd">extends</span> <span class="nc">AuthorizationServerConfigurerAdapter</span> <span class="o">{</span>
+ 
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">AuthenticationManager</span> <span class="n">manager</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SecurityUserService</span> <span class="n">userService</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">TokenStore</span> <span class="n">tokenStore</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">AccessTokenConverter</span> <span class="n">tokenConverter</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">AuthorizationServerTokenServices</span> <span class="n">tokenServices</span><span class="o">;</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="nc">AuthorizationServerEndpointsConfigurer</span> <span class="n">endpoints</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="n">endpoints</span><span class="o">.</span><span class="na">tokenStore</span><span class="o">(</span><span class="n">tokenStore</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">authenticationManager</span><span class="o">(</span><span class="n">manager</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">allowedTokenEndpointRequestMethods</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="nc">HttpMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">userDetailsService</span><span class="o">(</span><span class="n">userService</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">accessTokenConverter</span><span class="o">(</span><span class="n">tokenConverter</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">tokenServices</span><span class="o">(</span><span class="n">tokenServices</span><span class="o">);</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="nc">AuthorizationServerSecurityConfigurer</span> <span class="n">security</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="n">security</span><span class="o">.</span><span class="na">tokenKeyAccess</span><span class="o">(</span><span class="s">"permitAll()"</span><span class="o">)</span> <span class="c1">//url:/oauth/token_key,exposes public key for token verification if using JWT tokens</span>
+                <span class="o">.</span><span class="na">checkTokenAccess</span><span class="o">(</span><span class="s">"isAuthenticated()"</span><span class="o">)</span> <span class="c1">//url:/oauth/check_token allow check token</span>
+                <span class="o">.</span><span class="na">allowFormAuthenticationForClients</span><span class="o">();</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="nc">ClientDetailsServiceConfigurer</span> <span class="n">clients</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="n">clients</span><span class="o">.</span><span class="na">withClientDetails</span><span class="o">(</span><span class="n">clientDetailsService</span><span class="o">());</span>
+    <span class="o">}</span>
+ 
+    <span class="kd">public</span> <span class="nc">ClientDetailsService</span> <span class="nf">clientDetailsService</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">OauthClientService</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>5、前端使用axios请求</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 拦截后端请求的返回</span>
+<span class="nx">service</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// 缓存自动刷新生成的新token</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">event</span><span class="dl">'</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="dl">"</span><span class="s2">token-refreshed</span><span class="dl">"</span> <span class="o">===</span> <span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">event</span><span class="dl">'</span><span class="p">])</span> <span class="p">{</span>
+      <span class="nx">setToken</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">access_token</span><span class="dl">'</span><span class="p">])</span>
+      <span class="nx">store</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">SET_TOKEN</span><span class="dl">'</span><span class="p">,</span> <span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">access_token</span><span class="dl">'</span><span class="p">])</span>
+    <span class="p">}</span>
+    <span class="c1">// 忽略部分代码</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样就做到了jwt无感刷新。　　</p>
+
+<blockquote>
+  <p>项目测试</p>
+</blockquote>
+
+<h3 id="方案二校验失败后刷新">方案二校验失败后刷新</h3>
+
+<p>验证失效后，Oauth2框架会把异常信息发送到OAuth2AuthenticationEntryPoint类里处理。这时候我们可以在这里做jwt token刷新并跳转。失效后，使用refresh_token获取新的access_token。并将新的access_token设置到response.header然后跳转，前端接收并无感更新access_token。</p>
+
+<p>参考这两篇文章：</p>
+
+<ul>
+  <li>
+    <p><a href="https://www.cnblogs.com/xuchao0506/p/13073913.html">https://www.cnblogs.com/xuchao0506/p/13073913.html</a></p>
+
+    <p>思路：JWT过期使用刷新token请求获得新的JWT和刷新token，刷新token过期就提示用户重新登录</p>
+
+    <p>github: <a href="https://github.com/xuchao6969/springsecurity-oauth2-jwt">https://github.com/xuchao6969/springsecurity-oauth2-jwt</a></p>
+  </li>
+  <li>
+    <p><a href="https://blog.csdn.net/m0_37834471/article/details/83213002">https://blog.csdn.net/m0_37834471/article/details/83213002</a></p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>问题</p>
+</blockquote>
+
+<p>使用第二种方案并且jwt token刷新功能正常使用后，想换一种token方案做兼容。</p>
+
+<p>切换成memory token的时候，发现OAuth2AuthenticationEntryPoint里面拿不到旧的token信息导致刷新失败。</p>
+
+<p>查看源码DefaultTokenServices.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">OAuth2Authentication</span> <span class="nf">loadAuthentication</span><span class="o">(</span><span class="nc">String</span> <span class="n">accessTokenValue</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">AuthenticationException</span><span class="o">,</span>
+<span class="nc">InvalidTokenException</span> <span class="o">{</span>
+  <span class="nc">OAuth2AccessToken</span> <span class="n">accessToken</span> <span class="o">=</span> <span class="n">tokenStore</span><span class="o">.</span><span class="na">readAccessToken</span><span class="o">(</span><span class="n">accessTokenValue</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">accessToken</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidTokenException</span><span class="o">(</span><span class="s">"Invalid access token: "</span> <span class="o">+</span> <span class="n">accessTokenValue</span><span class="o">);</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">accessToken</span><span class="o">.</span><span class="na">isExpired</span><span class="o">())</span> <span class="o">{</span>
+    <span class="c1">// 失效后accessToken即被删除</span>
+    <span class="n">tokenStore</span><span class="o">.</span><span class="na">removeAccessToken</span><span class="o">(</span><span class="n">accessToken</span><span class="o">);</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">InvalidTokenException</span><span class="o">(</span><span class="s">"Access token expired: "</span> <span class="o">+</span> <span class="n">accessTokenValue</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 忽略部分代码</span>
+  <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>看下面截图，可以看到JwtTokenStore的removeAccessToken：它是一个空方法，什么也没做。所以我们在OAuth2AuthenticationEntryPoint依然能拿到旧的token并作处理。</p>
+
+<p><img src="\assets\images\2020\springcloud\jwt-1.png" alt="" /></p>
+
+<h2 id="4memory-token的刷新">4、Memory token的刷新</h2>
+
+<p>memory token刷新策略比较简单，每次请求过来直接给token延期即可。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OauthTokenRefreshExecutor</span> <span class="kd">extends</span> <span class="nc">AbstractTokenRefreshExecutor</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">accessTokenValiditySeconds</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">12</span><span class="o">;</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">shouldRefresh</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 与jwt不同，因为每次请求都需要延长token失效时间，所以这里是token未过期时就需要刷新</span>
+        <span class="k">return</span> <span class="nf">getAccessToken</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">getAccessToken</span><span class="o">().</span><span class="na">isExpired</span><span class="o">();</span>
+    <span class="o">}</span>
+ 
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">refresh</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">seconds</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getAccessToken</span><span class="o">()</span> <span class="k">instanceof</span> <span class="nc">DefaultOAuth2AccessToken</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 获取client中的过期时间, 没有则默认12小时</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">getClientService</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">OAuth2Authentication</span> <span class="n">auth2Authentication</span> <span class="o">=</span> <span class="n">getTokenStore</span><span class="o">().</span><span class="na">readAuthentication</span><span class="o">(</span><span class="n">getAccessToken</span><span class="o">());</span>
+                <span class="nc">String</span> <span class="n">clientId</span> <span class="o">=</span> <span class="n">auth2Authentication</span><span class="o">.</span><span class="na">getOAuth2Request</span><span class="o">().</span><span class="na">getClientId</span><span class="o">();</span>
+                <span class="nc">ClientDetails</span> <span class="n">client</span> <span class="o">=</span> <span class="n">getClientService</span><span class="o">().</span><span class="na">loadClientByClientId</span><span class="o">(</span><span class="n">clientId</span><span class="o">);</span>
+                <span class="n">seconds</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getAccessTokenValiditySeconds</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">seconds</span> <span class="o">=</span> <span class="n">accessTokenValiditySeconds</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">// 只修改token失效时间</span>
+            <span class="o">((</span><span class="nc">DefaultOAuth2AccessToken</span><span class="o">)</span> <span class="n">getAccessToken</span><span class="o">()).</span><span class="na">setExpiration</span><span class="o">(</span><span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">+</span> <span class="o">(</span><span class="n">seconds</span> <span class="o">*</span> <span class="mi">1000</span><span class="n">l</span><span class="o">)));</span>
+        <span class="o">}</span>
+        <span class="c1">// 返回的还是旧的token</span>
+        <span class="k">return</span> <span class="nf">getAccessToken</span><span class="o">().</span><span class="na">getValue</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>然后修改TokenConfig相关bean注册即可。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2020/09/24/jwt-refresh-logout.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

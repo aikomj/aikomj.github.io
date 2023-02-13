@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 工作中Oracle的认识与使用 - 大伟的博客 </title>
+    <meta name="keywords" content="oracle">
+    <meta name="description"
+          content="基本的sql优化策略,insert append原理解析,归档模式，快速插入大量数据的4种方法，DML操作与锁，行锁原理，5个阻塞场景分析">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/mysql/2020/09/11/oracle-all-my-know.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="工作中Oracle的认识与使用">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>工作中Oracle的认识与使用</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/09/11
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>刚毕业出来工作的那几年，还会有公司使用oracle，但是oracle高成本的版权费和硬件维护成本，国内已经比较少公司使用oracle了</p>
+
+<h2 id="1sql优化策略">1、sql优化策略</h2>
+
+<p>要会看执行计划，看io的耗费，cpu的耗费，表的索引扫描还是全表扫描</p>
+
+<blockquote>
+  <p>1、尽量使用SELECT EXISTS 替代SELECT IN</p>
+</blockquote>
+
+<blockquote>
+  <p>2、select in 的两种优化</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/oracle/in-or.png" alt="" /></p>
+
+<blockquote>
+  <p>3、select in 、or、union的互转的性能比较</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">article</span> <span class="k">where</span> <span class="n">article_category</span><span class="o">=</span><span class="mi">2</span> <span class="k">or</span> <span class="n">article_category</span><span class="o">=</span><span class="mi">11</span>
+<span class="c1">-- 执行时间 11.077</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">article</span> <span class="k">where</span> <span class="n">article_category</span> <span class="k">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span>
+<span class="c1">-- 执行时间 11.285</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">article</span> <span class="k">where</span> <span class="n">article_category</span><span class="o">=</span><span class="mi">2</span>
+<span class="k">union</span> <span class="k">all</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">article</span> <span class="k">where</span> <span class="n">article_category</span><span class="o">=</span><span class="mi">11</span>
+<span class="c1">-- 执行时间 0.0264</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/oracle/union.png" alt="" /></p>
+
+<blockquote>
+  <p>4、分页索引的优化，时间倒序</p>
+</blockquote>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">create</span> <span class="k">index</span> <span class="n">IDX_WAREHOUSE_CT</span> <span class="k">on</span> <span class="n">T_WAREHOUSE</span><span class="p">(</span><span class="n">CREATED_DATE</span> <span class="k">DESC</span><span class="p">);</span> 
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="p">(</span>
+    <span class="k">select</span> <span class="n">t1</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="n">ROWNUM</span> <span class="n">rn</span> <span class="k">from</span> <span class="p">(</span>
+        <span class="k">select</span> <span class="n">prod_id</span><span class="p">,</span><span class="n">bar_code</span><span class="p">,</span><span class="n">created_date</span> <span class="k">from</span> <span class="n">warehouse</span> <span class="k">order</span> <span class="k">by</span> <span class="n">created_date</span> <span class="k">desc</span>
+    <span class="p">)</span> <span class="n">t1</span> <span class="k">where</span> <span class="n">rownum</span><span class="o">&lt;=</span><span class="mi">10</span>
+<span class="p">)</span><span class="n">t2</span> <span class="k">where</span> <span class="n">rn</span><span class="o">&gt;</span><span class="mi">0</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>5、INNER JOIN 与WHERE</p>
+</blockquote>
+
+<p>尽量使用WHERE，前者是连接表结果，where是结果集查询，where 遵循最右匹配原则，与mysql的最左匹配原则相反</p>
+
+<p><img src="/assets/images/2020/oracle/inner-joib-where.png" alt="" /></p>
+
+<blockquote>
+  <p>6、where 语句中选择最有效的表顺序,基础表放在最右边</p>
+</blockquote>
+
+<p>2个表的时候，使用数据量小的表作为基础表</p>
+
+<p><img src="/assets/images/2020/oracle/where-base-table.png" alt="" /></p>
+
+<p>3个以上的表连接查询，需要选择交叉表作为基础表，交叉表是指那个被其他表所引用的表</p>
+
+<p><img src="/assets/images/2020/oracle/where-join-table.png" alt="" /></p>
+
+<h2 id="2insert--append原理解析">2、insert  append原理解析</h2>
+
+<h3 id="解析">解析</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>insert /<span class="k">*</span>+ APPEND <span class="k">*</span>/  into test1 <span class="k">select</span> <span class="k">*</span> from dba_objects<span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>append 就是把数据追加到表的末尾，直接路径加载，速度比常规加载方式快是因为从HWM高水位的位置开始插入，会造成空间浪费（表中有空闲的位置，它不会插入数据，从而造成空间浪费）</p>
+  </li>
+  <li>
+    <p>非归档模式下，只需append就能大量减少redo的产生；归档模式下，只有append+nologging才能大量减少redo。</p>
+  </li>
+  <li>
+    <p>insert /*+ append */ 时会对表加锁（排它锁），<strong>会阻塞表上的除了select以外所有DML语句</strong>，这就是所谓的enqueue等待。</p>
+
+    <blockquote>
+      <p>扩展：传统的DML在TM enqueue上使用模式3（row exclusive），其允许其他DML在相同的模式上获得TM enqueue。但是直接路径加载在TM enqueue使用模式6（exclusive），这使其他DML在直接路径加载期间将被阻塞。</p>
+    </blockquote>
+  </li>
+</ul>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span> <span class="k">into</span> <span class="n">tab1</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">tab2</span><span class="p">;</span> 
+<span class="k">commit</span><span class="p">;</span>
+<span class="c1">-- 千万级别的数据插入产生arch归档日志文件会比较快</span>
+</code></pre></div></div>
+
+<h3 id="分清redo与undo">分清redo与undo</h3>
+
+<p><mark>redo</mark>就是重做日志文件(redo log file)，用来重做数据。Oracle维护着两类重做日志文件：在线(online)重做日志文件和归档(archived)重做日志文件。这两类重做日志文件都用于恢复;其主要目的是，万一实例失败或介质失败，它们能够恢复数据。 由于数据库缓冲，对磁盘数据的更新不是实时的，但是对redo日志的更新会在commit之后确切发生。  如果在事务提交之后，磁盘数据更新之前，系统发生故障，比如断电，系统重启之后会将那些已经写入redo，但是没有更新到磁盘的数据进行重做，这样系统就恢复到故障点之前了。  redo日志默认3组，循环写入，第一组(每个组所有成员同时写入同样的信息)满了，切换到第二个，第二个满了切换到第三个，当所有组都写满之后，日志进程再次开始写第一个，后面的数据覆盖前面的数据，即为非归档模式。 鉴于redo如此重要，需要将已写满的日志归档，即复制内容到其他地方，即开启归档日志模式，但是会影响系统性能。</p>
+
+<p><mark>undo</mark>就是回滚数据的信息，保存在undo表空间中，且包含在redo日志中。 当执行DML操作时，旧数据会写入undo中。 事务回滚,未提交时，rollback,把undo中的旧数据重新写回数据段中;已提交时，进行闪回(flashback)操作 ，大多都是基于undo数据实现的。读一致性：用户检索数据时，ORACLE总是使用户只能看到被提交过的数据(当前事务中的其他语句可以看到未提交的数据)，或者特定时间点的数据(select语句时间点)。当某个用户在此查询点之后修改了数据，此查询读到这个数据时，就是通过在undo中读取来实现的。  oracle使用scn来实现读一致性，系统变化号(SCN)是一个数据结构，它定义了一个给定时刻提交的数据库版本，SCN可以被认为是oracle的逻辑时钟，每一次提交数值都要增加。</p>
+
+<h3 id="归档模式与非归档模式">归档模式与非归档模式</h3>
+
+<p>Oracle数据库有联机重做日志，这个日志是记录对数据库所做的修改，比如插入，删除，更新数据等，对这些操作都会记录在联机重做日志里。一般数据库至少要有2个联机重做日志组。当一个联机重做日志组被写满的时候，就会发生日志切换，这时联机重做日志组2成为当前使用的日志，当联机重做日志组2写满的时候，又会发生日志切换，去写联机重做日志组1，就这样反复进行。
+如果数据库处于非归档模式,联机日志在切换时就会丢弃.  而在归档模式下，当发生日志切换的时候，被切换的日志会进行归档。比如，当前在使用联机重做日志1，当1写满的时候，发生日志切换，开始写联机重做日志2，这时联机重做日志1的内容会被拷贝到另外一个指定的目录下。这个目录叫做归档目录，拷贝的文件叫归档重做日志。
+数据库使用归档方式运行时才可以进行灾难性恢复。</p>
+
+<blockquote>
+  <p>区别</p>
+</blockquote>
+
+<ul>
+  <li>非归档模式只能做冷备份,并且恢复时只能做完全备份.最近一次完全备份到系统出错期间的数据不能恢复.</li>
+  <li>归档模式可以做热备份,并且可以做增量备份,可以做部分恢复.</li>
+</ul>
+
+<h2 id="3快速插入大量数据">3、快速插入大量数据</h2>
+
+<p>当需要对一个非常大的表INSERT的时候，会消耗非常多的资源，因为update表的时候，oracle需要生成 redo log和undo  log;此时最好的解决办法是用insert,  并且将表设置为nologging;当把表设为nologging后，并且使用的insert时，速度是最快的，这个时候oracle只会生成最低限度的必须的redo log，而没有一点undo信息。如果有可能将index也删除，重建。</p>
+
+<p><strong>1、alter table nologging;</strong></p>
+
+<p><strong>a、</strong>查询当前数据库的归档状态：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select </span>name,log_mode from v<span class="nv">$database</span><span class="p">;</span> <span class="c"># 默认为 NOARCHIVELOG 非归档</span>
+</code></pre></div></div>
+
+<p><strong>b、</strong>nologging在归档模式下有效，非归档模式nologging不起什么作用</p>
+
+<p><strong>c</strong>、为了提高插入的速度，我们可以对表关闭写log功能。 SQL 如下：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">alter</span> <span class="k">table</span> <span class="k">table_name</span> <span class="n">NOLOGGING</span><span class="p">;</span> 
+<span class="c1">-- 插入/修改,完数据后，再修改表写日志：  </span>
+<span class="k">alter</span> <span class="k">table</span> <span class="k">table_name</span> <span class="n">LOGGING</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>d、</strong>没有写log， 速度会块很多，但是也增加了风险，如果出现问题就不能恢复。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">create</span> <span class="k">table</span> <span class="k">table_name</span> <span class="n">nologging</span> <span class="k">as</span> <span class="p">(</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="p">...);</span>
+</code></pre></div></div>
+
+<p><strong>2、drop掉索引约束之类的，待insert完成后再建索引和约束。;</strong></p>
+
+<p><strong>3、使用直接插入的方式</strong></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span><span class="cm">/*+append+*/</span><span class="k">into</span> <span class="n">tb_name</span> <span class="k">select</span> <span class="n">colnam1</span><span class="p">,</span><span class="n">colname2</span> <span class="k">from</span> <span class="k">table_name</span><span class="p">;</span>    
+</code></pre></div></div>
+
+<p><strong>4、并行 parallel</strong></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span> <span class="k">into</span> <span class="n">tab1</span> <span class="k">select</span> <span class="cm">/*+ parallel */</span> <span class="o">*</span> <span class="k">from</span> <span class="n">tab2</span><span class="p">;</span> 
+<span class="k">commit</span><span class="p">;</span>
+<span class="c1">-- 对于select之后的语句是全表扫描的情况，我们可以加parallel的hint来提高其并发，这里需要注意的是最大并发度受到初始化参数parallel_max_servers的限制，并发的进程可以通过v$px_session查看，或者ps -ef |grep ora_p查看。</span>
+
+<span class="k">alter</span> <span class="k">session</span> <span class="n">enable</span> <span class="n">parallel</span> <span class="n">dml</span><span class="p">;</span> 
+<span class="k">insert</span> <span class="cm">/*+ parallel */</span> <span class="k">into</span> <span class="n">tab1</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">tab2</span><span class="p">;</span> 
+<span class="k">commit</span><span class="p">;</span>
+<span class="c1">-- 与上面的直接插入相反（单线程与多线程）</span>
+</code></pre></div></div>
+
+<h2 id="4dml与锁">4、DML与锁</h2>
+
+<h3 id="delete与truncate的区别">delete与truncate的区别</h3>
+
+<ul>
+  <li>
+    <p>delete会锁定行，truncate会锁定整张表</p>
+  </li>
+  <li>
+    <p>delete不影响表所占用的extent,HWM高水位线保持不变，</p>
+
+    <p>truncate默认会将占用空间会释放到minextents（除非使用reuse storage），truncate会将高水线复位回到最开始。</p>
+  </li>
+</ul>
+
+<h3 id="锁类型">锁类型</h3>
+
+<ul>
+  <li>
+    <p>排他锁，只有一个事务在某个时间点持有某个资源</p>
+  </li>
+  <li>
+    <p>共享锁 ，多个事务同时持有某个资源</p>
+  </li>
+</ul>
+
+<h3 id="行锁原理">行锁原理</h3>
+
+<p>行级锁的信息是置于数据块block中的，如果要修改某一条记录的值，就会访问相应的block块，并且分配一个ITL，然后通过rowid访问rowpiece header 行头信息，如果第二个字节lock byte 为0，则将其改为分配的ITL slot number 槽号码，lock  byte只占用1个字节，最大值为255，这也是为什么maxtrans最大为255。另外一个事务如果也想要修改数据，就会发现lock  byte不为0，如果第一个事务还没有结束，则第二个事务进入enqueue（入队列相对就是dequeue出队列）等待，也就是transaction enqueue。</p>
+
+<p>当一行被修改时，oracle通过回滚段undo空间提供数据的一致性读。一个DML操作，会对表和行加锁，也就是v$lock中的TM锁（表锁）和TX锁（行锁）,</p>
+
+<ul>
+  <li>TM锁，也就是 row-X (SX)锁，保证在事务结束之前，表的结构不会被更改。多个事务可以同时持有相同表的sx锁。</li>
+  <li>TX锁，行排他锁。</li>
+</ul>
+
+<p>v$lock.LMODE字段中的数字对应的锁类型</p>
+
+<p>0 -none</p>
+
+<p>1 -null (NULL)</p>
+
+<p>2 -row-S (SS)</p>
+
+<p>3 -row-X (SX)</p>
+
+<p>4 -share (S)</p>
+
+<p>5 -S/Row-X (SSX)</p>
+
+<p>6 -exclusive (X)</p>
+
+<h2 id="5阻塞">5、阻塞</h2>
+
+<h3 id="insert阻塞">insert阻塞</h3>
+
+<blockquote>
+  <p>普通 insert</p>
+</blockquote>
+
+<p>insert操作会对表加3级rx锁，和行排他锁，但是一般不会发生阻塞，因为读一致性的关系，在没提交之前只有当前session才可以操作新插入的行，对于其他事务来说 新增的记录是不可见的。</p>
+
+<blockquote>
+  <p>append insert 直接路径加载</p>
+</blockquote>
+
+<p>通过v$lock 可用看到它会给表和行都会加6级的排他锁，从而阻塞该表除了select外的所有DML操作，直到insert commit。例子：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- append插入</span>
+<span class="k">insert</span> <span class="cm">/*+ append_values */</span> <span class="k">into</span> <span class="n">tun2_tab</span> <span class="k">values</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span>
+<span class="c1">-- 查看锁情况</span>
+<span class="k">select</span> <span class="n">sid</span> <span class="p">,</span> <span class="k">type</span> <span class="p">,</span> <span class="n">lmode</span> <span class="p">,</span> <span class="n">request</span> <span class="p">,</span> <span class="n">block</span> <span class="k">from</span> <span class="n">v</span><span class="err">$</span><span class="k">lock</span> <span class="k">where</span> <span class="n">sid</span> <span class="o">=</span> <span class="p">(</span><span class="k">select</span> <span class="n">sidfrom</span> <span class="n">v</span><span class="err">$</span><span class="n">mystat</span> <span class="k">where</span> <span class="n">rownum</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">)</span> 
+<span class="n">SID</span>  <span class="k">TYPE</span>  <span class="n">LMODE</span>   <span class="n">REQUEST</span>    <span class="n">BLOCK</span>
+<span class="c1">-------------- ---------- ---------- ----------</span>
+  <span class="mi">22</span> <span class="n">AE</span>            <span class="mi">4</span>          <span class="mi">0</span>          <span class="mi">0</span>
+  <span class="mi">22</span> <span class="n">TM</span>            <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">0</span>
+  <span class="mi">22</span> <span class="n">TX</span>            <span class="mi">6</span>          <span class="mi">0</span>         <span class="mi">0</span>
+
+<span class="c1">-- 另一个session会话 </span>
+<span class="k">update</span> <span class="n">tun2_tab</span> <span class="k">set</span> <span class="n">id</span><span class="o">=</span><span class="mi">3</span> <span class="p">;</span>
+<span class="n">waiting</span><span class="p">...</span>
+<span class="c1">-- 查看锁情况</span>
+<span class="k">select</span> <span class="n">sid</span> <span class="p">,</span> <span class="k">type</span> <span class="p">,</span> <span class="n">id1</span> <span class="p">,</span> <span class="n">lmode</span> <span class="p">,</span> <span class="n">request</span> <span class="p">,</span> <span class="n">block</span>
+<span class="k">from</span> <span class="n">v</span><span class="err">$</span><span class="k">lock</span> <span class="n">l</span>
+<span class="k">where</span> <span class="n">sid</span> <span class="k">in</span> <span class="p">(</span><span class="k">select</span> <span class="n">session_id</span> <span class="k">from</span> <span class="n">v</span><span class="err">$</span><span class="n">locked_object</span><span class="p">)</span>
+<span class="k">and</span> <span class="k">type</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'TM'</span><span class="p">,</span> <span class="s1">'TX'</span><span class="p">)</span>
+<span class="k">order</span> <span class="k">by</span> <span class="mi">1</span> <span class="p">;</span>
+
+<span class="n">SID</span>   <span class="k">TYPE</span>        <span class="n">ID1</span>     <span class="n">LMODE</span>    <span class="n">REQUEST</span>      <span class="n">BLOCK</span>
+<span class="c1">-------------- ---------- ---------- ---------- ----------</span>
+<span class="mi">22</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">1</span>        <span class="c1">--session1 包含了表6级锁，它正在阻塞其他的事务</span>
+<span class="mi">22</span> <span class="n">TX</span>       <span class="mi">524296</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">0</span>
+<span class="mi">24</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">0</span>          <span class="mi">3</span>          <span class="mi">0</span>        <span class="c1">--session2 它正在请求表的3级锁。</span>
+</code></pre></div></div>
+
+<h3 id="主键和唯一键引发的阻塞">主键和唯一键引发的阻塞</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 添加主键</span>
+<span class="k">alter</span> <span class="k">table</span> <span class="n">tun2_tab</span> <span class="k">add</span> <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">-- session1 session_id=22: 插入数据</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">tun2_tab</span> <span class="k">values</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span>
+<span class="mi">1</span> <span class="n">rowcreated</span>
+ 
+<span class="c1">-- session1 session_id=24: 插入数据, 同一个主键值会发生阻塞，不同主键值不会</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">tun2_tab</span> <span class="k">values</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">waiting</span><span class="p">...</span>
+
+<span class="c1">-- 查看锁情况</span>
+<span class="k">select</span> <span class="n">sid</span> <span class="p">,</span> <span class="k">type</span> <span class="p">,</span> <span class="n">id1</span> <span class="p">,</span> <span class="n">lmode</span> <span class="p">,</span> <span class="n">request</span> <span class="p">,</span> <span class="n">block</span>
+<span class="k">from</span> <span class="n">v</span><span class="err">$</span><span class="k">lock</span> <span class="n">l</span>
+<span class="k">where</span> <span class="n">sid</span> <span class="k">in</span> <span class="p">(</span><span class="k">select</span> <span class="n">session_id</span> <span class="k">from</span> <span class="n">v</span><span class="err">$</span><span class="n">locked_object</span><span class="p">)</span>
+<span class="k">and</span> <span class="k">type</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'TM'</span><span class="p">,</span> <span class="s1">'TX'</span><span class="p">)</span>
+<span class="k">order</span> <span class="k">by</span> <span class="mi">1</span> <span class="p">;</span>
+
+<span class="n">SID</span> <span class="k">TYPE</span>        <span class="n">ID1</span>     <span class="n">LMODE</span>    <span class="n">REQUEST</span>      <span class="n">BLOCK</span>
+  <span class="mi">22</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+  <span class="mi">22</span> <span class="n">TX</span>       <span class="mi">196635</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">1</span>        
+  <span class="mi">24</span> <span class="n">TX</span>        <span class="mi">65548</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">0</span>
+  <span class="mi">24</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+  <span class="mi">24</span> <span class="n">TX</span>       <span class="mi">196635</span>          <span class="mi">0</span>          <span class="mi">4</span>          <span class="mi">0</span>
+
+<span class="k">select</span> <span class="n">sid</span><span class="p">,</span><span class="n">seq</span><span class="o">#</span><span class="p">,</span><span class="n">event</span> <span class="k">from</span> <span class="n">v</span><span class="err">$</span><span class="n">session_wait</span> <span class="k">where</span> <span class="n">sid</span><span class="o">=</span> <span class="mi">24</span> <span class="p">;</span>
+<span class="n">SID</span>  <span class="n">SEQ</span><span class="o">#</span> <span class="n">EVENT</span>
+<span class="mi">24</span>   <span class="mi">104</span> <span class="n">enq</span><span class="p">:</span> <span class="n">TX</span> <span class="o">-</span> <span class="k">row</span> <span class="k">lock</span> <span class="n">contention</span>
+
+<span class="c1">-- 因为在拥有primary key列上插入了相同的值，第二个session除了持有自己本事务的6级排他锁之外，还在请求一个4级行的共享锁。这里发生了阻塞。如果第一个session 提交 。第二个session会报错。</span>
+</code></pre></div></div>
+
+<h3 id="updatedelete阻塞">update/delete阻塞</h3>
+
+<p>对表加3级的共享锁TM，对修改/删除的行加6级的排他锁TX，delete\update相同的行，都会发生阻塞</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- session1 session_id=22</span>
+<span class="k">delete</span> <span class="k">from</span> <span class="n">tun2_tab</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span><span class="mi">2</span> <span class="p">;</span>
+<span class="mi">1</span> <span class="n">rowdeleted</span>
+
+<span class="c1">-- session2 session_id=18,</span>
+<span class="k">update</span> <span class="n">tun2_tab</span> <span class="k">set</span> <span class="n">name</span> <span class="o">=</span><span class="s1">'dexter'</span> <span class="k">where</span> <span class="n">id</span><span class="o">&gt;</span><span class="mi">1</span> <span class="p">;</span>
+<span class="n">waiting</span><span class="p">...</span>
+
+<span class="c1">-- session3 session_id=9</span>
+<span class="k">delete</span> <span class="n">tun2_tab</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">3</span> <span class="p">;</span> 
+<span class="mi">1</span> <span class="n">rowdeleted</span>
+
+<span class="c1">-- 查看锁情况</span>
+<span class="n">SID</span> <span class="k">TYPE</span>    <span class="n">ID1</span>     <span class="n">LMODE</span>    <span class="n">REQUEST</span>      <span class="n">BLOCK</span>
+<span class="mi">9</span> <span class="n">TX</span>       <span class="mi">393228</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">0</span>
+<span class="mi">9</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>         <span class="mi">0</span>          <span class="mi">0</span>
+<span class="mi">18</span> <span class="n">TX</span>       <span class="mi">131089</span>          <span class="mi">0</span>          <span class="mi">6</span>          <span class="mi">0</span>
+<span class="mi">18</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+<span class="mi">22</span> <span class="n">TX</span>       <span class="mi">131089</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">1</span>
+<span class="mi">22</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>         <span class="mi">0</span>
+<span class="c1">-- 发现 session2在请求6级排他锁，它还没来得及对任何记录加锁，就已经进入了等待中。所以session3能成功执行，并对id=3的行加了排他锁。即使session1提交了，session2会仍然等待session3的提交</span>
+</code></pre></div></div>
+
+<p>稍微修改以下删除的id的顺序，就</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- session1session_id=144：</span>
+<span class="k">delete</span> <span class="k">from</span> <span class="n">tun2_tab</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span><span class="mi">3</span> <span class="p">;</span>
+<span class="mi">1</span> <span class="n">rowdeleted</span><span class="p">.</span>
+
+<span class="c1">-- session2session_id=18：</span>
+<span class="k">update</span> <span class="n">tun2_tab</span> <span class="k">set</span> <span class="n">name</span> <span class="o">=</span><span class="s1">'dexter'</span> <span class="n">whereid</span><span class="o">&gt;</span><span class="mi">1</span> <span class="p">;</span>
+<span class="n">waiting</span><span class="p">..</span>
+
+<span class="c1">-- session3session_id=9：</span>
+<span class="k">delete</span> <span class="n">tun2_tab</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">;</span>
+<span class="n">waiting</span><span class="p">..</span>
+
+<span class="c1">-- 查看锁的情况</span>
+<span class="n">SID</span> <span class="k">TYPE</span>        <span class="n">ID1</span>     <span class="n">LMODE</span>    <span class="n">REQUEST</span>      <span class="n">BLOCK</span>
+<span class="mi">9</span> <span class="n">TX</span>       <span class="mi">196635</span>          <span class="mi">0</span>          <span class="mi">6</span>          <span class="mi">0</span>
+<span class="mi">9</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+<span class="mi">18</span> <span class="n">TX</span>       <span class="mi">196635</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">1</span>
+<span class="mi">18</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>         <span class="mi">0</span>
+<span class="mi">18</span> <span class="n">TX</span>       <span class="mi">458767</span>          <span class="mi">0</span>          <span class="mi">6</span>          <span class="mi">0</span>
+<span class="mi">144</span> <span class="n">TM</span>        <span class="mi">82618</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+<span class="mi">144</span> <span class="n">TX</span>       <span class="mi">458767</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">1</span>
+<span class="c1">-- 可以发现session2 先获取了ID=2的行锁，然后等待ID=3的行锁，所以造成了session3的阻塞等待</span>
+</code></pre></div></div>
+
+<h3 id="itl引起的阻塞">ITL引起的阻塞</h3>
+
+<p>当block中没有多余的空间来添加ITL entry的时候，就会发生阻塞。通常情况下不会发生这种情况。</p>
+
+<p>解决办法：设置表的inittrans 参数为合理值。</p>
+
+<h3 id="bitmap-index引起的阻塞">bitmap index引起的阻塞</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- 创建表</span>
+<span class="k">create</span> <span class="k">table</span> <span class="n">tb_bitmap_test</span> <span class="p">(</span><span class="n">id</span> <span class="n">number</span> <span class="p">,</span> <span class="n">gender</span> <span class="n">varchar2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> 
+
+<span class="c1">-- 插入数据</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">tb_bitmap_test</span> <span class="k">select</span> <span class="k">level</span> <span class="p">,</span> <span class="s1">'F'</span><span class="k">from</span> <span class="n">dual</span> <span class="k">connect</span> <span class="k">by</span> <span class="k">level</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="mi">3</span> <span class="n">rowscreated</span><span class="p">.</span>
+
+<span class="k">insert</span> <span class="k">into</span> <span class="n">tb_bitmap_test</span> <span class="k">select</span> <span class="k">level</span> <span class="p">,</span> <span class="s1">'M'</span><span class="k">from</span> <span class="n">dual</span> <span class="k">connect</span> <span class="k">by</span> <span class="k">level</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="mi">2</span> <span class="n">rowscreated</span><span class="p">.</span>
+
+<span class="c1">-- 创建位图index</span>
+<span class="k">create</span> <span class="n">bitmap</span> <span class="k">index</span> <span class="n">tb_bitmap_test_btidx1</span> <span class="k">on</span> <span class="n">tb_bitmap_test</span><span class="p">(</span><span class="n">gender</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">-- session1 session_id=144:</span>
+<span class="k">update</span> <span class="n">tb_bitmap_test</span> <span class="k">set</span> <span class="n">gender</span><span class="o">=</span><span class="s1">'M'</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span> <span class="k">and</span> <span class="n">gender</span><span class="o">=</span><span class="s1">'F'</span> <span class="p">;</span>
+<span class="mi">1</span> <span class="n">rowupdated</span><span class="p">.</span>
+<span class="c1">-- 因为有了Bitmap索引，所以这个操作会索引表中所有gender=’M’和‘F’的记录，并且会阻塞相关的DML操作-- session2 session_id=18:</span>
+<span class="k">delete</span> <span class="n">tb_bitmap_test</span> <span class="k">where</span> <span class="n">gender</span><span class="o">=</span><span class="s1">'M'</span> <span class="k">and</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="n">waiting</span><span class="p">...</span>
+<span class="c1">-- 发生阻塞</span>
+
+<span class="c1">-- session3 session_id=9 :</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">tb_bitmap_test</span> <span class="k">values</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">'S'</span><span class="p">)</span> <span class="p">;</span>
+<span class="mi">1</span> <span class="n">rowcreated</span><span class="p">.</span>
+<span class="c1">-- 只要gender的值不等于M或者F即可顺利执行</span>
+<span class="c1">-- 查看锁的情况</span>
+<span class="n">SID</span> <span class="k">TYPE</span>        <span class="n">ID1</span>     <span class="n">LMODE</span>    <span class="n">REQUEST</span>      <span class="n">BLOCK</span>
+   <span class="mi">9</span> <span class="n">TM</span>        <span class="mi">82847</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+   <span class="mi">9</span> <span class="n">TX</span>       <span class="mi">196626</span>          <span class="mi">6</span>          <span class="mi">0</span>         <span class="mi">0</span>
+   <span class="mi">18</span> <span class="n">TX</span>       <span class="mi">327710</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">0</span>
+   <span class="mi">18</span> <span class="n">TM</span>        <span class="mi">82847</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+   <span class="mi">18</span> <span class="n">TX</span>       <span class="mi">589854</span>          <span class="mi">0</span>          <span class="mi">4</span>          <span class="mi">0</span>
+ <span class="mi">144</span> <span class="n">TX</span>       <span class="mi">589854</span>          <span class="mi">6</span>          <span class="mi">0</span>          <span class="mi">1</span>
+ <span class="mi">144</span> <span class="n">TM</span>        <span class="mi">82847</span>          <span class="mi">3</span>          <span class="mi">0</span>          <span class="mi">0</span>
+ 
+<span class="c1">-- 发现不管gender是M 还是F，只要是涉及到这两个值的dml操作都会进入等待，因为session1  锁住了整个bitmap segment，</span>
+<span class="c1">-- 但是只要gender的值不是M或者F就可以顺利执行，所以session3 没有被阻塞。</span>
+</code></pre></div></div>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://blog.csdn.net/xiaobluesky/article/details/50494101">https://blog.csdn.net/xiaobluesky/article/details/50494101</a></p>
+
+<p><a href="https://www.cnblogs.com/dongchao3312/p/12843870.html">https://www.cnblogs.com/dongchao3312/p/12843870.html</a></p>
+
+<p><a href="https://www.cnblogs.com/jxldjsn/p/10815944.html">https://www.cnblogs.com/jxldjsn/p/10815944.html</a></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/mysql/2020/09/11/oracle-all-my-know.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

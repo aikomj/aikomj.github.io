@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> RocketMq消息队列应用实战-1 - 大伟的博客 </title>
+    <meta name="keywords" content="rocketmq">
+    <meta name="description"
+          content="rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/mq/2021/03/24/rocketmq-stater-001.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="RocketMq消息队列应用实战-1">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>RocketMq消息队列应用实战-1</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/03/24
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1rocketmq的架构原理">1、RocketMQ的架构原理</h2>
+
+<p>架构图如下：</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-arch.jpg" alt="" /></p>
+
+<p><img src="../../..\assets\images\2021\mq\rocketmq-arch.jpg" alt="" /></p>
+
+<p>可以看到消费者都是拉的方式从Broker获取消息来消费的。</p>
+
+<h3 id="概念">概念</h3>
+
+<p>看上面的架构图，Broker信息会上报至NameServer,Consumer会从NameServer中拉取Broker和Topic的信息。</p>
+
+<ul>
+  <li>Producer：消息生产者，向Broker发送消息的客户端</li>
+  <li>Consumer：消息消费者，从Broker读取消息的客户端</li>
+  <li>Broker：消息中间的处理节点，这里和kafka不同，kafka的Broker没有主从的概念，都可以写入请求以及备份其他节点数据，RocketMQ只有主Broker节点才能写，一般也通过主节点读，当主节点有故障或者一些其他特殊情况才会使用从节点读，有点类似- 于mysql的主从架构。</li>
+  <li><strong>Topic：消息主题，一级消息类型</strong>，生产者向其发送消息, 消费者读取其消息。</li>
+  <li>Group：分为ProducerGroup,ConsumerGroup,代表某一类的生产者和消费者，一般来说同一个服务可以作为Group,同一个Group一般来说发送和消费的消息都是一样的。</li>
+  <li>Tag：Kafka中没有这个概念，<strong>Tag是属于二级消息类型</strong>，一般来说业务有关联的可以使用同一个Tag,比如订单消息队列，使用Topic_Order,Tag可以分为Tag_食品订单,Tag_服装订单等等。</li>
+  <li>Queue: 在<strong>kafka中叫Partition</strong>,每个Queue内部是有序的，在RocketMQ中分为读和写两种队列，一般来说读写队列数量一致，如果不一致就会出现很多问题。</li>
+  <li>NameServer：Kafka中使用的是ZooKeeper保存Broker的地址信息，以及Broker的Leader的选举，在RocketMQ中并没有采用选举Broker的策略，所以采用了无状态的NameServer来存储，由于NameServer是无状态的，集群节点之间并不会通信，所以上传数据的时候都需要向所有节点进行发送。</li>
+</ul>
+
+<h3 id="topic与queue">Topic与Queue</h3>
+
+<blockquote>
+  <p>topic分片</p>
+</blockquote>
+
+<p>topic可以分为多个queue，相当于kafka划分多个partition。</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-topic-queue.jpg" alt="" /></p>
+
+<blockquote>
+  <p>读写queue</p>
+</blockquote>
+
+<p>在RocketMQ中Queue被分为读和写两种，并且要配置读写队列数量一致，每个队列都有一个有序ID</p>
+
+<ul>
+  <li>当写队列数量大于读队列数量，那么大于读队列这部分ID的写队列的数据会无法消费，因为不会将其分配给消费者。</li>
+  <li>当写队列数量小于读队列数量，那么多的读队列就不会有消息被投递进来。</li>
+</ul>
+
+<blockquote>
+  <p>消费者类型</p>
+</blockquote>
+
+<p>RocketMQ提供两种类型，都是客户端主动去拉取消息的，区别如下</p>
+
+<ul>
+  <li>MQPullConsumer：每次拉取消息需要传入拉取消息的offset和每次拉取多少消息量，具体拉取哪里的消息，拉取多少是由客户端控制。</li>
+  <li>MQPushConsumer：同样也是客户端主动拉取消息，但是消息进度是由服务端保存，Consumer会定时上报自己消费到哪里，所以Consumer下次消费的时候是可以找到上次消费的点，一般来说使用这种类型我们不需要关心offset和拉取多少数据，直接使用即可。</li>
+</ul>
+
+<blockquote>
+  <p>集群消费和广播消费</p>
+</blockquote>
+
+<p>在RocketMQ针对不同的场景，提供了<strong>集群消费</strong>与<strong>广播消费</strong>这两种模式，都是基于pull拉取的消费模型，由Consumer从broker拉取消息消费。</p>
+
+<ul>
+  <li>
+    <p><strong>集群消费</strong>：一个消费组内的所有消费者共同消费一个主题中的队列，<mark>消费组内的每个消费者只消费一个topic的部分队列</mark>，从消费组的维度，多个消费者最终能消费一个topic的全部消息。在RocketMQ中，队列负载：以消费组为维度<strong>，</strong>一个消费者能分配多个队列，但一个队列只会分配给一个消费者。故一个topic的队列数量直接决定了其支持的消费者的最大数，如果topic的队列数量小于消费者的数量，那部分消费者将无法消费消息，这很正常，rocketmq 生产环境都是集群部署，即多个broker，每个broker都有topic的部分队列，这也是分片的思想，消息就存储在队列。</p>
+
+    <p><img src="\assets\images\2021\mq\rockermq-consumre-group.jpg" alt="" /></p>
+
+    <p><img src="\assets\images\2021\mq\rockermq-consumre-group-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p><strong>广播模式</strong>：一个消费组内的每一个消费者都会消费topic中的所有消息，即topic 中的所有队列都会分配给消费组内的每一个消费者，其主要使用场景：<strong>刷新本地缓存</strong></p>
+
+    <p><img src="\assets\images\2021\mq\rocketmq-consumer-global.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<h3 id="网络模型">网络模型</h3>
+
+<p>在Kafka中使用的原生的socket实现网络通信，而RocketMQ使用的是netty网络框架，现在越来越多的中间件都不会直接选择原生的socket，而是使用的Netty框架，因为：</p>
+
+<ul>
+  <li>netty API 使用简单，</li>
+  <li>性能高</li>
+  <li>稳定</li>
+</ul>
+
+<p>网络框架是一方面，想要保证网络通信的高效，网络模型也很重要，常见的有</p>
+
+<ul>
+  <li>
+    <p>1+N : 1个Acceptor线程，N个IO线程</p>
+  </li>
+  <li>
+    <p>1+N+M: 1个acceptor线程，N个IO线程，M个worker线程</p>
+  </li>
+  <li>
+    <p>1+N1+N2+M: RocketMQ使用的是该模型</p>
+
+    <p><img src="\assets\images\2021\mq\rocketmq-nio-model.jpg" alt="" /></p>
+
+    <p>1个acceptor线程，N1个IO线程，N2个线程用来做Shake-hand,SSL验证,编解码;M个线程用来做业务处理。这样的好处将编解码，和SSL验证等一些可能耗时的操作放在了一个单独的线程池，不会占据我们业务线程和IO线程</p>
+  </li>
+</ul>
+
+<h3 id="与kafka比较吞吐量">与Kafka比较吞吐量</h3>
+
+<p>RocketMQ和Kafka的存储核心设计有很大的不同，所以其在写入性能方面也有很大的差别，这是16年阿里中间件团队对RocketMQ和Kafka不同数量Topic下做的性能测试:</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-compare-kafka-1.jpg" alt="" /></p>
+
+<p>从图上可以看出：</p>
+
+<ul>
+  <li>Kafka在Topic数量由64增长到256时，吞吐量下降了98.37%。</li>
+  <li>RocketMQ在Topic数量由64增长到256时，吞吐量只下降了16%</li>
+</ul>
+
+<p>1、为什么kafka的吞吐量会那么低？</p>
+
+<p>因为kafka一个topic下面的所有消息都是以partition的方式分布式的存储在多个节点上。同时在kafka的机器上，每个Partition其实都会对应一个日志目录，在目录下面会对应多个日志分段。所以如果Topic很多的时候Kafka虽然写文件是顺序写，但<mark>实际上文件过多，会造成磁盘IO竞争非常激烈</mark></p>
+
+<p>2、RocketMQ为什么在多Topic的情况下，依然还能很好的保持较多的吞吐量呢?</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-file.jpg" alt="" /></p>
+
+<p>原因在于RocketMQ关键的3个目录：</p>
+
+<ul>
+  <li>commitlog目录：消息主体以及元数据的存储主体，存储Producer端写入的消息主体内容,消息内容不是定长的。单个文件大小默认1G ，文件名长度为20位，左边补零，剩余为起始偏移量，比如00000000000000000000代表了第一个文件，起始偏移量为0，文件大小为1G=1073741824；当第一个文件写满了，第二个文件为00000000001073741824，起始偏移量为1073741824，以此类推。消息主要是顺序写入日志文件，当文件满了，写入下一个文件；</li>
+  <li>config：保存一些配置信息，包括Group，Topic以及Consumer消费偏移量offset。</li>
+  <li>consumequeue目录：索引文件，提高消息消费的性能，RocketMQ是基于主题topic的订阅模式，消息消费是针对topic进行的，如果根据topic遍历commitlog文件去查找待消费消息是非常低效的，consumequeue保存了指定topic下的消息在commitlog中的起始物理偏移量offset、消息大小size、消息tag的HashCode值。跟表建立索引加快查询一样的道理，Consumer根据consumequeue的索引文件信息可以快速查找到指定topic在commlitlog下的待消费消息。consumequeue目录是topic/queue/file三层目录结构，具体存储路径为：HOME storeindex${fileName}，文件名fileName是以创建时的时间戳命名的，固定的单个索引文件大小约为400M，可以保存 2000W个索引。索引文件的底层存储设计是HashMap结构，所以也叫hash索引</li>
+</ul>
+
+<p><strong>总结</strong></p>
+
+<ol>
+  <li>
+    <p>RocketMQ的Topic和队列是什么样的，和Kafka的分区有什么不同？</p>
+
+    <p>topic上的消息hash到多个有序对列上，kafka的topic分片到不同分区上，每个分区会分为Leader和Follower分区，follower分区只是做备份使用，体现HA。</p>
+  </li>
+  <li>
+    <p>RocketMQ网络模型是什么样的，和Kafka对比如何？</p>
+
+    <p>netty网络模型，kafka使用socket进行网络通信</p>
+  </li>
+  <li>
+    <p>RocketMQ消息存储模型是什么样的，如何保证高可靠的存储，和Kafka对比如何？</p>
+  </li>
+</ol>
+
+<h2 id="2rocketmq的安装部署">2、RocketMQ的安装部署</h2>
+
+<p>生产都安装到linux上，并做集群</p>
+
+<h3 id="查看消息堆积">查看消息堆积</h3>
+
+<p>点击<code class="highlighter-rouge">主题(Topic)</code>，找到我们发消息时的Topic，然后点击<code class="highlighter-rouge">CONSUMER管理</code>选项</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-message-1.jpg" alt="" /></p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-message-2.jpg" alt="" /></p>
+
+<p>可以看到topic的消息被分片了16个队列，<code class="highlighter-rouge">差值</code>就是每个队列的堆积消息，<code class="highlighter-rouge">差值之和</code>就是topic对于当前订阅组未消费的堆积消息</p>
+
+<h3 id="查看消息是否已消费">查看消息是否已消费</h3>
+
+<p>选择topic，搜索消息，选择一条，点击<code class="highlighter-rouge">MESSAGE DETAIL</code>,往下拉，通过trackType可以看出是否被消费：</p>
+
+<ul>
+  <li>NOT_ONLINE 代表该Consumer没有运行</li>
+  <li>CONSUMED 代表该消息已经被消费</li>
+  <li>NOT_CONSUME_YET 还没被消费</li>
+  <li>UNKNOW_EXCEPTION 报错</li>
+  <li>CONSUMED_BUT_FILTERED 消费了，但是被过滤了，一般是被tag过滤了</li>
+</ul>
+
+<p>消息在broker保存默认最多3天，超过3天未消费的消息会被删除，当然这个消息保存时间是可以调整的</p>
+
+<p>参考：<a href="https://help.aliyun.com/knowledge_detail/172349.html">https://help.aliyun.com/knowledge_detail/172349.html</a></p>
+
+<h2 id="3rocketmq的特点和优势">3、RocketMQ的特点和优势</h2>
+
+<h3 id="削峰填谷">削峰填谷</h3>
+
+<p>削峰填谷（主要解决诸如秒杀、抢红包、企业开门红等大型活动时皆会带来较高的流量脉冲，或因没做相应的保护而导致系统超负荷甚至崩溃，或因限制太过导致请求大量失败而影响用户体验，海量消息堆积能力强）</p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-feature.jpg" alt="" /></p>
+
+<h3 id="异步解耦">异步解耦</h3>
+
+<p>异步解耦（高可用松耦合架构设计，对高依赖的项目之间进行解耦，当下游系统出现宕机，不会影响上游系统的正常运行，或者雪崩）</p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-feature-2.jpg" alt="" /></p>
+
+<h3 id="顺序消息">顺序消息</h3>
+
+<p>顺序消息（顺序消息即保证消息的先进先出，比如证券交易过程时间优先原则，交易系统中的订单创建、支付、退款等流程，航班中的旅客登机消息处理等）</p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-feature-3.jpg" alt="" /></p>
+
+<p>提供有序消息，官方例子：<a href="https://rocketmq.apache.org/docs/order-example/">https://rocketmq.apache.org/docs/order-example/</a></p>
+
+<p>发送方使用FIFO顺序提供有序消息</p>
+
+<p><strong>发送消息示例代码</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderedProducer</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="c1">//Instantiate with a producer group name.</span>
+        <span class="nc">MQProducer</span> <span class="n">producer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultMQProducer</span><span class="o">(</span><span class="s">"example_group_name"</span><span class="o">);</span>
+        <span class="c1">//Launch the instance.</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">tags</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">[]</span> <span class="o">{</span><span class="s">"TagA"</span><span class="o">,</span> <span class="s">"TagB"</span><span class="o">,</span> <span class="s">"TagC"</span><span class="o">,</span> <span class="s">"TagD"</span><span class="o">,</span> <span class="s">"TagE"</span><span class="o">};</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="kt">int</span> <span class="n">orderId</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">10</span><span class="o">;</span>
+            <span class="c1">//Create a message instance, specifying topic, tag and message body.</span>
+            <span class="nc">Message</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Message</span><span class="o">(</span><span class="s">"TopicTest"</span><span class="o">,</span> <span class="n">tags</span><span class="o">[</span><span class="n">i</span> <span class="o">%</span> <span class="n">tags</span><span class="o">.</span><span class="na">length</span><span class="o">],</span> <span class="s">"KEY"</span> <span class="o">+</span> <span class="n">i</span><span class="o">,</span>
+                    <span class="o">(</span><span class="s">"Hello RocketMQ "</span> <span class="o">+</span> <span class="n">i</span><span class="o">).</span><span class="na">getBytes</span><span class="o">(</span><span class="nc">RemotingHelper</span><span class="o">.</span><span class="na">DEFAULT_CHARSET</span><span class="o">));</span>
+            <span class="nc">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="n">producer</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="k">new</span> <span class="nc">MessageQueueSelector</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="nc">MessageQueue</span> <span class="nf">select</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqs</span><span class="o">,</span> <span class="nc">Message</span> <span class="n">msg</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">Integer</span> <span class="n">id</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Integer</span><span class="o">)</span> <span class="n">arg</span><span class="o">;</span>
+                <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">id</span> <span class="o">%</span> <span class="n">mqs</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+                <span class="k">return</span> <span class="n">mqs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="o">},</span> <span class="n">orderId</span><span class="o">);</span> <span class="c1">// orderId就是arg，根据orderId取模得到存储的具体队列，实现同一个订单id的消息都放到同一队列里</span>
+
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%s%n"</span><span class="o">,</span> <span class="n">sendResult</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c1">//server shutdown</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>RocketMQTemplate发送顺序消息的写法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">sendOneWayOrderly</span><span class="o">(</span><span class="s">"settlement-test:test"</span><span class="o">,</span><span class="n">jmap</span><span class="o">,</span><span class="n">jmap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"orderId"</span><span class="o">).</span><span class="na">toString</span><span class="o">());</span>
+</code></pre></div></div>
+
+<p>进入RocketMQTemplate的源码，查看该方法</p>
+
+<p><img src="\assets\images\2022\springcloud\rocketmqtemplate.png" alt="" /></p>
+
+<p>方法里调用默认生产者<code class="highlighter-rouge">this.producer</code>发送消息，参数<code class="highlighter-rouge">this.messageQueueSelector</code>队列选择器是<code class="highlighter-rouge">SelectMessageQueueByHash</code></p>
+
+<p><img src="\assets\images\2022\springcloud\rocketmqtemplate-2.png" alt="" /></p>
+
+<p>进入方法<code class="highlighter-rouge">this.producer.sendOneWay</code></p>
+
+<p><img src="\assets\images\2022\springcloud\rocketmqtemplate-3.png" alt="" /></p>
+
+<p>进入到方法<code class="highlighter-rouge">DefaultMQProducerImpl.sendSelectImpl</code></p>
+
+<p><img src="\assets\images\2022\springcloud\rocketmqtemplate-4.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">selector.select(messageQueueList,userMessage,arg)</code>就是<code class="highlighter-rouge">SelectMessageQueueByHash</code>的select</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SelectMessageQueueByHash</span> <span class="kd">implements</span> <span class="nc">MessageQueueSelector</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">SelectMessageQueueByHash</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">MessageQueue</span> <span class="nf">select</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqs</span><span class="o">,</span> <span class="nc">Message</span> <span class="n">msg</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">arg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="na">hashCode</span><span class="o">()</span> <span class="o">%</span> <span class="n">mqs</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="o">(</span><span class="nc">MessageQueue</span><span class="o">)</span><span class="n">mqs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>订阅消息示例代码</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderedConsumer</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">DefaultMQPushConsumer</span> <span class="n">consumer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultMQPushConsumer</span><span class="o">(</span><span class="s">"example_group_name"</span><span class="o">);</span>
+
+        <span class="n">consumer</span><span class="o">.</span><span class="na">setConsumeFromWhere</span><span class="o">(</span><span class="nc">ConsumeFromWhere</span><span class="o">.</span><span class="na">CONSUME_FROM_FIRST_OFFSET</span><span class="o">);</span>
+
+        <span class="n">consumer</span><span class="o">.</span><span class="na">subscribe</span><span class="o">(</span><span class="s">"TopicTest"</span><span class="o">,</span> <span class="s">"TagA || TagC || TagD"</span><span class="o">);</span>
+
+        <span class="n">consumer</span><span class="o">.</span><span class="na">registerMessageListener</span><span class="o">(</span><span class="k">new</span> <span class="nc">MessageListenerOrderly</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="nc">AtomicLong</span> <span class="n">consumeTimes</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicLong</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="nc">ConsumeOrderlyStatus</span> <span class="nf">consumeMessage</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageExt</span><span class="o">&gt;</span> <span class="n">msgs</span><span class="o">,</span>
+                                                       <span class="nc">ConsumeOrderlyContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">context</span><span class="o">.</span><span class="na">setAutoCommit</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" Receive New Messages: "</span> <span class="o">+</span> <span class="n">msgs</span> <span class="o">+</span> <span class="s">"%n"</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">consumeTimes</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="na">consumeTimes</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">%</span> <span class="mi">2</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="nc">ConsumeOrderlyStatus</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="na">consumeTimes</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">%</span> <span class="mi">3</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="nc">ConsumeOrderlyStatus</span><span class="o">.</span><span class="na">ROLLBACK</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="na">consumeTimes</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">%</span> <span class="mi">4</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="nc">ConsumeOrderlyStatus</span><span class="o">.</span><span class="na">COMMIT</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="na">consumeTimes</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">%</span> <span class="mi">5</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">context</span><span class="o">.</span><span class="na">setSuspendCurrentQueueTimeMillis</span><span class="o">(</span><span class="mi">3000</span><span class="o">);</span>
+                    <span class="k">return</span> <span class="nc">ConsumeOrderlyStatus</span><span class="o">.</span><span class="na">SUSPEND_CURRENT_QUEUE_A_MOMENT</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="nc">ConsumeOrderlyStatus</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">;</span>
+
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="n">consumer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"Consumer Started.%n"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>正常消费消息就好。</p>
+
+<h3 id="分布式事务消息">分布式事务消息</h3>
+
+<p>分布式事务消息（确保数据的最终一致性，大量引入 MQ 的分布式事务，既可以实现系统之间的解耦，又可以保证最终的数据一致性，减少系统间的交互）</p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-feature-4.jpg" alt="" /></p>
+
+<h2 id="4springboot集成">4、SpringBoot集成</h2>
+
+<p>使用原生方式导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.rocketmq<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>rocketmq-client<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.7.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>使用start的方式导入依赖，使用简化xxxTemplate模板类调用rocketmq client，下面例子代码是使用该方式</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.rocketmq<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>rocketmq-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.2.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>得益于spring简化开发的4大核心思想：</p>
+
+<ol>
+  <li>Spring Bean，生命周期由spring 容器管理的ava对象</li>
+  <li>IOC，控制反转的思想，所有的对象都去Spring容器getbean</li>
+  <li>AOP，切面编程降低侵入。</li>
+  <li>xxxTemplate模版技术，如RestTemplate,RedisTemplate</li>
+</ol>
+
+<p>application.yaml配置，生产者和消费者的配置可以一样</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">rocketmq</span><span class="pi">:</span>
+  <span class="na">name-server</span><span class="pi">:</span> <span class="s">http://127.0.0.1:9876;10.16.154.59:9876;10.16.154.58:9876</span> <span class="c1">#rocketmq服务地址</span>
+  <span class="na">producer</span><span class="pi">:</span>
+    <span class="na">group</span><span class="pi">:</span> <span class="s">rocketmq_test</span> <span class="c1">#自定义的组名称</span>
+    <span class="c1"># access-key: your aliyun accessKey</span>
+    <span class="c1"># secret-key: your aliyun secretKey</span>
+    <span class="na">send-message-timeout</span><span class="pi">:</span> <span class="m">3000</span>  <span class="c1">#消息发送超时时长</span>
+</code></pre></div></div>
+
+<h3 id="发送接收消息">发送接收消息</h3>
+
+<blockquote>
+  <p>发送方</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderProducer</span><span class="o">{</span>
+  <span class="nd">@Autowired</span>
+  <span class="kd">private</span> <span class="nc">RocketMQTemplate</span> <span class="n">rocketMQTemplate</span><span class="o">;</span>
+
+  <span class="nd">@Value</span><span class="o">(</span><span class="s">"${rocketmq.producer.send-message-timeout}"</span><span class="o">)</span>
+  <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">messageTimeOut</span><span class="o">;</span>
+
+  <span class="cm">/**
+     * 发送普通消息
+     */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMsg</span><span class="o">(</span><span class="nc">String</span> <span class="n">msgBody</span><span class="o">){</span>
+    <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">syncSend</span><span class="o">(</span><span class="s">"queue_test_topic"</span><span class="o">,</span><span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">msgBody</span><span class="o">).</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**
+     * 发送异步消息 在SendCallback中可处理相关成功失败时的逻辑
+     */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendAsyncMsg</span><span class="o">(</span><span class="nc">String</span> <span class="n">msgBody</span><span class="o">){</span>
+   <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">asyncSend</span><span class="o">(</span><span class="s">"queue_test_topic"</span><span class="o">,</span><span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">msgBody</span><span class="o">).</span><span class="na">build</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">SendCallback</span><span class="o">()</span> <span class="o">{</span>
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="nc">SendResult</span> <span class="n">sendResult</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 处理消息发送成功逻辑</span>
+      <span class="o">}</span>
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 处理消息发送异常逻辑</span>
+      <span class="o">}</span>
+    <span class="o">});</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**
+     * 发送延时消息&lt;br/&gt;
+     * 在start版本中 延时消息一共分为18个等级分别为：1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h&lt;br/&gt;
+     */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendDelayMsg</span><span class="o">(</span><span class="nc">String</span> <span class="n">msgBody</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">delayLevel</span><span class="o">){</span>    <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">syncSend</span><span class="o">(</span><span class="s">"queue_test_topic"</span><span class="o">,</span><span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">msgBody</span><span class="o">).</span><span class="na">build</span><span class="o">(),</span><span class="n">messageTimeOut</span><span class="o">,</span><span class="n">delayLevel</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**
+     * 发送带tag的消息,直接在topic后面加上":tag",看源码RocketMQUtil会把第一入参destination转为topic与tag
+     */</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendTagMsg</span><span class="o">(</span><span class="nc">String</span> <span class="n">msgBody</span><span class="o">){</span>    <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">syncSend</span><span class="o">(</span><span class="s">"queue_test_topic:tag1"</span><span class="o">,</span><span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">msgBody</span><span class="o">).</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSend</span><span class="o">(</span><span class="nc">Map</span> <span class="n">jmap</span><span class="o">){</span>
+    <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">convertAndSend</span><span class="o">(</span><span class="s">"settlement-test:test"</span><span class="o">,</span><span class="n">jmap</span><span class="o">);</span> <span class="c1">// 底层也是调用syncSend方法</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="\assets\images\2021\mq\rocketmq-destination.png" alt="" /></p>
+
+<p>rocketMQTemplate的方法注释上也说明destination入参是合并了topic和tag</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-syncsend-destination.png" alt="" /></p>
+
+<p>知道了设置tag，哪如何设置key，继续看RocketMQUtil的源码，就会发现答案</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-syncsend-header-keys.png" alt="" /></p>
+
+<p>所以rocketMQTemplate设置发送消息的tag和key的写法是</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">syncSend</span><span class="o">(</span><span class="s">"RetryPushTodo:Tag1"</span><span class="o">,</span> <span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">pushEntity</span><span class="o">).</span><span class="na">setHeader</span><span class="o">(</span><span class="nc">RocketMQHeaders</span><span class="o">.</span><span class="na">KEYS</span><span class="o">,</span><span class="n">firstEntity</span><span class="o">.</span><span class="na">getModelId</span><span class="o">()).</span><span class="na">build</span><span class="o">());</span>
+</code></pre></div></div>
+
+<p>导入测试依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-test<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>编写测试类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RunWith</span><span class="o">(</span><span class="nc">SpringRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@SpringBootTest</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderSender</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">OrderProducer</span> <span class="n">orderProducer</span><span class="o">;</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testProducer</span><span class="o">(){</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+            <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">jmap</span><span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;(</span><span class="mi">3</span><span class="o">);</span>
+            <span class="n">jmap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"jacob"</span><span class="o">+</span><span class="n">i</span><span class="o">);</span>
+            <span class="n">jmap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"age"</span><span class="o">,</span><span class="n">i</span><span class="o">);</span>
+            <span class="n">orderProducer</span><span class="o">.</span><span class="na">testSend</span><span class="o">(</span><span class="n">jmap</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"发送完毕"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>接收方</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// selectorExpression 就是发送端的tag,默认是*,即接受所有tag的消息</span>
+<span class="nd">@Service</span>
+<span class="nd">@RocketMQMessageListener</span><span class="o">(</span><span class="n">topic</span> <span class="o">=</span> <span class="s">"settlement-test"</span><span class="o">,</span><span class="n">selectorExpression</span> <span class="o">=</span> <span class="s">"test"</span><span class="o">,</span><span class="n">consumerGroup</span> <span class="o">=</span> <span class="s">"settlement-ar-test"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderReceiver</span> <span class="kd">implements</span> <span class="nc">RocketMQListener</span><span class="o">&lt;</span><span class="nc">Map</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">RocketMQTemplate</span> <span class="n">rocketMQTemplate</span><span class="o">;</span>
+
+  <span class="c1">// 只要没有抛异常，就会消费成功，请不要捕获异常，否则不会重新拉取消息进行重新消费</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="nc">Map</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"收到消息"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>idea 启动两个消费者实例，发现是对半接收消息的，说明有负载均衡的策略，主要是解决了消费的幂等性</p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-consumer-test1.jpg" alt="" /></p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-consumer-test2.jpg" alt="" /></p>
+
+<p>参考：</p>
+
+<p><a href="https://blog.csdn.net/qq_38306688/article/details/107716046">https://blog.csdn.net/qq_38306688/article/details/107716046</a></p>
+
+<p><a href="https://blog.csdn.net/zxl646801924/article/details/105659481">https://blog.csdn.net/zxl646801924/article/details/105659481</a></p>
+
+<h3 id="消费组tag">消费组tag</h3>
+
+<p>同一个消费组的设置相同的tag，必须要保持订阅关系一致。同一个消费组中，设置不同tag时，后启动的消费者会<strong>覆盖</strong>先启动的消费者设置的tag。从原理分析，上面与kafka比较吞吐量也分析了，rocketmq保存消息的三个核心文件夹：commitlog、consumerqueue、config</p>
+
+<ul>
+  <li>
+    <p>commitlog</p>
+
+    <p>1) 保存所有topic的原始消息</p>
+
+    <p>2) commitLog文件夹下分为多个文件，每个文件默认最大为1G</p>
+
+    <p>3) 每条记录包括：消息长度和消息文本（消息体，属性，uid等等）</p>
+
+    <p>4) 因每条消息长度不一致，每个commitLog文件的记录长度也不一致</p>
+  </li>
+  <li>
+    <p>consumerqueue</p>
+
+    <p>1) 保存某个Topic下某个Queue的索引信息</p>
+
+    <p>2) 每条记录包括：消息在commitLog中的offset，消息大小，消息tag的哈希值</p>
+
+    <p>3) 每条记录长度固定为20byte</p>
+
+    <p>4) producer发送消息后，先保存到commitLog，再异步建立该条消息对应的topic + queue对应的ConsumerQueue索引</p>
+
+    <p>5) 第三部分的Hash(tag)是服务端过滤消息的重要依据</p>
+  </li>
+</ul>
+
+<p>consumer消费者如何订阅消息，会将订阅信息注册到到服务端，保存订阅信息的是ConcurrentHashMap类，key为topic，value主要是tag，subVersion是版本号，所以同一个消费组的消费者依次注册订阅关系，比如消费者1订阅tag1，消费者2订阅tag2。最后map中只保存tag2，所以消费者都只订阅了tag2的消息，这个可以看项目启动时，执行RocketMQAutoConfiguration自动配置类，向rocketmq broker推送注册信息注册消费者时，类DefaultRocketMQListenerContainer的initRocketMQPushConsumer()方法，里面调用DefaultMQPushConsumerImpl类的subscribe() 方法，把订阅信息放进map里面</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">subscribe</span><span class="o">(</span><span class="nc">String</span> <span class="n">topic</span><span class="o">,</span> <span class="nc">String</span> <span class="n">subExpression</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">MQClientException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">SubscriptionData</span> <span class="n">subscriptionData</span> <span class="o">=</span> <span class="nc">FilterAPI</span><span class="o">.</span><span class="na">buildSubscriptionData</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">(),</span> <span class="n">topic</span><span class="o">,</span> <span class="n">subExpression</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">rebalanceImpl</span><span class="o">.</span><span class="na">getSubscriptionInner</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">subscriptionData</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">.</span><span class="na">sendHeartbeatToAllBrokerWithLock</span><span class="o">();</span>
+            <span class="o">}</span>
+
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">var4</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="s">"subscription exception"</span><span class="o">,</span> <span class="n">var4</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="事务消息方案">事务消息方案</h3>
+
+<p>RocketMQ 事务消息设计则主要是为了解决 Producer 端的消息发送与本地事务执行的原子性问题，目的是实现与下游消息消费的最终数据一致性。</p>
+
+<p>在RocketMQ 4.3后实现了完整的事务消息，实际上其实是对本地消息表的一个封装，将本地消息表移动到了MQ内部，解决 Producer 端的消息发送与本地事务执行的原子性问题。</p>
+
+<p><img src="\assets\images\2021\springcloud\rocketmq-transaction-message.jpg" alt="" /></p>
+
+<p>执行流程如下：</p>
+
+<p>本例子中Producer是用户服务，负责新增用户，Consumer是积分服务，负责新增积分。</p>
+
+<p>1、Producer 发送事务消息</p>
+
+<p>Producer 发送事务消息至MQ Server，MQ Server将消息状态标记为Prepared（预备状态），注意此时这条消息Consumer是无法消费到的。本例中，Producer 发送 ”增加积分消息“ 到MQ Server。</p>
+
+<p>2、MQ Server回应消息发送成功</p>
+
+<p>MQ Server接收到Producer 发送的消息则回应发送成功。</p>
+
+<p>3、Producer 执行本地事务</p>
+
+<p>Producer 端执行业务代码逻辑，通过本地数据库事务控制。</p>
+
+<p>4、消息投递</p>
+
+<p>若Producer 本地事务执行成功则自动向MQ Server发送commit消息，MQ Server接收到commit消息后，将”增加积分消息“ 状态标记为可消费，此时Consumer可正常消费消息</p>
+
+<p>若Producer 本地事务执行失败则自动向MQ Server发送rollback消息，MQ Server接收到rollback消息后，将删除”增加积分消息“ 。</p>
+
+<p>Consumer（积分服务）消费消息，消费成功则向MQ回应ack，否则将重复接收消息。这里ack默认自动回应，即程序执行正常则自动回应ack。</p>
+
+<p>5、事务回查</p>
+
+<p>如果Producer端执行本地事务过程中挂掉或超时，MQ Server将会不停的询问同组的其他Producer来获取事务执行状态，这个过程叫<mark>事务回查</mark>。MQ Server会根据事务回查结果来决定是否投递消息。</p>
+
+<p>以上主流程已由RocketMQ实现，对用户来说，只需分别实现本地事务执行以及本地事务回查方法，RoacketMQ提供RocketMQLocalTransactionListener接口，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RocketMQLocalTransactionListener</span> <span class="o">{</span>
+  <span class="cm">/*
+   - 发送prepare消息成功此方法被回调，该方法用于执行本地事务
+   - @param msg 回传的消息，利用transactionId即可获取到该消息的唯一Id
+   - @param arg 调用send方法时传递的参数，当send时候若有额外的参数可以传递到send方法中，这里能获取到
+   - @return 返回事务状态，COMMIT：提交  ROLLBACK：回滚  UNKNOW：回调
+     */</span>
+  <span class="nc">RocketMQLocalTransactionState</span> <span class="nf">executeLocalTransaction</span><span class="o">(</span><span class="nc">Message</span> <span class="n">msg</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">arg</span><span class="o">);</span>
+  
+  <span class="cm">/*
+   - @param msg 通过获取transactionId来判断这条消息的本地事务执行状态
+   - @return 返回事务状态，COMMIT：提交  ROLLBACK：回滚  UNKNOW：回调
+     */</span>
+  <span class="nc">RocketMQLocalTransactionState</span> <span class="nf">checkLocalTransaction</span><span class="o">(</span><span class="nc">Message</span> <span class="n">msg</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><mark>发送事务消息的API</mark></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">TransactionMQProducer</span> <span class="n">producer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TransactionMQProducer</span><span class="o">(</span><span class="s">"ProducerGroup"</span><span class="o">);</span>
+<span class="n">producer</span><span class="o">.</span><span class="na">setNamesrvAddr</span><span class="o">(</span><span class="s">"127.0.0.1:9876"</span><span class="o">);</span>
+<span class="n">producer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+<span class="c1">//设置TransactionListener实现</span>
+<span class="n">producer</span><span class="o">.</span><span class="na">setTransactionListener</span><span class="o">(</span><span class="n">transactionListener</span><span class="err">）；</span>
+<span class="c1">//发送事务消息，</span>
+<span class="nc">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="n">producer</span><span class="o">.</span><span class="na">sendMessageInTransaction</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>代码示例</p>
+</blockquote>
+
+<p>场景说明，两个账户在分别在不同的银行(张三在bank1、李四在bank2)，bank1、bank2是两个微服务。交易过程是，张三给李四转账指定金额。</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-transaction-demo-1.jpg" alt="" /></p>
+
+<p>张三扣减金额与给bank2发转账消息，两个操作必须是一个原子性事务</p>
+
+<p>使用MQ消息中间件解决这个场景的技术架构如下图：</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-transaction-demo-2.jpg" alt="" /></p>
+
+<p>交互流程如下：</p>
+
+<p>1、Bank1向MQ Server发送转账消息</p>
+
+<p>2、Bank1执行本地事务，扣减金额</p>
+
+<p>3、Bank2接收消息，执行本地事务，添加金额</p>
+
+<p>MQ环境已经搭建，下面创建数据库</p>
+
+<p>创建bank1库，并导入以下表结构和数据(包含张三账户)</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="nv">`bank1`</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="s1">'utf8'</span> <span class="k">COLLATE</span> <span class="s1">'utf8_general_ci'</span><span class="p">;</span>
+
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="nv">`account_info`</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`account_info`</span>  <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`account_name`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'户主姓名'</span><span class="p">,</span>
+  <span class="nv">`account_no`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'银行卡号'</span><span class="p">,</span>
+  <span class="nv">`account_password`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'帐户密码'</span><span class="p">,</span>
+  <span class="nv">`account_balance`</span> <span class="nb">double</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'帐户余额'</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span> <span class="o">=</span> <span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span> <span class="o">=</span> <span class="mi">5</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">=</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="o">=</span> <span class="n">utf8_bin</span> <span class="n">ROW_FORMAT</span> <span class="o">=</span> <span class="k">Dynamic</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`account_info`</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'张三的账户'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="mi">10000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>创建bank2库，并导入以下表结构和数据(包含李四账户)</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="nv">`bank2`</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="s1">'utf8'</span> <span class="k">COLLATE</span> <span class="s1">'utf8_general_ci'</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`account_info`</span>  <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`account_name`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'户主姓名'</span><span class="p">,</span>
+  <span class="nv">`account_no`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'银行卡号'</span><span class="p">,</span>
+  <span class="nv">`account_password`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'帐户密码'</span><span class="p">,</span>
+  <span class="nv">`account_balance`</span> <span class="nb">double</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span> <span class="k">COMMENT</span> <span class="s1">'帐户余额'</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span> <span class="o">=</span> <span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span> <span class="o">=</span> <span class="mi">5</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">=</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="o">=</span> <span class="n">utf8_bin</span> <span class="n">ROW_FORMAT</span> <span class="o">=</span> <span class="k">Dynamic</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`account_info`</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'李四的账户'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="k">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>注意</strong>：在bank1、bank2数据库中新增de_duplication，交易记录表(去重表)，用于交易幂等控制，RocketMQ需要用到这张表</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">EXISTS</span> <span class="nv">`de_duplication`</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`de_duplication`</span>  <span class="p">(</span>
+  <span class="nv">`tx_no`</span>  <span class="nb">varchar</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="k">COLLATE</span> <span class="n">utf8_bin</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`create_time`</span> <span class="nb">datetime</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">NULL</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`tx_no`</span><span class="p">)</span> <span class="k">USING</span> <span class="n">BTREE</span>
+<span class="p">)</span> <span class="n">ENGINE</span> <span class="o">=</span> <span class="n">InnoDB</span> <span class="nb">CHARACTER</span> <span class="k">SET</span> <span class="o">=</span> <span class="n">utf8</span> <span class="k">COLLATE</span> <span class="o">=</span> <span class="n">utf8_bin</span> <span class="n">ROW_FORMAT</span> <span class="o">=</span> <span class="k">Dynamic</span><span class="p">;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Producer 端</p>
+</blockquote>
+
+<p>在application-local.propertis中配置rocketMQ nameServer地址及生产组：</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">rocketmq.producer.group</span> <span class="p">=</span> <span class="s">producer_bank2</span>
+<span class="py">rocketmq.name-server</span> <span class="p">=</span> <span class="s">127.0.0.1:9876</span>
+</code></pre></div></div>
+
+<p>1) Dao层</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Mapper</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AccountInfoDao</span> <span class="o">{</span>
+    <span class="nd">@Update</span><span class="o">(</span><span class="s">"update account_info set account_balance=account_balance+#{amount} where account_no=#{accountNo}"</span><span class="o">)</span>
+    <span class="kt">int</span> <span class="nf">updateAccountBalance</span><span class="o">(</span><span class="nd">@Param</span><span class="o">(</span><span class="s">"accountNo"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">accountNo</span><span class="o">,</span> <span class="nd">@Param</span><span class="o">(</span><span class="s">"amount"</span><span class="o">)</span> <span class="nc">Double</span> <span class="n">amount</span><span class="o">);</span>
+
+    <span class="nd">@Select</span><span class="o">(</span><span class="s">"select count(1) from de_duplication where tx_no = #{txNo}"</span><span class="o">)</span>
+    <span class="kt">int</span> <span class="nf">isExistTx</span><span class="o">(</span><span class="nc">String</span> <span class="n">txNo</span><span class="o">);</span>
+
+    <span class="nd">@Insert</span><span class="o">(</span><span class="s">"insert into de_duplication values(#{txNo},now());"</span><span class="o">)</span>
+    <span class="kt">int</span> <span class="nf">addTx</span><span class="o">(</span><span class="nc">String</span> <span class="n">txNo</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2) 服务层实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountInfoServiceImpl</span> <span class="kd">implements</span> <span class="nc">AccountInfoService</span> <span class="o">{</span>
+	<span class="nd">@Resource</span>
+	<span class="kd">private</span> <span class="nc">RocketMQTemplate</span> <span class="n">rocketMQTemplate</span><span class="o">;</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="kd">private</span> <span class="nc">AccountInfoDao</span> <span class="n">accountInfoDao</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 更新帐号余额-发送消息
+	 * producer向MQ Server发送消息
+	 * @param accountChangeEvent
+	 */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendUpdateAccountBalance</span><span class="o">(</span><span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">//构建消息体</span>
+		<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JSONObject</span><span class="o">();</span>
+		<span class="n">jsonObject</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"accountChange"</span><span class="o">,</span><span class="n">accountChangeEvent</span><span class="o">);</span>
+		<span class="nc">Message</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">message</span> <span class="o">=</span> <span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">()).</span><span class="na">build</span><span class="o">();</span>
+		<span class="nc">TransactionSendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">sendMessageInTransaction</span><span class="o">(</span><span class="s">"producer_group_txmsg_bank1"</span><span class="o">,</span> <span class="s">"topic_txmsg:tag1"</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"send transcation message body={},result={}"</span><span class="o">,</span><span class="n">message</span><span class="o">.</span><span class="na">getPayload</span><span class="o">(),</span><span class="n">sendResult</span><span class="o">.</span><span class="na">getSendStatus</span><span class="o">());</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**
+	 * 更新帐号余额-本地事务
+	 * producer发送消息完成后接收到MQ Server的回应即开始执行本地事务
+	 * @param accountChangeEvent
+	 */</span>
+	<span class="nd">@Transactional</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">doUpdateAccountBalance</span><span class="o">(</span><span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"开始更新本地事务，事务号：{}"</span><span class="o">,</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+		<span class="n">accountInfoDao</span><span class="o">.</span><span class="na">updateAccountBalance</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAccountNo</span><span class="o">(),</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAmount</span><span class="o">()</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+		<span class="c1">//为幂等作准备</span>
+		<span class="n">accountInfoDao</span><span class="o">.</span><span class="na">addTx</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAmount</span><span class="o">()</span> <span class="o">==</span> <span class="mi">2</span><span class="o">){</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"bank1更新本地事务时抛出异常"</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"结束更新本地事务，事务号：{}"</span><span class="o">,</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3) 编写RocketMQLocalTransactionListener接口实现类，实现<font color="red">执行本地事务和事务回查</font>两个方法。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@RocketMQTransactionListener</span><span class="o">(</span><span class="n">txProducerGroup</span> <span class="o">=</span> <span class="s">"producer_group_txmsg_bank1"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProducerTxmsgListener</span> <span class="kd">implements</span> <span class="nc">RocketMQLocalTransactionListener</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">AccountInfoService</span> <span class="n">accountInfoService</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">AccountInfoDao</span> <span class="n">accountInfoDao</span><span class="o">;</span>
+
+    <span class="c1">//消息发送成功回调此方法，此方法执行本地事务</span>
+    <span class="nd">@Override</span>
+    <span class="nd">@Transactional</span>
+    <span class="kd">public</span> <span class="nc">RocketMQLocalTransactionState</span> <span class="nf">executeLocalTransaction</span><span class="o">(</span><span class="nc">Message</span> <span class="n">message</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">arg</span><span class="o">){</span>
+        <span class="c1">//解析消息内容</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">String</span> <span class="n">jsonString</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">((</span><span class="kt">byte</span><span class="o">[])</span> <span class="n">message</span><span class="o">.</span><span class="na">getPayload</span><span class="o">());</span>
+            <span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonString</span><span class="o">);</span>
+            <span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"accountChange"</span><span class="o">),</span> <span class="nc">AccountChangeEvent</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="c1">//扣除金额</span>
+            <span class="n">accountInfoService</span><span class="o">.</span><span class="na">doUpdateAccountBalance</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">);</span>
+            <span class="k">return</span> <span class="nc">RocketMQLocalTransactionState</span><span class="o">.</span><span class="na">COMMIT</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"executeLocalTransaction 事务执行失败"</span><span class="o">,</span><span class="n">e</span><span class="o">);</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+            <span class="k">return</span> <span class="nc">RocketMQLocalTransactionState</span><span class="o">.</span><span class="na">ROLLBACK</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">//此方法检查事务执行状态</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">RocketMQLocalTransactionState</span> <span class="nf">checkLocalTransaction</span><span class="o">(</span><span class="nc">Message</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">RocketMQLocalTransactionState</span> <span class="n">state</span><span class="o">;</span>
+        <span class="kd">final</span> <span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="k">new</span> <span class="nc">String</span><span class="o">((</span><span class="kt">byte</span><span class="o">[])</span> <span class="n">message</span><span class="o">.</span><span class="na">getPayload</span><span class="o">()));</span>
+        <span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"accountChange"</span><span class="o">),</span><span class="nc">AccountChangeEvent</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+        <span class="c1">//事务id</span>
+        <span class="nc">String</span> <span class="n">txNo</span> <span class="o">=</span> <span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">isexistTx</span> <span class="o">=</span> <span class="n">accountInfoDao</span><span class="o">.</span><span class="na">isExistTx</span><span class="o">(</span><span class="n">txNo</span><span class="o">);</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"回查事务，事务号: {} 结果: {}"</span><span class="o">,</span> <span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">(),</span><span class="n">isexistTx</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">isexistTx</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">){</span>
+            <span class="n">state</span><span class="o">=</span>  <span class="nc">RocketMQLocalTransactionState</span><span class="o">.</span><span class="na">COMMIT</span><span class="o">;</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">state</span><span class="o">=</span>  <span class="nc">RocketMQLocalTransactionState</span><span class="o">.</span><span class="na">UNKNOWN</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">state</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4) Controller层</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountInfoController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">AccountInfoService</span> <span class="n">accountInfoService</span><span class="o">;</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"/transfer"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">transfer</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"accountNo"</span><span class="o">)</span><span class="nc">String</span> <span class="n">accountNo</span><span class="o">,</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"amount"</span><span class="o">)</span> <span class="nc">Double</span> <span class="n">amount</span><span class="o">){</span>
+        <span class="nc">String</span> <span class="n">tx_no</span> <span class="o">=</span> <span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">();</span>
+        <span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AccountChangeEvent</span><span class="o">(</span><span class="n">accountNo</span><span class="o">,</span><span class="n">amount</span><span class="o">,</span><span class="n">tx_no</span><span class="o">);</span>
+				<span class="c1">// 更新帐号余额-发送消息</span>
+        <span class="n">accountInfoService</span><span class="o">.</span><span class="na">sendUpdateAccountBalance</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">);</span>
+        <span class="k">return</span> <span class="s">"转账成功"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Consumer 端</p>
+</blockquote>
+
+<p>1、监听MQ，接收消息。</p>
+
+<p>2、接收到消息增加账户金额。</p>
+
+<p>1) 服务实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountInfoServiceImpl</span> <span class="kd">implements</span> <span class="nc">AccountInfoService</span> <span class="o">{</span>
+  <span class="nd">@Autowired</span>
+  <span class="nc">AccountInfoDao</span> <span class="n">accountInfoDao</span><span class="o">;</span>
+  
+  <span class="cm">/**
+     * 消费消息，更新本地事务，添加金额
+     * @param accountChangeEvent
+     */</span>
+  <span class="nd">@Override</span>
+  <span class="nd">@Transactional</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addAccountInfoBalance</span><span class="o">(</span><span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"bank2更新本地账号，账号：{},金额：{}"</span><span class="o">,</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAccountNo</span><span class="o">(),</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAmount</span><span class="o">());</span>
+
+    <span class="c1">//幂等校验</span>
+    <span class="kt">int</span> <span class="n">existTx</span> <span class="o">=</span> <span class="n">accountInfoDao</span><span class="o">.</span><span class="na">isExistTx</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">existTx</span><span class="o">&lt;=</span><span class="mi">0</span><span class="o">){</span>
+ 		  <span class="c1">//执行更新    	   </span>
+      <span class="n">accountInfoDao</span><span class="o">.</span><span class="na">updateAccountBalance</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAccountNo</span><span class="o">(),</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getAmount</span><span class="o">());</span>
+      <span class="c1">//添加事务记录</span>
+      <span class="n">accountInfoDao</span><span class="o">.</span><span class="na">addTx</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"更新本地事务执行成功，本次事务号: {}"</span><span class="o">,</span> <span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+    <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"更新本地事务执行失败，本次事务号: {}"</span><span class="o">,</span> <span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">getTxNo</span><span class="o">());</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2) MQ监听类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="nd">@RocketMQMessageListener</span><span class="o">(</span><span class="n">topic</span> <span class="o">=</span> <span class="s">"topic_txmsg"</span><span class="o">,</span><span class="n">selectorExpression</span><span class="o">=</span><span class="s">"tag1"</span><span class="o">,</span><span class="n">consumerGroup</span> <span class="o">=</span> <span class="s">"consumer_txmsg_group_bank2"</span><span class="o">)</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TxmsgConsumer</span> <span class="kd">implements</span> <span class="nc">RocketMQListener</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">AccountInfoService</span> <span class="n">accountInfoService</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"开始消费消息:{}"</span><span class="o">,</span><span class="n">s</span><span class="o">);</span>
+        <span class="c1">//解析消息为对象</span>
+        <span class="kd">final</span> <span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+        <span class="nc">AccountChangeEvent</span> <span class="n">accountChangeEvent</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"accountChange"</span><span class="o">),</span><span class="nc">AccountChangeEvent</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="c1">//调用service增加账号金额</span>
+        <span class="n">accountChangeEvent</span><span class="o">.</span><span class="na">setAccountNo</span><span class="o">(</span><span class="s">"2"</span><span class="o">);</span>
+        <span class="n">accountInfoService</span><span class="o">.</span><span class="na">addAccountInfoBalance</span><span class="o">(</span><span class="n">accountChangeEvent</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试场景</p>
+
+<ul>
+  <li>bank1本地事务失败，则bank1不发送转账消息。</li>
+  <li>bank2接收转账消息失败，会进行重试发送消息。</li>
+  <li>bank2多次消费同一个消息，实现幂等。</li>
+</ul>
+
+<p>参考：</p>
+
+<p><a href="https://blog.csdn.net/weixin_44062339/article/details/100180487">https://blog.csdn.net/weixin_44062339/article/details/100180487</a></p>
+
+<h3 id="消费端的ack机制">消费端的ACK机制</h3>
+
+<p>springboot集成rocketmq消费消息，我们只需实现接口<code class="highlighter-rouge">RocketMQListener</code>就可以了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @Author xiejw17
+ * @Date 2021/9/22 20:27
+ * 分销转自营，生成折让、红冲折让的销售单的结果订阅消费
+ */</span>
+<span class="nd">@Service</span>
+<span class="nd">@RocketMQMessageListener</span><span class="o">(</span><span class="n">topic</span><span class="o">=</span><span class="s">"TOPIC-MCSP-SMC-SETTLE-REBACK"</span><span class="o">,</span><span class="n">selectorExpression</span><span class="o">=</span><span class="s">"TAG-SETTLEBILL-RCC"</span><span class="o">,</span><span class="n">consumerGroup</span><span class="o">=</span><span class="s">"rcc-producer-group"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DistributeDiscountReversalConsumer</span> <span class="kd">implements</span> <span class="nc">RocketMQListener</span><span class="o">&lt;</span><span class="nc">MessageExt</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">BillProcessingLogService</span> <span class="n">billProcessingLogService</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="nc">DistributeToOwnDetailMapper</span> <span class="n">distributeToOwnDetailMapper</span><span class="o">;</span>
+
+    <span class="c1">// 只要没有抛异常，就会消费成功，请不要捕获异常，否则不会重新拉取消息进行重新消费</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="nc">MessageExt</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">json</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getBody</span><span class="o">());</span>
+        <span class="c1">//log.info("生成折让消息体{}",json);</span>
+        <span class="nc">SettleBillCallBackDTO</span> <span class="n">dto</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">json</span><span class="o">,</span><span class="nc">SettleBillCallBackDTO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">id</span> <span class="o">=</span> <span class="n">dto</span><span class="o">.</span><span class="na">getSrcBillNum</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"id"</span><span class="o">,</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">id</span><span class="o">));</span>
+        <span class="nc">UpdateWrapper</span><span class="o">&lt;</span><span class="nc">BillProcessingLog</span><span class="o">&gt;</span> <span class="n">updateWrapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UpdateWrapper</span><span class="o">();</span>
+        <span class="k">if</span><span class="o">(</span><span class="s">"Y"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">dto</span><span class="o">.</span><span class="na">getProcessFlag</span><span class="o">())){</span>
+            <span class="c1">// 1、成功，更新折让单单号，状态，原单号=前缀+id，</span>
+            <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"orderNum"</span><span class="o">,</span><span class="n">dto</span><span class="o">.</span><span class="na">getSettleBillNum</span><span class="o">());</span> <span class="c1">// 单号</span>
+            <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"state"</span><span class="o">,</span><span class="s">"11"</span><span class="o">);</span> <span class="c1">// 11-已审核</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">dto</span><span class="o">.</span><span class="na">getSrcBillNum</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="s">"DI"</span><span class="o">)){</span>
+                <span class="c1">// 生成折让</span>
+                <span class="n">distributeToOwnDetailMapper</span><span class="o">.</span><span class="na">updateDiscount</span><span class="o">(</span><span class="n">param</span><span class="o">);</span>
+            <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+                <span class="c1">// 红冲折让</span>
+                <span class="n">distributeToOwnDetailMapper</span><span class="o">.</span><span class="na">updateReversalDiscount</span><span class="o">(</span><span class="n">param</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">updateWrapper</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="nc">BillProcessingLog</span><span class="o">.</span><span class="na">STATUS</span><span class="o">,</span> <span class="nc">BillProcessStatusEnum</span><span class="o">.</span><span class="na">COMPLETE</span><span class="o">.</span><span class="na">getStatus</span><span class="o">())</span>
+                    <span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="nc">BillProcessingLog</span><span class="o">.</span><span class="na">DETAIL</span><span class="o">,</span><span class="s">"success"</span><span class="o">);</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="c1">// 失败</span>
+            <span class="n">updateWrapper</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="nc">BillProcessingLog</span><span class="o">.</span><span class="na">STATUS</span><span class="o">,</span><span class="nc">BillProcessStatusEnum</span><span class="o">.</span><span class="na">EXCEPTION</span><span class="o">.</span><span class="na">getStatus</span><span class="o">())</span>
+                    <span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="nc">BillProcessingLog</span><span class="o">.</span><span class="na">DETAIL</span><span class="o">,</span><span class="n">dto</span><span class="o">.</span><span class="na">getResultMsg</span><span class="o">().</span><span class="na">length</span><span class="o">()&gt;</span><span class="mi">400</span><span class="o">?</span><span class="n">dto</span><span class="o">.</span><span class="na">getResultMsg</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">400</span><span class="o">):</span><span class="n">dto</span><span class="o">.</span><span class="na">getResultMsg</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="c1">// 2、更新对账记录日志</span>
+        <span class="n">updateWrapper</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="s">"id"</span><span class="o">,</span><span class="n">id</span><span class="o">);</span>
+        <span class="n">updateWrapper</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">"updated_by"</span><span class="o">,</span><span class="s">"rocketMq"</span><span class="o">);</span>
+        <span class="n">updateWrapper</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">"update_time"</span><span class="o">,</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+        <span class="n">billProcessingLogService</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">updateWrapper</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>那它是怎么确认消息是消费成功的？如果业务发生异常，消费者会重新拉取消息进行消费吗？会，只要你不catch异常处理掉，把它抛出去就可以，来分析源码</p>
+
+<h3 id="rocketmqmessagelistener源码分析">RocketMQMessageListener源码分析</h3>
+
+<p>分析@RocketMQMessageListener注解的源码，项目启动会扫描该注解创建消费者，配置类<code class="highlighter-rouge">org.apache.rocketmq.spring.autoconfigure.ListenerContainerConfiguration</code>会被<code class="highlighter-rouge">RocketMQAutoConfiguration</code> 自动配置@import引入创建Bean对象</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-autoconfiguration.jpg" alt="" /></p>
+
+<p>也在<code class="highlighter-rouge">RocketMQAutoConfiguration</code>自动配置类创建生产者</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-autoconfiguration-defaultMQProducer.jpg" alt="" /></p>
+
+<p>创建Bean 实例<code class="highlighter-rouge">RocketMQTemplate</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span><span class="o">(</span><span class="n">destroyMethod</span> <span class="o">=</span> <span class="s">"destroy"</span><span class="o">)</span>
+<span class="nd">@ConditionalOnBean</span><span class="o">(</span><span class="nc">DefaultMQProducer</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@ConditionalOnMissingBean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="nc">RocketMQConfigUtils</span><span class="o">.</span><span class="na">ROCKETMQ_TEMPLATE_DEFAULT_GLOBAL_NAME</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">RocketMQTemplate</span> <span class="nf">rocketMQTemplate</span><span class="o">(</span><span class="nc">DefaultMQProducer</span> <span class="n">mqProducer</span><span class="o">,</span>
+                                         <span class="nc">ObjectMapper</span> <span class="n">rocketMQMessageObjectMapper</span><span class="o">,</span>
+                                         <span class="nc">RocketMQMessageConverter</span> <span class="n">rocketMQMessageConverter</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">RocketMQTemplate</span> <span class="n">rocketMQTemplate</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RocketMQTemplate</span><span class="o">();</span>
+  <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">setProducer</span><span class="o">(</span><span class="n">mqProducer</span><span class="o">);</span>
+  <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">setObjectMapper</span><span class="o">(</span><span class="n">rocketMQMessageObjectMapper</span><span class="o">);</span>
+  <span class="n">rocketMQTemplate</span><span class="o">.</span><span class="na">setMessageConverter</span><span class="o">(</span><span class="n">rocketMQMessageConverter</span><span class="o">.</span><span class="na">getMessageConverter</span><span class="o">());</span>
+  <span class="k">return</span> <span class="n">rocketMQTemplate</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>事务消息注册处理</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span>
+<span class="nd">@ConditionalOnBean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="nc">RocketMQConfigUtils</span><span class="o">.</span><span class="na">ROCKETMQ_TEMPLATE_DEFAULT_GLOBAL_NAME</span><span class="o">)</span>
+<span class="nd">@ConditionalOnMissingBean</span><span class="o">(</span><span class="nc">TransactionHandlerRegistry</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">TransactionHandlerRegistry</span> <span class="nf">transactionHandlerRegistry</span><span class="o">(</span>
+  <span class="nd">@Qualifier</span><span class="o">(</span><span class="nc">RocketMQConfigUtils</span><span class="o">.</span><span class="na">ROCKETMQ_TEMPLATE_DEFAULT_GLOBAL_NAME</span><span class="o">)</span> <span class="nc">RocketMQTemplate</span> <span class="n">template</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">TransactionHandlerRegistry</span><span class="o">(</span><span class="n">template</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="nc">RocketMQConfigUtils</span><span class="o">.</span><span class="na">ROCKETMQ_TRANSACTION_ANNOTATION_PROCESSOR_BEAN_NAME</span><span class="o">)</span>
+<span class="nd">@ConditionalOnBean</span><span class="o">(</span><span class="nc">TransactionHandlerRegistry</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@Role</span><span class="o">(</span><span class="nc">BeanDefinition</span><span class="o">.</span><span class="na">ROLE_INFRASTRUCTURE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="nc">RocketMQTransactionAnnotationProcessor</span> <span class="nf">transactionAnnotationProcessor</span><span class="o">(</span>
+  <span class="nc">TransactionHandlerRegistry</span> <span class="n">transactionHandlerRegistry</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">RocketMQTransactionAnnotationProcessor</span><span class="o">(</span><span class="n">transactionHandlerRegistry</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>继续看<code class="highlighter-rouge">ListenerContainerConfiguration</code>类，被创建Bean实例，就会调用构造方法，然后触发属性设置的后置方法<code class="highlighter-rouge">afterSingletonsInstantiated()</code>，因为它实现了接口<code class="highlighter-rouge">SmartInitializingSingleton</code></p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-listernerContainerConfiguration.jpg" alt="" /></p>
+
+<p>每个带有注解<code class="highlighter-rouge">RocketMQMessageListener</code>的Bean实例都会去调用registerContainer()方法注册进容器创建消费者，来看看这个方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">registerContainer</span><span class="o">(</span><span class="nc">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">bean</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="nc">AopProxyUtils</span><span class="o">.</span><span class="na">ultimateTargetClass</span><span class="o">(</span><span class="n">bean</span><span class="o">);</span>
+
+  <span class="c1">// 需要实现接口RocketMQListener，否则抛异常</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nc">RocketMQListener</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">bean</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="n">clazz</span> <span class="o">+</span> <span class="s">" is not instance of "</span> <span class="o">+</span> <span class="nc">RocketMQListener</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+        <span class="o">}</span>
+
+  <span class="c1">// 利用反射获取注解信息</span>
+        <span class="nc">RocketMQMessageListener</span> <span class="n">annotation</span> <span class="o">=</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getAnnotation</span><span class="o">(</span><span class="nc">RocketMQMessageListener</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+  <span class="c1">// 从注解你获取消费组、topic名称</span>
+        <span class="nc">String</span> <span class="n">consumerGroup</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">consumerGroup</span><span class="o">());</span>
+        <span class="nc">String</span> <span class="n">topic</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">topic</span><span class="o">());</span>
+
+  <span class="c1">// 判断是否不订阅注解中的消费组和topic，是则不创建消费者</span>
+        <span class="kt">boolean</span> <span class="n">listenerEnabled</span> <span class="o">=</span>
+            <span class="o">(</span><span class="kt">boolean</span><span class="o">)</span><span class="n">rocketMQProperties</span><span class="o">.</span><span class="na">getConsumer</span><span class="o">().</span><span class="na">getListeners</span><span class="o">().</span><span class="na">getOrDefault</span><span class="o">(</span><span class="n">consumerGroup</span><span class="o">,</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">EMPTY_MAP</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">getOrDefault</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="n">listenerEnabled</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span>
+                <span class="s">"Consumer Listener (group:{},topic:{}) is not enabled by configuration, will ignore initialization."</span><span class="o">,</span>
+                <span class="n">consumerGroup</span><span class="o">,</span> <span class="n">topic</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+  <span class="c1">// 校验</span>
+        <span class="n">validate</span><span class="o">(</span><span class="n">annotation</span><span class="o">);</span>
+		<span class="c1">// 监听者容器bean名称</span>
+        <span class="nc">String</span> <span class="n">containerBeanName</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"%s_%s"</span><span class="o">,</span> <span class="nc">DefaultRocketMQListenerContainer</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+            <span class="n">counter</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">());</span>
+        <span class="nc">GenericApplicationContext</span> <span class="n">genericApplicationContext</span> <span class="o">=</span> <span class="o">(</span><span class="nc">GenericApplicationContext</span><span class="o">)</span><span class="n">applicationContext</span><span class="o">;</span>
+<span class="c1">// 创建消费者实例，注册进ioc容器</span>
+        <span class="n">genericApplicationContext</span><span class="o">.</span><span class="na">registerBean</span><span class="o">(</span><span class="n">containerBeanName</span><span class="o">,</span> <span class="nc">DefaultRocketMQListenerContainer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+            <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">createRocketMQListenerContainer</span><span class="o">(</span><span class="n">containerBeanName</span><span class="o">,</span> <span class="n">bean</span><span class="o">,</span> <span class="n">annotation</span><span class="o">));</span>
+        <span class="nc">DefaultRocketMQListenerContainer</span> <span class="n">container</span> <span class="o">=</span> <span class="n">genericApplicationContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">containerBeanName</span><span class="o">,</span>
+            <span class="nc">DefaultRocketMQListenerContainer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+ <span class="c1">// 启动消费者，开始监听</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">container</span><span class="o">.</span><span class="na">isRunning</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">container</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Started container failed. {}"</span><span class="o">,</span> <span class="n">container</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Register the listener to container, listenerBeanName:{}, containerBeanName:{}"</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">containerBeanName</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>如果在applicaiton.yml配置文件中，配置了不订阅的消费组和topic , 那么对应的消费者就不会被创建，属性配置看类<code class="highlighter-rouge">RocketMQProperties</code>的内部静态类<code class="highlighter-rouge">Consumer</code></p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-properties.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Consumer</span> <span class="o">{</span>
+  <span class="cm">/**
+         * listener configuration container
+         * the pattern is like this:
+         * group1.topic1 = false
+         * group2.topic2 = true
+         * group3.topic3 = false
+         */</span>
+  <span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Boolean</span><span class="o">&gt;&gt;</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+
+  <span class="kd">public</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Boolean</span><span class="o">&gt;&gt;</span> <span class="nf">getListeners</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">listeners</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setListeners</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Boolean</span><span class="o">&gt;&gt;</span> <span class="n">listeners</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">listeners</span> <span class="o">=</span> <span class="n">listeners</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>所以我在application.yml 添加了如下配置</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">rocketmq</span><span class="pi">:</span>
+  <span class="na">producer</span><span class="pi">:</span>
+    <span class="na">group</span><span class="pi">:</span> <span class="s">rcc-producer-group</span>
+  <span class="na">name-server</span><span class="pi">:</span> <span class="s">10.16.157.69:9876;10.16.157.70:9876;10.16.157.71:9876</span>
+  <span class="na">consumer</span><span class="pi">:</span>
+    <span class="na">listeners</span><span class="pi">:</span>
+      <span class="na">GROUP-RCC-INVOICE-APPLY</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-RCC-INVOICE-APPLY-RESULT</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">GROUP-RCC-AR-PAYABLE-HEDGE</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-MCC-PAYMENT-TEMPORARY-PAY-INFO-MSG</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">rcc-producer-group</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-SMC-SETTLE-REBACK</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">ERP-AR-APPLY-RESULT-GROUP</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">ERP-AR-TRX-APPLY-RESULT-GROUP</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">ERP-AR-TRX-UN-APPLY-RESULT-GROUP</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">ERP-AR-UN-APPLY-RESULT-GROUP</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">GROUP-SMC-INTF-RESULT-DISTRIBUTOR</span><span class="pi">:</span>
+        <span class="na">TOPIC-MCSP-SMC-INTF-RESULT-DISTRIBUTOR</span><span class="pi">:</span> <span class="no">false</span>
+</code></pre></div></div>
+
+<p>继续回到<code class="highlighter-rouge">registerContainer</code>方法，下面这段代码创建消费者Bean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="n">genericApplicationContext</span><span class="o">.</span><span class="na">registerBean</span><span class="o">(</span><span class="n">containerBeanName</span><span class="o">,</span> <span class="nc">DefaultRocketMQListenerContainer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+            <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">createRocketMQListenerContainer</span><span class="o">(</span><span class="n">containerBeanName</span><span class="o">,</span> <span class="n">bean</span><span class="o">,</span> <span class="n">annotation</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p><img src="\assets\images\2021\mq\rocketmq-register-2.png" alt="" /></p>
+
+<p>以后可以参考这种方式手动注册bean到spring ioc了，看到supplier 提供者函数式接口，所以注册Spring bean时会调用方法<code class="highlighter-rouge">createRocketMQListenerContainer()</code>，来提供一个bean实例放入spring ioc容器</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">private</span> <span class="nc">DefaultRocketMQListenerContainer</span> <span class="nf">createRocketMQListenerContainer</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">bean</span><span class="o">,</span>
+        <span class="nc">RocketMQMessageListener</span> <span class="n">annotation</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DefaultRocketMQListenerContainer</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultRocketMQListenerContainer</span><span class="o">();</span>
+        
+        <span class="n">container</span><span class="o">.</span><span class="na">setRocketMQMessageListener</span><span class="o">(</span><span class="n">annotation</span><span class="o">);</span>
+        
+        <span class="nc">String</span> <span class="n">nameServer</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">nameServer</span><span class="o">());</span>
+        <span class="n">nameServer</span> <span class="o">=</span> <span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">nameServer</span><span class="o">)</span> <span class="o">?</span> <span class="n">rocketMQProperties</span><span class="o">.</span><span class="na">getNameServer</span><span class="o">()</span> <span class="o">:</span> <span class="n">nameServer</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">accessChannel</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">accessChannel</span><span class="o">());</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setNameServer</span><span class="o">(</span><span class="n">nameServer</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">accessChannel</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">container</span><span class="o">.</span><span class="na">setAccessChannel</span><span class="o">(</span><span class="nc">AccessChannel</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">accessChannel</span><span class="o">));</span>
+        <span class="o">}</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setTopic</span><span class="o">(</span><span class="n">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">topic</span><span class="o">()));</span>
+        <span class="nc">String</span> <span class="n">tags</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">selectorExpression</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">tags</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">container</span><span class="o">.</span><span class="na">setSelectorExpression</span><span class="o">(</span><span class="n">tags</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setConsumerGroup</span><span class="o">(</span><span class="n">environment</span><span class="o">.</span><span class="na">resolvePlaceholders</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">consumerGroup</span><span class="o">()));</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setRocketMQMessageListener</span><span class="o">(</span><span class="n">annotation</span><span class="o">);</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setRocketMQListener</span><span class="o">((</span><span class="nc">RocketMQListener</span><span class="o">)</span><span class="n">bean</span><span class="o">);</span> <span class="c1">// 具体的业务消费者对象</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setObjectMapper</span><span class="o">(</span><span class="n">objectMapper</span><span class="o">);</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setMessageConverter</span><span class="o">(</span><span class="n">rocketMQMessageConverter</span><span class="o">.</span><span class="na">getMessageConverter</span><span class="o">());</span>
+        <span class="n">container</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>  <span class="c1">// REVIEW ME, use the same clientId or multiple?</span>
+
+        <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">DefaultRocketMQListenerContainer</code>对象创建完后，就开始监听了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(!</span><span class="n">container</span><span class="o">.</span><span class="na">isRunning</span><span class="o">())</span> <span class="o">{</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="n">container</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Started container failed. {}"</span><span class="o">,</span> <span class="n">container</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>点进<code class="highlighter-rouge">DefaultRocketMQListenerContainer</code>类的start方法</p>
+
+<p><img src="\assets\images\2021\mq\default-rocketmq-listener-container.jpg" alt="" /></p>
+
+<p>这里还有stop()方法，是不是可以通过applicationContext根据所有DefaultRocketMQListenerContainer类的消费者，然后判断topic或者consumerGroup进行手动关闭。调用<code class="highlighter-rouge">consumer.start()</code> ，看看conusmer对象如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">DefaultMQPushConsumer</span> <span class="n">consumer</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>看类名字就知道是向rocketmq 服务端推送自己的注册信息，这个consumer对象是什么时候被创建的?DefaultRocketMQListenerContainer类实现了接口InitializingBean，这个接口有一个afterPropertiesSet()的后置方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">InitializingBean</span> <span class="o">{</span>
+
+	<span class="cm">/**
+	 * Invoked by the containing {@code BeanFactory} after it has set all bean properties
+	 * and satisfied {@link BeanFactoryAware}, {@code ApplicationContextAware} etc.
+	 * &lt;p&gt;This method allows the bean instance to perform validation of its overall
+	 * configuration and final initialization when all bean properties have been set.
+	 * @throws Exception in the event of misconfiguration (such as failure to set an
+	 * essential property) or if initialization fails for any other reason
+	 */</span>
+	<span class="kt">void</span> <span class="nf">afterPropertiesSet</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>所以在上面<code class="highlighter-rouge">createRocketMQListenerContainer()</code>方法创建完 DefaultRocketMQListenerContainer container对象后就触发了DefaultRocketMQListenerContainer 类的afterPropertiesSet()方法，里面调用了initRocketMQPushConsumer()方法初始化consumer对象</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-initRocketMQPushConsumer.png" alt="" /></p>
+
+<p><img src="\assets\images\2021\mq\default-rocketmq-listener-container-2.jpg" alt="" /></p>
+
+<p>initRocketMQPushConsumer()方法是一个核心方法，它设置了每个@RocketMQMessageListener 消费者向RocketMQ broker注册自己的消费者信息，如nameServer地址、一个消费者的最大消费线程数consumeThreadMax、 消费者连接超时时间consumeTimeout、消费模式consumerMode、选择消息的类型SelectorType（默认是TAG类型，即根据tag表达式取选择消息）、TAG表达式selectorExpression、消息模式messageModel（默认集群消费）、消费模式consumeMode(默认并发消费)</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="nc">MessageModel</span> <span class="o">{</span>
+    <span class="no">BROADCASTING</span><span class="o">(</span><span class="s">"BROADCASTING"</span><span class="o">),</span> <span class="c1">// 广播消息，一个消费组内的每一个消费者都会消费topic的所有队列，使用场景刷新本地缓存，一个队列对应每一个消费者</span>
+    <span class="no">CLUSTERING</span><span class="o">(</span><span class="s">"CLUSTERING"</span><span class="o">);</span>  <span class="c1">// 集群消息，一个消费组内的每一个消费者只消费topic的部分队列，一个队列只对应一个消费者，</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">modeCN</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nf">MessageModel</span><span class="o">(</span><span class="nc">String</span> <span class="n">modeCN</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">modeCN</span> <span class="o">=</span> <span class="n">modeCN</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getModeCN</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">modeCN</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>里面有一段代码会选择消费模式，顺序消费还是并发消费，会创建对应的消费类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">switch</span> <span class="o">(</span><span class="n">consumeMode</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nl">ORDERLY:</span>
+    <span class="n">consumer</span><span class="o">.</span><span class="na">setMessageListener</span><span class="o">(</span><span class="k">new</span> <span class="nc">DefaultMessageListenerOrderly</span><span class="o">());</span>
+    <span class="k">break</span><span class="o">;</span>
+  <span class="k">case</span> <span class="nl">CONCURRENTLY:</span>
+    <span class="n">consumer</span><span class="o">.</span><span class="na">setMessageListener</span><span class="o">(</span><span class="k">new</span> <span class="nc">DefaultMessageListenerConcurrently</span><span class="o">());</span>
+    <span class="k">break</span><span class="o">;</span>
+  <span class="k">default</span><span class="o">:</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Property 'consumeMode' was wrong."</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>@RocketMQMessageListener 注解的属性consumeMode默认是CONCURRENTLY 并发模式，那么就会创建消费对象DefaultMessageListenerConcurrently</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultMessageListenerConcurrently</span> <span class="kd">implements</span> <span class="nc">MessageListenerConcurrently</span> <span class="o">{</span>
+
+  <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"unchecked"</span><span class="o">)</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="nc">ConsumeConcurrentlyStatus</span> <span class="nf">consumeMessage</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageExt</span><span class="o">&gt;</span> <span class="n">msgs</span><span class="o">,</span> <span class="nc">ConsumeConcurrentlyContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">MessageExt</span> <span class="n">messageExt</span> <span class="o">:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"received msg: {}"</span><span class="o">,</span> <span class="n">messageExt</span><span class="o">);</span>
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="c1">// 把消息转换后，调用自定义的业务消费类，消费消息</span>
+        <span class="n">rocketMQListener</span><span class="o">.</span><span class="na">onMessage</span><span class="o">(</span><span class="n">doConvertMessage</span><span class="o">(</span><span class="n">messageExt</span><span class="o">));</span>
+        <span class="kt">long</span> <span class="n">costTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">now</span><span class="o">;</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"consume {} cost: {} ms"</span><span class="o">,</span> <span class="n">messageExt</span><span class="o">.</span><span class="na">getMsgId</span><span class="o">(),</span> <span class="n">costTime</span><span class="o">);</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"consume message failed. messageExt:{}"</span><span class="o">,</span> <span class="n">messageExt</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">setDelayLevelWhenNextConsume</span><span class="o">(</span><span class="n">delayLevelWhenNextConsume</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nc">ConsumeConcurrentlyStatus</span><span class="o">.</span><span class="na">RECONSUME_LATER</span><span class="o">;</span> <span class="c1">// 消费失败，让broker重发消息</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="nc">ConsumeConcurrentlyStatus</span><span class="o">.</span><span class="na">CONSUME_SUCCESS</span><span class="o">;</span> <span class="c1">// 消费成功</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>consumeMessage()就是消费方法啦，它把消息经过转换解析后再给到我们自定义的业务消费类，所以添加了注解@RocketMQMessageListener 的Service类都会创建一个消费者consumer，实现接口RocketMQListener，只需重写 onMessage() 消费消息，不要catch异常。</p>
+
+<p>那这个consumer是什么时候调用MessageListenerConcurrently对象的，要好好研究consumer.start()方法做了什么操作。</p>
+
+<h3 id="集成多个rocketmq集群">集成多个rocketMQ集群</h3>
+
+<p>统一APP的app-msg服务需要集成大公共消息中心的rocketmq集群和统一APP的rocketmq集群，下面是实现方案</p>
+
+<blockquote>
+  <p>生产者</p>
+</blockquote>
+
+<p>1、application.yml 配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 统一APP的rocketmq配置,RocketMQAutoConfiguration自动配置类默认读取该配置值，初始化RocketMQ客户端连接</span>
+<span class="na">rocketmq</span><span class="pi">:</span>
+  <span class="na">name-server</span><span class="pi">:</span> <span class="s">${ROCKETMQ_APP_NAME_SERVER}</span> <span class="c1"># 第一个业务rocketmq集群</span>
+  <span class="na">producer</span><span class="pi">:</span>
+    <span class="na">group</span><span class="pi">:</span> <span class="s">pg_app_msg</span>
+<span class="c1"># 统一APP的rocketmq配置</span>
+<span class="na">rocketmq-app</span><span class="pi">:</span>
+  <span class="na">name-server</span><span class="pi">:</span> <span class="s">${ROCKETMQ_APP_NAME_SERVER}</span> <span class="c1"># 第二个业务rocketmqt集群</span>
+  <span class="na">producer</span><span class="pi">:</span>
+    <span class="na">group</span><span class="pi">:</span> <span class="s">pg_app_msg</span>
+</code></pre></div></div>
+
+<p>2、自定义配置类，创建另外一个RocketMQ集群的消息发送者模板类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @author xiejinwei02
+ * @date 2022/7/14 17:21
+ * 配置统一APP的RocketMQ消息发送者，RocketMQAutoConfiguration自动配置类创建的RocketMQTemplate Bean是大公共消息平台的RocketMQ消息发送者
+ * 所以存在两个不同RocketMQ集群的消息发送者
+ */</span>
+<span class="nd">@Configuration</span>
+<span class="c1">//@ConditionalOnExpression("${push.enabled:false}==true")</span>
+<span class="nd">@EnableConfigurationProperties</span><span class="o">(</span><span class="nc">RocketMQProperties</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MqConfig</span> <span class="o">{</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${rocketmq-app.name-server}"</span><span class="o">)</span>
+    <span class="nc">String</span> <span class="n">nameServer</span><span class="o">;</span>
+
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${rocketmq-app.producer.group}"</span><span class="o">)</span>
+    <span class="nc">String</span> <span class="n">groupName</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 统一APP RocketMQ 消息发送模板类
+     * @param rocketMQMessageConverter
+     * @param rocketMQProperties
+     * @return
+     */</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">RocketMQTemplate</span> <span class="nf">appRocketMQTemplate</span><span class="o">(</span><span class="nd">@Autowired</span> <span class="nc">RocketMQMessageConverter</span> <span class="n">rocketMQMessageConverter</span><span class="o">,</span><span class="nc">RocketMQProperties</span> <span class="n">rocketMQProperties</span><span class="o">){</span>
+        <span class="kt">boolean</span> <span class="n">isEnableMsgTrace</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">customizedTraceTopic</span> <span class="o">=</span> <span class="nc">MixAll</span><span class="o">.</span><span class="na">RMQ_SYS_TRACE_TOPIC</span><span class="o">;</span>
+        <span class="nc">RocketMQTemplate</span> <span class="n">appRocketMQTemplate</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RocketMQTemplate</span><span class="o">();</span>
+        <span class="nc">DefaultMQProducer</span> <span class="n">producer</span> <span class="o">=</span> <span class="nc">RocketMQUtil</span><span class="o">.</span><span class="na">createDefaultMQProducer</span><span class="o">(</span><span class="n">groupName</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span> <span class="n">isEnableMsgTrace</span><span class="o">,</span> <span class="n">customizedTraceTopic</span><span class="o">);</span> <span class="c1">// 参照自动配置类创建发送者</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setNamesrvAddr</span><span class="o">(</span><span class="n">nameServer</span><span class="o">);</span>
+        <span class="nc">RocketMQProperties</span><span class="o">.</span><span class="na">Producer</span> <span class="n">producerConfig</span> <span class="o">=</span> <span class="n">rocketMQProperties</span><span class="o">.</span><span class="na">getProducer</span><span class="o">();</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setSendMsgTimeout</span><span class="o">(</span><span class="n">producerConfig</span><span class="o">.</span><span class="na">getSendMessageTimeout</span><span class="o">());</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setRetryTimesWhenSendFailed</span><span class="o">(</span><span class="n">producerConfig</span><span class="o">.</span><span class="na">getRetryTimesWhenSendFailed</span><span class="o">());</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setRetryTimesWhenSendAsyncFailed</span><span class="o">(</span><span class="n">producerConfig</span><span class="o">.</span><span class="na">getRetryTimesWhenSendAsyncFailed</span><span class="o">());</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setMaxMessageSize</span><span class="o">(</span><span class="n">producerConfig</span><span class="o">.</span><span class="na">getMaxMessageSize</span><span class="o">());</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setCompressMsgBodyOverHowmuch</span><span class="o">(</span><span class="n">producerConfig</span><span class="o">.</span><span class="na">getCompressMessageBodyThreshold</span><span class="o">());</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setRetryAnotherBrokerWhenNotStoreOK</span><span class="o">(</span><span class="n">producerConfig</span><span class="o">.</span><span class="na">isRetryNextServer</span><span class="o">());</span>
+        <span class="n">producer</span><span class="o">.</span><span class="na">setInstanceName</span><span class="o">(</span><span class="s">"AppMQProducer"</span><span class="o">);</span> <span class="c1">// 必须设置实例名称，根据实际业务名称设置</span>
+        <span class="n">appRocketMQTemplate</span><span class="o">.</span><span class="na">setProducer</span><span class="o">(</span><span class="n">producer</span><span class="o">);</span>
+        <span class="n">appRocketMQTemplate</span><span class="o">.</span><span class="na">setMessageConverter</span><span class="o">(</span><span class="n">rocketMQMessageConverter</span><span class="o">.</span><span class="na">getMessageConverter</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">appRocketMQTemplate</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 待办线程池，用于异步设置“待办列表更新”期望值、推送待办APP消息
+     * @return
+     */</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">ThreadPoolExecutor</span> <span class="nf">todoThreadPool</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">ThreadPoolExecutor</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span>
+                <span class="mi">200</span><span class="o">,</span>
+                <span class="mi">300</span><span class="o">,</span>
+                <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">,</span>
+                <span class="k">new</span> <span class="nc">LinkedBlockingDeque</span><span class="o">&lt;&gt;(</span><span class="mi">10000</span><span class="o">),</span>
+                <span class="nc">Executors</span><span class="o">.</span><span class="na">defaultThreadFactory</span><span class="o">(),</span>
+                <span class="k">new</span> <span class="nc">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、Service业务层使用</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Slf4j</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MessageServiceImpl</span> <span class="kd">implements</span> <span class="nc">MessageService</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"rocketMQTemplate"</span><span class="o">)</span>
+    <span class="nc">RocketMQTemplate</span> <span class="n">rocketMQTemplate</span><span class="o">;</span> <span class="c1">// 第一个业务rocketmq集群的消息发送模板类Bean</span>
+    
+    <span class="nd">@Resource</span>
+    <span class="nc">RocketMQTemplate</span> <span class="n">rocketMQTemplate</span><span class="o">;</span> <span class="c1">// 第一个业务rocketmq集群的消息发送模板类Bean</span>
+    
+    <span class="nd">@Autowired</span>
+    <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"appRocketMQTemplate"</span><span class="o">)</span>
+    <span class="nc">RocketMQTemplate</span> <span class="n">appRocketMQTemplate</span><span class="o">;</span> <span class="c1">// 第二个业务rocketmq集群的消息发送模板类Bean</span>
+    
+    <span class="nd">@Resource</span>
+  	<span class="nc">RocketMQTemplate</span> <span class="n">appRocketMQTemplate</span><span class="o">;</span>  <span class="c1">// 第二个业务rocketmq集群的消息发送模板类Bean  </span>
+    
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">sendRetryPushTodo</span><span class="o">(</span><span class="nc">DeviceInfoRetDTO</span> <span class="n">device</span><span class="o">,</span><span class="nc">TodoEntity</span> <span class="n">todoEntity</span><span class="o">){</span>
+        <span class="nc">RePushTodoEntity</span> <span class="n">rePushTodo</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RePushTodoEntity</span><span class="o">();</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setSourceAppName</span><span class="o">(</span><span class="n">todoEntity</span><span class="o">.</span><span class="na">getSourceAppName</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setSubject</span><span class="o">(</span><span class="n">todoEntity</span><span class="o">.</span><span class="na">getSubject</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="n">todoEntity</span><span class="o">.</span><span class="na">getTitle</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setModelId</span><span class="o">(</span><span class="n">todoEntity</span><span class="o">.</span><span class="na">getModelId</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setMobileLink</span><span class="o">(</span><span class="n">todoEntity</span><span class="o">.</span><span class="na">getMobileLink</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setUserAccount</span><span class="o">(</span><span class="n">device</span><span class="o">.</span><span class="na">getUserAccount</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setUserType</span><span class="o">(</span><span class="n">device</span><span class="o">.</span><span class="na">getUserType</span><span class="o">().</span><span class="na">getText</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setSystemName</span><span class="o">(</span><span class="n">device</span><span class="o">.</span><span class="na">getOs</span><span class="o">().</span><span class="na">name</span><span class="o">().</span><span class="na">toLowerCase</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setDeviceId</span><span class="o">(</span><span class="n">device</span><span class="o">.</span><span class="na">getPlatformDeviceId</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setPushAppName</span><span class="o">(</span><span class="n">device</span><span class="o">.</span><span class="na">getAppName</span><span class="o">());</span>
+        <span class="n">rePushTodo</span><span class="o">.</span><span class="na">setExtra</span><span class="o">(</span><span class="n">todoEntity</span><span class="o">.</span><span class="na">getExtra</span><span class="o">());</span>
+        <span class="c1">// 同步发送</span>
+        <span class="nc">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="n">appRocketMQTemplate</span><span class="o">.</span><span class="na">syncSend</span><span class="o">(</span><span class="nc">CommonConstant</span><span class="o">.</span><span class="na">RETRY_PUSH_TODO</span><span class="o">,</span> <span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">rePushTodo</span><span class="o">).</span><span class="na">setHeader</span><span class="o">(</span><span class="nc">RocketMQHeaders</span><span class="o">.</span><span class="na">KEYS</span><span class="o">,</span> <span class="n">todoEntity</span><span class="o">.</span><span class="na">getModelId</span><span class="o">()).</span><span class="na">build</span><span class="o">());</span>
+        <span class="k">if</span><span class="o">(!</span><span class="n">sendResult</span><span class="o">.</span><span class="na">getSendStatus</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="nc">SendStatus</span><span class="o">.</span><span class="na">SEND_OK</span><span class="o">)){</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"发送MQ消息，重推APP待办消息提醒，失败,{}"</span><span class="o">,</span><span class="n">rePushTodo</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>消费者</p>
+</blockquote>
+
+<p>1、application.yml 配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 大公共消息平台的rocketmq集群</span>
+<span class="na">rocketmq</span><span class="pi">:</span>
+  <span class="na">name-server</span><span class="pi">:</span> <span class="s">${ROCKETMQ_NAME_SERVER}</span>  <span class="c1"># 第一个业务rocketmq集群</span>
+  <span class="na">producer</span><span class="pi">:</span>
+    <span class="na">group</span><span class="pi">:</span> <span class="s">pg_app_msg_worker</span>
+
+<span class="c1"># 统一APP的rocketmq集群</span>
+<span class="na">rocketmq-app</span><span class="pi">:</span>
+  <span class="na">name-server</span><span class="pi">:</span> <span class="s">${ROCKETMQ_APP_NAME_SERVER}</span>  <span class="c1"># 第二个业务rocketmq集群</span>
+  <span class="na">producer</span><span class="pi">:</span>
+    <span class="na">group</span><span class="pi">:</span> <span class="s">pg_app_msg_worker</span>
+</code></pre></div></div>
+
+<p>2、自定义消费监听者</p>
+
+<p>根据业务创建</p>
+
+<ul>
+  <li>待办， 第一个业务rocketmq集群的监听者，默认的<code class="highlighter-rouge">${rocketmq.name-server}</code></li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Slf4j</span>
+<span class="nd">@Service</span>
+<span class="nd">@RocketMQMessageListener</span><span class="o">(</span><span class="n">topic</span> <span class="o">=</span> <span class="s">"Employee-Todo"</span><span class="o">,</span><span class="n">selectorExpression</span> <span class="o">=</span> <span class="s">"*"</span><span class="o">,</span><span class="n">consumerGroup</span> <span class="o">=</span> <span class="s">"EmployeeTodo-PT20090"</span><span class="o">,</span><span class="n">consumeMode</span> <span class="o">=</span> <span class="nc">ConsumeMode</span><span class="o">.</span><span class="na">ORDERLY</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EmployeeTodoListener</span> <span class="kd">extends</span> <span class="nc">BaseTodoListener</span> <span class="kd">implements</span> <span class="nc">RocketMQListener</span><span class="o">&lt;</span><span class="nc">MessageExt</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@SneakyThrows</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="nc">MessageExt</span> <span class="n">payload</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">MessageBody</span><span class="o">.</span><span class="na">TodoBody</span> <span class="n">todoBody</span> <span class="o">=</span> <span class="n">convertTodoBody</span><span class="o">(</span><span class="n">payload</span><span class="o">);</span>
+        <span class="n">handleTodo</span><span class="o">(</span><span class="n">todoBody</span><span class="o">,</span><span class="n">payload</span><span class="o">.</span><span class="na">getTags</span><span class="o">(),</span> <span class="nc">UserTypeEnum</span><span class="o">.</span><span class="na">BIP</span><span class="o">.</span><span class="na">getText</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>通知置为已办， 第二个业务rocketmq集群的监听者，指定name-server地址是<code class="highlighter-rouge">${rocketmq-app.name-server}</code>，同时指定accessKey和secretKey值</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @author xiejinwei02
+ * @date 2022/9/27 16:44
+ * 降低消费线程数，避免高并发调用总线接口
+ */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Service</span>
+<span class="nd">@RocketMQMessageListener</span><span class="o">(</span><span class="n">topic</span> <span class="o">=</span> <span class="s">"${topic.todo}"</span><span class="o">,</span><span class="n">selectorExpression</span> <span class="o">=</span> <span class="nc">CommonConstant</span><span class="o">.</span><span class="na">TAG_DONE</span><span class="o">,</span><span class="n">nameServer</span> <span class="o">=</span> <span class="s">"${rocketmq-app.name-server:}"</span><span class="o">,</span><span class="n">consumerGroup</span> <span class="o">=</span> <span class="s">"${consumerGroup.notifyTodoDone}"</span><span class="o">,</span><span class="n">consumeThreadMax</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span><span class="n">accessKey</span> <span class="o">=</span> <span class="s">"access"</span><span class="o">,</span><span class="n">secretKey</span> <span class="o">=</span> <span class="s">"secret"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NotifyTodoDoneListener</span> <span class="kd">implements</span> <span class="nc">RocketMQListener</span><span class="o">&lt;</span><span class="nc">SetTodoDoneEntity</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">MessageService</span> <span class="n">messageService</span><span class="o">;</span>
+
+    <span class="nd">@SneakyThrows</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="nc">SetTodoDoneEntity</span> <span class="n">entity</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">messageService</span><span class="o">.</span><span class="na">notifyBipSetTodoDone</span><span class="o">(</span><span class="n">entity</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>注意：accessKey 和 secretKey必须要设置值，否则不会向nameServer指定的rocketMQ集群注册client 连接，而是默认的</p>
+
+<p><code class="highlighter-rouge">"${rocketmq.name-server:}"</code>集群注册client连接。上面源码分析中的配置类 <code class="highlighter-rouge">ListenerContainerConfiguration</code> 创建消费对象</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-default-push-consumer.png" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="nc">RPCHook</span> <span class="nf">getRPCHookByAkSk</span><span class="o">(</span><span class="nc">Environment</span> <span class="n">env</span><span class="o">,</span> <span class="nc">String</span> <span class="n">accessKeyOrExpr</span><span class="o">,</span> <span class="nc">String</span> <span class="n">secretKeyOrExpr</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">ak</span><span class="o">,</span> <span class="n">sk</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">ak</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="na">resolveRequiredPlaceholders</span><span class="o">(</span><span class="n">accessKeyOrExpr</span><span class="o">);</span>
+        <span class="n">sk</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="na">resolveRequiredPlaceholders</span><span class="o">(</span><span class="n">secretKeyOrExpr</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Ignore it</span>
+        <span class="n">ak</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">sk</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">// 不为空才创建rpc连接</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">ak</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">sk</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">AclClientRPCHook</span><span class="o">(</span><span class="k">new</span> <span class="nc">SessionCredentials</span><span class="o">(</span><span class="n">ak</span><span class="o">,</span> <span class="n">sk</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="rocketmqlistener和rocketmqreplylistener">RocketMQListener和RocketMQReplyListener</h3>
+
+<p>在Springboot 集成RocketMQ的创建消费者的配置类<code class="highlighter-rouge">ListenerContainerConfiguration</code>（被RocketMQAutoConfiguration @import注解引入）, registerContainer()方法创建消费者的判断</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-register-container.png" alt="" /></p>
+
+<p>消费者实现类不能同时实现接口<code class="highlighter-rouge">RocketMQListener</code>和<code class="highlighter-rouge">RocketMQReplyListener</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">rocketmq</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">core</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RocketMQListener</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="no">T</span> <span class="n">message</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">rocketmq</span><span class="o">.</span><span class="na">spring</span><span class="o">.</span><span class="na">core</span><span class="o">;</span>
+
+<span class="cm">/**
+ * The consumer supporting request-reply should implement this interface.
+ *
+ * @param &lt;T&gt; the type of data received by the listener
+ * @param &lt;R&gt; the type of data replying to producer
+ */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RocketMQReplyListener</span><span class="o">&lt;</span><span class="no">T</span><span class="o">,</span> <span class="no">R</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="cm">/**
+     * @param message data received by the listener
+     * @return data replying to producer
+     */</span>
+    <span class="no">R</span> <span class="nf">onMessage</span><span class="o">(</span><span class="no">T</span> <span class="n">message</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">RocketMQReplyListener</code>多了一个返回值给消息生产者，这个应用在怎样的场景中？</p>
+
+<p>上面分析了@RocketMQMessageListener的消费者最终调用了<code class="highlighter-rouge">DefaultMessageListenerConcurrently</code>或者<code class="highlighter-rouge">DefaultMessageListenerOrderly</code>的 consumeMessage()方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DefaultMessageListenerConcurrently</span> <span class="kd">implements</span> <span class="nc">MessageListenerConcurrently</span> <span class="o">{</span>
+
+    <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"unchecked"</span><span class="o">)</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ConsumeConcurrentlyStatus</span> <span class="nf">consumeMessage</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageExt</span><span class="o">&gt;</span> <span class="n">msgs</span><span class="o">,</span> <span class="nc">ConsumeConcurrentlyContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">MessageExt</span> <span class="n">messageExt</span> <span class="o">:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"received msg: {}"</span><span class="o">,</span> <span class="n">messageExt</span><span class="o">);</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                <span class="n">handleMessage</span><span class="o">(</span><span class="n">messageExt</span><span class="o">);</span>
+                <span class="kt">long</span> <span class="n">costTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">now</span><span class="o">;</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"consume {} cost: {} ms"</span><span class="o">,</span> <span class="n">messageExt</span><span class="o">.</span><span class="na">getMsgId</span><span class="o">(),</span> <span class="n">costTime</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"consume message failed. messageExt:{}, error:{}"</span><span class="o">,</span> <span class="n">messageExt</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                <span class="n">context</span><span class="o">.</span><span class="na">setDelayLevelWhenNextConsume</span><span class="o">(</span><span class="n">delayLevelWhenNextConsume</span><span class="o">);</span>
+                <span class="k">return</span> <span class="nc">ConsumeConcurrentlyStatus</span><span class="o">.</span><span class="na">RECONSUME_LATER</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nc">ConsumeConcurrentlyStatus</span><span class="o">.</span><span class="na">CONSUME_SUCCESS</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>进入handleMessage()方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span>
+    <span class="nc">MessageExt</span> <span class="n">messageExt</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">MQClientException</span><span class="o">,</span> <span class="nc">RemotingException</span><span class="o">,</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">rocketMQListener</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">rocketMQListener</span><span class="o">.</span><span class="na">onMessage</span><span class="o">(</span><span class="n">doConvertMessage</span><span class="o">(</span><span class="n">messageExt</span><span class="o">));</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">rocketMQReplyListener</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 接收返回值</span>
+        <span class="nc">Object</span> <span class="n">replyContent</span> <span class="o">=</span> <span class="n">rocketMQReplyListener</span><span class="o">.</span><span class="na">onMessage</span><span class="o">(</span><span class="n">doConvertMessage</span><span class="o">(</span><span class="n">messageExt</span><span class="o">));</span>
+        <span class="c1">// 创建MQ消息</span>
+        <span class="nc">Message</span><span class="o">&lt;?&gt;</span> <span class="n">message</span> <span class="o">=</span> <span class="nc">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">replyContent</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="c1">// 第一个参数是消费者的入参消息</span>
+        <span class="c1">// 第二个参数是消费者的出参</span>
+        <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">rocketmq</span><span class="o">.</span><span class="na">common</span><span class="o">.</span><span class="na">message</span><span class="o">.</span><span class="na">Message</span> <span class="n">replyMessage</span> <span class="o">=</span> <span class="nc">MessageUtil</span><span class="o">.</span><span class="na">createReplyMessage</span><span class="o">(</span><span class="n">messageExt</span><span class="o">,</span> <span class="n">convertToBytes</span><span class="o">(</span><span class="n">message</span><span class="o">));</span>
+        <span class="c1">// 异步发送消息</span>
+        <span class="n">consumer</span><span class="o">.</span><span class="na">getDefaultMQPushConsumerImpl</span><span class="o">().</span><span class="na">getmQClientFactory</span><span class="o">().</span><span class="na">getDefaultMQProducer</span><span class="o">().</span><span class="na">send</span><span class="o">(</span><span class="n">replyMessage</span><span class="o">,</span> <span class="k">new</span> <span class="nc">SendCallback</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="nc">SendResult</span> <span class="n">sendResult</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">sendResult</span><span class="o">.</span><span class="na">getSendStatus</span><span class="o">()</span> <span class="o">!=</span> <span class="nc">SendStatus</span><span class="o">.</span><span class="na">SEND_OK</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Consumer replies message failed. SendStatus: {}"</span><span class="o">,</span> <span class="n">sendResult</span><span class="o">.</span><span class="na">getSendStatus</span><span class="o">());</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Consumer replies message success."</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Consumer replies message failed. error: {}"</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getLocalizedMessage</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>发现 registerContainer() 要判断消费者只能实现接口<code class="highlighter-rouge">RocketMQListener</code>和<code class="highlighter-rouge">RocketMQReplyListener</code>其中一个的原因。</p>
+
+<p>如果是rocketMQReplyListener，用Object 类型接收任何数据类型的返回值，并封装成MQ消息体，发送给消息的生产者，那topic是多少？看MessageUtil.createReplyMessage()方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MessageUtil</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Message</span> <span class="nf">createReplyMessage</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Message</span> <span class="n">requestMessage</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">body</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">MQClientException</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">requestMessage</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">Message</span> <span class="n">replyMessage</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Message</span><span class="o">();</span>
+            <span class="nc">String</span> <span class="n">cluster</span> <span class="o">=</span> <span class="n">requestMessage</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_CLUSTER</span><span class="o">);</span>
+            <span class="nc">String</span> <span class="n">replyTo</span> <span class="o">=</span> <span class="n">requestMessage</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MESSAGE_REPLY_TO_CLIENT</span><span class="o">);</span>
+            <span class="nc">String</span> <span class="n">correlationId</span> <span class="o">=</span> <span class="n">requestMessage</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_CORRELATION_ID</span><span class="o">);</span>
+            <span class="nc">String</span> <span class="n">ttl</span> <span class="o">=</span> <span class="n">requestMessage</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MESSAGE_TTL</span><span class="o">);</span>
+            <span class="n">replyMessage</span><span class="o">.</span><span class="na">setBody</span><span class="o">(</span><span class="n">body</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cluster</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// 设置返回消息的topic</span>
+                <span class="nc">String</span> <span class="n">replyTopic</span> <span class="o">=</span> <span class="nc">MixAll</span><span class="o">.</span><span class="na">getReplyTopic</span><span class="o">(</span><span class="n">cluster</span><span class="o">);</span>
+                <span class="n">replyMessage</span><span class="o">.</span><span class="na">setTopic</span><span class="o">(</span><span class="n">replyTopic</span><span class="o">);</span>
+                <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">putProperty</span><span class="o">(</span><span class="n">replyMessage</span><span class="o">,</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MESSAGE_TYPE</span><span class="o">,</span> <span class="nc">MixAll</span><span class="o">.</span><span class="na">REPLY_MESSAGE_FLAG</span><span class="o">);</span>
+                <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">putProperty</span><span class="o">(</span><span class="n">replyMessage</span><span class="o">,</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_CORRELATION_ID</span><span class="o">,</span> <span class="n">correlationId</span><span class="o">);</span>
+                <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">putProperty</span><span class="o">(</span><span class="n">replyMessage</span><span class="o">,</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MESSAGE_REPLY_TO_CLIENT</span><span class="o">,</span> <span class="n">replyTo</span><span class="o">);</span>
+                <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">putProperty</span><span class="o">(</span><span class="n">replyMessage</span><span class="o">,</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MESSAGE_TTL</span><span class="o">,</span> <span class="n">ttl</span><span class="o">);</span>
+
+                <span class="k">return</span> <span class="n">replyMessage</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="nc">ClientErrorCode</span><span class="o">.</span><span class="na">CREATE_REPLY_MESSAGE_EXCEPTION</span><span class="o">,</span> <span class="s">"create reply message fail, requestMessage error, property["</span> <span class="o">+</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_CLUSTER</span> <span class="o">+</span> <span class="s">"] is null."</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="nc">ClientErrorCode</span><span class="o">.</span><span class="na">CREATE_REPLY_MESSAGE_EXCEPTION</span><span class="o">,</span> <span class="s">"create reply message fail, requestMessage cannot be null."</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getReplyToClient</span><span class="o">(</span><span class="kd">final</span> <span class="nc">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MESSAGE_REPLY_TO_CLIENT</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>其中</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">cluster</span> <span class="o">=</span> <span class="n">requestMessage</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_CLUSTER</span><span class="o">);</span>  <span class="c1">// 常量值=CLUSTER</span>
+<span class="nc">String</span> <span class="n">replyTopic</span> <span class="o">=</span> <span class="nc">MixAll</span><span class="o">.</span><span class="na">getReplyTopic</span><span class="o">(</span><span class="n">cluster</span><span class="o">);</span>
+<span class="n">replyMessage</span><span class="o">.</span><span class="na">setTopic</span><span class="o">(</span><span class="n">replyTopic</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">MixAll.getReplyTopic()</code>方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getReplyTopic</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">clusterName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">clusterName</span> <span class="o">+</span> <span class="s">"_"</span> <span class="o">+</span> <span class="no">REPLY_TOPIC_POSTFIX</span><span class="o">;</span> <span class="c1">// 常量值=REPLY_TOPIC</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>那么topic就是：原消息MessageExt的properties属性(HashMap)中key=CLUSTER的值 + 下划线+REPLY_TOPIC</p>
+
+<p>相当于消费者对生产者的每一个消息消费后的一个应答</p>
+
+<p><img src="\assets\images\2021\mq\rocketmq-replylistener.png" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/mq/2021/03/24/rocketmq-stater-001.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

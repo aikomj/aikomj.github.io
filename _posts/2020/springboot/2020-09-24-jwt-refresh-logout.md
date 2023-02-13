@@ -4,7 +4,7 @@ title: spring oauth2+JWT后端自动刷新access_token
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: JWT 存储在客户端的认证字符串，无状态化，它可以存储当前登录的用户等认证信息
+excerpt: JWT 存储在客户端的认证字符串，无状态化，它可以存储当前登录的用户等认证信息,jwt的4种注销方法，jwt的刷新
 lock: noneed
 ---
 
@@ -188,16 +188,16 @@ public class ShiroConfig {
 
 ### 刷新令牌
 
-当用户登录时，为他们提供JWT和刷新令牌ref_token。将刷新令牌存储在数据库中。
+当用户登录时，为他们提供JWT和刷新令牌refreshToken。将刷新令牌存储在数据库中。
 
 对于经过身份验证的请求，客户端可以使用JWT，但是当令牌过期（或即将过期）时，让客户端使用刷新令牌发出请求以换取新的JWT。这样，您只需在用户登录或要求新的JWT时访问数据库。当用户注销时，您需要使存储的刷新令牌无效。否则，即使用户已经注销，有人在监听连接时仍然可以获得新的JWT。但注销到JWT过期仍然有一个时间窗口，JWT是依然可用的。这里只是解决了用户无感刷新JWT的问题，客户端携带刷新令牌获取新的JWT。
 ### 创建JWT黑名单
 
-当后端收到注销请求时，将JWT存储在redis，并设置过期时间等于JWT的剩余存活时间。
+当后端收到注销请求时，将JWT存储在Redis，并设置过期时间等于JWT的剩余存活时间。
 
 对于每个经过身份验证的请求，您需要检查Redis查看令牌是否已失效。根据令牌剩余有效期设置内存数据失效时间，达到自动清除的目的，JWT可以携带一个UUID，作为黑名单中JWT的key，該key对应的value就是redis的过期时间，redis可以使用Map的数据类型存储。
 
-个人觉得JWT黑名单是较好的JWT注销方案。
+<mark>个人觉得JWT黑名单是较好的JWT注销方案。</mark>
 
 ## 3、JWT 刷新
 

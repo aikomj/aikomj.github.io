@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Spring Security 中的Bcrypt加密算法 - 大伟的博客 </title>
+    <meta name="keywords" content="security">
+    <meta name="description"
+          content="bcrypt算法使用慢哈希，降低密码暴力破解攻击">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2021/03/14/spring-security-bcrypt.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Spring Security 中的Bcrypt加密算法">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Spring Security 中的Bcrypt加密算法</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/03/14
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1前言">1、前言</h2>
+
+<h3 id="密码加盐">密码加盐</h3>
+
+<p>加盐哈希是一种常见的保存用户密码的方法。知乎上有个问题大家可以先读一下: <a href="https://www.zhihu.com/question/20299384">加盐密码保存的最通用方法是？</a></p>
+
+<p><mark>对于每个用户的密码，都应该使用独一无二的盐值</mark>，每当新用户注册或者修改密码时，都应该使用新的盐值进行加密，并且这个盐值应该足够长，使得有足够的盐值以供加密。随着彩虹表的出现及不断增大，MD5算法不建议再使用了</p>
+
+<p><strong>存储密码的步骤</strong></p>
+
+<p>使用基于加密的伪随机数生成器（Cryptographically Secure Pseudo-Random Number Generator – CSPRNG）生成一个足够长的盐值，如Java中的<a href="https://docs.oracle.com/javase/8/docs/api/java/security/SecureRandom.html">java.security.SecureRandom</a></p>
+
+<p>将盐值混入密码(常用的做法是置于密码之前)，并使用标准的加密哈希函数进行加密，如SHA256</p>
+
+<p>把哈希值和盐值一起存入数据库中对应此用户的那条记录</p>
+
+<p><strong>校验密码的步骤</strong></p>
+
+<p>从数据库取出用户的密码哈希值和对应盐值</p>
+
+<p>将盐值混入用户输入的密码，并使用相同的哈希函数进行加密</p>
+
+<p>比较上一步结果和哈希值是否相同，如果相同那么密码正确，反之密码错误</p>
+
+<p><strong>暴力攻击</strong></p>
+
+<p>加盐使攻击者无法采用特定的查询表或彩虹表快速破解大量哈希值，但不能阻止字典攻击或暴力攻击。这里假设攻击者已经获取到用户数据库，意味着攻击者知道每个用户的盐值，根据<a href="https://en.wikipedia.org/wiki/Kerckhoffs's_principle">Kerckhoffs’s principle</a>，应该假设攻击者知道用户系统使用密码加密算法，如果攻击者使用高端GPU或定制的<a href="https://en.wikipedia.org/wiki/Application-specific_integrated_circuit">ASIC</a>，每秒可以进行数十亿次哈希计算，针对每个用户进行字典查询的效率依旧很高效。</p>
+
+<p>为了降低这类攻击，可以用一种叫做<strong>密钥扩展</strong>的技术，让哈希函数变得很慢，即使GPU或ASIC字典攻击或暴力攻击也会慢得让攻击者无法接受。密钥扩展的实现依赖一种CPU密集型哈希函数，如<a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>和本文将要介绍的<a href="https://en.wikipedia.org/wiki/Bcrypt">Bcrypt</a>。这类函数使用一个安全因子或迭代次数作为参数，该值决定了哈希函数会有多慢。</p>
+
+<h2 id="2bcrypt加密算法">2、Bcrypt加密算法</h2>
+
+<p>Bcrypt是由Niels Provos和DavidMazières基于Blowfish密码设计的一种密码散列函数，于1999年在USENIX上发布。</p>
+
+<h3 id="伪代码">伪代码</h3>
+
+<p>wikipedia上Bcrypt词条中有该算法的伪代码:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Function</span> <span class="n">bcrypt</span>
+
+    <span class="nl">Input:</span>
+
+        <span class="nl">cost:</span>    <span class="nc">Number</span> <span class="o">(</span><span class="mi">4</span><span class="o">..</span><span class="mi">31</span><span class="o">)</span>                <span class="c1">// 该值决定了密钥扩展的迭代次数 Iterations = 2^cost</span>
+
+        <span class="nl">salt:</span>    <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">16</span> <span class="n">bytes</span><span class="o">)</span>    <span class="c1">// 随机数</span>
+
+        <span class="nl">password:</span> <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">72</span> <span class="n">bytes</span><span class="o">)</span>  <span class="c1">// 用户密码</span>
+
+    <span class="nl">Output:</span>
+
+        <span class="nl">hash:</span>    <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">24</span> <span class="n">bytes</span><span class="o">)</span>    <span class="c1">// 返回的哈希值</span>
+
+    <span class="c1">// 使用Expensive key setup算法初始化Blowfish状态</span>
+
+    <span class="n">state</span> <span class="o">&lt;-</span> <span class="nc">EksBlowfishSetup</span><span class="o">(</span><span class="n">cost</span><span class="o">,</span> <span class="n">salt</span><span class="o">,</span> <span class="n">password</span><span class="o">)</span>    <span class="c1">// 这一步是整个算法中最耗时的步骤</span>
+
+    <span class="n">ctext</span> <span class="o">&lt;-</span> <span class="s">"OrpheanBeholderScryDoubt"</span>    <span class="c1">// 24 bytes，初始向量</span>
+
+    <span class="n">repeat</span> <span class="o">(</span><span class="mi">64</span><span class="o">)</span>
+
+        <span class="n">ctext</span> <span class="o">&lt;-</span> <span class="nc">EncryptECB</span><span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="n">ctext</span><span class="o">)</span>  <span class="c1">// 使用 blowfish 算法的ECB模式进行加密</span>
+
+    <span class="k">return</span> <span class="nf">Concatenate</span><span class="o">(</span><span class="n">cost</span><span class="o">,</span> <span class="n">salt</span><span class="o">,</span> <span class="n">ctext</span><span class="o">)</span>
+
+<span class="c1">// Expensive key setup</span>
+
+<span class="nc">Function</span> <span class="nc">EksBlowfishSetup</span>
+
+    <span class="nl">Input:</span>
+
+        <span class="nl">cost:</span>    <span class="nc">Number</span> <span class="o">(</span><span class="mi">4</span><span class="o">..</span><span class="mi">31</span><span class="o">)</span>
+
+        <span class="nl">salt:</span>    <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">16</span> <span class="n">bytes</span><span class="o">)</span>
+
+        <span class="nl">password:</span> <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">72</span> <span class="n">bytes</span><span class="o">)</span>
+
+    <span class="nl">Output:</span>
+
+        <span class="nl">state:</span>    <span class="n">opaque</span> <span class="nc">BlowFish</span> <span class="n">state</span> <span class="n">structure</span>
+
+    <span class="n">state</span> <span class="o">&lt;-</span> <span class="nc">InitialState</span><span class="o">()</span>
+
+    <span class="n">state</span> <span class="o">&lt;-</span> <span class="nc">ExpandKey</span><span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="n">salt</span><span class="o">,</span> <span class="n">password</span><span class="o">)</span>
+
+    <span class="n">repeat</span> <span class="o">(</span><span class="mi">2</span> <span class="o">^</span> <span class="n">cost</span><span class="o">)</span>          <span class="c1">// 计算密集型</span>
+
+        <span class="n">state</span> <span class="o">&lt;-</span> <span class="nc">ExpandKey</span><span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">password</span><span class="o">)</span>
+
+        <span class="n">state</span> <span class="o">&lt;-</span> <span class="nc">ExpandKey</span><span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">salt</span><span class="o">)</span>
+
+    <span class="k">return</span> <span class="n">state</span>
+
+<span class="nc">Function</span> <span class="nf">ExpandKey</span><span class="o">(</span><span class="n">state</span><span class="o">,</span> <span class="n">salt</span><span class="o">,</span> <span class="n">password</span><span class="o">)</span>
+
+    <span class="nl">Input:</span>
+
+        <span class="nl">state:</span>    <span class="nc">Opaque</span> <span class="nc">BlowFish</span> <span class="n">state</span> <span class="n">structure</span>  <span class="c1">// 内部包含 P-array 和 S-box</span>
+
+        <span class="nl">salt:</span>    <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">16</span> <span class="n">bytes</span><span class="o">)</span>
+
+        <span class="nl">password:</span> <span class="n">array</span> <span class="n">of</span> <span class="nf">Bytes</span> <span class="o">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">72</span> <span class="n">bytes</span><span class="o">)</span>
+
+    <span class="nl">Output:</span>
+
+        <span class="nl">state:</span>    <span class="nc">Opaque</span> <span class="nc">BlowFish</span> <span class="n">state</span> <span class="n">structure</span>
+</code></pre></div></div>
+
+<p>通过伪代码可以看出，通过制定不同的cost值，可以使得EksBlowfishSetup的运算次数大幅提升，从而达到慢哈希的目的。</p>
+
+<h3 id="springsecurity中的bcrypt">SpringSecurity中的Bcrypt</h3>
+
+<p>BCryptPasswordEncoder.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BCryptPasswordEncoder</span> <span class="kd">implements</span> <span class="nc">PasswordEncoder</span> <span class="o">{</span>
+  <span class="o">...</span><span class="err">省略</span><span class="n">log</span><span class="o">...</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">strength</span><span class="o">;</span>        <span class="c1">// 相当于wiki伪代码中的cost，默认为10</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">SecureRandom</span> <span class="n">random</span><span class="o">;</span>  <span class="c1">// CSPRNG</span>
+  
+  <span class="kd">public</span> <span class="nf">BCryptPasswordEncoder</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 相当于伪代码中的cost, 长度 4 ~ 31</span>
+  <span class="kd">public</span> <span class="nf">BCryptPasswordEncoder</span><span class="o">(</span><span class="kt">int</span> <span class="n">strength</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">strength</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 构造函数</span>
+  <span class="kd">public</span> <span class="nf">BCryptPasswordEncoder</span><span class="o">(</span><span class="kt">int</span> <span class="n">strength</span><span class="o">,</span> <span class="nc">SecureRandom</span> <span class="n">random</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">strength</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">strength</span> <span class="o">&lt;</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">MIN_LOG_ROUNDS</span> <span class="o">||</span> <span class="n">strength</span> <span class="o">&gt;</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">MAX_LOG_ROUNDS</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Bad strength"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">strength</span> <span class="o">=</span> <span class="n">strength</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">random</span> <span class="o">=</span> <span class="n">random</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 加密函数</span>
+  <span class="kd">public</span> <span class="nc">String</span> <span class="nf">encode</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">rawPassword</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">salt</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">strength</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">random</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">salt</span> <span class="o">=</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">gensalt</span><span class="o">(</span><span class="n">strength</span><span class="o">,</span> <span class="n">random</span><span class="o">);</span>
+      <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+        <span class="n">salt</span> <span class="o">=</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">gensalt</span><span class="o">(</span><span class="n">strength</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+      <span class="n">salt</span> <span class="o">=</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">gensalt</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">hashpw</span><span class="o">(</span><span class="n">rawPassword</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">salt</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 密码匹配函数</span>
+  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">rawPassword</span><span class="o">,</span> <span class="nc">String</span> <span class="n">encodedPassword</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">encodedPassword</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">encodedPassword</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">logger</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"Empty encoded password"</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(!</span><span class="no">BCRYPT_PATTERN</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">encodedPassword</span><span class="o">).</span><span class="na">matches</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">logger</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"Encoded password does not look like BCrypt"</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="nc">BCrypt</span><span class="o">.</span><span class="na">checkpw</span><span class="o">(</span><span class="n">rawPassword</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">encodedPassword</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>BCrypt.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BCrypt</span> <span class="o">{</span>
+    <span class="c1">// 生成盐值的函数 "$2a$" + 2字节log_round + "$" + 22字节随机数Base64编码</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">gensalt</span><span class="o">(</span><span class="kt">int</span> <span class="n">log_rounds</span><span class="o">,</span> <span class="nc">SecureRandom</span> <span class="n">random</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">log_rounds</span> <span class="o">&lt;</span> <span class="no">MIN_LOG_ROUNDS</span> <span class="o">||</span> <span class="n">log_rounds</span> <span class="o">&gt;</span> <span class="no">MAX_LOG_ROUNDS</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Bad number of rounds"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nc">StringBuilder</span> <span class="n">rs</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+        <span class="kt">byte</span> <span class="n">rnd</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="no">BCRYPT_SALT_LEN</span><span class="o">];</span>
+        <span class="n">random</span><span class="o">.</span><span class="na">nextBytes</span><span class="o">(</span><span class="n">rnd</span><span class="o">);</span>
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"$2a$"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">log_rounds</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"0"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">log_rounds</span><span class="o">);</span>
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"$"</span><span class="o">);</span>
+        <span class="n">encode_base64</span><span class="o">(</span><span class="n">rnd</span><span class="o">,</span> <span class="n">rnd</span><span class="o">.</span><span class="na">length</span><span class="o">,</span> <span class="n">rs</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>  <span class="c1">// 总长度29字节</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+    * Hash a password using the OpenBSD bcrypt scheme
+    * @param password the password to hash
+    * @param salt the salt to hash with (perhaps generated using BCrypt.gensalt)
+    * @return the hashed password
+    * @throws IllegalArgumentException if invalid salt is passed
+    */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">hashpw</span><span class="o">(</span><span class="nc">String</span> <span class="n">password</span><span class="o">,</span> <span class="nc">String</span> <span class="n">salt</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IllegalArgumentException</span> <span class="o">{</span>
+        <span class="c1">// 该函数在验证阶段也会用到，因为前29字节为盐值，所以可以将之前计算过的密码哈希值做为盐值</span>
+        <span class="nc">BCrypt</span> <span class="no">B</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">real_salt</span><span class="o">;</span>
+        <span class="kt">byte</span> <span class="n">passwordb</span><span class="o">[],</span> <span class="n">saltb</span><span class="o">[],</span> <span class="n">hashed</span><span class="o">[];</span>
+        <span class="kt">char</span> <span class="n">minor</span> <span class="o">=</span> <span class="o">(</span><span class="kt">char</span><span class="o">)</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">rounds</span><span class="o">,</span> <span class="n">off</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="nc">StringBuilder</span> <span class="n">rs</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">salt</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"salt cannot be null"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="kt">int</span> <span class="n">saltLength</span> <span class="o">=</span> <span class="n">salt</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">saltLength</span> <span class="o">&lt;</span> <span class="mi">28</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Invalid salt"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">salt</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">'$'</span> <span class="o">||</span> <span class="n">salt</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">'2'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Invalid salt version"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">salt</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'$'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">off</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+        <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+            <span class="n">minor</span> <span class="o">=</span> <span class="n">salt</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">minor</span> <span class="o">!=</span> <span class="sc">'a'</span> <span class="o">||</span> <span class="n">salt</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">!=</span> <span class="sc">'$'</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Invalid salt revision"</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">off</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">saltLength</span> <span class="o">-</span> <span class="n">off</span> <span class="o">&lt;</span> <span class="mi">25</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Invalid salt"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Extract number of rounds</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">salt</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">off</span> <span class="o">+</span> <span class="mi">2</span><span class="o">)</span> <span class="o">&gt;</span> <span class="sc">'$'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Missing salt rounds"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">rounds</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">salt</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">off</span><span class="o">,</span> <span class="n">off</span> <span class="o">+</span> <span class="mi">2</span><span class="o">));</span>
+        <span class="n">real_salt</span> <span class="o">=</span> <span class="n">salt</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">off</span> <span class="o">+</span> <span class="mi">3</span><span class="o">,</span> <span class="n">off</span> <span class="o">+</span> <span class="mi">25</span><span class="o">);</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">passwordb</span> <span class="o">=</span> <span class="o">(</span><span class="n">password</span> <span class="o">+</span> <span class="o">(</span><span class="n">minor</span> <span class="o">&gt;=</span> <span class="sc">'a'</span> <span class="o">?</span> <span class="s">"\000"</span> <span class="o">:</span> <span class="s">""</span><span class="o">)).</span><span class="na">getBytes</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">);</span>
+        <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="nc">UnsupportedEncodingException</span> <span class="n">uee</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">AssertionError</span><span class="o">(</span><span class="s">"UTF-8 is not supported"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 解析成16字节的字节数组</span>
+        <span class="n">saltb</span> <span class="o">=</span> <span class="n">decode_base64</span><span class="o">(</span><span class="n">real_salt</span><span class="o">,</span> <span class="no">BCRYPT_SALT_LEN</span><span class="o">);</span>
+
+        <span class="c1">// 这里new了一个新的对象是因为会用到BCrypt中int P[]和 int S[]，扩展的密钥存放在这两个结构体</span>
+        <span class="no">B</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCrypt</span><span class="o">();</span>
+        <span class="n">hashed</span> <span class="o">=</span> <span class="no">B</span><span class="o">.</span><span class="na">crypt_raw</span><span class="o">(</span><span class="n">passwordb</span><span class="o">,</span> <span class="n">saltb</span><span class="o">,</span> <span class="n">rounds</span><span class="o">);</span>
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"$2"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">minor</span> <span class="o">&gt;=</span> <span class="sc">'a'</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">minor</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"$"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">rounds</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"0"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">rounds</span><span class="o">);</span>
+        <span class="n">rs</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"$"</span><span class="o">);</span>
+        <span class="n">encode_base64</span><span class="o">(</span><span class="n">saltb</span><span class="o">,</span> <span class="n">saltb</span><span class="o">.</span><span class="na">length</span><span class="o">,</span> <span class="n">rs</span><span class="o">);</span>
+        <span class="n">encode_base64</span><span class="o">(</span><span class="n">hashed</span><span class="o">,</span> <span class="n">bf_crypt_ciphertext</span><span class="o">.</span><span class="na">length</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">rs</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+    * Perform the central password hashing step in the bcrypt scheme
+    * @param password the password to hash
+    * @param salt the binary salt to hash with the password
+    * @param log_rounds the binary logarithm of the number of rounds of hashing to apply
+    * @return an array containing the binary hashed password
+    */</span>
+
+    <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">crypt_raw</span><span class="o">(</span><span class="kt">byte</span> <span class="n">password</span><span class="o">[],</span> <span class="kt">byte</span> <span class="n">salt</span><span class="o">[],</span> <span class="kt">int</span> <span class="n">log_rounds</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">cdata</span><span class="o">[]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">[])</span> <span class="n">bf_crypt_ciphertext</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">clen</span> <span class="o">=</span> <span class="n">cdata</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+        <span class="kt">byte</span> <span class="n">ret</span><span class="o">[];</span>
+        <span class="c1">// rounds = 1 &lt;&lt; log_round</span>
+
+        <span class="kt">long</span> <span class="n">rounds</span> <span class="o">=</span> <span class="n">roundsForLogRounds</span><span class="o">(</span><span class="n">log_rounds</span><span class="o">);</span>
+        <span class="n">init_key</span><span class="o">();</span>
+        <span class="n">ekskey</span><span class="o">(</span><span class="n">salt</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">rounds</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span> <span class="c1">// 最耗时的密钥扩展</span>
+            <span class="n">key</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
+            <span class="n">key</span><span class="o">(</span><span class="n">salt</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">64</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="o">(</span><span class="n">clen</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="o">);</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="n">encipher</span><span class="o">(</span><span class="n">cdata</span><span class="o">,</span> <span class="n">j</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">clen</span> <span class="o">*</span> <span class="mi">4</span><span class="o">];</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">clen</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">ret</span><span class="o">[</span><span class="n">j</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">((</span><span class="n">cdata</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+            <span class="n">ret</span><span class="o">[</span><span class="n">j</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">((</span><span class="n">cdata</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+            <span class="n">ret</span><span class="o">[</span><span class="n">j</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">((</span><span class="n">cdata</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+            <span class="n">ret</span><span class="o">[</span><span class="n">j</span><span class="o">++]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">)</span> <span class="o">(</span><span class="n">cdata</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+    * Check that a plaintext password matches a previously hashed one
+    * @param plaintext the plaintext password to verify
+    * @param hashed the previously-hashed password
+    * @return true if the passwords match, false otherwise
+    */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">checkpw</span><span class="o">(</span><span class="nc">String</span> <span class="n">plaintext</span><span class="o">,</span> <span class="nc">String</span> <span class="n">hashed</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">equalsNoEarlyReturn</span><span class="o">(</span><span class="n">hashed</span><span class="o">,</span> <span class="n">hashpw</span><span class="o">(</span><span class="n">plaintext</span><span class="o">,</span> <span class="n">hashed</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">equalsNoEarlyReturn</span><span class="o">(</span><span class="nc">String</span> <span class="n">a</span><span class="o">,</span> <span class="nc">String</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">char</span><span class="o">[]</span> <span class="n">caa</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">();</span>
+        <span class="kt">char</span><span class="o">[]</span> <span class="n">cab</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">caa</span><span class="o">.</span><span class="na">length</span> <span class="o">!=</span> <span class="n">cab</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="kt">byte</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">caa</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+
+            <span class="n">ret</span> <span class="o">|=</span> <span class="n">caa</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">^</span> <span class="n">cab</span><span class="o">[</span><span class="no">I</span><span class="o">];</span>
+
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>性能</p>
+</blockquote>
+
+<p>慢哈希既要防止攻击者无法使用暴力破击，又不能影响用户体验，由于机器性能的差异，获取强度参数最好的办法就是执行一个简短的性能基准测试，找到使哈希函数大约耗费0.5秒的值。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BCryptBench</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">startTime</span><span class="o">,</span> <span class="n">endTime</span><span class="o">,</span> <span class="n">duration</span><span class="o">;</span>
+
+        <span class="c1">// the default strength 10</span>
+        <span class="nc">BCryptPasswordEncoder</span> <span class="n">bCryptPasswordEncoder10</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCryptPasswordEncoder</span><span class="o">();</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bCryptPasswordEncoder10</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="s">"admin"</span><span class="o">));</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">duration</span> <span class="o">+=</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">duration</span> <span class="o">/</span> <span class="mf">10.0</span><span class="o">);</span>    <span class="c1">// 88.4ms</span>
+
+        <span class="c1">// strength 11</span>
+        <span class="c1">// the default strength 10</span>
+        <span class="nc">BCryptPasswordEncoder</span> <span class="n">bCryptPasswordEncoder11</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCryptPasswordEncoder</span><span class="o">(</span><span class="mi">11</span><span class="o">);</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bCryptPasswordEncoder11</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="s">"admin"</span><span class="o">));</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">duration</span> <span class="o">+=</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">duration</span> <span class="o">/</span> <span class="mf">10.0</span><span class="o">);</span>    <span class="c1">// 175.3ms</span>
+
+        <span class="c1">// strength 12</span>
+        <span class="nc">BCryptPasswordEncoder</span> <span class="n">bCryptPasswordEncoder12</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCryptPasswordEncoder</span><span class="o">(</span><span class="mi">12</span><span class="o">);</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bCryptPasswordEncoder12</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="s">"admin"</span><span class="o">));</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">duration</span> <span class="o">+=</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="n">duration</span> <span class="o">/</span> <span class="mf">10.0</span><span class="o">);</span>   <span class="c1">// 344.3ms</span>
+
+        <span class="c1">// strength 13</span>
+        <span class="nc">BCryptPasswordEncoder</span> <span class="n">bCryptPasswordEncoder13</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCryptPasswordEncoder</span><span class="o">(</span><span class="mi">13</span><span class="o">);</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bCryptPasswordEncoder13</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="s">"admin"</span><span class="o">));</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">duration</span> <span class="o">+=</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">duration</span> <span class="o">/</span> <span class="mf">10.0</span><span class="o">);</span>    <span class="c1">// 703.8ms</span>
+
+        <span class="c1">// strength 14</span>
+        <span class="nc">BCryptPasswordEncoder</span> <span class="n">bCryptPasswordEncoder14</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCryptPasswordEncoder</span><span class="o">(</span><span class="mi">14</span><span class="o">);</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bCryptPasswordEncoder14</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="s">"admin"</span><span class="o">));</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">duration</span> <span class="o">+=</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">duration</span> <span class="o">/</span> <span class="mf">10.0</span><span class="o">);</span>    <span class="c1">// 1525.0ms</span>
+
+        <span class="c1">// strength 15</span>
+        <span class="nc">BCryptPasswordEncoder</span> <span class="n">bCryptPasswordEncoder15</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BCryptPasswordEncoder</span><span class="o">(</span><span class="mi">15</span><span class="o">);</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bCryptPasswordEncoder15</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="s">"admin"</span><span class="o">));</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="n">duration</span> <span class="o">+=</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">duration</span> <span class="o">/</span> <span class="mf">10.0</span><span class="o">);</span>    <span class="c1">// 2921.9ms</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从测试的结果可以看出，如果想选定一个执行时间为0.5秒的慢哈希，需要将Bcrypt函数的强度设置为12或13。而在我们自己的微服务中，使用了默认的强度10</p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2021/03/14/spring-security-bcrypt.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 提升开发效率的17个工具类 - 大伟的博客 </title>
+    <meta name="keywords" content="java">
+    <meta name="description"
+          content="Collections,CollectionUtils,Objects,StringUtils,IOUtils,MDC,ClassUtils,BeanUtils,ReflectionUtils,Base64Utils,DigestUtils,SerializationUtils，HttpStatus,gson与map的转换">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2022/07/17/seventeen-utils.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="提升开发效率的17个工具类">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>提升开发效率的17个工具类</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/07/17
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>转载自苏三说技术</p>
+
+<h2 id="1collections">1、Collections</h2>
+
+<p><code class="highlighter-rouge">java.util</code>包下的Collections类，该类主要用于操作集合和返回集合</p>
+
+<blockquote>
+  <p>排序</p>
+</blockquote>
+
+<p>集合stream流也可以做排序，Collection工具类做排序</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+  <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+  <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+  <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+  <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">list</span><span class="o">);</span><span class="c1">//升序</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+  <span class="nc">Collections</span><span class="o">.</span><span class="na">reverse</span><span class="o">(</span><span class="n">list</span><span class="o">);</span><span class="c1">//降序</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>获取最大或最小值</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+<span class="nc">Integer</span> <span class="n">max</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">list</span><span class="o">);</span><span class="c1">//获取最大值</span>
+<span class="nc">Integer</span> <span class="n">min</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">list</span><span class="o">);</span><span class="c1">//获取最小值</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">max</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">min</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>转换线程安全集合</p>
+</blockquote>
+
+<p>我们都知道，java中的很多集合，比如：ArrayList、LinkedList、HashMap、HashSet等，都是线程不安全的。因为，这些集合在多线程的环境中，添加数据会出现异常。这时，可以用Collections的<code class="highlighter-rouge">synchronizedxxx</code>方法，将这些线程不安全的集合，直接转换成线程安全集合。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+  list.add(2);
+  list.add(1);
+  list.add(3);
+
+  List&lt;Integer&gt; integers = Collections.synchronizedList(list);//将ArrayList转换成线程安全集合
+  System.out.println(integers);
+</code></pre></div></div>
+
+<p>它的底层会创建<code class="highlighter-rouge">SynchronizedRandomAccessList</code>或者<code class="highlighter-rouge">SynchronizedList</code>类，这两个类的很多方法都会用<code class="highlighter-rouge">synchronized</code>加锁。</p>
+
+<p>也可以直接使用CopyOnWriteArrayList、CopyOnWriteArraySet、ConcurrentHashMap,</p>
+
+<blockquote>
+  <p>返回空集合</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="nf">fun</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">list</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">//业务处理</span>
+    <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>二分查找</p>
+</blockquote>
+
+<p><code class="highlighter-rouge">binarySearch</code>方法提供了一个非常好用的<code class="highlighter-rouge">二分查找</code>功能，只用传入指定集合和需要找到的key即可。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">binarySearch</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span><span class="c1">//二分查找</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span> <span class="o">);</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2
+</code></pre></div></div>
+
+<blockquote>
+  <p>转换成不可修改集合</p>
+</blockquote>
+
+<p>为了防止后续的程序把某个集合的结果修改了，有时候我们需要把某个集合定义成不可修改的，使用Collections的<code class="highlighter-rouge">unmodifiablexxx</code>方法就能轻松实现：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">integers</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">unmodifiableList</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+<span class="n">integers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">4</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">integers</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Exception</span> <span class="n">in</span> <span class="n">thread</span> <span class="s">"main"</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">UnsupportedOperationException</span>
+ <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Collections</span><span class="n">$UnmodifiableCollection</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="nc">Collections</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">1055</span><span class="o">)</span>
+ <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">sue</span><span class="o">.</span><span class="na">jump</span><span class="o">.</span><span class="na">service</span><span class="o">.</span><span class="na">test1</span><span class="o">.</span><span class="na">UtilTest</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="nc">UtilTest</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">19</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>当然Collections工具类中还有很多常用的方法，在这里就不一一介绍了，需要你自己去探索。</p>
+
+<p><img src="/assets/images/2022/java/collections-method.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2022/java/collections-method-2.jpg" alt="" /></p>
+
+<h2 id="2collectionutils">2、CollectionUtils</h2>
+
+<p>目前比较主流的是<code class="highlighter-rouge">spring</code>的<code class="highlighter-rouge">org.springframework.util</code>包下的CollectionUtils工具类。</p>
+
+<p><img src="/assets/images/2022/java/collectionutils.jpg" alt="" /></p>
+
+<p><code class="highlighter-rouge">apache</code>的<code class="highlighter-rouge">org.apache.commons.collections</code>包下的CollectionUtils工具类</p>
+
+<p><img src="/assets/images/2022/java/collectionutils-2.jpg" alt="" /></p>
+
+<p>我个人更推荐使用apache的包下的CollectionUtils工具类，因为它的工具更多更全面。</p>
+
+<p>下面我们以<code class="highlighter-rouge">apache</code>的CollectionUtils工具类为例，介绍一下常用方法。</p>
+
+<blockquote>
+  <p>集合判空</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">list</span><span class="o">))</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"集合为空"</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">list</span><span class="o">))</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"集合不为空"</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>对俩个集合进行操作</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list2</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="n">list2</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">4</span><span class="o">);</span>
+
+<span class="c1">//获取并集</span>
+<span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">unionList</span> <span class="o">=</span> <span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">union</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">list2</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">unionList</span><span class="o">);</span>
+
+<span class="c1">//获取交集</span>
+<span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">intersectionList</span> <span class="o">=</span> <span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">intersection</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">list2</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">intersectionList</span><span class="o">);</span>
+
+<span class="c1">//获取交集的补集</span>
+<span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">disjunctionList</span> <span class="o">=</span> <span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">disjunction</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">list2</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">disjunctionList</span><span class="o">);</span>
+
+<span class="c1">//获取差集</span>
+<span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">subtractList</span> <span class="o">=</span> <span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">subtract</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">list2</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">subtractList</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>1, 2, 3, 4]
+<span class="o">[</span>2]
+<span class="o">[</span>1, 3, 4]
+<span class="o">[</span>1, 3]
+</code></pre></div></div>
+
+<p>说句实话，对两个集合的操作，在实际工作中用得挺多的，特别是很多批量的场景中。以前我们需要写一堆代码，但没想到有现成的轮子。</p>
+
+<h2 id="3lists">3、Lists</h2>
+
+<p>如果你引入<code class="highlighter-rouge">com.google.guava</code>的pom文件，会获得很多好用的小工具。这里推荐一款<code class="highlighter-rouge">com.google.common.collect</code>包下的集合工具：<code class="highlighter-rouge">Lists</code>。</p>
+
+<blockquote>
+  <p>快速初始化集合</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="nc">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>分页</p>
+</blockquote>
+
+<p>如果你想将一个<code class="highlighter-rouge">大集合</code>分成若干个<code class="highlighter-rouge">小集合</code>，可以使用Lists的<code class="highlighter-rouge">partition</code>方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="nc">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">);</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="n">partitionList</span> <span class="o">=</span> <span class="nc">Lists</span><span class="o">.</span><span class="na">partition</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">partitionList</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[[</span>1, 2], <span class="o">[</span>3, 4], <span class="o">[</span>5]]
+</code></pre></div></div>
+
+<p>这个例子中，list有5条数据，我将list集合按大小为2，分成了3页，即变成3个小集合。</p>
+
+<h2 id="4objects">4、Objects</h2>
+
+<blockquote>
+  <p>对象判空</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Integer</span> <span class="n">integer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">integer</span><span class="o">))</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"对象为空"</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">integer</span><span class="o">))</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"对象不为空"</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>对象为空抛异常</p>
+</blockquote>
+
+<p>如果我们想在对象为空时，抛出空指针异常，可以使用Objects的<code class="highlighter-rouge">requireNonNull</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Integer</span> <span class="n">integer1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">128</span><span class="o">);</span>
+
+<span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">integer1</span><span class="o">);</span>
+<span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">integer1</span><span class="o">,</span> <span class="s">"参数不能为空"</span><span class="o">);</span>
+<span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">integer1</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">"参数不能为空"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>获取对象的hashcode</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="s">"abc"</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">hashCode</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>96354
+</code></pre></div></div>
+
+<p>Objects的内容先介绍到这里，有兴趣的小伙们，可以看看下面更多的方法：</p>
+
+<p><img src="/assets/images/2022/java/objects.jpg" style="zoom:67%;" /></p>
+
+<h2 id="5booleanutils">5、BooleanUtils</h2>
+
+<blockquote>
+  <p>判断true或false</p>
+</blockquote>
+
+<p>如果你想判断某个参数的值是true或false，可以直接使用<code class="highlighter-rouge">isTrue</code>或<code class="highlighter-rouge">isFalse</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Boolean</span> <span class="n">aBoolean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Boolean</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">isTrue</span><span class="o">(</span><span class="n">aBoolean</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">isFalse</span><span class="o">(</span><span class="n">aBoolean</span><span class="o">));</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>判断不为true或不为false</p>
+</blockquote>
+
+<p>有时候，需要判断某个参数不为true，即是null或者false。或者判断不为false，即是null或者true。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Boolean</span> <span class="n">aBoolean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Boolean</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="nc">Boolean</span> <span class="n">aBoolean1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">isNotTrue</span><span class="o">(</span><span class="n">aBoolean</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">isNotTrue</span><span class="o">(</span><span class="n">aBoolean1</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">isNotFalse</span><span class="o">(</span><span class="n">aBoolean</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">isNotFalse</span><span class="o">(</span><span class="n">aBoolean1</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">false
+true
+true
+true</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>转换成数字</p>
+</blockquote>
+
+<p>如果你想将true转换成数字1，false转换成数字0，可以使用<code class="highlighter-rouge">toInteger</code>方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Boolean</span> <span class="n">aBoolean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Boolean</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="nc">Boolean</span> <span class="n">aBoolean1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Boolean</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">toInteger</span><span class="o">(</span><span class="n">aBoolean</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BooleanUtils</span><span class="o">.</span><span class="na">toInteger</span><span class="o">(</span><span class="n">aBoolean1</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1
+0
+</code></pre></div></div>
+
+<p>BooleanUtils类的方法还有很多，有兴趣的小伙伴可以看看下面的内容：</p>
+
+<p><img src="/assets/images/2022/java/booleanutils.jpg" style="zoom:67%;" /></p>
+
+<h2 id="6stringutils">6、StringUtils</h2>
+
+<p><code class="highlighter-rouge">org.apache.commons.lang3</code>包下的<code class="highlighter-rouge">StringUtils</code>工具类，给我们提供了非常丰富的选择。</p>
+
+<blockquote>
+  <p>判空</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isBlank</span><span class="o">(</span><span class="n">str1</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">str4</span><span class="o">));</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>分隔字符串</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="n">str1</span><span class="o">,</span><span class="s">","</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str1</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">","</span><span class="o">));</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>判断是否纯数字</p>
+</blockquote>
+
+<p>给定一个字符串，判断它是否为纯数字，可以使用<code class="highlighter-rouge">isNumeric</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str1</span> <span class="o">=</span> <span class="s">"123"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="s">"123q"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">str3</span> <span class="o">=</span> <span class="s">"0.33"</span><span class="o">;</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str1</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str2</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNumeric</span><span class="o">(</span><span class="n">str3</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">true
+false
+false</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>将集合合拼成字符串</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="nc">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">);</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list2</span> <span class="o">=</span> <span class="nc">Lists</span><span class="o">.</span><span class="na">newArrayList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="s">","</span><span class="o">));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">list2</span><span class="o">,</span> <span class="s">" "</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a,b,c
+1 2 3
+</code></pre></div></div>
+
+<h2 id="7assert">7、Assert</h2>
+
+<p><code class="highlighter-rouge">spring</code>给我们提供了<code class="highlighter-rouge">Assert</code>类，它表示<code class="highlighter-rouge">断言</code>。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">str</span><span class="o">,</span> <span class="s">"str必须为空"</span><span class="o">);</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">str</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">"str必须为空"</span><span class="o">);</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">str</span><span class="o">,</span> <span class="s">"str不能为空"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>如果不满足条件就会抛出<code class="highlighter-rouge">IllegalArgumentException</code>异常。</p>
+
+<blockquote>
+  <p>断言集合是否为空</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">notEmpty</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="s">"list不能为空"</span><span class="o">);</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">notEmpty</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">"list不能为空"</span><span class="o">);</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">notEmpty</span><span class="o">(</span><span class="n">map</span><span class="o">,</span> <span class="s">"map不能为空"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>如果不满足条件就会抛出<code class="highlighter-rouge">IllegalArgumentException</code>异常。</p>
+
+<blockquote>
+  <p>断言条件是否true</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">isTrue</span><span class="o">(</span><span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">list</span><span class="o">),</span> <span class="s">"list不能为空"</span><span class="o">);</span>
+<span class="nc">Assert</span><span class="o">.</span><span class="na">isTrue</span><span class="o">(</span><span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">list</span><span class="o">),</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">"list不能为空"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/java/assert.jpg" style="zoom:67%;" /></p>
+
+<h2 id="8ioutils">8、IOUtils</h2>
+
+<p>如果你使用<code class="highlighter-rouge">org.apache.commons.io</code>包下的<code class="highlighter-rouge">IOUtils</code>类，会节省大量的时间。</p>
+
+<blockquote>
+  <p>读取文件</p>
+</blockquote>
+
+<p>如果你想将某个txt文件中的数据，读取到字符串当中，可以使用IOUtils类的<code class="highlighter-rouge">toString</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="nc">IOUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"/temp/a.txt"</span><span class="o">),</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>写入文件</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"abcde"</span><span class="o">;</span>
+<span class="nc">IOUtils</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">str</span><span class="o">,</span> <span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="s">"/temp/b.tx"</span><span class="o">),</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>文件拷贝</p>
+</blockquote>
+
+<p>如果你想将某个文件中的所有内容，都拷贝到另一个文件当中，可以使用IOUtils类的<code class="highlighter-rouge">copy</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">IOUtils</span><span class="o">.</span><span class="na">copy</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"/temp/a.txt"</span><span class="o">),</span> <span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="s">"/temp/b.txt"</span><span class="o">));</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>读取文件内容到字节数组</p>
+</blockquote>
+
+<p>如果你想将某个文件中的内容，读取字节数组中，可以使用IOUtils类的<code class="highlighter-rouge">toByteArray</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="nc">IOUtils</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"/temp/a.txt"</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>IOUtils类非常实用，感兴趣的小伙们，可以看看下面内容。</p>
+
+<p><img src="/assets/images/2022/java/ioutils.jpg" style="zoom:67%;" /></p>
+
+<h2 id="9mdc">9、MDC</h2>
+
+<p><code class="highlighter-rouge">MDC</code>是<code class="highlighter-rouge">org.slf4j</code>包下的一个类，它的全称是Mapped Diagnostic Context，一个线程安全的存放诊断日志的容器，底层使用ThreadLocal来保存数据的。</p>
+
+<p>例如现在有这样一种场景：我们使用<code class="highlighter-rouge">RestTemplate</code>调用远程接口时，有时需要在<code class="highlighter-rouge">header</code>中传递信息，比如：traceId，source等，便于在查询日志时能够串联一次完整的请求链路，快速定位问题。</p>
+
+<p>这种业务场景就能通过<code class="highlighter-rouge">ClientHttpRequestInterceptor</code>接口实现，具体做法如下：</p>
+
+<p>第1步，定义一个LogFilter拦截所有接口请求，在MDC中设置traceId：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogFilter</span> <span class="kd">implements</span> <span class="nc">Filter</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="nc">FilterConfig</span> <span class="n">filterConfig</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="nc">ServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">ServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">FilterChain</span> <span class="n">chain</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">ServletException</span> <span class="o">{</span>
+        <span class="nc">MdcUtil</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"记录请求日志"</span><span class="o">);</span>
+        <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"记录响应日志"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">destroy</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第2步，实现<code class="highlighter-rouge">ClientHttpRequestInterceptor</code>接口，MDC中获取当前请求的traceId，然后设置到header中：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestTemplateInterceptor</span> <span class="kd">implements</span> <span class="nc">ClientHttpRequestInterceptor</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ClientHttpResponse</span> <span class="nf">intercept</span><span class="o">(</span><span class="nc">HttpRequest</span> <span class="n">request</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">body</span><span class="o">,</span> <span class="nc">ClientHttpRequestExecution</span> <span class="n">execution</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="s">"traceId"</span><span class="o">,</span> <span class="nc">MdcUtil</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">execution</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">body</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第3步，定义配置类，配置上面定义的<code class="highlighter-rouge">RestTemplateInterceptor</code>类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestTemplateConfiguration</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">RestTemplate</span> <span class="n">restTemplate</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RestTemplate</span><span class="o">();</span>
+      <span class="n">restTemplate</span><span class="o">.</span><span class="na">setInterceptors</span><span class="o">(</span><span class="nc">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">(</span><span class="n">restTemplateInterceptor</span><span class="o">()));</span>
+        <span class="k">return</span> <span class="n">restTemplate</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">RestTemplateInterceptor</span> <span class="nf">restTemplateInterceptor</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">RestTemplateInterceptor</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>其中MdcUtil其实是利用MDC工具在ThreadLocal中存储和获取traceId</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MdcUtil</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">TRACE_ID</span> <span class="o">=</span> <span class="s">"TRACE_ID"</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="no">MDC</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="no">TRACE_ID</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="nc">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">MDC</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="no">TRACE_ID</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>当然，这个例子中没有演示MdcUtil类的add方法具体调的地方，我们可以在filter中执行接口方法之前，生成traceId，调用MdcUtil类的add方法添加到MDC中，然后在同一个请求的其他地方就能通过MdcUtil类的get方法获取到该traceId。</p>
+
+<p>能使用MDC保存traceId等参数的根本原因是，用户请求到应用服务器，Tomcat会从线程池中分配一个线程去处理该请求。</p>
+
+<p>那么该请求的整个过程中，保存到MDC的ThreadLocal中的参数，也是该线程独享的，所以不会有线程安全问题。</p>
+
+<h2 id="10classutils">10、ClassUtils</h2>
+
+<p>spring的<code class="highlighter-rouge">org.springframework.util</code>包下的<code class="highlighter-rouge">ClassUtils</code>类，它里面有很多让我们惊喜的功能。</p>
+
+<blockquote>
+  <p>获取对象的所有接口</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">allInterfaces</span> <span class="o">=</span> <span class="nc">ClassUtils</span><span class="o">.</span><span class="na">getAllInterfaces</span><span class="o">(</span><span class="k">new</span> <span class="nc">User</span><span class="o">());</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>获取某个类的包名</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">packageName</span> <span class="o">=</span> <span class="nc">ClassUtils</span><span class="o">.</span><span class="na">getPackageName</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">packageName</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>判断某个类是否内部类</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ClassUtils</span><span class="o">.</span><span class="na">isInnerClass</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>判断对象是否代理对象</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ClassUtils</span><span class="o">.</span><span class="na">isCglibProxy</span><span class="o">(</span><span class="k">new</span> <span class="nc">User</span><span class="o">()));</span>
+</code></pre></div></div>
+
+<h2 id="11beanutils">11、BeanUtils</h2>
+
+<p><code class="highlighter-rouge">org.springframework.beans</code>包下面，它的名字叫做：<code class="highlighter-rouge">BeanUtils</code>。</p>
+
+<blockquote>
+  <p>拷贝对象的属性</p>
+</blockquote>
+
+<p>经常用的功能</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">User</span> <span class="n">user1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">User</span><span class="o">();</span>
+<span class="n">user1</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
+<span class="n">user1</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"苏三说技术"</span><span class="o">);</span>
+<span class="n">user1</span><span class="o">.</span><span class="na">setAddress</span><span class="o">(</span><span class="s">"成都"</span><span class="o">);</span>
+
+<span class="nc">User</span> <span class="n">user2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">User</span><span class="o">();</span>
+<span class="nc">BeanUtils</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="n">user1</span><span class="o">,</span> <span class="n">user2</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">user2</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>实例化某个类</p>
+</blockquote>
+
+<p>如果你想通过反射实例化一个类的对象，可以使用BeanUtils的<code class="highlighter-rouge">instantiateClass</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="nc">BeanUtils</span><span class="o">.</span><span class="na">instantiateClass</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>获取指定类的指定方法</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Method</span> <span class="n">declaredMethod</span> <span class="o">=</span> <span class="nc">BeanUtils</span><span class="o">.</span><span class="na">findDeclaredMethod</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"getId"</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">declaredMethod</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>获取指定方法的参数</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Method</span> <span class="n">declaredMethod</span> <span class="o">=</span> <span class="nc">BeanUtils</span><span class="o">.</span><span class="na">findDeclaredMethod</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"getId"</span><span class="o">);</span>
+<span class="nc">PropertyDescriptor</span> <span class="n">propertyForMethod</span> <span class="o">=</span> <span class="nc">BeanUtils</span><span class="o">.</span><span class="na">findPropertyForMethod</span><span class="o">(</span><span class="n">declaredMethod</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">propertyForMethod</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/java/beanutils.jpg" style="zoom:67%;" /></p>
+
+<h2 id="12reflectionutils">12、ReflectionUtils</h2>
+
+<p><code class="highlighter-rouge">org.springframework.util</code>包下反射工具类</p>
+
+<blockquote>
+  <p>获取方法</p>
+</blockquote>
+
+<p>如果你想获取某个类的某个方法，可以使用ReflectionUtils类的<code class="highlighter-rouge">findMethod</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">findMethod</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"getId"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>获取字段</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">findField</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"id"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>执行方法</p>
+</blockquote>
+
+<p>如果你想通过反射调用某个方法，传递参数，可以使用ReflectionUtils类的<code class="highlighter-rouge">invokeMethod</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">invokeMethod</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">springContextsUtil</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">beanName</span><span class="o">),</span> <span class="n">param</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>判断字段是否常量</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Field</span> <span class="n">field</span> <span class="o">=</span> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">findField</span><span class="o">(</span><span class="nc">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"id"</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">isPublicStaticFinal</span><span class="o">(</span><span class="n">field</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/java/reflection-utils.jpg" alt="" /></p>
+
+<h2 id="13base64utils">13、Base64Utils</h2>
+
+<p>有时候，为了安全考虑，需要将参数只用<code class="highlighter-rouge">base64</code>编码，JWT中的载荷信息payload就是使用base64编码转换的。</p>
+
+<p>这时就能直接使用<code class="highlighter-rouge">org.springframework.util</code>包下的<code class="highlighter-rouge">Base64Utils</code>工具类。</p>
+
+<p>它里面包含：<code class="highlighter-rouge">encode</code>和<code class="highlighter-rouge">decode</code>方法，用于对数据进行加密和解密。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"abc"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">encode</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="nc">Base64Utils</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"加密后："</span> <span class="o">+</span> <span class="n">encode</span><span class="o">);</span>
+<span class="k">try</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">decode</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="nc">Base64Utils</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">encode</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()),</span> <span class="s">"utf8"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"解密后："</span> <span class="o">+</span> <span class="n">decode</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">UnsupportedEncodingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>加密后：YWJj
+解密后：abc
+</code></pre></div></div>
+
+<h2 id="14standardcharsets">14、StandardCharsets</h2>
+
+<p>我们在做字符转换的时候，经常需要指定字符编码，比如：UTF-8、ISO-8859-1等等。</p>
+
+<p>这时就可以直接使用<code class="highlighter-rouge">java.nio.charset</code>包下的<code class="highlighter-rouge">StandardCharsets</code>类中静态变量</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"abc"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">encode</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="nc">Base64Utils</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()));</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"加密后："</span> <span class="o">+</span> <span class="n">encode</span><span class="o">);</span>
+<span class="nc">String</span> <span class="n">decode</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="nc">Base64Utils</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">encode</span><span class="o">.</span><span class="na">getBytes</span><span class="o">())</span>
+<span class="o">,</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"解密后："</span> <span class="o">+</span> <span class="n">decode</span><span class="o">);</span>
+</code></pre></div></div>
+
+<h2 id="15digestutils">15、DigestUtils</h2>
+
+<p>有时候，我们需要对数据进行加密处理，比如：md5或sha256。</p>
+
+<p>可以使用apache的<code class="highlighter-rouge">org.apache.commons.codec.digest</code>包下的<code class="highlighter-rouge">DigestUtils</code>类。</p>
+
+<blockquote>
+  <p>md5加密</p>
+</blockquote>
+
+<p>如果你想对数据进行md5加密，可以使用DigestUtils的<code class="highlighter-rouge">md5Hex</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">md5Hex</span> <span class="o">=</span> <span class="nc">DigestUtils</span><span class="o">.</span><span class="na">md5Hex</span><span class="o">(</span><span class="s">"苏三说技术"</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">md5Hex</span><span class="o">);</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>sha256加密</p>
+</blockquote>
+
+<p>如果你想对数据进行sha256加密，可以使用DigestUtils的<code class="highlighter-rouge">sha256Hex</code>方法。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">md5Hex</span> <span class="o">=</span> <span class="nc">DigestUtils</span><span class="o">.</span><span class="na">sha256Hex</span><span class="o">(</span><span class="s">"苏三说技术"</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">md5Hex</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>更多的加密方法请在使用时自己查看</p>
+
+<h2 id="16serializationutils">16、SerializationUtils</h2>
+
+<p>有时候，我们需要把数据进行<code class="highlighter-rouge">序列化</code>和<code class="highlighter-rouge">反序列化</code>处理。</p>
+
+<p>传统的做法是某个类实现<code class="highlighter-rouge">Serializable</code>接口，然后重新它的<code class="highlighter-rouge">writeObject</code>和<code class="highlighter-rouge">readObject</code>方法。</p>
+
+<p>但如果使用<code class="highlighter-rouge">org.springframework.util</code>包下的<code class="highlighter-rouge">SerializationUtils</code>工具类，能更轻松实现序列化和反序列化功能。例如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="nc">Maps</span><span class="o">.</span><span class="na">newHashMap</span><span class="o">();</span>
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"1"</span><span class="o">);</span>
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span> <span class="s">"2"</span><span class="o">);</span>
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"c"</span><span class="o">,</span> <span class="s">"3"</span><span class="o">);</span>
+<span class="kt">byte</span><span class="o">[]</span> <span class="n">serialize</span> <span class="o">=</span> <span class="nc">SerializationUtils</span><span class="o">.</span><span class="na">serialize</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+<span class="nc">Object</span> <span class="n">deserialize</span> <span class="o">=</span> <span class="nc">SerializationUtils</span><span class="o">.</span><span class="na">deserialize</span><span class="o">(</span><span class="n">serialize</span><span class="o">);</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">deserialize</span><span class="o">);</span>
+</code></pre></div></div>
+
+<h2 id="17httpstatus">17、HttpStatus</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">int</span> <span class="no">SUCCESS_CODE</span> <span class="o">=</span> <span class="mi">200</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kt">int</span> <span class="no">ERROR_CODE</span> <span class="o">=</span> <span class="mi">500</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kt">int</span> <span class="no">NOT_FOUND_CODE</span> <span class="o">=</span> <span class="mi">404</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>其实<code class="highlighter-rouge">org.springframework.http</code>包下的HttpStatus枚举，或者<code class="highlighter-rouge">org.apache.http</code>包下的<code class="highlighter-rouge">HttpStatus</code>接口，已经把常用的http返回码给我们定义好了，直接拿来用就可以了，真的不用再重复定义了。</p>
+
+<p><img src="/assets/images/2022/java/httpstatus-interface.jpg" style="zoom:67%;" /></p>
+
+<blockquote>
+  <p>gson与map的转换</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">toJson</span><span class="o">(){</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">testMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="n">testMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span><span class="s">"a"</span><span class="o">);</span>
+        <span class="n">testMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">testMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"c"</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="n">person</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"kuangshen"</span><span class="o">);</span>
+        <span class="n">person</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"age"</span><span class="o">,</span><span class="mi">18</span><span class="o">);</span>
+        <span class="n">testMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"person"</span><span class="o">,</span><span class="n">person</span><span class="o">);</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">nameList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="n">nameList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"kuangshen"</span><span class="o">);</span>
+        <span class="n">nameList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"feige"</span><span class="o">);</span>
+        <span class="n">person</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"nameList"</span><span class="o">,</span><span class="n">nameList</span><span class="o">);</span>
+
+        <span class="n">testMap</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="n">k</span><span class="o">,</span><span class="n">v</span><span class="o">)-&gt;{</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">String</span><span class="o">){</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"String 类型：{}"</span><span class="o">,</span><span class="n">v</span><span class="o">);</span>
+            <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Number</span><span class="o">){</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Number类型：{}"</span><span class="o">,</span><span class="n">v</span><span class="o">);</span>
+            <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Boolean</span><span class="o">){</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Boolean 类型：{}"</span><span class="o">,</span><span class="n">v</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nc">Gson</span> <span class="n">gson</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Gson</span><span class="o">();</span>
+                <span class="nc">String</span> <span class="n">gsonStr</span> <span class="o">=</span> <span class="n">gson</span><span class="o">.</span><span class="na">toJson</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="nc">JsonObject</span> <span class="n">json</span> <span class="o">=</span> <span class="nc">JsonParser</span><span class="o">.</span><span class="na">parseString</span><span class="o">(</span><span class="n">gsonStr</span><span class="o">).</span><span class="na">getAsJsonObject</span><span class="o">();</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"转换成JsonObject:{}"</span><span class="o">,</span><span class="n">json</span><span class="o">);</span>
+                <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="nc">IllegalStateException</span> <span class="n">e</span><span class="o">){</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"不支持该类型，请用JsonObject封装,{}:{}"</span><span class="o">,</span><span class="n">k</span><span class="o">,</span><span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2022/07/17/seventeen-utils.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

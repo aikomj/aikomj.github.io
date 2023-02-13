@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第45节：kafka消息队列应用实战-1 - 大伟的博客 </title>
+    <meta name="keywords" content="kafka">
+    <meta name="description"
+          content="kafka的架构模型分析，内部设计特点，发送消息消费消息的流程，kafka的应用场景分析，安装zookeeper集群,kafka安装部署，kafka内部命令使用，内部文件存储结构，生产者分区的原则，kafka副本分区的复制方案ISR机制">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/03/04/gavin-note-045.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第45节：kafka消息队列应用实战-1">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第45节：kafka消息队列应用实战-1</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/04
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1-kafka的主要特点分析">1. kafka的主要特点分析</h2>
+
+<p>官网：<a href="http://kafka.apache.org/">http://kafka.apache.org/</a></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-apache.jpg" alt="" /></p>
+
+<p>kafka是一个<strong>分布式</strong>的发布订阅消息系统，由linkedin开发，现在成为了apache的项目一部分</p>
+
+<ul>
+  <li>同时可以为发布和订阅提供高吞吐量的访问，kafka每秒可以生产25万消息（50MB），每秒可以处理55万消息（110MB，因为只有读取的操作，没有存储操作所以更快一些）</li>
+  <li>可以进行持久化的操作。将消息持久化大磁盘，因此可以进行批量消息的处理，还提供replcation防止数据丢失</li>
+  <li>分布式系统，易于向外扩展，<font color="red">**所有的producer、broker、consumer都会有多个**</font>，这些都是分布式的，无需停机就可以进行扩展（使用zookeeper）</li>
+  <li>
+    <font color="red">**消息的处理状态是在consumer端维护，不是在server端(broker)维护，失败的时候能够自动平衡**</font>
+  </li>
+  <li>支持online 线上和offline 线下场景</li>
+  <li>kafka不支持事务，对消息的丢失，错误没有太严格的要求</li>
+</ul>
+
+<h2 id="2-kafka的架构模型分析">2. kafka的架构模型分析</h2>
+
+<p>kafka的整体架构非常简单，是一种显示分布式架构，数据是从producer（生产者）发送到broker，broker承担了一个中间缓存的分发作用，分发给注册到broker的consumer</p>
+
+<p><strong>集群结构是什么样的？</strong></p>
+
+<p>整个集群是通过zookeeper进行节点的发现和注册，kafka节点间进行数据的复制备份</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-cluster.png" alt="" /></p>
+
+<ul>
+  <li>基本概念：可以对比ElasticSearch的索引index和分片shard来学习，它们是非常相似的，topic就相当于索引,partition就相当于分片
+    <ul>
+      <li><mark>Topic</mark>：是消息的一个分类，你可以理解为他就是不同的队列（queue），kafka是以topic进行消费分类的（对比rabbitmq的topic是exchange的分类，就是对routingkey的模糊匹配分发到不同routingkey对列）</li>
+      <li><mark>Partition</mark>：topic是一个逻辑上的概念，而partition是topic物理上的一个分组/分区，一个topic可以分为多个partition，每个partition也都是有序的队列，partition中的每个消息都会被分配一个<mark>有序ID（offset）</mark>，分区数量自己指定</li>
+      <li>Message：消息体本身</li>
+      <li>Producers：消息的生产者</li>
+      <li>Consumers：消息的消费者</li>
+      <li>Broker：就是kafka的服务本身，缓存代理(落盘与RAM的方式 ，rabbitmq也有这两种方式)</li>
+    </ul>
+  </li>
+  <li>发送消息的流程
+    <ul>
+      <li>producer发送一个message给到指定的topic(理解为队列)</li>
+      <li>topic会将接收到消息分配给他的partition进行保存（partition数量是你自己指定的），这点真的像ES的索引和分片</li>
+      <li>如果你设置了follower分区，并且有多个节点的情况下，所有的主分区不在一个机器上</li>
+      <li>consumer是进行数据消费的，<strong>一个partition只能同时被一个consumer group中的消费者消费</strong>，多个分区就有多个消费者消费，这就可以提升消费能力</li>
+      <li>在v0.9版本之前消息的<mark>有序ID（offset）</mark>是放在zookeeper中，后面放在自己的磁盘上了</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/producer-topic-consumer-flow.png" alt="" /></p>
+
+<p>Leader和Follower不会放在同一个broker上，体现HA高可用，一个broker宕机了，我的数据还是完整的。</p>
+
+<p>和ES不同的是，ES的副本分片可以负载均衡分担主分片的读取数据压力（轮询策略），kafka的Follower分区只做备份的作用，不对外提供读取数据的服务，只有在Leader分区挂了后，它才会被选举为新的Leader分区提供写和读的服务。<font color="red">kafka的写读都是在Leader分区</font></p>
+
+<h2 id="3-kafka的内部设计特点">3. kafka的内部设计特点</h2>
+
+<ul>
+  <li>高吞吐能力：为了实现高吞吐能力做了以下设计
+    <ul>
+      <li>内存访问，使用pagecache来进行高效缓存</li>
+      <li>zero-copy：减少I/O的操作</li>
+      <li>对消息的处理是支持批量发送和压缩的</li>
+      <li>topic分区，将消息文件(落盘持久化)分散多个机器上进行存储，这就能利用好分布式的优势，存储也能水平扩展了</li>
+    </ul>
+  </li>
+  <li>负载均衡
+    <ul>
+      <li>producer可以根据用户指定的算法（如果没有指定就是roundrabin 轮询），将消息发送到指定的partition 中</li>
+      <li>每个partition都有自己的replica（follower 分区），replicat分布在不同的broker节点上</li>
+      <li>zookeeper可以动态的加入新的broker节点，实现动态水平扩展能力</li>
+    </ul>
+  </li>
+  <li>消息拉取
+    <ul>
+      <li>数据是通过broker来进行pull的方式</li>
+      <li>consumer可以根据消费能力自主控制消息的拉取速度，因为它是拉的方式消费的，是以consumer group的方式消费</li>
+    </ul>
+  </li>
+  <li>可扩展性：broker可以通过zookeeper动态增加</li>
+</ul>
+
+<h2 id="4-kafka的应用场景分析">4. kafka的应用场景分析</h2>
+
+<ul>
+  <li>消息队列：大规模消息处理应用解决方案，在消息队列领域，kafka足以媲美ActiveMQ、RabbitMQ</li>
+  <li>行为跟踪</li>
+  <li>元信息监控</li>
+  <li>日志收集</li>
+  <li>流处理</li>
+  <li>事件源，程序设计的方式， 按照一定的时间顺序记录相应日志和操作轨迹</li>
+  <li>持久化日志</li>
+</ul>
+
+<h2 id="5-kafka安装部署">5. kafka安装部署</h2>
+
+<p>安装的前置条件：JDK、zookeeper</p>
+
+<h3 id="安装zookeeper集群">安装zookeeper集群</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 由于kafka的服务协调是基于zookeeper实现的，所以要先下载安装zookeeper</span>
+wget https://archive.apache.org/dist/zookeeper/zookeeper-3.5.7/apache-zookeeper-3.5.7-bin.tar.gz 
+
+<span class="c"># 下面在单机上（不同端口）安装zookeeper集群（伪集群）</span>
+<span class="c"># 创建集群文件夹</span>
+<span class="nb">mkdir </span>zookeeper-cluster
+<span class="c"># 1、解压，重命名</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> apache-zookeeper-3.5.8-bin.tar.gz
+<span class="o">[</span>root@helloworld zookeeper-cluster]# <span class="nb">mv </span>apache-zookeeper-3.5.8 zookeeper1
+<span class="c"># 提前把data和logs文件创建好</span>
+<span class="c"># 2、在conf里修改zoo_sample.cfg为zoo.cfg进行修改</span>
+<span class="o">[</span>root@helloworld conf]# <span class="nb">cp </span>zoo_sample.cfg zoo.cfg
+<span class="o">[</span>root@helloworld conf]# vim zoo.cfg
+<span class="nv">dataDir</span><span class="o">=</span>/usr/local/zookeeper-cluster/zookeeper1/data
+<span class="nv">dataLogDir</span><span class="o">=</span>/usr/local/zookeeper-cluster/zookeeper1/logs
+<span class="nv">clientPort</span><span class="o">=</span>2181 <span class="c"># 每个机器的端口不能一样</span>
+<span class="c">#maxClientCnxns=60  # increase this if you need to handle more clients,生产环境中注意一下这个参数</span>
+server.1<span class="o">=</span>127.0.0.1:2881:3881
+server.2<span class="o">=</span>127.0.0.1:2882:3882
+server.3<span class="o">=</span>127.0.0.1:2883:3883  <span class="c"># 增加通信内容三台机器一样：server.服务编号=服务地址:LF通信端口:选举端口</span>
+<span class="c"># 在三台机器的data目录dataDir=/usr/local/zookeeper-cluster/zookeeper1/data</span>
+<span class="c"># data里创建文件myid，三台分别写入值1、2、3</span>
+<span class="nb">cd</span> /usr/local/zookeeper-cluster/zookeeper1/data
+<span class="o">[</span>root@helloworld data]# vim myid
+1
+<span class="c"># 3、复制</span>
+<span class="o">[</span>root@helloworld zookeeper-cluster]# <span class="nb">cp</span> <span class="nt">-r</span> zookeeper1/ zookeeper2
+<span class="o">[</span>root@helloworld zookeeper-cluster]# <span class="nb">cp</span> <span class="nt">-r</span> zookeeper1/ zookeeper3
+
+<span class="c"># 修改zoo.cfg和myid</span>
+<span class="nb">cd</span> /usr/local/zookeeper-cluster/zookeeper2/data
+<span class="o">[</span>root@helloworld data]# vim myid
+2
+<span class="nb">cd</span> /usr/local/zookeeper-cluster/zookeeper3/data
+<span class="o">[</span>root@helloworld data]# vim myid
+3
+<span class="c"># 4、创建的sh文件统一启动zookeeper，zookeeper-start.sh</span>
+<span class="o">[</span>root@helloworld zookeeper-cluster]# vim zookeeper-start.sh
+/usr/local/zookeeper-cluster/zookeeper1/bin/zkServer.sh start
+/usr/local/zookeeper-cluster/zookeeper2/bin/zkServer.sh start
+/usr/local/zookeeper-cluster/zookeeper3/bin/zkServer.sh start
+<span class="c"># 批处理文件授权</span>
+<span class="nb">chmod </span>777 zookeeper-start.sh
+<span class="c"># 启动zookeeper集群</span>
+./zookeeper-start.sh
+
+<span class="c"># 5、服务管理命令</span>
+zkServer.sh start|stop|restart|status
+<span class="c"># 客户端连接,客户端关闭：quit ,推荐使用界面操作工具zooInspector，因为zookeeper的数据是树形结构存储的，使用界面会更为直观</span>
+zkCli.sh <span class="nt">-server</span> <span class="k">${</span><span class="nv">ip</span><span class="k">}</span>:<span class="k">${</span><span class="nv">port</span><span class="k">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/zookeeper-cluster-1.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/zookeeper-cluster-2.jpg" alt="" /></p>
+
+<p>可以看到zookeeper2是leader节点</p>
+
+<h3 id="安装kafka并进行基础配置">安装kafka并进行基础配置</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载kafka</span>
+wget http://mirror.bit.edu.cn/apache/kafka/2.4.0/kafka_2.13-2.4.0.tgz
+<span class="c"># 1、解压后移动到/usr/local下</span>
+<span class="nb">tar</span> <span class="nt">-xvf</span>  kafka_2.13-2.4.0.tgz
+<span class="nb">mv </span>kafka_2.13-2.4.0 kakfa
+<span class="nb">mv </span>kafka /usr/local/
+
+<span class="c"># 2、进入config目录，修改server.properties</span>
+<span class="o">[</span>root@helloworld config]# vim server.properties
+<span class="c"># kafka的broker编号，必须是一个整数，服务编号，在集群中不能一样</span>
+broker.id<span class="o">=</span>11
+<span class="c"># topic允许删除的，如果你设置成false，删除topic对kafka是无效的，默认就是true</span>
+delete.topic.enable<span class="o">=</span><span class="nb">true
+</span><span class="nv">port</span><span class="o">=</span>9092
+<span class="c"># 处理网络请求的线程数量</span>
+num.network.threads<span class="o">=</span>3
+<span class="c"># 磁盘IO的线程数量</span>
+num.io.threads<span class="o">=</span>8
+<span class="c"># 发送socket的缓冲区大小</span>
+socket.send.buffer.bytes<span class="o">=</span>102400
+<span class="c"># 接收socket的缓冲区大小</span>
+socket.receive.buffer.bytes<span class="o">=</span>102400
+<span class="c"># 请求socket的缓冲区大小</span>
+socket.request.max.bytes<span class="o">=</span>104857600
+<span class="c"># 是保存消息日志的文件目录,data目录要提前创建好,partition分区就存放在这个目录下</span>
+log.dirs<span class="o">=</span>/usr/local/kafka/data
+<span class="c"># topic在创建时默认多少个分区</span>
+num.partitions<span class="o">=</span>1
+<span class="c"># 我们的消息数据默认保存时间长度，单位是小时 168小时=7天，不是永久保存</span>
+<span class="c"># The minimum age of a log file to be eligible for deletion due to age</span>
+log.retention.hours<span class="o">=</span>168
+<span class="c"># 一个log文件的大小，这里默认是1G，如果超过1G就再创建一个新文件</span>
+log.segment.bytes<span class="o">=</span>1073741824
+<span class="c"># zookeeper的集群地址</span>
+zookeeper.connect<span class="o">=</span>127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183
+</code></pre></div></div>
+
+<p>启动和关闭服务</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 启动服务命令，要指定配置文件，后台启动</span>
+/usr/local/kafka/bin/kafka-server-start.sh <span class="nt">-daemon</span> /usr/local/kafka/config/server.properties
+<span class="c"># 关闭服务命令</span>
+/usr/local/kafka/bin/kafka-server-stop.sh /usr/local/kafka/config/server.properties
+</code></pre></div></div>
+
+<p>单机已经启动了，集群只需要我们和单机一样将新的kafka加入到同一个zookeeper里即可，<mark>但broker.id需要和其他机器不一样</mark></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-1.jpg" alt="" /></p>
+
+<p>进入zookeeper客户端查看kafka节点</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-2.jpg" alt="" /></p>
+
+<p>把kafka/bin加入环境变量</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld <span class="nb">local</span><span class="o">]</span><span class="c"># vim /etc/profile</span>
+<span class="nb">export </span><span class="nv">KAFKA_HOME</span><span class="o">=</span>/opt/kafka
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$ZOOKEEPER_HOME</span>/bin:<span class="nv">$KAFKA_HOME</span>/bin
+<span class="c"># 使配置生效(已连接的会话需要重新连接)</span>
+<span class="nb">source</span> /etc/profile
+<span class="c"># 加入环境变量后，直接使用命令</span>
+kafka-server-start.sh
+</code></pre></div></div>
+
+<h2 id="6-kafka内部命令使用">6. kafka内部命令使用</h2>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-topics-help.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 0.查看topics命令帮助</span>
+kafka-topics.sh <span class="nt">--help</span>
+<span class="c"># 1.查看当前服务器中所有的topic，需要连接zookeeper节点</span>
+kafka-topics.sh <span class="nt">--zookeeper</span> 127.0.0.1:2181 <span class="nt">--list</span>
+<span class="c"># 2.创建topic，--replication-factor</span>
+kafka-topics.sh <span class="nt">--zookeeper</span>  127.0.0.1:2181 <span class="nt">--create</span> <span class="nt">--partitions</span> 3 <span class="nt">--replication-factor</span> 1 <span class="nt">--topic</span> topicfirst
+<span class="c"># Error while executing topic command : Replication factor: 2 larger than available brokers: 1.</span>
+<span class="nt">--topic</span> <span class="c"># topic名称</span>
+<span class="nt">--partitions</span> <span class="c"># 定义分区数,partition的命名规则&lt;topicName-partiton序号&gt;</span>
+<span class="nt">--replication-factor</span> <span class="c"># 副本数量,1代表就是当前主分区没有副本,2代表每个主分区有一个副本分区,副本分区和主分区不能在同一个broker</span>
+<span class="c"># topic创建后，进入log.dirs=/usr/local/kafka/data 存储目录，发现topicfirst的3个分区文件夹</span>
+<span class="o">[</span>root@helloworld data]# <span class="nb">ls
+</span>topicfirst-0  topicfirst-1  topicfirst-2
+<span class="o">[</span>root@helloworld data]# <span class="nb">cd </span>topicfirst-0
+<span class="o">[</span>root@helloworld topicfirst-0]# <span class="nb">ls 
+</span>00000000000000000000.index  00000000000000000000.log  00000000000000000000.timeindex  leader-epoch-checkpoint
+<span class="c"># 000000000是偏移量</span>
+
+<span class="c"># 3.删除topic</span>
+<span class="c"># 如果配置文件server.properties里delete.topic.enable设为false，删除是无效的</span>
+<span class="c"># Note: This will have no impact if delete.topic.enable is not set to true.</span>
+kafka-topics.sh <span class="nt">--zookeeper</span> 127.0.0.1:2181 <span class="nt">--delete</span> <span class="nt">--topic</span> topicfirst
+<span class="c"># 4.查看topic的详情</span>
+kafka-topics.sh <span class="nt">--zookeeper</span> 127.0.0.1:2181 <span class="nt">--describe</span> <span class="nt">--topic</span> topicfirst
+<span class="c"># 5.修改topic分区数,注意分区只能增加，不能减少，因为可能会破坏分区数据</span>
+kafka-topics.sh <span class="nt">--zookeeper</span> 127.0.0.1:2181 <span class="nt">-alter</span> <span class="nt">--topic</span> topicfirst <span class="nt">--partitions</span> 5
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-4.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-3.jpg" alt="" /></p>
+
+<blockquote>
+  <p>发送和接收消息</p>
+</blockquote>
+
+<p>命令都在kafka/bin目录下，可以通过–help查看命令帮助</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-sh.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld bin]# ./kafka-console-producer.sh <span class="nt">--help</span>
+<span class="c"># 发送消息,broker是集群多个的话，要用,隔开,如192.168.1.120:9092,192.168.1.130:9093,192.168.1.140:9092</span>
+kafka-console-producer.sh <span class="nt">--topic</span> topicfirst <span class="nt">--broker-list</span> 127.0.0.1:9092
+<span class="c"># 接收消息</span>
+<span class="c"># --from-beginning 如果加了，会从topic头来接收消息（监听前已发送的消息已持久化，需要加该参数进行接收）</span>
+kafka-console-consumer.sh <span class="nt">--topic</span> topicfirst <span class="nt">--from-beginning</span> <span class="nt">--bootstrap-server</span> 127.0.0.1:9092
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-5.jpg" alt="" /></p>
+
+<p>为什么？因为topicfirst有5个分区，发送消息的时候，消息轮询放入分区，由于一个分区只能同时被一个consumer group中的消费者消费，所以有5个消费者从5个分区里读取数据，基本上都是无序的。想有序读取数据，那就创建topics 时指定只有1个分区，那就只有一个消费者进行消费，就是有序的。</p>
+
+<h2 id="7-kafka内部文件存储结构">7. kafka内部文件存储结构</h2>
+
+<p>在kafka的v0.9版本前，是通过zookeeper来保存我们的消费offset数据的，但zookeeper的读写操作会影响kafka性能，所以在新版本就把消费的offset数据保存到本地的data目录里，这个data目录是你自己指定的log.dirs目录，默认有50个consumer_offsets目录，里面存储的是每个topic消息消费的位移情况</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-6.jpg" alt="" /></p>
+
+<p>发送的消息数据到底是存放在哪个文件里的？找到topic的分区，默认轮询</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld data]# <span class="nb">cd </span>topicfirst-0
+<span class="o">[</span>root@helloworld topicfirst-0]# <span class="nb">ls 
+</span>00000000000000000000.index  <span class="c"># 保存的消息的顺序编号</span>
+00000000000000000000.log    <span class="c"># 实际保存消息数据的</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/topic.png" alt="" /></p>
+
+<p>由于生产者生产数据的时候是会不断将数据追加到log文件的末尾，<strong>为了防止文件过大</strong>，<strong>数据定位的效率低下，kafka采用了分片和索引机制，将每个partition分为了多个segment(块)</strong>，每个segment对应了两个文件index文件和log文件，这些文件都在一个文件夹下</p>
+
+<ul>
+  <li>log文件是具体保存数据的，如果文件超过大小就会生成第二个，文件命名是这样的
+    <ul>
+      <li>0000000000000000000.log 这里的0就是文件的offset的起点</li>
+      <li>0000000000000013938.log 这里的13938就是上个文件end_offset+1</li>
+    </ul>
+  </li>
+  <li>index文件是具体存放消息索引信息的，如果consumer刚好消费时<strong>跨了两个log文件，就需要index支持定位了</strong>，log和index是成对出现的</li>
+</ul>
+
+<h2 id="8-kafka生产者分析">8. kafka生产者分析</h2>
+
+<h3 id="81-生产者分区的原则">8.1. 生产者分区的原则</h3>
+
+<p>为什么要分区</p>
+
+<ul>
+  <li>提升了水平扩展能力</li>
+  <li>提供并发能力</li>
+</ul>
+
+<p>分区的原则</p>
+
+<ul>
+  <li>指明partition的情况下，直降将指明的值作为partition的值（指定存放分区）</li>
+  <li>没有指明partition，但有key的情况下，会将key的hash值与topic的partition数量进行取余得到partition值，具体放入那个分区</li>
+  <li>什么都没有指定，在第一发消息的时候，系统会随机生成一个整数来对topic的partition数量进行取余得到partition值，后面每次都对这个已经生成的随机数进行+1，这就得到了round-robin算法了（轮询的方案）</li>
+</ul>
+
+<h3 id="82-kafka副本的复制方案isr机制">8.2. Kafka副本的复制方案ISR机制</h3>
+
+<h4 id="821-副本的复制方式分析">8.2.1. 副本的复制方式分析</h4>
+
+<p><strong>Kafka内部发送响应的机制</strong>：为了保证producer的数据能够可靠的发送并保存到topic上，topic的每个partition收到发送的数据后，都需要向生产者发送ACK(确认消息发送到topic)，如果生产者收到ACK，就会进行下一轮发送，如果没有收到就会重新发送</p>
+
+<blockquote>
+  <p>副本的复制是如何复制的？</p>
+</blockquote>
+
+<p>思考一个问题：是数据发送到leader分区就完成返回ACK，还是要同步复制到所有follower完成后才返回ACK ?</p>
+
+<p>Producer—&gt;leader（follower1，follower2）</p>
+
+<p>这个情况下应该如何向Producer发送ACK</p>
+
+<p>方案一：确保半数以上的follower完成同步，就发送ACK，优点是延迟低，在选举新的leader的时候，如果容忍n台节点故障，就需要2n+1个副本</p>
+
+<p>方案二：完成全部follower的同步，才发送ACK，缺点是延迟高，在选举新的leader的时候，如果容忍n台节点故障，只就需要n+1个副本</p>
+
+<p><mark>kafka使用方案二作为follower的同步方式,全部同步完成才返回ACK</mark></p>
+
+<ul>
+  <li>如果选择方案一：虽然网络延迟低，但数据一致性无法保障，而且需要2n+1个副本，副本过多就会导致数据冗余过大，造成很大浪费</li>
+  <li>虽然方案二延迟高，但对于kafka来说影响不大，</li>
+</ul>
+
+<h4 id="822-通过isr优化副本同步">8.2.2. 通过ISR优化副本同步</h4>
+
+<p>先看一下topic的详细信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kafka-topics.sh <span class="nt">--zookeeper</span> 127.0.0.1:2181 <span class="nt">--describe</span> <span class="nt">--topic</span> topicfirst
+Topic: topicfirst       PartitionCount: 5       ReplicationFactor: 1    Configs: 
+Topic: topicfirst       Partition: 0    Leader: 11      Replicas: 11    Isr: 11
+Topic: topicfirst       Partition: 1    Leader: 11      Replicas: 11    Isr: 11
+Topic: topicfirst       Partition: 2    Leader: 11      Replicas: 11    Isr: 11
+Topic: topicfirst       Partition: 3    Leader: 11      Replicas: 11    Isr: 11
+Topic: topicfirst       Partition: 4    Leader: 11      Replicas: 11    Isr: 11
+
+这里的11是broker的id，在config/server.properties 配置 
+</code></pre></div></div>
+
+<p><strong>可能发送的问题：</strong></p>
+
+<p>如果kafka采用第二种方案进行副本复制后进行ACK响应，会等待所有follower完成同步，这个时候如果有一个follower因为某种原因无法访问，这个时候leader就要一直等着这个follower来完成同步才能发ACK给producer</p>
+
+<p><strong>Kafka的解决方案：Leader维护了一个动态的in-sync replica set（ISR）</strong>，保持同步的follower集合</p>
+
+<ul>
+  <li>
+    <p>副本同步机制</p>
+
+    <ul>
+      <li>作用是和leader保持同步的follower集合</li>
+      <li>当ISR中的follower完成数据同步之后，leader就会给follower发送ack（<mark>数据是由follower主动从leader那里拉取过来的</mark>）</li>
+    </ul>
+  </li>
+  <li>
+    <p>ISR是一个动态同步集合：从ISR中移除follower的条件是当follower长时间未向leader拉取数据，该follower就会被剔除出ISR，时间阀值由：replica.lag.time.max.ms=10000 决定 单位ms，心跳</p>
+
+    <blockquote>
+      <p>replica.lag.max.messages 这个是leader和follower的消息数的差值，超过就剔除出ISR，这个参数在0.9版本已经移除</p>
+    </blockquote>
+
+    <p><img src="/assets/images/2020/icoding/mq/kafka/replica.lag.max.messages.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p><mark>当leader发生故障了，就会从ISR中选举新leader</mark></p>
+  </li>
+</ul>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/03/04/gavin-note-045.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

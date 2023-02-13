@@ -2,13 +2,13 @@
 layout: post
 title: 重学Java第43讲：throw 和 throws
 category: java
-tags: [base]
+tags: [java]
 keywords: java
 excerpt: throw 主动抛出异常，throws 关键字写在方法上声明可能产生的异常，让调用方法通过try catch进行捕捉处理
 lock: noneed
 ---
 
-原创 沉默王二，Java程序员进阶之路，
+转载自沉默王二的《Java程序员进阶之路》
 
 码云地址: [https://gitee.com/itwanger/toBeBetterJavaer](https://gitee.com/itwanger/toBeBetterJavaer)
 

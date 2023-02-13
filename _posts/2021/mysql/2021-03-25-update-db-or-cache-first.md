@@ -3,7 +3,7 @@ layout: post
 title: 高并发场景下，Redis与Mysql的数据一致性如何保证
 category: mysql
 tags: [mysql]
-keywords: redis
+keywords: redis,mysql,architect
 excerpt: 常用策略是先更新数据库再删除缓存，理论上还是会出现问题，解决办法是给缓存设置过期时间，允许系统中少量数据短时间不一致的场景出现，数据库和缓存数据保存强一致，可以吗?不可以，3种方案保证最终一致性，
 lock: noneed
 ---

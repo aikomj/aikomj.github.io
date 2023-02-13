@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 23种设计模式之工厂方法模式-Factory - 大伟的博客 </title>
+    <meta name="keywords" content="design-mode">
+    <meta name="description"
+          content="工厂方法模式是一种创建型设计模式，允许你通过具体工厂实例化具体的产品对象，简单工厂模式，工厂方法模式，两个角色（创建者角色和产品角色）,具体产品都遵循同一产品接口">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/design-mode/2020/05/03/2-java-factory-mode.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="23种设计模式之工厂方法模式-Factory">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>23种设计模式之工厂方法模式-Factory</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/05/03
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p><mark>工厂方式模式Factory</mark></p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-mini.png" alt="" /></p>
+
+<h2 id="1意图">1、意图</h2>
+
+<p>以下内容来源于网站 Refactoring Guru：<a href="https://refactoringguru.cn/design-patterns/factory-method">https://refactoringguru.cn/design-patterns/factory-method</a></p>
+
+<p>创建型模式：提供创建对象的机制， 增加已有代码的灵活性和可复用性</p>
+
+<p><strong>工厂方法模式</strong>是一种创建型设计模式， 其在父类中提供一个创建对象的方法， 允许子类决定实例化对象的类型。这些实例化对象都实现同一产品接口</p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-zh.png" alt="" /></p>
+
+<h3 id="问题">问题</h3>
+
+<p>假设你正在开发一款物流管理应用。 最初版本只能处理卡车运输， 因此大部分代码都在位于名为 <code class="highlighter-rouge">卡车</code>的类中。</p>
+
+<p>一段时间后， 这款应用变得极受欢迎。 你每天都能收到十几次来自海运公司的请求， 希望应用能够支持海上物流功能。</p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-problem1-zh.png" alt="" /></p>
+
+<p><strong>如果代码其余部分与现有类（具体的产品类）已经存在耦合关系</strong>， 那么向程序中添加新类其实并没有那么容易。这可是个好消息。 但是代码问题该如何处理呢？ 目前， 大部分代码都与 <code class="highlighter-rouge">卡车</code>类相关。 在程序中添加 <code class="highlighter-rouge">轮船</code>类需要修改全部代码。 更糟糕的是， 如果你以后需要在程序中支持另外一种运输方式， 很可能需要再次对这些代码进行大幅修改。</p>
+
+<p>最后， 你将不得不编写繁复的代码， 根据不同的运输对象类， 在应用中进行不同的处理。</p>
+
+<h3 id="解决方案">解决方案</h3>
+
+<p><mark>工厂方法模式</mark>建议使用特殊的工厂方法代替对于对象构造函数的直接调用 。不用担心， 对象仍将通过 <code class="highlighter-rouge">new</code>运算符创建， 只是该运算符改在工厂方法中调用罢了。 工厂方法返回的对象通常被称作 “产品”</p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-solution1.png" alt="" /></p>
+
+<p><mark>子类可以修改工厂方法返回的对象类型。</mark></p>
+
+<p>乍看之下， 这种更改可能毫无意义： 我们只是改变了程序中调用构造函数的位置而已。 但是， 仔细想一下， 现在你可以在子类中重写工厂方法， 从而改变其创建产品的类型。但有一点需要注意:仅当这些产品具有共同的基类或者接口时， 子类才能返回不同类型的产品， 同时基类中的工厂方法还应将其返回类型声明为这一共有产品接口。</p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-solution2-zh.png" alt="" /></p>
+
+<p><mark>所有产品都必须使用同一接口。</mark></p>
+
+<p>举例来说：<code class="highlighter-rouge">卡车Truck</code>和 <code class="highlighter-rouge">轮船Ship</code>类都必须实现 <code class="highlighter-rouge">运输</code>Transport接口（抽象产品的角色）， 该接口声明了一个名为 <code class="highlighter-rouge">deliver</code>交付的方法。 每个类都将以不同的方式实现该方法： 卡车走陆路交付货物， 轮船走海路交付货物。  <code class="highlighter-rouge">陆路运输</code>Road­Logistics类中的工厂方法返回卡车对象， 而 <code class="highlighter-rouge">海路运输</code>Sea­Logistics类则返回轮船对象。</p>
+
+<p>产品的角色：Transport(抽象产品接口)、Truck(具体产品)、Ship(另一个具体产品)</p>
+
+<p>创建者的角色：Logistics(抽象工厂/基类工厂)、RoadLogistics(具体工厂)、SeaLogistics(另一个具体工厂)</p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-solution3-zh.png" alt="" /></p>
+
+<p><mark>只要产品类实现一个共同的接口， 你就可以将其对象传递给客户代码， 而无需提供额外数据</mark></p>
+
+<p>客户端将所有产品视为抽象的 <code class="highlighter-rouge">运输</code> 。 客户端知道所有运输对象都提供 <code class="highlighter-rouge">deliver交付</code>方法， 但是并不关心其具体实现方式。</p>
+
+<h3 id="工厂方法模式结构">工厂方法模式结构</h3>
+
+<p><img src="\assets\images\2021\javabase\factory-method-structure.png" alt="" /></p>
+
+<ol>
+  <li>
+    <p><strong>产品</strong> （Product） 将会对接口进行声明。 对于所有由创建者及其子类构建的对象， 这些接口都是通用的。</p>
+  </li>
+  <li>
+    <p><strong>具体产品</strong> （Concrete Products） 是产品接口的不同实现。</p>
+  </li>
+  <li>
+    <p><strong>创建者</strong> （Creator） 类声明返回产品对象的工厂方法。 该方法的返回对象类型必须与产品接口相匹配。</p>
+
+    <p>你可以将工厂方法声明为抽象方法， 强制要求每个子类以不同方式实现该方法。 或者， 你也可以在基础工厂方法中返回默认产品类型。</p>
+
+    <p>注意， 尽管它的名字是创建者， 但他最主要的职责并<strong>不是</strong>创建产品。 一般来说， 创建者类包含一些与产品相关的核心业务逻辑。 工厂方法将这些逻辑处理从具体产品类中分离出来。 打个比方， 大型软件开发公司拥有程序员培训部门。 但是， 这些公司的主要工作还是编写代码， 而非生产程序员。</p>
+  </li>
+  <li>
+    <p><strong>具体创建者</strong> （Concrete Creators） 将会重写基础工厂方法， 使其返回不同类型的产品。</p>
+
+    <p>注意， 并不一定每次调用工厂方法都会<strong>创建</strong>新的实例。 工厂方法也可以返回缓存、 对象池或其他来源的已有对象。</p>
+  </li>
+</ol>
+
+<h3 id="伪代码">伪代码</h3>
+
+<p>以下示例演示了如何使用<strong>工厂方法</strong>开发跨平台 UI （用户界面） 组件， 并同时避免客户代码与具体 UI 类之间的耦合。利用语言的多态特性，客户端与抽象产品交互，避免了与具体对象之间的耦合。</p>
+
+<p><img src="\assets\images\2021\javabase\factory-method-example.png" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 创建者类声明的工厂方法必须返回一个产品类的对象。创建者的子类通常会提供</span>
+<span class="c1">// 该方法的实现。</span>
+<span class="kd">class</span> <span class="nc">Dialog</span> <span class="n">is</span>
+  <span class="c1">// 创建者还可提供一些工厂方法的默认实现。</span>
+  <span class="kd">abstract</span> <span class="n">method</span> <span class="nf">createButton</span><span class="o">():</span><span class="nc">Button</span>
+
+  <span class="c1">// 请注意，创建者的主要职责并非是创建产品。其中通常会包含一些核心业务</span>
+  <span class="c1">// 逻辑，这些逻辑依赖于由工厂方法返回的产品对象。子类可通过重写工厂方</span>
+  <span class="c1">// 法并使其返回不同类型的产品来间接修改业务逻辑。</span>
+  <span class="n">method</span> <span class="nf">render</span><span class="o">()</span> <span class="n">is</span>
+  <span class="c1">// 调用工厂方法创建一个产品对象。</span>
+  <span class="nc">Button</span> <span class="n">okButton</span> <span class="o">=</span> <span class="n">createButton</span><span class="o">()</span>
+  <span class="c1">// 现在使用产品。</span>
+  <span class="n">okButton</span><span class="o">.</span><span class="na">onClick</span><span class="o">(</span><span class="n">closeDialog</span><span class="o">)</span>
+  <span class="n">okButton</span><span class="o">.</span><span class="na">render</span><span class="o">()</span>
+
+<span class="c1">// 具体创建者将重写工厂方法以改变其所返回的产品类型。</span>
+<span class="kd">class</span> <span class="nc">WindowsDialog</span> <span class="kd">extends</span> <span class="nc">Dialog</span> <span class="n">is</span>
+  <span class="n">method</span> <span class="nf">createButton</span><span class="o">():</span><span class="nc">Button</span> <span class="n">is</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">WindowsButton</span><span class="o">()</span>
+
+<span class="kd">class</span> <span class="nc">WebDialog</span> <span class="kd">extends</span> <span class="nc">Dialog</span> <span class="n">is</span>
+  <span class="n">method</span> <span class="nf">createButton</span><span class="o">():</span><span class="nc">Button</span> <span class="n">is</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">HTMLButton</span><span class="o">()</span>
+
+<span class="c1">// 产品接口中将声明所有具体产品都必须实现的操作。</span>
+<span class="kd">interface</span> <span class="nc">Button</span> <span class="n">is</span>
+  <span class="n">method</span> <span class="nf">render</span><span class="o">()</span>
+  <span class="n">method</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+
+<span class="c1">// 具体产品需提供产品接口的各种实现。</span>
+<span class="kd">class</span> <span class="nc">WindowsButton</span> <span class="kd">implements</span> <span class="nc">Button</span> <span class="n">is</span>
+  <span class="n">method</span> <span class="nf">render</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">)</span> <span class="n">is</span>
+<span class="c1">// 根据 Windows 样式渲染按钮。</span>
+  <span class="n">method</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="n">is</span>
+<span class="c1">// 绑定本地操作系统点击事件。</span>
+
+<span class="kd">class</span> <span class="nc">HTMLButton</span> <span class="kd">implements</span> <span class="nc">Button</span> <span class="n">is</span>
+  <span class="n">method</span> <span class="nf">render</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">)</span> <span class="n">is</span>
+	<span class="c1">// 返回一个按钮的 HTML 表述。</span>
+  <span class="n">method</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">f</span><span class="o">)</span> <span class="n">is</span>
+ <span class="c1">// 绑定网络浏览器的点击事件。</span>
+
+<span class="kd">class</span> <span class="nc">Application</span> <span class="n">is</span>
+  <span class="n">field</span> <span class="nl">dialog:</span> <span class="nc">Dialog</span>
+
+	<span class="c1">// 程序根据当前配置或环境设定选择创建者的类型。</span>
+	<span class="n">method</span> <span class="nf">initialize</span><span class="o">()</span> <span class="n">is</span>
+  	<span class="n">config</span> <span class="o">=</span> <span class="n">readApplicationConfigFile</span><span class="o">()</span>
+
+  	<span class="k">if</span> <span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">OS</span> <span class="o">==</span> <span class="s">"Windows"</span><span class="o">)</span> <span class="n">then</span>
+     	<span class="n">dialog</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WindowsDialog</span><span class="o">()</span>
+  	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">OS</span> <span class="o">==</span> <span class="s">"Web"</span><span class="o">)</span> <span class="n">then</span>
+     	<span class="n">dialog</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WebDialog</span><span class="o">()</span>
+  	<span class="k">else</span>
+     	<span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="o">(</span><span class="s">"错误！未知的操作系统。"</span><span class="o">)</span>
+      
+  <span class="c1">// 当前客户端代码会与具体创建者的实例进行交互，但是必须通过其基本接口</span>
+  <span class="c1">// 进行。只要客户端通过基本接口与创建者进行交互，你就可将任何创建者子</span>
+  <span class="c1">// 类传递给客户端。</span>
+  <span class="n">method</span> <span class="nf">main</span><span class="o">()</span> <span class="n">is</span>
+  	<span class="k">this</span><span class="o">.</span><span class="na">initialize</span><span class="o">()</span>
+    <span class="n">dialog</span><span class="o">.</span><span class="na">render</span><span class="o">()</span>
+</code></pre></div></div>
+
+<h3 id="适合应用场景">适合应用场景</h3>
+
+<ul>
+  <li>
+    <p>当你在编写代码的过程中， 如果无法预知对象确切类别及其依赖关系时， 可使用工厂方法</p>
+
+    <p>工厂方法将创建产品的代码与实际使用产品的代码分离， 从而能在不影响其他代码的情况下扩展产品创建部分代码。</p>
+
+    <p>例如， 如果需要向应用中添加一种新产品， 你只需要开发新的创建者子类， 然后重写其工厂方法即可。</p>
+  </li>
+  <li>
+    <p>如果你希望用户能扩展你软件库或框架的内部组件， 可使用工厂方法。</p>
+
+    <p>继承可能是扩展软件库或框架默认行为的最简单方法。 但是当你使用子类替代标准组件时， 框架如何辨识出该子类？</p>
+
+    <p>解决方案是将各框架中构造组件的代码集中到单个工厂方法中， 并在继承该组件之外允许任何人对该方法进行重写。</p>
+
+    <p>让我们看看具体是如何实现的。 假设你使用开源 UI 框架编写自己的应用。 你希望在应用中使用圆形按钮， 但是原框架仅支持矩形按钮。 你可以使用 <code class="highlighter-rouge">圆形按钮</code>Round­Button子类来继承标准的 <code class="highlighter-rouge">按钮</code>Button类。 但是， 你需要告诉 <code class="highlighter-rouge">UI框架</code>UIFramework类使用新的子类按钮代替默认按钮。</p>
+
+    <p>为了实现这个功能， 你可以根据基础框架类开发子类 <code class="highlighter-rouge">圆形按钮 UI</code>UIWith­Round­Buttons ， 并且重写其 <code class="highlighter-rouge">create­Button</code>创建按钮方法。 基类中的该方法返回 <code class="highlighter-rouge">按钮</code>对象， 而你开发的子类返回 <code class="highlighter-rouge">圆形按钮</code>对象。 现在， 你就可以使用 <code class="highlighter-rouge">圆形按钮 UI</code>类代替 <code class="highlighter-rouge">UI框架</code>类。 就是这么简单！</p>
+  </li>
+  <li>
+    <p>如果你希望复用现有对象来节省系统资源， 而不是每次都重新创建对象， 可使用工厂方法。</p>
+
+    <p>在处理大型资源密集型对象 （比如数据库连接、 文件系统和网络资源） 时， 你会经常碰到这种资源需求。</p>
+
+    <p>让我们思考复用现有对象的方法：</p>
+
+    <ol>
+      <li>首先， 你需要创建存储空间来存放所有已经创建的对象。</li>
+      <li>当他人请求一个对象时， 程序将在对象池中搜索可用对象。</li>
+      <li>…然后将其返回给客户端代码。</li>
+      <li>如果没有可用对象， 程序则创建一个新对象 （并将其添加到对象池中）。</li>
+    </ol>
+
+    <p>这些代码可不少！ 而且它们必须位于同一处， 这样才能确保重复代码不会污染程序。</p>
+
+    <p>可能最显而易见， 也是最方便的方式， 就是将这些代码放置在我们试图重用的对象类的构造函数中。 但是从定义上来讲， 构造函数始终返回的是<strong>新对象</strong>， 其无法返回现有实例。</p>
+
+    <p>因此， 你需要有一个既能够创建新对象， 又可以重用现有对象的普通方法。 这听上去和工厂方法非常相像。</p>
+  </li>
+</ul>
+
+<h3 id="实现方式">实现方式</h3>
+
+<ol>
+  <li>
+    <p>让所有产品都遵循同一接口。 该接口必须声明对所有产品都有意义的方法。</p>
+  </li>
+  <li>
+    <p>在创建类中添加一个空的工厂方法。 该方法的返回类型必须遵循通用的产品接口。</p>
+  </li>
+  <li>
+    <p>在创建者代码中找到对于产品构造函数的所有引用。 将它们依次替换为对于工厂方法的调用， 同时将创建产品的代码移入工厂方法。 你可能需要在工厂方法中添加临时参数来控制返回的产品类型。</p>
+
+    <p>工厂方法的代码看上去可能非常糟糕。 其中可能会有复杂的 <code class="highlighter-rouge">switch</code>分支运算符， 用于选择各种需要实例化的产品类。 但是不要担心， 我们很快就会修复这个问题。</p>
+  </li>
+  <li>
+    <p>现在， 为工厂方法中的每种产品编写一个创建者子类， 然后在子类中重写工厂方法， 并将基本方法中的相关创建代码移动到工厂方法中。</p>
+  </li>
+  <li>
+    <p>如果应用中的产品类型太多， 那么为每个产品创建子类并无太大必要， 这时你也可以在子类中复用基类中的控制参数。</p>
+
+    <p>例如， 设想你有以下一些层次结构的类。 基类 <code class="highlighter-rouge">邮件</code>及其子类 <code class="highlighter-rouge">航空邮件</code>和 <code class="highlighter-rouge">陆路邮件</code> ；  <code class="highlighter-rouge">运输</code>及其子类 <code class="highlighter-rouge">飞机</code>, <code class="highlighter-rouge">卡车</code>和 <code class="highlighter-rouge">火车</code> 。  <code class="highlighter-rouge">航空邮件</code>仅使用 <code class="highlighter-rouge">飞机</code>对象， 而 <code class="highlighter-rouge">陆路邮件</code>则会同时使用 <code class="highlighter-rouge">卡车</code>和 <code class="highlighter-rouge">火车</code>对象。 你可以编写一个新的子类 （例如 <code class="highlighter-rouge">火车邮件</code> ） 来处理这两种情况， 但是还有其他可选的方案。 客户端代码可以给 <code class="highlighter-rouge">陆路邮件</code>类传递一个参数， 用于控制其希望获得的产品。</p>
+  </li>
+  <li>
+    <p>如果代码经过上述移动后， 基础工厂方法中已经没有任何代码， 你可以将其转变为抽象类。 如果基础工厂方法中还有其他语句， 你可以将其设置为该方法的默认行为。</p>
+  </li>
+</ol>
+
+<h3 id="优点">优点</h3>
+
+<ul>
+  <li>
+    <p>你可以避免创建者和具体产品之间的紧密耦合。</p>
+  </li>
+  <li>
+    <p><em>单一职责原则</em>。 你可以将产品创建代码放在程序的单一位置， 从而使得代码更容易维护。</p>
+  </li>
+  <li>
+    <p><em>开闭原则</em>。 无需更改现有客户端代码， 你就可以在程序中引入新的产品类型。</p>
+  </li>
+</ul>
+
+<h3 id="缺点">缺点</h3>
+
+<ul>
+  <li>应用工厂方法模式需要引入许多新的子类， 代码可能会因此变得更复杂。 最好的情况是将该模式引入创建者类的现有层次结构中。</li>
+</ul>
+
+<h3 id="与其他模式的关系">与其他模式的关系</h3>
+
+<ul>
+  <li>
+    <p>在许多设计工作的初期都会使用<a href="https://refactoringguru.cn/design-patterns/factory-method">工厂方法模式</a> （较为简单， 而且可以更方便地通过子类进行定制）， 随后演化为使用<a href="https://refactoringguru.cn/design-patterns/abstract-factory">抽象工厂模式</a>、 <a href="https://refactoringguru.cn/design-patterns/prototype">原型模式</a>或<a href="https://refactoringguru.cn/design-patterns/builder">生成器模式</a> （更灵活但更加复杂）。</p>
+  </li>
+  <li>
+    <p><a href="https://refactoringguru.cn/design-patterns/abstract-factory">抽象工厂模式</a>通常基于一组<a href="https://refactoringguru.cn/design-patterns/factory-method">工厂方法</a>， 但你也可以使用<a href="https://refactoringguru.cn/design-patterns/prototype">原型模式</a>来生成这些类的方法。</p>
+  </li>
+  <li>
+    <p>你可以同时使用<a href="https://refactoringguru.cn/design-patterns/factory-method">工厂方法</a>和<a href="https://refactoringguru.cn/design-patterns/iterator">迭代器模式</a>来让子类集合返回不同类型的迭代器， 并使得迭代器与集合相匹配。</p>
+  </li>
+  <li>
+    <p><a href="https://refactoringguru.cn/design-patterns/prototype">原型</a>并不基于继承， 因此没有继承的缺点。 另一方面， <em>原型</em>需要对被复制对象进行复杂的初始化。 <a href="https://refactoringguru.cn/design-patterns/factory-method">工厂方法</a>基于继承， 但是它不需要初始化步骤。</p>
+  </li>
+  <li>
+    <p><a href="https://refactoringguru.cn/design-patterns/factory-method">工厂方法</a>是<a href="https://refactoringguru.cn/design-patterns/template-method">模板方法模式</a>的一种特殊形式。 同时， <em>工厂方法</em>可以作为一个大型<em>模板方法</em>中的一个步骤。</p>
+  </li>
+</ul>
+
+<h3 id="代码示例">代码示例</h3>
+
+<p><strong>复杂度</strong>：1</p>
+
+<p><strong>流行度</strong>：3</p>
+
+<blockquote>
+  <p>使用示例</p>
+</blockquote>
+
+<p>工厂方法定义了一个方法， 且必须使用该方法代替通过直接调用构造函数来创建对象 （ <code class="highlighter-rouge">new</code>操作符） 的方式。 子类可重写该方法来更改将被创建的对象所属类。</p>
+
+<p>工厂方法模式在 Java 代码中得到了广泛使用。 当你需要在代码中提供高层次的灵活性时， 该模式会非常实用。</p>
+
+<p>核心 Java 程序库中有该模式的应用：</p>
+
+<ul>
+  <li><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Calendar.html#getInstance--"><code class="highlighter-rouge">java.util.Calendar#getInstance()</code></a></li>
+  <li><a href="http://docs.oracle.com/javase/8/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-"><code class="highlighter-rouge">java.util.ResourceBundle#getBundle()</code></a></li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html#of(E)"><code class="highlighter-rouge">java.util.EnumSet#of()</code></a></li>
+</ul>
+
+<p><strong>识别方法：</strong> 工厂方法可通过构建方法来识别， 它会创建具体类的对象， 但以抽象类型或接口的形式返回这些对象。</p>
+
+<blockquote>
+  <p>生成跨平台的GUI</p>
+</blockquote>
+
+<p>在本例中， 按钮担任产品的角色， 对话框担任创建者的角色。不同类型的对话框需要其各自类型的元素。 因此我们可为每个对话框类型创建子类并重写其工厂方法。现在， 每种对话框类型都将对合适的按钮类进行初始化。 对话框基类使用其通用接口与对象进行交互， 因此代码更改后仍能正常工作。</p>
+
+<p><strong>buttons</strong></p>
+
+<p>1)  <strong>buttons/Button.java:</strong>  通用产品接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">buttons</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Common interface for all buttons.
+ */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Button</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">render</span><span class="o">();</span>
+    <span class="kt">void</span> <span class="nf">onClick</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2) <strong>buttons/HtmlButton.java:</strong>  具体产品</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">buttons</span><span class="o">;</span>
+
+<span class="cm">/**
+ * HTML button implementation.
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HtmlButton</span> <span class="kd">implements</span> <span class="nc">Button</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">render</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"&lt;button&gt;Test Button&lt;/button&gt;"</span><span class="o">);</span>
+        <span class="n">onClick</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Click! Button says - 'Hello World!'"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3)  <strong>buttons/WindowsButton.java:</strong>  另一个具体产品</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">buttons</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.swing.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.awt.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.awt.event.ActionEvent</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.awt.event.ActionListener</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Windows button implementation.
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">WindowsButton</span> <span class="kd">implements</span> <span class="nc">Button</span> <span class="o">{</span>
+    <span class="nc">JPanel</span> <span class="n">panel</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JPanel</span><span class="o">();</span>
+    <span class="nc">JFrame</span> <span class="n">frame</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JFrame</span><span class="o">();</span>
+    <span class="nc">JButton</span> <span class="n">button</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">render</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">frame</span><span class="o">.</span><span class="na">setDefaultCloseOperation</span><span class="o">(</span><span class="nc">JFrame</span><span class="o">.</span><span class="na">EXIT_ON_CLOSE</span><span class="o">);</span>
+        <span class="nc">JLabel</span> <span class="n">label</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JLabel</span><span class="o">(</span><span class="s">"Hello World!"</span><span class="o">);</span>
+        <span class="n">label</span><span class="o">.</span><span class="na">setOpaque</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">label</span><span class="o">.</span><span class="na">setBackground</span><span class="o">(</span><span class="k">new</span> <span class="nc">Color</span><span class="o">(</span><span class="mi">235</span><span class="o">,</span> <span class="mi">233</span><span class="o">,</span> <span class="mi">126</span><span class="o">));</span>
+        <span class="n">label</span><span class="o">.</span><span class="na">setFont</span><span class="o">(</span><span class="k">new</span> <span class="nc">Font</span><span class="o">(</span><span class="s">"Dialog"</span><span class="o">,</span> <span class="nc">Font</span><span class="o">.</span><span class="na">BOLD</span><span class="o">,</span> <span class="mi">44</span><span class="o">));</span>
+        <span class="n">label</span><span class="o">.</span><span class="na">setHorizontalAlignment</span><span class="o">(</span><span class="nc">SwingConstants</span><span class="o">.</span><span class="na">CENTER</span><span class="o">);</span>
+        <span class="n">panel</span><span class="o">.</span><span class="na">setLayout</span><span class="o">(</span><span class="k">new</span> <span class="nc">FlowLayout</span><span class="o">(</span><span class="nc">FlowLayout</span><span class="o">.</span><span class="na">CENTER</span><span class="o">));</span>
+        <span class="n">frame</span><span class="o">.</span><span class="na">getContentPane</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="n">panel</span><span class="o">);</span>
+        <span class="n">panel</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">label</span><span class="o">);</span>
+        <span class="n">onClick</span><span class="o">();</span>
+        <span class="n">panel</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">button</span><span class="o">);</span>
+
+        <span class="n">frame</span><span class="o">.</span><span class="na">setSize</span><span class="o">(</span><span class="mi">320</span><span class="o">,</span> <span class="mi">200</span><span class="o">);</span>
+        <span class="n">frame</span><span class="o">.</span><span class="na">setVisible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">onClick</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JButton</span><span class="o">(</span><span class="s">"Exit"</span><span class="o">);</span>
+        <span class="n">button</span><span class="o">.</span><span class="na">addActionListener</span><span class="o">(</span><span class="k">new</span> <span class="nc">ActionListener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">actionPerformed</span><span class="o">(</span><span class="nc">ActionEvent</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">frame</span><span class="o">.</span><span class="na">setVisible</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>factory</strong></p>
+
+<p>1) factory/Dialog.java: 基础创建者</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">factory</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.buttons.Button</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Base factory class. Note that "factory" is merely a role for the class. It
+ * should have some core business logic which needs different products to be
+ * created.
+ */</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Dialog</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">renderWindow</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// ... other code ...</span>
+        <span class="nc">Button</span> <span class="n">okButton</span> <span class="o">=</span> <span class="n">createButton</span><span class="o">();</span>
+        <span class="n">okButton</span><span class="o">.</span><span class="na">render</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * Subclasses will override this method in order to create specific button
+     * objects.
+     */</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">Button</span> <span class="nf">createButton</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2)  <strong>factory/HtmlDialog.java:</strong>  具体创建者</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">factory</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.buttons.Button</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.buttons.HtmlButton</span><span class="o">;</span>
+
+<span class="cm">/**
+ * HTML Dialog will produce HTML buttons.
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HtmlDialog</span> <span class="kd">extends</span> <span class="nc">Dialog</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Button</span> <span class="nf">createButton</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">HtmlButton</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3) <strong>factory/WindowsDialog.java:</strong>  另一个具体创建者</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">factory</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.buttons.Button</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.buttons.WindowsButton</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Windows Dialog will produce Windows buttons.
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">WindowsDialog</span> <span class="kd">extends</span> <span class="nc">Dialog</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Button</span> <span class="nf">createButton</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">WindowsButton</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>Demo.java:  客户端代码</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">refactoring_guru</span><span class="o">.</span><span class="na">factory_method</span><span class="o">.</span><span class="na">example</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.factory.Dialog</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.factory.HtmlDialog</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">refactoring_guru.factory_method.example.factory.WindowsDialog</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Demo class. Everything comes together here.
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Dialog</span> <span class="n">dialog</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">configure</span><span class="o">();</span>
+        <span class="n">runBusinessLogic</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * The concrete factory is usually chosen depending on configuration or
+     * environment options.
+     */</span>
+    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">"os.name"</span><span class="o">).</span><span class="na">equals</span><span class="o">(</span><span class="s">"Windows 10"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">dialog</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WindowsDialog</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">dialog</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HtmlDialog</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * All of the client code should work with factories and products through
+     * abstract interfaces. This way it does not care which factory it works
+     * with and what kind of product it returns.
+     */</span>
+    <span class="kd">static</span> <span class="kt">void</span> <span class="nf">runBusinessLogic</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="na">renderWindow</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>OutputDemo.txt: 执行结果 （Html­Dialog）</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button&gt;Test Button&lt;/button&gt;
+Click! Button says - <span class="s1">'Hello World!'</span>
+</code></pre></div></div>
+
+<p>OutputDemo.png:**  执行结果 （Windows­Dialog）</p>
+
+<p><img src="\assets\images\2021\javabase\OutputDemo.png" alt="" /></p>
+
+<h2 id="2举例">2、举例</h2>
+
+<h3 id="简单工厂模式">简单工厂模式</h3>
+
+<p>一个抽象接口，多个抽象接口的实现类，一个工厂类，用来实例化抽象的接口，代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jude</span><span class="o">.</span><span class="na">factory</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Car</span> <span class="o">{</span>
+	 <span class="kt">void</span> <span class="nf">run</span><span class="o">();</span>
+	 <span class="kt">void</span> <span class="nf">stop</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Benz</span> <span class="kd">implements</span> <span class="nc">Car</span><span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Benz 开始启动了..."</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">stop</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Benz 停车了..."</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Ford</span> <span class="kd">implements</span> <span class="nc">Car</span> <span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">stop</span><span class="o">()</span> <span class="o">{</span>
+
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 工厂类</span>
+<span class="kd">class</span> <span class="nc">Factory</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">Car</span> <span class="nf">getCarInstance</span><span class="o">(</span><span class="nc">String</span> <span class="n">type</span><span class="o">){</span>
+		<span class="nc">Car</span> <span class="n">c</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="k">if</span><span class="o">(</span><span class="s">"Benz"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">type</span><span class="o">)){</span>
+			<span class="n">c</span> <span class="o">=</span>  <span class="k">new</span> <span class="nc">Benz</span><span class="o">();</span>
+		<span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="s">"Ford"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">type</span><span class="o">)){</span>
+			<span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Ford</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">c</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Car</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">Factory</span><span class="o">.</span><span class="na">getCarInstance</span><span class="o">((</span><span class="s">"Benz"</span><span class="o">));</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">c</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+			<span class="n">c</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+			<span class="n">c</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+		<span class="o">}</span><span class="k">else</span><span class="o">{</span>
+			<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"造不类这种汽车"</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="工厂方法模式">工厂方法模式</h3>
+
+<p>创建者的角色：抽象工厂，具体工厂</p>
+
+<p>产品的角色：抽象产品，具体产品</p>
+
+<p>不再是由一个工厂类去实例化具体的产品，而是由抽象工厂的子类去实例化具体的产品，代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 抽象产品</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Moveable</span> <span class="o">{</span>
+	<span class="kt">void</span> <span class="nf">run</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="c1">// 具体产品</span>
+<span class="kd">class</span> <span class="nc">Plane</span> <span class="kd">implements</span> <span class="nc">Moveable</span> <span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"plane..."</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 具体产品</span>
+<span class="kd">class</span> <span class="nc">Broom</span> <span class="kd">implements</span> <span class="nc">Moveable</span> <span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"broom..."</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 基类工厂</span>
+<span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">VehicleFactory</span> <span class="o">{</span>
+	<span class="kd">abstract</span> <span class="nc">Moveable</span> <span class="nf">create</span><span class="o">();</span> <span class="c1">// 生产抽象产品</span>
+<span class="o">}</span>
+
+<span class="c1">// 具体工厂</span>
+<span class="kd">class</span> <span class="nc">PlaneFactory</span> <span class="kd">extends</span> <span class="nc">VehicleFactory</span> <span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="nc">Moveable</span> <span class="nf">create</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">Plane</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+<span class="c1">// 具体工厂</span>
+<span class="kd">class</span> <span class="nc">BroomFactory</span> <span class="kd">extends</span> <span class="nc">VehicleFactory</span> <span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="nc">Moveable</span> <span class="nf">create</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">Broom</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 客户端</span>
+<span class="kd">class</span> <span class="nc">TestFactory2</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">VehicleFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BroomFactory</span><span class="o">();</span>
+		<span class="nc">Moveable</span> <span class="n">m</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+		<span class="n">m</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="抽象工厂模式">抽象工厂模式</h3>
+
+<p>与工厂方法模式不同的是，工厂方法模式中的工厂只生产单一的产品，而抽象工厂模式中的工厂生产多个产品</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 基类工厂</span>
+<span class="kd">public</span>  <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractFactory</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">Vehicle</span> <span class="nf">createVhick</span><span class="o">();</span>
+  <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">Weapon</span> <span class="nf">createWeapon</span><span class="o">();</span>
+  <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">Food</span> <span class="nf">createFood</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="c1">// 具体工厂类，Vehicle,Weapon，Foood是抽象类</span>
+<span class="kd">class</span> <span class="nc">DefaultFactory</span> <span class="kd">extends</span> <span class="nc">Abstractory</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">Apple</span><span class="o">();</span>
+  <span class="o">}</span>
+  
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createWeapon</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">AK47</span><span class="o">();</span>
+  <span class="o">}</span>
+  
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createVhick</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">Car</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 测试类</span>
+<span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Abstractory</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultFactory</span><span class="o">();</span>
+    <span class="nc">Vehicle</span> <span class="n">v</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="na">createVhick</span><span class="o">();</span>
+    <span class="n">v</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+    <span class="nc">Weapon</span> <span class="n">w</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="na">createWeapon</span><span class="o">();</span>
+    <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/design-mode/2020/05/03/2-java-factory-mode.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

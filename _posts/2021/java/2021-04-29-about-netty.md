@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Netty,网络高效传输的NIO框架
-category: java
-tags: [java]
-keywords: java
+category: tool
+tags: [netty]
+keywords: netty
 excerpt: Netty 示例
 lock: noneed
 ---
@@ -159,6 +159,8 @@ Now is:Mon Apr 19 11:34:21 CST 2021
 
 ![](\assets\images\2021\javabase\netty-nio-class.jpg)
 
+![](../../..\assets\images\2021\javabase\netty-nio-class.jpg)
+
 而在源码中，最重要的就是这个Channel。分析源码，我们要知道源码创作者是在表达什么意思。
 
 All I/O operations are asynchronous.一句话点出核心所有的IO操作都是异步的，这意味着任何I/O调用都将立即返回，但不保证请求的I/O操作已完成。这是在源码的注释上面给出的解释。
@@ -195,6 +197,8 @@ Channel的抽象类AbstractChannel中有一个受保护的构造方法，而Abst
 ### 为什么选择Netty
 
 ![](\assets\images\2021\springcloud\java-io-1.jpg)
+
+![](../../..\assets\images\2021\springcloud\java-io-1.jpg)
 
 其实在上面的图中，已经能看出来了，不同的I/O模型，效率，使用难度，吞吐量都是非常重要的，所以选择的时候，肯定要慎重选择，而我们为什么不使用Java原生的呢？因为复杂、不好用。
 

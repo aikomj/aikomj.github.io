@@ -8,8 +8,6 @@ excerpt: 不满足最左匹配原则，使用了select *，索引列上有计算
 lock: noneed
 ---
 
-以下内容转自苏三说技术。
-
 前面苏三发表了 [sql优化的15个技巧](/mysql/2021/11/11/sql-optimization.html)，索引作为优化sql的一个常用手段，我们要让索引生效就要避开一些坑，下面举10种场景聊聊
 
 ![](\assets\images\2022\mysql\index-invalid-ten-scene.png)

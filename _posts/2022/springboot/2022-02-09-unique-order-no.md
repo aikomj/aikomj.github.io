@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 订单号重复？一招搞定它
+title: 订单号重复的解决方案
 category: springboot
 tags: [springboot]
 keywords: springboot

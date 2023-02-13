@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第52节：数据切分设计方案Mycat-2 - 大伟的博客 </title>
+    <meta name="keywords" content="mysql">
+    <meta name="description"
+          content="Mycat的分片规则取模、枚举、时间分片，全局表的概念，主表子表管理，Mycat的用户权限配置、黑白名单，Mycat进行集群配置(zookeeper)">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/06/27/icoding-note-052.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第52节：数据切分设计方案Mycat-2">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第52节：数据切分设计方案Mycat-2</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/06/27
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="5-mycat的分片规则">5. MyCat的分片规则</h2>
+
+<p>在Mycat上修改逻辑表user_info 添加字段type，会自动同步到物理表的。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-table-add-column.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-table-add-column2.jpg" alt="" /></p>
+
+<h3 id="51-枚举分片">5.1. 枚举分片</h3>
+
+<p>修改<mark> rule.xml</mark> 和 <mark>schema.xml </mark></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、rule.xml</span>
+<span class="c"># columns对应我们的分片列名，要注意列名对应</span>
+&lt;tableRule <span class="nv">name</span><span class="o">=</span><span class="s2">"sharding-by-intfile"</span><span class="o">&gt;</span>
+	&lt;rule&gt;
+	&lt;columns&gt;type&lt;/columns&gt;
+	&lt;algorithm&gt;hash-int&lt;/algorithm&gt;
+	&lt;/rule&gt;
+&lt;/tableRule&gt;
+
+<span class="c"># 加入了默认的配置项</span>
+&lt;<span class="k">function </span><span class="nv">name</span><span class="o">=</span><span class="s2">"hash-int"</span> <span class="nv">class</span><span class="o">=</span><span class="s2">"io.mycat.route.function.PartitionByFileMap"</span><span class="o">&gt;</span>
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"mapFile"</span><span class="o">&gt;</span>partition-hash-int.txt&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"defaultNode"</span><span class="o">&gt;</span>0&lt;/property&gt;
+&lt;/function&gt;
+        
+<span class="c"># 2、数据分片节点匹配文件partition-hash-int.txt 枚举规则</span>
+vi partition-hash-int.txt
+<span class="nv">10000</span><span class="o">=</span>0
+<span class="nv">10010</span><span class="o">=</span>0
+<span class="nv">10020</span><span class="o">=</span>0
+<span class="nv">10001</span><span class="o">=</span>1
+<span class="nv">10011</span><span class="o">=</span>1
+<span class="nv">10021</span><span class="o">=</span>1
+<span class="nv">DEFAULT_NODE</span><span class="o">=</span>0
+
+<span class="c"># 3、修改schema.xml，分片策略为 sharding-by-intfile</span>
+&lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">checkSQLschema</span><span class="o">=</span><span class="s2">"true"</span> <span class="nv">sqlMaxLimit</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;<span class="o">!</span><span class="nt">--</span> 枚举分片--&gt;
+	&lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"user_info"</span> <span class="nv">dataNode</span><span class="o">=</span><span class="s2">"dn213,dn214"</span> <span class="nv">rule</span><span class="o">=</span><span class="s2">"sharding-by-intfile"</span> /&gt;
+	
+<span class="c"># 4、连接mycat的9066管理端,重新加载mycat的配置，</span>
+mysql&gt; reload @@config_all<span class="p">;</span>
+</code></pre></div></div>
+
+<p>枚举分片跟分区表的list分区是一样的，要注意三个点：</p>
+
+<ul>
+  <li>分片列名要与表的列名一致</li>
+  <li>
+    <p>要配置超出规则的默认数据分片节点 defaultNode</p>
+  </li>
+  <li>要修改修改schema逻辑库的逻辑表的分片规则rule</li>
+</ul>
+
+<p>在mycat上插入三条数据type的值分别为：10000,10001,20000</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-hash-int.jpg" alt="" /></p>
+
+<p>按照分片规则10000和20000分到了db213，10001分到了db214
+<img src="/assets/images/2020/icoding/mysql/mycat-hash-int-213.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-hash-int-214.jpg" alt="" /></p>
+
+<h3 id="52-取模分片">5.2. 取模分片</h3>
+
+<p>修改<mark> rule.xml</mark> 和 <mark>schema.xml </mark></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、rule.xml</span>
+<span class="c"># 拿id做取模分片</span>
+&lt;tableRule <span class="nv">name</span><span class="o">=</span><span class="s2">"mod-long"</span><span class="o">&gt;</span>
+	&lt;rule&gt;
+	&lt;columns&gt;id&lt;/columns&gt;
+	&lt;algorithm&gt;mod-long&lt;/algorithm&gt;
+	&lt;/rule&gt;
+&lt;/tableRule&gt;
+<span class="c"># 根据节点数取模，我们现在有两个数据分片节点dataNode： dn213和dn214</span>
+&lt;<span class="k">function </span><span class="nv">name</span><span class="o">=</span><span class="s2">"mod-long"</span> <span class="nv">class</span><span class="o">=</span><span class="s2">"io.mycat.route.function.PartitionByMod"</span><span class="o">&gt;</span>
+	&lt;<span class="o">!</span><span class="nt">--</span> how many data nodes <span class="nt">--</span><span class="o">&gt;</span>
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"count"</span><span class="o">&gt;</span>2&lt;/property&gt;
+&lt;/function&gt;
+        
+<span class="c"># 2、修改schema.xml，分片策略为mod-long</span>
+&lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">checkSQLschema</span><span class="o">=</span><span class="s2">"true"</span> <span class="nv">sqlMaxLimit</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;<span class="o">!</span><span class="nt">--</span> 取模分片--&gt;
+	&lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"user_info"</span> <span class="nv">dataNode</span><span class="o">=</span><span class="s2">"dn213,dn214"</span> <span class="nv">rule</span><span class="o">=</span><span class="s2">"mod-long"</span> /&gt;
+	
+<span class="c"># 3、连接mycat的9066管理端,重新加载mycat的配置，</span>
+mysql&gt; reload @@config_all<span class="p">;</span>	
+</code></pre></div></div>
+
+<p>在mycat上插入三条数据id的值分别为：14,15,16</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-mod-long.jpg" alt="" /></p>
+
+<p>按照分片规则14和16分到了db213，15分到了db214</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-mod-long-213.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-mod-long-214.jpg" alt="" /></p>
+
+<h3 id="53-按时间分片">5.3 .按时间分片</h3>
+
+<p>分别在分片主机db213的物理库user_213创建表login_info和分片主机db214的物理库user_214创建表login_info</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE TABLE <span class="sb">`</span>login_info<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>username<span class="sb">`</span> varchar<span class="o">(</span>100<span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>login_date<span class="sb">`</span> <span class="nb">date </span>DEFAULT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8<span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-logininfo.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、在rule.xml中创建一个新的时间规则</span>
+<span class="o">[</span>root@helloworld conf]# vim rule.xml 
+&lt;tableRule <span class="nv">name</span><span class="o">=</span><span class="s2">"my-sharding-by-date"</span><span class="o">&gt;</span>
+	&lt;rule&gt;
+		&lt;columns&gt;login_date&lt;/columns&gt;
+		&lt;algorithm&gt;my-sharding-by-date-func&lt;/algorithm&gt;
+	&lt;/rule&gt;
+&lt;/tableRule&gt;
+
+<span class="c"># 增加一个function</span>
+&lt;<span class="k">function </span><span class="nv">name</span><span class="o">=</span><span class="s2">"my-sharding-by-date-func"</span> <span class="nv">class</span><span class="o">=</span><span class="s2">"io.mycat.route.function.PartitionByDate"</span><span class="o">&gt;</span>
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"dateFormat"</span><span class="o">&gt;</span>yyyy-MM-dd&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"sBeginDate"</span><span class="o">&gt;</span>2020-06-20&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"sEndDate"</span><span class="o">&gt;</span>2020-06-23&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"sPartionDay"</span><span class="o">&gt;</span>1&lt;/property&gt;
+&lt;/function&gt;      
+<span class="c"># cloumns：分区字段</span>
+<span class="c"># algorithm：指定分片算法</span>
+<span class="c"># dateFormat：日期格式</span>
+<span class="c"># sBeginDate：开始时间</span>
+<span class="c"># sEndDate：结束时间</span>
+<span class="c"># sPartionDay：分区的大小，1代表一天分一个，如果超过结束时间则循环写入</span>
+
+<span class="c"># 2、修改schema.xml，表login_info的分片策略为my-sharding-by-date</span>
+&lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">checkSQLschema</span><span class="o">=</span><span class="s2">"true"</span> <span class="nv">sqlMaxLimit</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;<span class="o">!</span><span class="nt">--</span> 时间分片--&gt;
+	&lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"login_info"</span> <span class="nv">dataNode</span><span class="o">=</span><span class="s2">"dn213,dn214"</span> <span class="nv">rule</span><span class="o">=</span><span class="s2">"my-sharding-by-date"</span> /&gt;
+	
+<span class="c"># 3、连接mycat的9066管理端,重新加载mycat的配置，</span>
+mysql&gt; reload @@config_all<span class="p">;</span>	
+</code></pre></div></div>
+
+<p>启动mycat报错</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-my-sharding-date.jpg" alt="" /></p>
+
+<p>错误提示很明确，按照分区规则会有4个分区，但我在schema.xml 配置login_info表只有2个datanode: dn213，dn214，所以对不上，我尝试修改sPartionDay=2</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 修改rule.xml</span>
+&lt;<span class="k">function </span><span class="nv">name</span><span class="o">=</span><span class="s2">"my-sharding-by-date-func"</span> <span class="nv">class</span><span class="o">=</span><span class="s2">"io.mycat.route.function.PartitionByDate"</span><span class="o">&gt;</span>
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"dateFormat"</span><span class="o">&gt;</span>yyyy-MM-dd&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"sBeginDate"</span><span class="o">&gt;</span>2020-06-20&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"sEndDate"</span><span class="o">&gt;</span>2020-06-23&lt;/property&gt;
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"sPartionDay"</span><span class="o">&gt;</span>2&lt;/property&gt;
+&lt;/function&gt; 
+</code></pre></div></div>
+
+<p>启动成功，在Mycat连接的服务端8066插入数据</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-19'</span><span class="p">);</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-20'</span><span class="p">);</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-21'</span><span class="p">);</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-22'</span><span class="p">);</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-23'</span><span class="p">);</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-24'</span><span class="p">);</span>
+<span class="k">insert</span> <span class="k">into</span> <span class="n">login_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">username</span><span class="p">,</span><span class="n">login_date</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="s1">'gavin'</span><span class="p">,</span><span class="s1">'2020-06-25'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>分片节点dn213的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-my-sharding-date-213.jpg" alt="" /></p>
+
+<p>分片节点dn214的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-my-sharding-date-214.jpg" alt="" /></p>
+
+<h3 id="54-mycat全局表的概念">5.4. MyCat全局表的概念</h3>
+
+<p>对于数据量不大的基础配置表就没必要横向拆分，在每个数据分片节点上的全局表的数据是一样的，如省市区表，避免了分布式事务，</p>
+
+<p>在2个分片节点dn213,dn214所以对应的物理库创建province_info表</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CREATE TABLE <span class="sb">`</span>province_info<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> NOT NULL,
+  <span class="sb">`</span>province_name<span class="sb">`</span> varchar<span class="o">(</span>100<span class="o">)</span> DEFAULT NULL,
+  PRIMARY KEY <span class="o">(</span><span class="sb">`</span><span class="nb">id</span><span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8<span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-province_info.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、修改schema.xml，表province_info ,type=global,不分片，全局表</span>
+&lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">checkSQLschema</span><span class="o">=</span><span class="s2">"true"</span> <span class="nv">sqlMaxLimit</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"province_info"</span> <span class="nv">dataNode</span><span class="o">=</span><span class="s2">"dn213,dn214"</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"global"</span>/&gt;
+
+<span class="c"># 2、连接mycat的9066管理端,重新加载mycat的配置，</span>
+mysql&gt; reload @@config_all<span class="p">;</span>	
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/schema-xml-province-info.jpg" alt="" /></p>
+
+<p>在Mycat连接的服务端8066插入数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-province-info.jpg" alt="" /></p>
+
+<p>分片节点dn213的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-province-info-213.jpg" alt="" /></p>
+
+<p>分片节点dn214的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-province-info-214.jpg" alt="" /></p>
+
+<p>发现数据是一样的，做了全局表，不分库了</p>
+
+<h3 id="55-mycat子表管理">5.5. MyCat子表管理</h3>
+
+<p>比如我们的订单信息，一般分为订单info表，订单item表，这两个表即便是按照一样的分区规则，也有可能到导致数据去到不同库，这个时候就会导致跨库，如何避免？使用子表关联，让同一个订单id的主表数据和子表数据放在同一个物理库中。</p>
+
+<p>在2个分片节点dn213,dn214所以对应的物理库创建表order_info,order_item</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建两个关联表</span>
+CREATE TABLE <span class="sb">`</span>order_info<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>order_total<span class="sb">`</span> decimal<span class="o">(</span>10,2<span class="o">)</span> DEFAULT NULL
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8<span class="p">;</span>
+
+CREATE TABLE <span class="sb">`</span>order_item<span class="sb">`</span> <span class="o">(</span>
+  <span class="sb">`</span><span class="nb">id</span><span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>order_id<span class="sb">`</span> int<span class="o">(</span>11<span class="o">)</span> DEFAULT NULL,
+  <span class="sb">`</span>product_name<span class="sb">`</span> varchar<span class="o">(</span>255<span class="o">)</span> DEFAULT NULL
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8<span class="p">;</span>
+
+
+<span class="c"># 1、修改schema.xml,主表order_info按照字段id进行取模分片，子表不用设置分片规则，因为它跟着主表走，就是主表数据往哪个分片放，# 子表也一样</span>
+<span class="c"># joinKey 子表的关联字段</span>
+<span class="c"># parentKey 就是子表的joinKey与主表（父表）的哪个字段进行关联</span>
+&lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">checkSQLschema</span><span class="o">=</span><span class="s2">"true"</span> <span class="nv">sqlMaxLimit</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+  &lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"order_info"</span> <span class="nv">dataNode</span><span class="o">=</span><span class="s2">"dn213,dn214"</span> <span class="nv">rule</span><span class="o">=</span><span class="s2">"mod-long"</span><span class="o">&gt;</span>
+      &lt;childTable <span class="nv">name</span><span class="o">=</span><span class="s2">"order_item"</span> <span class="nv">joinKey</span><span class="o">=</span><span class="s2">"order_id"</span> <span class="nv">parentKey</span><span class="o">=</span><span class="s2">"id"</span>/&gt;
+  &lt;/table&gt;
+
+<span class="c"># 2、连接mycat的9066管理端,重新加载mycat的配置，mycat不用重启</span>
+mysql&gt; reload @@config_all<span class="p">;</span>	
+</code></pre></div></div>
+
+<p>在Mycat连接的服务端8066插入数据</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>insert into order_info<span class="o">(</span><span class="nb">id</span>,order_total<span class="o">)</span> values<span class="o">(</span>10,139.9<span class="o">)</span><span class="p">;</span>
+insert into order_item<span class="o">(</span><span class="nb">id</span>,order_id,product_name<span class="o">)</span> values<span class="o">(</span>111,10,<span class="s1">'安装牛奶'</span><span class="o">)</span><span class="p">;</span>
+insert into order_info<span class="o">(</span><span class="nb">id</span>,order_total<span class="o">)</span> values<span class="o">(</span>11,39.9<span class="o">)</span><span class="p">;</span>
+insert into order_item<span class="o">(</span><span class="nb">id</span>,order_id,product_name<span class="o">)</span> values<span class="o">(</span>120,11,<span class="s1">'亨利玉米片'</span><span class="o">)</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>发现id为10的主表数据和它的子表数据都放到了dn213，id为11的主表数据和它的子表数据都放到了dn214，实现了同一个order_id的数据不分离。</p>
+
+<h2 id="6-mycat安全机制">6. MyCat安全机制</h2>
+
+<h3 id="61-用户权限的配置">6.1. 用户权限的配置</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 修改server.xml</span>
+<span class="o">[</span>root@helloworld conf]# vi server.xml
+&lt;user <span class="nv">name</span><span class="o">=</span><span class="s2">"customer"</span><span class="o">&gt;</span>
+  &lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"password"</span><span class="o">&gt;</span>123456&lt;/property&gt;
+  &lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"schemas"</span><span class="o">&gt;</span>user_module&lt;/property&gt;
+  &lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"readOnly"</span><span class="o">&gt;</span><span class="nb">true</span>&lt;/property&gt;
+  &lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"benchmark"</span><span class="o">&gt;</span>2&lt;/property&gt;
+&lt;/user&gt;
+<span class="c"># readOnly只读设置，只能查询</span>
+<span class="c"># benchmark：当链接达到这里设置的值就拒绝访问，0或不设置就是不拒绝，至少设置为2,因为Mycat会留一个连接给自己使用。</span>
+<span class="c"># 不同用户可以连接同一个逻辑库</span>
+<span class="c"># 超出benchmark限制报错</span>
+ERROR 1045 <span class="o">(</span>HY000<span class="o">)</span>: Access denied <span class="k">for </span>user <span class="s1">'customer'</span>, because service be degraded 
+</code></pre></div></div>
+
+<p><strong>schema中的表的操作权限</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 修改server.xml</span>
+&lt;user <span class="nv">name</span><span class="o">=</span><span class="s2">"mycat"</span> <span class="nv">defaultAccount</span><span class="o">=</span><span class="s2">"true"</span><span class="o">&gt;</span>
+    &lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"password"</span><span class="o">&gt;</span>123456&lt;/property&gt;
+    &lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"schemas"</span><span class="o">&gt;</span>user_module&lt;/property&gt;
+
+    &lt;<span class="o">!</span><span class="nt">--</span> 表级 DML 权限设置 <span class="nt">--</span><span class="o">&gt;</span>
+    &lt;privileges <span class="nv">check</span><span class="o">=</span><span class="s2">"true"</span><span class="o">&gt;</span>
+    &lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">dml</span><span class="o">=</span><span class="s2">"1111"</span> <span class="o">&gt;</span>
+        &lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"province_info"</span> <span class="nv">dml</span><span class="o">=</span><span class="s2">"1110"</span><span class="o">&gt;</span>&lt;/table&gt;
+        &lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"order_info"</span> <span class="nv">dml</span><span class="o">=</span><span class="s2">"1101"</span><span class="o">&gt;</span>&lt;/table&gt;
+    &lt;/schema&gt;
+    &lt;/privileges&gt;
+&lt;/user&gt;
+
+<span class="c"># 1111的顺序分别对应 insert(0/1),update(0/1),select(0/1),delete(0/1) 基于schema下的表的具体权限</span>
+</code></pre></div></div>
+
+<h3 id="62-黑白名单">6.2. 黑白名单</h3>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-server-firewall.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 跟mysql限制用户的连接ip是一样道理的</span>
+<span class="c"># 修改server.xml</span>
+<span class="c"># 先设置白名单</span>
+&lt;firewall&gt;
+    &lt;whitehost&gt;
+      	&lt;host <span class="nv">host</span><span class="o">=</span><span class="s2">"192.168.0.213"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"mycat"</span>/&gt;
+      	&lt;host <span class="nv">host</span><span class="o">=</span><span class="s2">"192.168.0.214"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"customer"</span>/&gt;
+    &lt;/whitehost&gt;
+&lt;/firewall&gt;
+<span class="c"># 黑名单，对dml权限的限制，是基于整个用户的，而上面的是基于schema下的表的具体权限</span>
+&lt;firewall&gt;
+    &lt;whitehost&gt;
+      	&lt;host <span class="nv">host</span><span class="o">=</span><span class="s2">"192.168.0.213"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"mycat"</span>/&gt;
+    &lt;/whitehost&gt;
+    &lt;blacklist <span class="nv">check</span><span class="o">=</span><span class="s2">"true"</span><span class="o">&gt;</span>
+    		&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"deleteAllow"</span><span class="o">&gt;</span><span class="nb">false</span>&lt;/property&gt;  <span class="c"># 不允许删除</span>
+    &lt;/blacklist&gt;
+&lt;/firewall&gt;
+<span class="c"># 黑名单的权限配置项,是允许用户进行操作</span>
+selectAllow <span class="nb">true</span>/false
+deleteAllow <span class="nb">true</span>/false
+updateAllow <span class="nb">true</span>/false
+insertAllow <span class="nb">true</span>/false
+
+<span class="c"># 修改后，连接mycat的9066管理端,重新加载mycat的配置，mycat不用重启</span>
+mysql&gt; reload @@config<span class="p">;</span>	
+mysql&gt; reload @@config_all<span class="p">;</span>	
+
+<span class="c"># 测试</span>
+mysql&gt; delete from login_info where <span class="nb">id</span><span class="o">=</span>7<span class="p">;</span>
+3012 - The statement is unsafe SQL, reject <span class="k">for </span>user <span class="s1">'jude'</span>, Time: 0.016000s
+</code></pre></div></div>
+
+<h2 id="7-mycat集群高可用">7. MyCat集群高可用</h2>
+
+<h3 id="安装zookeeper">安装zookeeper</h3>
+
+<p>官网：https://zookeeper.apache.org/</p>
+
+<p>zookeeper，中文意思就是动物园管理员，如图所示，通过zookeeper(群)来管理协调各个集群形态的分布式组件。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/zookeeper.jpg" alt="" /></p>
+
+<p>Zookeeper特性</p>
+
+<p>一致性：数据一致性，数据按照顺序分批入库
+ 原子性：事务要么成功要么失败，不会局部化
+ 单一视图：客户端连接集群中的任一zk节点，数据都是一致的
+ 可靠性：每次对zk的操作状态都会保存在服务端
+ 实时性：客户端可以读取到zk服务端的最新数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/zookeeper-download.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># zk依赖java环境</span>
+<span class="c"># 1、下载</span>
+wget https://mirrors.bfsu.edu.cn/apache/zookeeper/zookeeper-3.5.8/apache-zookeeper-3.5.8-bin.tar.gz
+<span class="c"># 解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> apache-zookeeper-3.5.8-bin.tar.gz
+<span class="c"># 移动到安装目录</span>
+<span class="nb">mv </span>apache-zookeeper-3.5.8-bin apache-zookeeper-3.5.8
+<span class="c"># 2、创建目录</span>
+<span class="o">[</span>root@helloworld apache-zookeeper-3.5.8]# <span class="nb">mkdir </span>data
+<span class="o">[</span>root@helloworld apache-zookeeper-3.5.8]# <span class="nb">mkdir </span>logs
+<span class="c"># 3、修改zk配置</span>
+<span class="o">[</span>root@helloworld apache-zookeeper-3.5.8]# <span class="nb">cd </span>conf
+<span class="o">[</span>root@helloworld conf]# <span class="nb">cp </span>zoo_sample.cfg zoo.cfg
+<span class="o">[</span>root@helloworld conf]# vim zoo.cfg
+<span class="nv">dataDir</span><span class="o">=</span>/usr/local/apache-zookeeper-3.5.8/data
+<span class="nv">dataLogDir</span><span class="o">=</span>/usr/local/apache-zookeeper-3.5.8/logs
+<span class="c"># 4、环境变量配置</span>
+<span class="o">[</span>root@helloworld <span class="nb">local</span><span class="o">]</span><span class="c"># vim /etc/profile</span>
+<span class="nb">export </span><span class="nv">ZOOKEEPER_HOME</span><span class="o">=</span>/usr/local/apache-zookeeper-3.5.8
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$ZOOKEEPER_HOME</span>/bin
+<span class="c"># 使配置生效</span>
+<span class="nb">source</span> /etc/profile
+
+<span class="c"># 5、服务管理命令</span>
+zkServer.sh start|stop|restart|status
+<span class="c"># 客户端连接,客户端关闭：quit ,推荐使用界面操作工具zooInspector，因为zookeeper的数据是树形结构存储的，使用界面会更为直观</span>
+zkCli.sh <span class="nt">-server</span> <span class="k">${</span><span class="nv">ip</span><span class="k">}</span>:<span class="k">${</span><span class="nv">port</span><span class="k">}</span>
+
+<span class="c"># -------配置zk集群--------- </span>
+<span class="c"># 假设有3个zk服务： 192.168.162.128:2181、192.168.162.129:2181、192.168.162.130:2181</span>
+<span class="c"># 1、修改zoo.cfg,增加</span>
+<span class="o">[</span>root@helloworld conf]# vim zoo.cfg
+server.1<span class="o">=</span>192.168.162.128:2888:3888   <span class="c"># 2888 是集群内通信的端口</span>
+server.2<span class="o">=</span>192.168.162.129:2888:3888	<span class="c"># 3888 是集群选举投票的端口</span>
+server.3<span class="o">=</span>192.168.162.130:2888:3888  
+<span class="c"># 2、server.ID，这里的1\2\3其实就是3个zk的id,在集群中为了识别它们，所以要分别在3个zk的dataDir目录下（上面zoo.cfg已配置）创建myid文件,内容分别就是1、2、3</span>
+<span class="nb">cd</span> /usr/local/apache-zookeeper-3.5.8/data
+<span class="o">[</span>root@helloworld data]# vim myid
+1
+</code></pre></div></div>
+
+<p><strong>zooInspector 界面工具</strong></p>
+
+<p>下载地址：<a href="https://issues.apache.org/jira/secure/attachment/12436620/ZooInspector.zip">https://issues.apache.org/jira/secure/attachment/12436620/ZooInspector.zip</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 解压，进入目录ZooInspector\build,运行zookeeper-dev-ZooInspector.jar</span>
+java <span class="nt">-jar</span> zookeeper-dev-ZooInspector.jar  //执行成功后，会弹出java ui client
+
+<span class="c"># 点击左上角连接按钮，输入Zookeeper服务地址：ip:2181</span>
+<span class="c"># 点击OK，就可以查看Zookeeper节点信息啦</span>
+</code></pre></div></div>
+
+<p>云服务器要开启安全组和防火墙端口2181</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-zookeeper.jpg" alt="" /></p>
+
+<h3 id="dockerfile创建mycat镜像">dockerfile创建mycat镜像</h3>
+
+<p>1、原材料</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> jdk-8u201-linux-x64.tar.gz
+ Mycat-server-1.6.7.3-release-20190927161129-linux.tar.gz
+</code></pre></div></div>
+
+<p>2、编写Dockerfile</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FROM centos:7.8.2003
+MAINTAINER jude&lt;747463168@qq.com&gt;
+COPY readme.md /usr/local/readme.md
+
+ADD jdk-8u201-linux-x64.tar.gz /usr/local
+ADD Mycat-server-1.6.7.3-release-20190927161129-linux.tar.gz /usr/local
+
+RUN yum <span class="nb">install</span> <span class="nt">-y</span> vim
+
+ENV MYPATH /usr/local
+
+WORKDIR <span class="nv">$MYPATH</span>
+
+ENV JAVA_HOME /usr/local/jdk1.8.0_201
+ENV CLASSPATH <span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar
+
+ENV PATH <span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin
+
+VOLUME /usr/local/mycat/conf
+EXPOSE 8066 9066
+
+CMD /usr/local/mycat/bin/mycat start <span class="o">&amp;&amp;</span> <span class="nb">tail</span> <span class="nt">-F</span> /usr/local/mycat/version.txt
+</code></pre></div></div>
+
+<p>3、创建镜像</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker build <span class="nt">-t</span> mycat:1.6.7 <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>4、启动运行</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-d</span> <span class="nt">-p</span> 8067:8066 <span class="nt">-p</span> 9067:9066 <span class="nt">--name</span> mycat2 mycat:1.6.7
+<span class="c"># 设置挂载卷，conf下是没有配置文件的，还不知道如何解决</span>
+<span class="c"># 不设置挂载卷就正常,conf下有配置文件</span>
+</code></pre></div></div>
+
+<h3 id="zookeeper托管mycat配置">zookeeper托管Mycat配置</h3>
+
+<p><strong>MyCat对于每个数据节点都可以实现HA和负载均衡，所有数据节点形成了一个分布式的数据库</strong></p>
+
+<p>如果MyCat作为一个中间层挂了怎么办？进行集群化</p>
+
+<p>如果要对MyCat进行集群化：MyCat是不是无状态的节点？是的。</p>
+
+<p>Nginx/HAProxy/Lvs/SLB + MyCat</p>
+
+<p>如果多个MyCat，你的配置如何同时更新：zookeeper帮助我们进行配置的统一管理</p>
+
+<blockquote>
+  <p>配置同步</p>
+</blockquote>
+
+<p>修改Mycat的配置让它同步到zookeeper</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 修改第一个Mycat</span>
+<span class="c"># 1.修改conf下的myid.properties</span>
+<span class="o">[</span>root@helloworld conf]# vim myid.properties 
+<span class="nv">loadZk</span><span class="o">=</span><span class="nb">true</span>									<span class="c"># 是否从zk下载配置</span>
+<span class="nv">zkURL</span><span class="o">=</span>192.168.0.215:2181		<span class="c"># zk的连接</span>
+<span class="nv">clusterId</span><span class="o">=</span>mycat-cluster-1		<span class="c"># mycat的集群名称</span>
+<span class="nv">myid</span><span class="o">=</span>mycat_fz_01					
+<span class="nv">clusterSize</span><span class="o">=</span>2								<span class="c"># mycat的节点数</span>
+<span class="nv">clusterNodes</span><span class="o">=</span>mycat_fz_01,mycat_fz_02  <span class="c"># mycat集群的节点有哪些</span>
+<span class="c">#server  booster  ;   booster install on db same server,will reset all minCon to 2</span>
+<span class="nb">type</span><span class="o">=</span>server
+<span class="nv">boosterDataHosts</span><span class="o">=</span>dataHost1
+
+<span class="c"># 2.将之前单机的配置 server.xml,schema.xml,rule.xml,autopartition-long.txt</span>
+<span class="c"># 将这些修改后的配置文件传输到mycat/conf/zkconf目录下来做上传使用</span>
+<span class="o">[</span>root@helloworld conf]# <span class="nb">cp </span>server.xml zkconf
+<span class="nb">cp</span>: overwrite ‘zkconf/server.xml’? y
+<span class="o">[</span>root@helloworld conf]# <span class="nb">cp </span>schema.xml zkconf/
+<span class="nb">cp</span>: overwrite ‘zkconf/schema.xml’? y
+<span class="o">[</span>root@helloworld conf]# <span class="nb">cp </span>rule.xml zkconf/
+<span class="nb">cp</span>: overwrite ‘zkconf/rule.xml’? y
+<span class="o">[</span>root@helloworld conf]# <span class="nb">cp </span>autopartition-long.txt zkconf/
+<span class="nb">cp</span>: overwrite ‘zkconf/autopartition-long.txt’? y
+
+<span class="c"># 3.执行zookeeper配置的同步脚本，在mycat/bin目录下</span>
+./init_zk_data.sh
+<span class="c"># 报错</span>
+<span class="nt">-bash</span>: ./init_zk_data.sh: /bin/bash^M: bad interpreter: No such file or directory
+<span class="c"># 修改一下命令</span>
+<span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/\r$//'</span> init_zk_data.sh
+<span class="c"># 再次执行,记得zookeeper要开启</span>
+<span class="o">[</span>root@helloworld bin]# ./init_zk_data.sh
+o2020-06-30 09:13:49 INFO <span class="nv">JAVA_CMD</span><span class="o">=</span>/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12-1.el7_6.x86_64/bin/java
+o2020-06-30 09:13:49 INFO Start to initialize /mycat of ZooKeeper
+o2020-06-30 09:13:52 INFO Done
+
+<span class="c"># ---------修改第二个Mycat----------</span>
+<span class="c"># 1、修改conf下的myid.properties</span>
+<span class="o">[</span>root@helloworld conf]# vim myid.properties 
+<span class="nv">loadZk</span><span class="o">=</span><span class="nb">true</span>									<span class="c"># 是否从zk下载配置</span>
+<span class="nv">zkURL</span><span class="o">=</span>192.168.0.215:2181		<span class="c"># zk的连接</span>
+<span class="nv">clusterId</span><span class="o">=</span>mycat-cluster-1		<span class="c"># mycat的集群名称</span>
+<span class="nv">myid</span><span class="o">=</span>mycat_fz_02					
+<span class="nv">clusterSize</span><span class="o">=</span>2								<span class="c"># mycat的节点数</span>
+<span class="nv">clusterNodes</span><span class="o">=</span>mycat_fz_01,mycat_fz_02  <span class="c"># mycat集群的节点有哪些</span>
+</code></pre></div></div>
+
+<p>zooInspector 连接zookeeper查看mycat的配置是否已经托管上来</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-zookeeper.jpg" alt="" /></p>
+
+<blockquote>
+  <p>启动两个mycat进行测试</p>
+</blockquote>
+
+<p>连接两个Mycat的服务端口8066，发现数据是一样的，因为底层数据是存储在mysql的。</p>
+
+<p>修改zookeeper的配置，会同步到两个Mycat上</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/zookeeper-schema-xml-update.jpg" alt="" /></p>
+
+<p>不需要reload config就生效，zookeeper是通过本身内部的监听机制实现的，它监听文件节点的变化，如果变化了，就通知订阅节点的Mycat更新</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/zookeeper-schema-xml-update2.jpg" alt="" /></p>
+
+<p>发现两个mycat下的conf/schema.xml文件都已修改</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/zookeeper-schema-xml-update3.jpg" alt="" /></p>
+
+<blockquote>
+  <p>作业：搭建一套HA高可用的MyCat服务，至少两套MyCat对外提供应用，并且有多个用户开启黑白名单和表的DML权限（数据库里要有全局表和子表的设计）</p>
+</blockquote>
+
+<p>已按照老师课堂上的练习做了一遍</p>
+
+<p>Nginx+Zookeeper+Mycat+Mysql的HA高可用架构：</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-ha-arch.jpg" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/06/27/icoding-note-052.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

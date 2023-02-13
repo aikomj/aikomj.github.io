@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Java的IO流 - 大伟的博客 </title>
+    <meta name="keywords" content="java">
+    <meta name="description"
+          content="Java IO按数据格式和传输方式分组，基于字节操作的IO、基于字符操作的IO、基于磁盘操作的IO、基于网络操作的IO,字节与字符的转化，网络IO的工作方式-BIO\NIO\AIO">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2020/10/16/java-io.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Java的IO流">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Java的IO流</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/10/16
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1简介">1、简介</h2>
+
+<p>Java IO，Input/Output输入输出，<strong>指数据在内部存储器和外部存储器或其他周边设备之间的输入和输出</strong>。</p>
+
+<p>java.io 包下，基本可以分为四组</p>
+
+<ul>
+  <li>基于字节操作的 I/O 接口：InputStream 和 OutputStream</li>
+  <li>基于字符操作的 I/O 接口：Writer 和 Reader</li>
+  <li>基于磁盘操作的 I/O 接口：File</li>
+  <li>基于网络操作的 I/O 接口：Socket</li>
+</ul>
+
+<p>前两组主要从<mark>数据格式</mark>的不同进行分组，字节与字符</p>
+
+<p>后两组主要从<mark>传输方式</mark>的不同进行分组，磁盘与网络</p>
+
+<p>I/O 的核心问题，要么是数据格式影响 I/O 操作，要么是传输方式影响 I/O 操作，也就是将什么样的数据写到什么地方的问题（是磁盘或网络）。I/O 只是人与机器或者机器与机器交互的手段，除了在它们能够完成这个交互功能外，我们关注的就是如何提高它的运行效率了，而<mark>数据格式</mark>和<mark>传输方式</mark>是影响效率最关键的因素。</p>
+
+<h2 id="2基于字节操作的接口">2、基于字节操作的接口</h2>
+
+<h3 id="inputstream字节流输入">InputStream字节流输入</h3>
+
+<p><code class="highlighter-rouge">InputStream</code>是一个抽象类，它的类继承层次如下图：</p>
+
+<p><img src="\assets\images\2021\javabase\inputstream-extend.jpg" alt="" /></p>
+
+<p>根据数据节点类型和处理方式，划分如下</p>
+
+<p><img src="\assets\images\2021\javabase\inputstream-group.jpg" alt="" /></p>
+
+<h3 id="outputstream字节流输出">OutputStream字节流输出</h3>
+
+<p><code class="highlighter-rouge">OutputStream</code>是一个抽象类，它的类继承层次与inputStream相对，如下图：</p>
+
+<p><img src="\assets\images\2021\javabase\outputstream-extend.jpg" alt="" /></p>
+
+<p>同样根据数据节点类型和处理方式，划分如下</p>
+
+<p><img src="\assets\images\2021\javabase\outputstream-group.jpg" alt="" /></p>
+
+<p><strong>无论是输入还是输出，操作数据的方式可以组合使用，各个处理流的类并不是只操作固定的节点流</strong>，比如如下输出方式：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//将文件输出流包装到序列化输出流中，再将序列化输出流包装到缓冲中</span>
+<span class="nc">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="nc">ObjectOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"fileName"</span><span class="o">)))</span><span class="err">；</span>
+</code></pre></div></div>
+
+<p>另外，<strong>输出流最终写到什么地方必须要指定</strong>，要么是写到硬盘中，要么是写到网络中。写网络实际上也是写文件，只不过写到网络中，需要经过底层操作系统将数据发送到其他的计算机中，而不是写入到本地硬盘中。</p>
+
+<p>web文件从服务端下载，一般可以用静态文件映射，或者把文件上传到OSS通过下载链接获取，还有一种方式请求服务端上的文件，就是通过字节流的方式把文件输出到请求中，代码如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">downLoadTemplate</span><span class="o">(</span><span class="nc">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">HttpServletResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="nc">ExcelUtils</span><span class="o">.</span><span class="na">getResponse</span><span class="o">();</span>
+  <span class="nc">InputStream</span> <span class="n">bis</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="nc">BufferedOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="nc">ClassPathResource</span> <span class="n">classPathResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPathResource</span><span class="o">(</span><span class="s">"template/"</span> <span class="o">+</span> <span class="n">fileName</span><span class="o">);</span>
+    <span class="n">bis</span> <span class="o">=</span> <span class="n">classPathResource</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+    <span class="n">fileName</span> <span class="o">=</span> <span class="nc">URLEncoder</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">fileName</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+    <span class="c1">//设置文件下载头</span>
+    <span class="n">response</span><span class="o">.</span><span class="na">addHeader</span><span class="o">(</span><span class="s">"Content-Disposition"</span><span class="o">,</span> <span class="s">"attachment;filename="</span> <span class="o">+</span> <span class="n">fileName</span><span class="o">);</span>
+    <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">"multipart/form-data"</span><span class="o">);</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedOutputStream</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">());</span>
+    <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">while</span> <span class="o">((</span><span class="n">len</span> <span class="o">=</span> <span class="n">bis</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">len</span><span class="o">);</span>
+      <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">BussinessException</span> <span class="o">|</span> <span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">BussinessException</span><span class="o">(</span><span class="nc">ErrorEnum</span><span class="o">.</span><span class="na">FAIL</span><span class="o">,</span> <span class="s">"未找到对应模板"</span><span class="o">);</span>
+  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="nc">ObjectUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">bis</span><span class="o">))</span> <span class="o">{</span>
+        <span class="n">bis</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+      <span class="o">}</span>
+
+      <span class="k">if</span> <span class="o">(</span><span class="nc">ObjectUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">out</span><span class="o">))</span> <span class="o">{</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>缺点：与静态文件映射一样，只适合单体应用</p>
+
+<h2 id="3基于字符操作的接口">3、基于字符操作的接口</h2>
+
+<p>不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符，所以 I/O 操作的都是字节而不是字符，但是为什么要有操作字符的 I/O 接口呢？</p>
+
+<p>这是因为我们的程序中通常操作的数据都是以字符形式，<strong>为了程序操作更方便而提供一个直接写字符的 I/O 接口，仅此而已。</strong></p>
+
+<p>基于字符的输入和输出操作接口分别是：Reader 和 Writer ，下图是字符的 I/O 操作接口涉及到的类结构图。</p>
+
+<h3 id="reader字符输入流">Reader字符输入流</h3>
+
+<p>Reader是一个抽象类，它的类继承层次，如下图</p>
+
+<p><img src="\assets\images\2021\javabase\reader-class.jpg" alt="" /></p>
+
+<p><img src="\assets\images\2021\javabase\reader-extend.jpg" alt="" /></p>
+
+<p>根据数据节点类型和处理方式，划分如下：</p>
+
+<p><img src="\assets\images\2021\javabase\reader-group.jpg" alt="" /></p>
+
+<h3 id="writer字符输出流">Writer字符输出流</h3>
+
+<p>Writer是一个抽象类，它的类继承层次，如下图</p>
+
+<p><img src="\assets\images\2021\javabase\writer-extend.jpg" alt="" /></p>
+
+<p>根据数据节点类型和处理方式，划分如下：</p>
+
+<p><img src="\assets\images\2021\javabase\writer-group.jpg" alt="" /></p>
+
+<p>不管是 Reader 还是 Writer 类，它们都只定义了读取或写入数据字符的方式，也就是说要么是读要么是写，但是并没有规定数据要写到哪去，写到哪去就是我们后面要讨论的基于磁盘或网络的工作机制。</p>
+
+<h2 id="4字节与字符的转化">4、字节与字符的转化</h2>
+
+<p>不管是磁盘还是网络传输，最小的存储单元都是字节，而不是字符，设计字符流的原因是为了程序操作更方便。相互转化的类：</p>
+
+<ul>
+  <li>InputStreamReader</li>
+  <li>OutputStreamWriter</li>
+</ul>
+
+<h3 id="输入流转化过程">输入流转化过程</h3>
+
+<p><img src="\assets\images\2021\javabase\inputstream-to-reader.jpg" alt="" /></p>
+
+<p>从图中看到，InputStreamReader 类是字节到字符的转化桥梁， 其中<code class="highlighter-rouge">StreamDecoder</code>指的是一个<strong>解码</strong>操作类，<code class="highlighter-rouge">Charset</code>指的是字符集。</p>
+
+<p>InputStream 到 Reader 的过程<mark>需要指定编码字符集，否则将采用操作系统默认字符集，很可能会出现乱码问题</mark>，StreamDecoder 则是完成字节到字符的解码的实现类。</p>
+
+<p>点击源码部分，可以看到InputStream到Reader的转化过程</p>
+
+<p><img src="\assets\images\2021\javabase\inputstream-to-reader-2.jpg" alt="" /></p>
+
+<h3 id="输出流转化过程">输出流转化过程</h3>
+
+<p><img src="\assets\images\2021\javabase\outputstream-to-writer.jpg" alt="" /></p>
+
+<p>从图中看到，OutputStreamWriter类是字节到字符的转化桥梁，其中StreamEncoder完成编码过程。</p>
+
+<p>点击源码部分，可以看到OutputStream到Writer的转化过程</p>
+
+<p><img src="\assets\images\2021\javabase\outputstream-to-writer-1.jpg" alt="" /></p>
+
+<h2 id="5基于磁盘操作的接口">5、基于磁盘操作的接口</h2>
+
+<p>文件是操作系统和磁盘驱动器交互的一个最小单元。</p>
+
+<p><img src="\assets\images\2021\javabase\java-file.jpg" style="zoom:67%;" /></p>
+
+<p><mark>在 Java I/O 体系中，File 类是唯一代表磁盘文件本身的对象</mark>，它定义了一些常用的操作</p>
+
+<ul>
+  <li>
+    <p>文件是否存在</p>
+  </li>
+  <li>
+    <p>文件创建</p>
+  </li>
+  <li>
+    <p>文件删除</p>
+  </li>
+  <li>
+    <p>重命名文件</p>
+  </li>
+  <li>
+    <p>判断文件的读写权限、设置和查询文件的最近修改时间</p>
+  </li>
+</ul>
+
+<p>Java 中通常的 File 并不代表一个真实存在的文件对象，当你通过指定一个路径描述符时，它就会返回一个代表这个路径相关联的一个<strong>虚拟对象</strong>，这个可能是一个真实存在的<strong>文件</strong>或者是一个包含多个文件的<strong>目录。</strong></p>
+
+<p><img src="\assets\images\2021\javabase\file-reader.jpg" alt="" /></p>
+
+<p>操作流程如下：</p>
+
+<p><img src="\assets\images\2021\javabase\file-reader-2.jpg" alt="" /></p>
+
+<p>点进源码</p>
+
+<p><img src="\assets\images\2021\javabase\file-reader-3.jpg" alt="" /></p>
+
+<p>可以看到，本质是创建一个<code class="highlighter-rouge">FileInputStream</code>对象来读取文件内容，也就是字节流读取文件。</p>
+
+<p>最终会创建一个<code class="highlighter-rouge">FileDescriptor</code>对象来描述底层操作系统关联的文件</p>
+
+<p><img src="\assets\images\2021\javabase\file-reader-4.jpg" alt="" /></p>
+
+<h2 id="6基于网络操作的接口">6、基于网络操作的接口</h2>
+
+<p>把数据写入网络，最终也是写到磁盘中，不是本地磁盘，是经过操作系统将数据发送到其他计算机中。</p>
+
+<h3 id="socket">Socket</h3>
+
+<p>大多时候我们使用socket都是基于TCP/IP的流套接字，在<a href="/icoding-edu/2020/06/18/icoding-rpc-and-http.html">OSI七层网络模型</a>中，Socket工作在会话层。</p>
+
+<p>TCP协议的三次握手</p>
+
+<p><img src="\assets\images\2021\javabase\tcp-three-.jpg" alt="" /></p>
+
+<p>SYN：Synchronize Sequence Number 同步序列编号,TCP连接时使用的握手信号</p>
+
+<p>ACK：Acknowledge character 即确认字符，表示发来的数据已确认接收无误。</p>
+
+<blockquote>
+  <p>传输数据</p>
+</blockquote>
+
+<p>客户端创建Socket 实例</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+  <span class="nc">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Socket</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span><span class="mi">8080</span><span class="o">);</span>
+  <span class="nc">BufferedWriter</span> <span class="n">bufferedWriter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedWriter</span><span class="o">(</span><span class="k">new</span> <span class="nc">OutputStreamWriter</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">()));</span>
+  <span class="nc">String</span> <span class="n">str</span><span class="o">=</span><span class="s">"hello,我是客户端"</span><span class="o">;</span>
+  <span class="n">bufferedWriter</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+  <span class="n">bufferedWriter</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span> <span class="c1">// 发送</span>
+  <span class="n">bufferedWriter</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="c1">// 关闭连接</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>与之对应的服务端</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+  <span class="nc">ServerSocket</span> <span class="n">serverSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerSocket</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
+  <span class="c1">// 循环监听客户端请求</span>
+  <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+    <span class="nc">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="n">serverSocket</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span> <span class="c1">// 阻塞线程，等待客户端请求</span>
+    <span class="c1">// 读取客户端输入的内容</span>
+    <span class="nc">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+    <span class="c1">// 读取一行数据</span>
+    <span class="nc">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"收到客户端的消息："</span><span class="o">+</span><span class="n">s</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>先启动服务端，再运行客户端，结果</p>
+
+<p><img src="\assets\images\2021\javabase\socket-test-1.jpg" alt="" /></p>
+
+<p>注意，客户端只有与服务端建立三次握手成功之后，才会发送数据，而 TCP/IP 握手过程，底层操作系统已经帮我们实现了。当连接已经建立成功，服务端和客户端都会拥有一个 Socket 实例，每个 Socket 实例都有一个 <strong>InputStream</strong> 和 <strong>OutputStream</strong>，正如我们前面所说的，网络 I/O 都是以字节流传输的，Socket 正是通过这两个对象来交换数据。</p>
+
+<p>当 Socket 对象创建时，操作系统将会为 InputStream 和 OutputStream 分别分配一定大小的缓冲区，数据的写入和读取都是通过这个缓存区完成的。</p>
+
+<p>写入端将数据写到 OutputStream 对应的 SendQ 队列中，当队列填满时，数据将被发送到另一端 InputStream 的 RecvQ 队列中，如果这时 RecvQ 已经满了，那么 OutputStream 的 write 方法将会阻塞直到 RecvQ 队列有足够的空间容纳 SendQ 发送的数据。</p>
+
+<h3 id="io的工作方式">IO的工作方式</h3>
+
+<ul>
+  <li>
+    <p>同步阻塞<mark>BIO</mark>（Blocking IO）：即传统的IO模型。</p>
+
+    <p><img src="\assets\images\2020\java\block-io.png" alt="" /></p>
+  </li>
+  <li>
+    <p>同步非阻塞<mark>NIO</mark>（Non Blocking IO）：默认创建的socket都是阻塞的，非阻塞IO要求socket被设置为<code class="highlighter-rouge">NONBLOCK</code></p>
+
+    <p><img src="\assets\images\2020\java\non-block-io.png" alt="" /></p>
+  </li>
+  <li>
+    <p>多路复用<mark>MIO</mark>（Multiplexing IO )：即经典的Reactor设计模式，有时也称为<strong>异步阻塞IO</strong>，Java中的Selector和Linux中的epoll都是这种模型。Redis单线程为什么速度还那么快，就是因为用了多路复用IO和缓存操作的原因，多个网络连接请求复用同一个线程IO(selector选择器)处理。</p>
+
+    <p><img src="\assets\images\2020\java\multiple-io.png" alt="" /></p>
+  </li>
+  <li>
+    <p>异步<mark>AIO</mark>（Asynchronous IO）：即经典的Proactor设计模式，有时也称<strong>异步非阻塞IO</strong></p>
+
+    <p><img src="\assets\images\2020\java\async-io.png" alt="" /></p>
+  </li>
+</ul>
+
+<p><mark>概念扫盲</mark></p>
+
+<ul>
+  <li>同步：发起一个请求后，接受者未处理完请求之前，不返回结果；</li>
+  <li>异步：发起一个请求后，立刻得到接受者的回应表示已接收到请求。但是接受者并没有处理完，通常是依靠事件回调等机制来通知请求者其处理结果；</li>
+  <li>阻塞：发起一个请求后，一直等待其请求结果返回，也就是当前线程会被挂起，无法从事其他任务，只有当条件就绪才能继续；</li>
+  <li>非阻塞：发起一个请求后，不用一直等着结果返回，可以先去干其他事情，当条件就绪的时候，就自动回来。</li>
+</ul>
+
+<p>常常同步是阻塞的，异步是非阻塞的。</p>
+
+<h3 id="bio同步阻塞">BIO同步阻塞</h3>
+
+<p><img src="\assets\images\2021\javabase\bio-acceptor.jpg" alt="" /></p>
+
+<p>采用 BIO 通信模型的服务端，通常由一个独立的 <strong>Acceptor</strong> 线程负责监听客户端的连接。</p>
+
+<p>客户端多线程请求</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>  <span class="o">{</span>
+  <span class="c1">// 创建5个线程</span>
+  <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">5</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+    <span class="kd">final</span> <span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Socket</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span><span class="mi">8080</span><span class="o">);</span>
+        <span class="nc">BufferedWriter</span> <span class="n">bufferedWriter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedWriter</span><span class="o">(</span><span class="k">new</span> <span class="nc">OutputStreamWriter</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">()));</span>
+        <span class="nc">String</span> <span class="n">str</span><span class="o">=</span><span class="s">"hello,我是第"</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="s">"个客户端"</span><span class="o">;</span>
+        <span class="n">bufferedWriter</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+        <span class="n">bufferedWriter</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span> <span class="c1">// 发送</span>
+        <span class="n">bufferedWriter</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="c1">// 关闭连接</span>
+        <span class="n">socket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>对应的服务端，多线程处理请求</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+	   	<span class="c1">// 创建5个线程来监听客户</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="kd">final</span> <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+				<span class="k">try</span> <span class="o">{</span>
+					<span class="nc">ServerSocket</span> <span class="n">serverSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerSocket</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
+					<span class="c1">// 循环监听客户端请求</span>
+					<span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+						<span class="nc">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="n">serverSocket</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+						<span class="c1">// 读取客户端输入的内容</span>
+						<span class="nc">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+						<span class="c1">// 读取一行数据</span>
+						<span class="nc">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+						<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"收到客户端的消息："</span><span class="o">+</span><span class="n">s</span><span class="o">);</span>
+					<span class="o">}</span>
+				<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+				<span class="o">}</span>
+			<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+
+<p>如果出现 100、1000、甚至 10000 个用户同时访问服务器，这个时候，如果使用这种模型，那么服务端也会创建与之相同的线程数量，<mark>线程数急剧膨胀可能会导致线程堆栈溢出、创建新线程失败等问题，最终导致进程宕机或者僵死，不能对外提供服务</mark></p>
+
+<p>这时我们应该使用ThreadPoolExecutor 线程池机制避免创建大量线程，导致资源耗尽。这时IO模型如下图：</p>
+
+<p><img src="\assets\images\2021\javabase\bio-acceptor-2.jpg" alt="" /></p>
+
+<p>当有新的客户端接入时，将客户端的 Socket 封装成一个 Task 投递到后端的线程池中进行处理</p>
+
+<p>客户端创建30个socket线程，代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>  <span class="o">{</span>
+  <span class="c1">// 创建30个线程</span>
+  <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">30</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+    <span class="kd">final</span> <span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+      <span class="k">try</span> <span class="o">(</span><span class="nc">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Socket</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span><span class="mi">8080</span><span class="o">);</span>
+           <span class="nc">PrintWriter</span> <span class="n">printWriter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PrintWriter</span><span class="o">(</span><span class="k">new</span> <span class="nc">OutputStreamWriter</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">()),</span><span class="kc">true</span><span class="o">);</span>
+           <span class="nc">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+          <span class="o">){</span>
+        <span class="c1">// 发送信息给服务端</span>
+        <span class="nc">String</span> <span class="n">str</span><span class="o">=</span><span class="s">"hello,我是第"</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="s">"个客户端"</span><span class="o">;</span>
+        <span class="n">printWriter</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+
+        <span class="c1">// 读取服务端返回的信息</span>
+        <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"客户端发送内容:%s -&gt; 收到服务端返回的内容:%s\n"</span><span class="o">,</span><span class="n">str</span><span class="o">,</span><span class="n">result</span><span class="o">);</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>服务端使用线程池处理socket信息，代码如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+  <span class="nc">ServerSocket</span> <span class="n">serverSocket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServerSocket</span><span class="o">(</span><span class="mi">8080</span><span class="o">);</span>
+  <span class="nc">ExecutorService</span> <span class="n">threadPool</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadPoolExecutor</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span>
+                                                      <span class="o">,</span> <span class="k">new</span> <span class="nc">LinkedBlockingDeque</span><span class="o">&lt;&gt;(</span><span class="mi">10</span><span class="o">),</span> <span class="nc">Executors</span><span class="o">.</span><span class="na">defaultThreadFactory</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
+
+  <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+    <span class="c1">// 监听客户请求</span>
+    <span class="nc">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="n">serverSocket</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+    <span class="c1">// 使用线程池处理请求</span>
+    <span class="n">threadPool</span><span class="o">.</span><span class="na">execute</span><span class="o">(()-&gt;{</span>
+      <span class="k">try</span> <span class="o">(</span>
+        <span class="c1">// 读取客户端输入的内容</span>
+        <span class="nc">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+        <span class="c1">// 向客户端返回信息，将字符转化成字节流，并输出</span>
+        <span class="nc">PrintWriter</span> <span class="n">printWriter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PrintWriter</span><span class="o">(</span><span class="k">new</span> <span class="nc">OutputStreamWriter</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">()));</span>
+      <span class="o">){</span>
+        <span class="c1">// 读取一行数据</span>
+        <span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">",收到客户端的消息："</span><span class="o">+</span><span class="n">str</span><span class="o">);</span>
+
+        <span class="n">printWriter</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务端返回信息："</span><span class="o">+</span><span class="n">str</span><span class="o">);</span>
+      <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">});</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>先启动服务端，再执行客户端。</p>
+
+<p>服务端输出</p>
+
+<p><img src="\assets\images\2021\javabase\bio-acceptor-3.jpg" alt="" /></p>
+
+<p>客户端输出，收到服务端的返回</p>
+
+<p><img src="\assets\images\2021\javabase\bio-acceptor-4.jpg" alt="" /></p>
+
+<p>服务端使用线程池，设置了最大线程数为10，阻塞队列数为10，它的资源占用是可控的，避免了资源耗尽。</p>
+
+<p>它的底层仍然是同步阻塞的 BIO 模型，当面对十万甚至百万级连接的时候，传统的 BIO 模型真的是无能为力的，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。</p>
+
+<h3 id="nio同步非阻塞">NIO同步非阻塞</h3>
+
+<p>默认创建的socket都是阻塞的，非阻塞IO要求socket被设置为<code class="highlighter-rouge">NONBLOCK</code>，从java1.4引入了NIO，在java.nio包下。</p>
+
+<p>NIO提供了与传统BIO模型中的<code class="highlighter-rouge">Socket</code>和<code class="highlighter-rouge">ServerSocket</code>相对应的<code class="highlighter-rouge">SocketChannel</code>和<code class="highlighter-rouge">ServerSocketChannel</code>两种不同的套接字通道实现。</p>
+
+<ul>
+  <li>BIO同步阻塞，适合低负载、低并发的应用程序，提升开发效率</li>
+  <li>NIO同步非阻塞，适合高负载，高并发的网络应用</li>
+</ul>
+
+<p>核心关联类图：</p>
+
+<p><img src="\assets\images\2021\javabase\nio-class.jpg" alt="" /></p>
+
+<p>三个关键类：</p>
+
+<ul>
+  <li>Channel 通道</li>
+  <li>Selector 选择器</li>
+  <li>Buffer 数据缓冲流</li>
+</ul>
+
+<p>Channel可以比作是某种具体的交通工具，如汽车、高铁、飞机，而Selector可以比作是一个车站的车辆运行调度系统，负责监控每辆车的当前运行状态：已经出站或者是在路上等，Selector会轮询每个Channel的状态。Buffer可以比作是交通工具上的座位，Channel是飞机，Buffer就是飞机上的座位。</p>
+
+<p>NIO 引入了 <strong>Channel、Buffer 和 Selector</strong> 就是想把 IO 传输过程中涉及到的<strong>信息具体化</strong>，让程序员有机会去控制它们。</p>
+
+<p>传统的网络IO操作中，当调用write()往 Socket 中的 SendQ 队列写数据时，当一次写的数据超过 SendQ 长度时，操作系统会按照 SendQ 的长度进行分割，这个过程中需要将用户空间数据和内核地址空间进行切换，而这个切换不是程序员可以控制的，由底层操作系统来帮我们处理。</p>
+
+<p>而Buffer 中，我们可以控制 Buffer 的 capacity（容量），并且是否扩容以及如何扩容都可以控制。</p>
+
+<p>客户端代码不用变化</p>
+
+<p>服务端代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NioServer</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="c1">// 1、打开服务器套接字通道(交通工具)</span>
+        <span class="nc">ServerSocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="nc">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="c1">// 配置为非阻塞</span>
+        <span class="n">channel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="c1">// 进行服务的绑定，监听8080端口</span>
+        <span class="n">channel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8080</span><span class="o">));</span>
+
+        <span class="c1">// 2、通过open方法找到Selector选择器（车辆监控系统）</span>
+        <span class="nc">Selector</span> <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="c1">// 将channel注册到selector中，并且让selector监听通道中的接受事件</span>
+        <span class="n">channel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
+        <span class="c1">// 3、监听事件</span>
+        <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+            <span class="c1">// 查询指定事件已经就绪的通道数量，如果为0就跳出</span>
+            <span class="kt">int</span> <span class="n">readyChannels</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span>
+            <span class="k">if</span><span class="o">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">readyChannels</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+            <span class="c1">// 通过选择器取得所有的key集合</span>
+            <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
+            <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">keyIterator</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">keyIterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+                <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">keyIterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="c1">// 判断状态是否有效</span>
+                <span class="k">if</span><span class="o">(!</span><span class="n">key</span><span class="o">.</span><span class="na">isValid</span><span class="o">()){</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">()){</span>
+                    <span class="c1">// 通道接收就绪</span>
+                    <span class="nc">ServerSocketChannel</span> <span class="n">ssChanel</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ServerSocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                    <span class="nc">SocketChannel</span> <span class="n">clientChannel</span> <span class="o">=</span> <span class="n">ssChanel</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span><span class="c1">// 阻塞</span>
+                    <span class="n">clientChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                    <span class="c1">// 将通道注册到选择器并监听通道中可读事件</span>
+                    <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span><span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+                    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"接收到新的客户端连接，地址："</span> <span class="o">+</span> <span class="n">clientChannel</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
+                <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">()){</span>
+                    <span class="c1">// 通道可读就绪</span>
+                    <span class="c1">// 创建一个容量为1024的字节数据</span>
+                    <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                    <span class="c1">// 获取通道</span>
+                    <span class="nc">SocketChannel</span> <span class="n">clientChannel</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                    <span class="c1">// 从通道中读取数据到缓冲（写到缓冲中）</span>
+                    <span class="kt">int</span> <span class="n">numRead</span> <span class="o">=</span> <span class="n">clientChannel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">);</span>
+                    <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span> <span class="c1">// 缓冲写模式切换到读模式</span>
+                    <span class="c1">// 获取缓冲中的数据</span>
+                    <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">.</span><span class="na">array</span><span class="o">(),</span><span class="mi">0</span><span class="o">,</span><span class="n">numRead</span><span class="o">);</span>
+                    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务端收到客户端发送的消息："</span><span class="o">+</span><span class="n">result</span><span class="o">);</span>
+                    <span class="c1">// 将通道注册到选择器并监听通道中可写事件</span>
+                    <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span><span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_WRITE</span><span class="o">);</span>
+                <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isWritable</span><span class="o">()){</span>
+                    <span class="c1">// 通道可写就绪</span>
+                    <span class="c1">// 创建一个容量为1024的字节数据</span>
+                    <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                    <span class="c1">// 获取通道</span>
+                    <span class="nc">SocketChannel</span> <span class="n">clientChannel</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                    <span class="n">byteBuffer</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"server send"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+                    <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span> <span class="c1">// 写模式切换到读模式</span>
+                    <span class="c1">// 缓冲数据写入通道</span>
+                    <span class="n">clientChannel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">);</span>
+                    <span class="c1">// 将通道注册到选择器并监听通道中可读事件</span>
+                    <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span><span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+                    <span class="n">clientChannel</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="c1">// 关闭通道</span>
+                <span class="o">}</span>
+                <span class="n">keyIterator</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span> <span class="c1">// 该事件已经处理，可以丢弃</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>关于buffer.flip()方法，它的作用是写进buffer后再flip()，可以读出buffer中的数据。buffer底层实现是数组，核心概念有capacity=容量数组大小，position就是读取或者写入时的下标，limit就是当前读写的最大下标，如下图：</p>
+
+<p><img src="\assets\images\2021\javabase\nio-buffer.png" alt="" /></p>
+
+<p>flip的源码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="nc">Buffer</span> <span class="nf">flip</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">limit</span> <span class="o">=</span> <span class="n">position</span><span class="o">;</span>
+  <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="n">mark</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+  <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>先启动服务端，再执行客户端，服务端输出：</p>
+
+<p><img src="\assets\images\2021\javabase\nio-server.jpg" alt="" /></p>
+
+<p>客户端输出：</p>
+
+<p><img src="\assets\images\2021\javabase\nio-client.jpg" alt="" /></p>
+
+<p>客户端也可以使用SocketChannel的写法，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NioClient</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="c1">// 写入缓冲buffer,容量1024个字节</span>
+        <span class="nc">ByteBuffer</span> <span class="n">writeBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+        <span class="c1">// 读取缓冲buffer</span>
+        <span class="nc">ByteBuffer</span> <span class="n">readBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+        <span class="c1">// 1、打开通道,</span>
+        <span class="nc">SocketChannel</span> <span class="n">socketChannel</span> <span class="o">=</span> <span class="nc">SocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="n">socketChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span> <span class="c1">// 设置为非阻塞</span>
+        <span class="c1">// 连接服务器地址和端口</span>
+        <span class="n">socketChannel</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span><span class="mi">8080</span><span class="o">));</span>
+
+        <span class="c1">// 2、打开选择器</span>
+        <span class="nc">Selector</span> <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="c1">// 通道注册到selector中，并且让selector监听连接事件</span>
+        <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_CONNECT</span><span class="o">);</span>
+
+        <span class="c1">// 查询指定事件已经就绪的通道数量</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">()&gt;</span><span class="mi">0</span><span class="o">){</span>
+            <span class="c1">// 通过选择器取得所有的key集合</span>
+            <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
+            <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">keyIterator</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+            <span class="c1">// 迭代key</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">keyIterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+                <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">keyIterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isConnectable</span><span class="o">()){</span>
+                    <span class="c1">// 通道连接就绪</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">socketChannel</span><span class="o">.</span><span class="na">finishConnect</span><span class="o">()){</span>
+                        <span class="c1">// 完成连接</span>
+                        <span class="c1">// 让selector监听写事件</span>
+                        <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span><span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_WRITE</span><span class="o">);</span>
+                        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"连接目标服务器...."</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isWritable</span><span class="o">()){</span>
+                    <span class="c1">// 通道可写就绪</span>
+                    <span class="n">writeBuffer</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span> <span class="c1">// 清空</span>
+                    <span class="n">writeBuffer</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"Hello,我是客户端"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+                    <span class="n">writeBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span> <span class="c1">// 写模式切换为读模式</span>
+                    <span class="n">socketChannel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">writeBuffer</span><span class="o">);</span>
+
+                    <span class="c1">// 让selector监听读事件</span>
+                    <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span><span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+                <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">()){</span>
+                    <span class="c1">// 通道可读就绪</span>
+                    <span class="c1">// 获取通道</span>
+                    <span class="nc">SocketChannel</span> <span class="n">client</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                    <span class="n">readBuffer</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span> <span class="c1">// 清空</span>
+                    <span class="c1">// 从通道读取数据写到缓冲中</span>
+                    <span class="n">client</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">readBuffer</span><span class="o">);</span>
+                    <span class="n">readBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span> <span class="c1">// 写模式切换为读模式</span>
+                    <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">Charset</span><span class="o">.</span><span class="na">defaultCharset</span><span class="o">().</span><span class="na">newDecoder</span><span class="o">().</span><span class="na">decode</span><span class="o">(</span><span class="n">readBuffer</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+                    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"收到服务端:"</span><span class="o">+</span><span class="n">client</span><span class="o">.</span><span class="na">socket</span><span class="o">().</span><span class="na">getRemoteSocketAddress</span><span class="o">()</span> <span class="o">+</span> <span class="s">",返回消息："</span><span class="o">+</span><span class="n">result</span><span class="o">);</span>
+
+                    <span class="c1">// 继续让selector监听写入事件</span>
+                    <span class="n">client</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span><span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_WRITE</span><span class="o">);</span>
+                    <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span> <span class="c1">// 读完并关闭客户端通道</span>
+                <span class="o">}</span>
+                <span class="n">keyIterator</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span> <span class="c1">// 该事件已经处理，可以丢弃</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<p><img src="\assets\images\2021\javabase\nio-client-2.jpg" alt="" /></p>
+
+<p>总的来说，NIO操作比BIO的操作要复杂。</p>
+
+<p><strong>Selector</strong> 被称为<strong>选择器</strong> ，<strong>多路复用器</strong> ，这时也称为MIO。它是 Java NIO 核心组件中的一个，用于检查一个或多个 <strong>Channel</strong>（通道）的状态是否处于<strong>连接就绪</strong>、<strong>接受就绪</strong>、<strong>可读就绪</strong>、<strong>可写就绪</strong>。如此可以实现单线程管理多个 <strong>channels</strong>，也就是可以管理多个网络连接，如下图：</p>
+
+<p><img src="\assets\images\2021\javabase\nio-selector.jpg" alt="" /></p>
+
+<p><strong>总结：</strong></p>
+
+<p>相比BIO的线程池管理IO,selector使用了更少线程处理通道，实现了网络高效传输。</p>
+
+<p>缺点：</p>
+
+<ul>
+  <li>编程复杂</li>
+  <li>JDK 的 NIO 底层由 epoll 实现，该实现饱受诟病的空轮询 bug 会导致 cpu 飙升 100%</li>
+  <li>自行实现的NIO维护成本高</li>
+</ul>
+
+<p>后面使用Google的Netty框架替代NIO实现网络高效传输。</p>
+
+<h3 id="aio异步非阻塞">AIO异步非阻塞</h3>
+
+<p>Asynchronous IO,从java7引入NIO的改进版NIO2，它是异步非阻塞的模型</p>
+
+<p>异步IO是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。</p>
+
+<p>客户端示例代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AioClient</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">InterruptedException</span><span class="o">,</span> <span class="nc">ExecutionException</span> <span class="o">{</span>
+    <span class="c1">// 1、打开一个客户端通道</span>
+    <span class="nc">AsynchronousSocketChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="nc">AsynchronousSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+    <span class="c1">// 与服务器建立连接</span>
+    <span class="n">channel</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span><span class="mi">8080</span><span class="o">));</span>
+
+    <span class="c1">// 睡眠1秒</span>
+    <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="c1">// 2、向服务器发送数据,并阻塞等待返回结果</span>
+    <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="s">"hello,我是客户端"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">())).</span><span class="na">get</span><span class="o">();</span>
+
+    <span class="c1">// 3、从服务器读取数据</span>
+    <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+    <span class="c1">// 将通道中的数据写入buffer</span>
+    <span class="n">channel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">).</span><span class="na">get</span><span class="o">();</span> <span class="c1">// 阻塞等待返回结果</span>
+    <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span> <span class="c1">// 写模式切换为读模式</span>
+    <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="nc">Charset</span><span class="o">.</span><span class="na">defaultCharset</span><span class="o">().</span><span class="na">newDecoder</span><span class="o">().</span><span class="na">decode</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"收到服务端返回的消息："</span><span class="o">+</span><span class="n">result</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>服务端示例代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AioServer</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nc">AsynchronousServerSocketChannel</span> <span class="n">serverSocketChannel</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">listen</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+    <span class="c1">// 1、打开一个服务端通道</span>
+    <span class="n">serverSocketChannel</span><span class="o">=</span> <span class="nc">AsynchronousServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+    <span class="c1">// 监听8080端口</span>
+    <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="mi">8080</span><span class="o">));</span>
+
+    <span class="c1">// 2、服务监听</span>
+    <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="nc">CompletionHandler</span><span class="o">&lt;</span><span class="nc">AsynchronousSocketChannel</span><span class="o">,</span> <span class="nc">AioServer</span><span class="o">&gt;()</span> <span class="o">{</span>
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">completed</span><span class="o">(</span><span class="nc">AsynchronousSocketChannel</span> <span class="n">client</span><span class="o">,</span> <span class="nc">AioServer</span> <span class="n">attachment</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+          <span class="k">if</span><span class="o">(</span><span class="n">client</span><span class="o">.</span><span class="na">isOpen</span><span class="o">()){</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"接收到新的客户端连接，地址："</span><span class="o">+</span><span class="n">client</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
+            <span class="kd">final</span> <span class="nc">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+            <span class="c1">// 读取客户端发送的消息</span>
+            <span class="n">client</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="n">client</span><span class="o">,</span> <span class="k">new</span> <span class="nc">CompletionHandler</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">AsynchronousSocketChannel</span><span class="o">&gt;()</span> <span class="o">{</span>
+              <span class="nd">@Override</span>
+              <span class="kd">public</span> <span class="kt">void</span> <span class="nf">completed</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">result</span><span class="o">,</span> <span class="nc">AsynchronousSocketChannel</span> <span class="n">attachment</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                  <span class="n">buffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span> <span class="c1">// 缓冲区由写模式切换为读模式</span>
+                  <span class="nc">String</span> <span class="n">content</span> <span class="o">=</span> <span class="nc">Charset</span><span class="o">.</span><span class="na">defaultCharset</span><span class="o">().</span><span class="na">newDecoder</span><span class="o">().</span><span class="na">decode</span><span class="o">(</span><span class="n">buffer</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+                  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"服务端收到客户端发送的消息："</span><span class="o">+</span><span class="n">content</span><span class="o">);</span>
+
+                  <span class="c1">// 向客户端发送消息</span>
+                  <span class="nc">ByteBuffer</span> <span class="n">writeBuffer</span><span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                  <span class="n">writeBuffer</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"server send"</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+                  <span class="n">writeBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
+                  <span class="n">attachment</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">writeBuffer</span><span class="o">).</span><span class="na">get</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+              <span class="o">}</span>
+
+              <span class="nd">@Override</span>
+              <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failed</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">exc</span><span class="o">,</span> <span class="nc">AsynchronousSocketChannel</span> <span class="n">attachment</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// 读取消息失败</span>
+                <span class="k">try</span> <span class="o">{</span>
+                  <span class="n">exc</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                  <span class="n">attachment</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+              <span class="o">}</span>
+            <span class="o">});</span>
+          <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+          <span class="c1">// 当有新客户端接入的时候，直接调用accept方法</span>
+          <span class="n">attachment</span><span class="o">.</span><span class="na">serverSocketChannel</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">attachment</span><span class="o">,</span><span class="k">this</span><span class="o">);</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failed</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">exc</span><span class="o">,</span> <span class="nc">AioServer</span> <span class="n">attachment</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 客户端接收失败</span>
+        <span class="n">exc</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">});</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span><span class="o">,</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="c1">// 启动服务器，并监听客户端</span>
+    <span class="k">new</span> <span class="nf">AioServer</span><span class="o">().</span><span class="na">listen</span><span class="o">();</span>
+    <span class="c1">// 因为是异步IO执行，让主线程睡眠但不关闭</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="nc">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>先启动服务端，多次执行客户端</p>
+
+<p>服务端执行结果：</p>
+
+<p><img src="\assets\images\2021\javabase\aio-server.jpg" alt="" /></p>
+
+<p>客户端：</p>
+
+<p><img src="\assets\images\2021\javabase\aio-client.jpg" alt="" /></p>
+
+<p>从代码可以看出，这种组合方式用起来比较复杂，只有在一些非常复杂的分布式情况下使用，像集群之间的消息同步机制一般用这种 I/O 组合方式。如 Cassandra 的 Gossip 通信机制就是采用异步非阻塞的方式。Netty 之前也尝试使用过 AIO，不过又放弃了。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2020/10/16/java-io.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

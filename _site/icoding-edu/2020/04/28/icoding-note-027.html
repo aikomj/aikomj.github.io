@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第27节：SpringCloud（中） - 大伟的博客 </title>
+    <meta name="keywords" content="springcloud">
+    <meta name="description"
+          content="Ribbon负载均衡，Feign接口式调用服务，Hystrix断路器">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/04/28/icoding-note-027.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第27节：SpringCloud（中）">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第27节：SpringCloud（中）</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/04/28
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1ribbon负载均衡">1、Ribbon负载均衡</h2>
+
+<p>Spring Cloud Ribbon是一套客户端的负载均衡工具。</p>
+
+<p>LB:负载均衡</p>
+
+<p><img src="/assets/images/2020/springcloud/ribbon.gif" alt="" /></p>
+
+<font color="red">将用户的请求均摊的分配到多个服务器上，从而达到HA（高可用）</font>
+
+<p>分类：</p>
+
+<ul>
+  <li>
+    <p>集中式LB</p>
+
+    <p>服务消费者和服务提供者之间，单独设置一个设施</p>
+
+    <p>比如Nginx</p>
+  </li>
+  <li>
+    <p>进程式LB</p>
+
+    <p>将LB集成到消费者，消费者从服务注册中心获得有哪些可用的地址，从中选取一个</p>
+
+    <p>Ribbon就是属于进程式LB</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Ribbon配置</p>
+</blockquote>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-ribbon<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、向程序的spring ioc容器注入一个bean: restTemplate</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigBean</span>
+<span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="nd">@LoadBalanced</span> <span class="c1">// 支持负载均衡的功能</span>
+    <span class="kd">public</span> <span class="nc">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">RestTemplate</span><span class="o">();</span>
+    <span class="o">}</span>    
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>通过restTemplate基于服务名调用微服务</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeptConsumerController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">RestTemplate</span> <span class="n">restTemplate</span><span class="o">;</span>
+
+    <span class="c1">// 这里现在是死的地址</span>
+    <span class="c1">// private static final String REST_URL_PREFIX = "http://localhost:8001";</span>
+    <span class="c1">// 一旦集成了Ribbon，这里可以直接编写服务名即可 springcloud-provider-dept</span>
+    <span class="c1">// 可以基于微服务的名称来访问微服务</span>
+    <span class="c1">// springcloud-provider-dept  8001   8002   8003 (集群)</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">REST_URL_PREFIX</span> <span class="o">=</span> <span class="s">"http://SPRINGCLOUD-PROVIDER-DEPT"</span><span class="o">;</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/consumer/dept/discovery"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">discovery</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getForObject</span><span class="o">(</span><span class="no">REST_URL_PREFIX</span><span class="o">+</span><span class="s">"/dept/discovery"</span><span class="o">,</span><span class="nc">Object</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/consumer/dept/add"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">add</span><span class="o">(</span><span class="nc">Dept</span> <span class="n">dept</span><span class="o">){</span>
+        <span class="k">return</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">postForObject</span><span class="o">(</span><span class="no">REST_URL_PREFIX</span><span class="o">+</span><span class="s">"/dept/add"</span><span class="o">,</span><span class="n">dept</span><span class="o">,</span><span class="nc">Boolean</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/consumer/dept/get/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Dept</span> <span class="nf">get</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"===&gt;"</span><span class="o">+</span><span class="n">id</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getForObject</span><span class="o">(</span><span class="no">REST_URL_PREFIX</span><span class="o">+</span><span class="s">"/dept/get/"</span><span class="o">+</span><span class="n">id</span><span class="o">,</span><span class="nc">Dept</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/consumer/dept/list"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Dept</span><span class="o">&gt;</span> <span class="nf">list</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getForObject</span><span class="o">(</span><span class="no">REST_URL_PREFIX</span><span class="o">+</span><span class="s">"/dept/list"</span><span class="o">,</span><span class="nc">List</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+
+</code></pre></div></div>
+
+<blockquote>
+  <p>IRule 负载均衡算法</p>
+</blockquote>
+
+<p>ribbon的负载均衡算法都是实现了IRule接口</p>
+
+<p>Ribbon中的7中负载均衡算法：</p>
+
+<p>（1）RoundRobinRule：轮询；</p>
+
+<p>（2）RandomRule：随机；</p>
+
+<p>（3）AvailabilityFilteringRule：会先过滤掉由于多次访问故障而处于断路器状态的服务，还有并发的连接数量超过阈值的服务，然后对剩余的服务列表按照轮询策略进行访问；</p>
+
+<p>（4）WeightedResponseTimeRule：根据平均响应时间计算所有服务的权重，响应时间越快的服务权重越大被选中的概率越大。刚启动时如果统计信息不足，则使用RoundRobinRule（轮询）策略，等统计信息足够，会切换到WeightedResponseTimeRule；</p>
+
+<p>（5）RetryRule：先按照RoundRobinRule（轮询）策略获取服务，如果获取服务失败则在指定时间内进行重试，获取可用的服务；</p>
+
+<p>（6）BestAvailableRule：会先过滤掉由于多次访问故障而处于断路器跳闸状态的服务，然后选择一个并发量最小的服务；</p>
+
+<p>（7）ZoneAvoidanceRule：复合判断Server所在区域的性能和Server的可用性选择服务器；</p>
+
+<p><img src="/assets/images/2020/springcloud/ribbon-irule.gif" alt="" /></p>
+
+<p>在ConfigBean 修改LB策略</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigBean</span> <span class="o">{</span>
+
+    <span class="c1">// 支持负载均衡的功能</span>
+    <span class="nd">@LoadBalanced</span> <span class="c1">// SpringCloud Ribbon 是基于客户端实现的一套负载均衡的工具</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">RestTemplate</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 修改LB策略</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">IRule</span> <span class="nf">myRule</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">RetryRule</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>自定义负载均衡算法</p>
+</blockquote>
+
+<p>注意点：一定不要在主启动类同级或子级下写算法，不能被Spring扫描!</p>
+
+<p><img src="/assets/images/2020/springcloud/ribbon-myselfrule.gif" alt="" /></p>
+
+<p>1、配置类MySelfRule</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MySelfRule</span> <span class="o">{</span>
+    <span class="c1">// 修改LB策略</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">IRule</span> <span class="nf">myRule</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">CodingRandomRule</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、自定义负载均衡规则CodingRandomRule</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CodingRandomRule</span> <span class="kd">extends</span> <span class="nc">AbstractLoadBalancerRule</span> <span class="o">{</span>
+
+    <span class="c1">// 8001    8002     8003 , 每个服务调用5次，轮询升级版</span>
+    <span class="c1">// 逻辑</span>
+    <span class="c1">// 1、total = 0，当total数量为5，就切换到下一个服务，重置为0</span>
+    <span class="c1">// 2、index = 0. 对外提供的服务选择 ，当index&gt;3, 重置为0</span>
+
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">currentIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="nc">ILoadBalancer</span> <span class="n">lb</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"codingRandom rule choice"</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">lb</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 最终选择的服务</span>
+        <span class="nc">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="k">while</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">interrupted</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">// 获取所有上线的服务  8001   8002   8003</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Server</span><span class="o">&gt;</span> <span class="n">upList</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getReachableServers</span><span class="o">();</span>
+            <span class="c1">// 获取所有所有的服务  8001   8002   8003  ......</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Server</span><span class="o">&gt;</span> <span class="n">allList</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getAllServers</span><span class="o">();</span>
+            <span class="c1">// 获取服务数量</span>
+            <span class="kt">int</span> <span class="n">serverCount</span> <span class="o">=</span> <span class="n">allList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">serverCount</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">// 随机选择一个 (算法的具体位置)</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">total</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="o">){</span> <span class="c1">// 如果当前total小于5</span>
+                <span class="n">server</span> <span class="o">=</span> <span class="n">upList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentIndex</span><span class="o">);</span>
+                <span class="n">total</span><span class="o">++;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c1">// 如果当前total大于5</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+                <span class="n">currentIndex</span><span class="o">++;</span>
+                <span class="c1">// &gt;=</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">currentIndex</span> <span class="o">&gt;=</span> <span class="n">upList</span><span class="o">.</span><span class="na">size</span><span class="o">()){</span>
+                    <span class="n">currentIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">server</span> <span class="o">=</span> <span class="n">upList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentIndex</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="c1">// ======= END =======</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
+                <span class="k">continue</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isAlive</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="o">(</span><span class="n">server</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">server</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kt">int</span> <span class="nf">chooseRandomInt</span><span class="o">(</span><span class="kt">int</span> <span class="n">serverCount</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">ThreadLocalRandom</span><span class="o">.</span><span class="na">current</span><span class="o">().</span><span class="na">nextInt</span><span class="o">(</span><span class="n">serverCount</span><span class="o">);</span>
+    <span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="nc">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nf">choose</span><span class="o">(</span><span class="n">getLoadBalancer</span><span class="o">(),</span> <span class="n">key</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">initWithNiwsConfig</span><span class="o">(</span><span class="nc">IClientConfig</span> <span class="n">clientConfig</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// TODO Auto-generated method stub</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、主启动类，加上注解@RibbonClient</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaClient</span> <span class="c1">// 客户端</span>
+<span class="nd">@EnableFeignClients</span>
+<span class="c1">// 配置Ribbon客户端, 多个  *</span>
+<span class="nd">@RibbonClient</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"provider-dept"</span><span class="o">,</span><span class="n">configuration</span> <span class="o">=</span> <span class="nc">MySelfRule</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConsumerDeptApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">ConsumerDeptApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="2feign调用">2、Feign调用</h2>
+
+<p>Feign 声明式的web service客户端，调用微服务更加简单，类似controller 调用sevice</p>
+
+<p>feign集成类ribbon，也支持负载均衡，调用ribbon的负载均衡算法。</p>
+
+<p>Feign 其实不是做负载均衡的，负载均衡的是ribbon的功能，feign只是集成了ribbon</p>
+
+<blockquote>
+  <p>使用</p>
+</blockquote>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-openfeign<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、定义一个feign接口，通过@ FeignClient（“服务名”），来指定调用哪个服务</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@FeignClient</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"provider-dept"</span><span class="o">,</span><span class="n">fallback</span> <span class="o">=</span> <span class="nc">DeptClientServiceFallbackFactory</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">DeptClientService</span> <span class="o">{</span>
+
+	<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"/dept/get/{id}"</span><span class="o">,</span><span class="n">method</span> <span class="o">=</span> <span class="nc">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+	<span class="no">R</span> <span class="nf">getByid</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、Web层conroller调用接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeptConsumerController</span> <span class="o">{</span>
+
+	<span class="c1">//编译器报错，无视。 因为这个Bean是在程序启动的时候注入的，编译器感知不到，所以报错。</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">DeptClientService</span> <span class="n">deptClientService</span><span class="o">;</span>
+  
+	<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/consumer/dept/get/{id}"</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="nc">Dept</span> <span class="nf">get</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">deptClientService</span><span class="o">.</span><span class="na">getById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4、启动类加上注解@EnableFeignClients开启Feign的功能：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaClient</span> <span class="c1">// 客户端</span>
+<span class="nd">@EnableFeignClients</span>
+<span class="c1">// 配置Ribbon客户端, 多个  *</span>
+<span class="nd">@RibbonClient</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"provider-dept"</span><span class="o">,</span><span class="n">configuration</span> <span class="o">=</span> <span class="nc">MySelfRule</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConsumerDeptApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">ConsumerDeptApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3hystrix断路器">3、Hystrix断路器</h2>
+
+<h3 id="服务雪崩">服务雪崩</h3>
+
+<p>分布式系统面临的问题：</p>
+
+<p>一个复杂系统中，经常会有数十个依赖相互调用，有时候依赖可能会调用失败</p>
+
+<p><img src="/assets/images/2020/springcloud/hystrix-service-call.gif" alt="" /></p>
+
+<p><mark>服务雪崩</mark></p>
+
+<p>多个微服务之间的调用，A调用B，B调用C，C又调用….，这就是所谓的扇出</p>
+
+<p>假设扇出的链路上，某一个微服务调用响应时间过长，或者直接不可用，对于微服务A，这个时候就会占用越来越多的资源，从而可能引起系统崩溃，这就是所谓的“雪崩效应”。</p>
+
+<p>对于高流量的应用来说，单例的后端依赖可能会导致所有服务上的资源在几秒内就饱和。比失败更糟糕的是，导致服务之间的延迟增加，队列，线程资源都紧张，可能导致更多的问题出现。</p>
+
+<p><strong>Hystrix的出现</strong></p>
+
+<p>Hystrix （豪猪，断路器）是一个用于处理分布式系统的延迟和容错的库。在分布式系统中，许多的依赖，不可避免会调用失败，比如超时，异常，Hystrix就可以保证一个依赖出现了问题的时候，不会导致整体的服务失败，避免级联故障，从而提高分布式系统的弹性。</p>
+
+<p>它的作用：</p>
+
+<ul>
+  <li>
+    <p>服务降级（客户端）</p>
+  </li>
+  <li>
+    <p>服务熔断（服务端）</p>
+  </li>
+  <li>
+    <p>服务限流</p>
+
+    <ul>
+      <li>实时监控（hystrix dashboard 监控@HystrixCommand指定的断路点，反应实例断路点调用健康情况）</li>
+    </ul>
+
+    <p>关于hystrix的监控，可以参考之前我写的两篇文章：</p>
+
+    <p><a href="/springcloud/2019/11/05/springcloud-hystrix-dashboard.html">/springcloud/2019/11/05/springcloud-hystrix-dashboard.html</a></p>
+
+    <p><a href="/springcloud/2019/11/06/springcloud-hystrix-turbine.html">/springcloud/2019/11/06/springcloud-hystrix-turbine.html</a></p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>服务熔断（提供方，服务端）</p>
+</blockquote>
+
+<p>熔断就是一种应对服务雪崩的链路保护机制，在服务提供方设置的。</p>
+
+<p>测试</p>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-hystrix<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、在controller对应的类上，处理问题，编写解决方案</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeptController</span> <span class="o">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">DeptService</span> <span class="n">deptService</span><span class="o">;</span>
+
+    <span class="c1">// 面对这种情况，就可以使用Hystrix,</span>
+    <span class="c1">// 使用 @HystrixCommand 然后配置 fallbackMethod</span>
+    <span class="c1">// 一旦调用服务失败，抛出了错误信息后，就自动会调用 fallbackMethod的方法！</span>
+    <span class="nd">@HystrixCommand</span><span class="o">(</span><span class="n">fallbackMethod</span> <span class="o">=</span> <span class="s">"hystrixFallbackGet"</span><span class="o">)</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/dept/get/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Dept</span> <span class="nf">get</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">){</span>
+        <span class="nc">Dept</span> <span class="n">dept</span> <span class="o">=</span> <span class="n">deptService</span><span class="o">.</span><span class="na">queryById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">dept</span><span class="o">==</span><span class="kc">null</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"该id"</span><span class="o">+</span><span class="n">id</span> <span class="o">+</span> <span class="s">"没有查询到对应的信息"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">dept</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 出现问题的解决方案！备用</span>
+    <span class="kd">public</span> <span class="nc">Dept</span> <span class="nf">hystrixFallbackGet</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Dept</span><span class="o">().</span><span class="na">setDeptno</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setDname</span><span class="o">(</span><span class="s">"该id"</span><span class="o">+</span><span class="n">id</span><span class="o">+</span><span class="s">"没有对应的信息null=&gt;hystrix_get_fallbackMethod"</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setDb_source</span><span class="o">(</span><span class="s">"no this data in mysql"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、启动类增加注解@EnableHystrix或者@EnableCircuitBreaker</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaClient</span> <span class="c1">// 本服务启动之后，就会自动注册到 Eureka 中</span>
+<span class="nd">@EnableDiscoveryClient</span> <span class="c1">// 开启服务发现</span>
+<span class="nd">@EnableCircuitBreaker</span> <span class="c1">// 对Hystrix熔断机制的支持</span>
+<span class="c1">//@EnableHystrix // 源码已包含@EnableCircuitBreaker注解</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProviderDeptApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">ProviderDeptApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/hystrix-circuit-breaker.gif" alt="" /></p>
+
+<blockquote>
+  <p>服务降级（消费方，客户端）</p>
+</blockquote>
+
+<p>理解：在某种情况下，调节服务，保证最高性能</p>
+
+<p><img src="/assets/images/2020/springcloud/hystix-service.gif" alt="" /></p>
+
+<p>上图为服务应用，在做秒杀活动60%的请求都是秒杀，只有10%的请求是退款的，为保证秒杀的请求的资源，可以把退款调用的微服务关闭，通过服务降级快速结束请求，把资源让处理，活动过后，再把退款的微服务应用开启。</p>
+
+<p>Feign集成了hystrix，不用导入hystrix依赖</p>
+
+<p>这里使用FallbackFactory编写降级方法，也可以使用Fallback，很简单的，参考我另外一篇文章</p>
+
+<p><a href="/springcloud/2019/11/04/springcloud-hystrix.html">在feign使用断路器</a></p>
+
+<p>1、编写降级Factory类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 客户端调用的失败的处理！</span>
+<span class="c1">// 1、客户端编写 FallbackFactory 类，实现 FallbackFactory接口，参数就是要处理的业务方法</span>
+<span class="c1">// 2、编写对应的逻辑（处理，接口调用这个 FallbackFactory）</span>
+<span class="c1">// 3、丢到spring中</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeptClientServiceFallbackFactory</span> <span class="kd">implements</span> <span class="nc">FallbackFactory</span><span class="o">&lt;</span><span class="nc">DeptClientService</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="c1">// 处理错误逻辑, 统一的处理方式</span>
+    <span class="kd">public</span> <span class="nc">DeptClientService</span> <span class="nf">create</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DeptClientService</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="kd">public</span> <span class="nc">Dept</span> <span class="nf">queryById</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="k">new</span> <span class="nf">Dept</span><span class="o">().</span><span class="na">setDeptno</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setDname</span><span class="o">(</span><span class="s">"请明天退款！"</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">setDb_source</span><span class="o">(</span><span class="s">"no this data in mysql"</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Dept</span><span class="o">&gt;</span> <span class="nf">queryAll</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">};</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、DeptClientServiceFallbackFactory配置feign接口中</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@FeignClient</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"SPRINGCLOUD-PROVIDER-DEPT"</span><span class="o">,</span><span class="n">fallbackFactory</span> <span class="o">=</span> <span class="nc">DeptClientServiceFallbackFactory</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">DeptClientService</span> <span class="o">{</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/dept/get/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Dept</span> <span class="nf">queryById</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">);</span> <span class="c1">// 根据id查询</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/dept/list"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Dept</span><span class="o">&gt;</span> <span class="nf">queryAll</span><span class="o">();</span> <span class="c1">// 查询所有</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、开启hystrix支持</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">feign:</span>
+  <span class="nl">hystrix:</span>
+    <span class="nl">enabled:</span> <span class="kc">true</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p>服务熔断：服务端设定，一般是因为一个服务故障，或者异常引起的，类似保险丝，触发了异常，就直接熔断，不会等待服务超时。</p>
+
+<p>服务降级：客户端设定，从整体的负荷考虑，将某个服务挂掉啦，不能再被调用了，前面举的秒杀活动例子，这个时候客户端可以准备一个自己的本地fallback进行回调，返回缺省值。虽然整体架构上，服务水平下降了，但是比直接挂掉强。</p>
+
+<h2 id="4服务监控-可视化面板">4、服务监控-可视化面板</h2>
+
+<p>单个服务监控</p>
+
+<p><a href="/springcloud/2019/11/05/springcloud-hystrix-dashboard.html">/springcloud/2019/11/05/springcloud-hystrix-dashboard.html</a></p>
+
+<p>多个服务监控</p>
+
+<p><a href="/springcloud/2019/11/06/springcloud-hystrix-turbine.html">/springcloud/2019/11/06/springcloud-hystrix-turbine.html</a></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/04/28/icoding-note-027.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

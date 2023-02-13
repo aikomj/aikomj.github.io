@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 聊聊幂等设计 - 大伟的博客 </title>
+    <meta name="keywords" content="architect">
+    <meta name="description"
+          content="什么是幂等，为什么需要幂等，接口超时如何处理，雪花算法创建全局唯一ID。幂等的设计流程，实现幂等的8种方案">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/architect/2022/05/29/mideng.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="聊聊幂等设计">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>聊聊幂等设计</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/05/29
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1幂等设计">1、幂等设计</h2>
+
+<h3 id="什么是幂等">什么是幂等</h3>
+
+<p>幂等是一个数学与计算机科学概念。</p>
+
+<ul>
+  <li>在数学中，幂等用函数表达式就是：<code class="highlighter-rouge">f(x) = f(f(x))</code>。比如求绝对值的函数，就是幂等的，<code class="highlighter-rouge">abs(x) = abs(abs(x))</code>。</li>
+  <li>计算机科学中，幂等表示一次和多次请求某一个资源应该具有同样的副作用，或者说，多次请求所产生的影响与一次请求执行的影响效果相同。</li>
+</ul>
+
+<h3 id="为什么需要幂等">为什么需要幂等</h3>
+
+<p>举个例子</p>
+
+<p>我们开发一个转账功能，假设我们调用下游接口超时了。一般情况下，超时可能是<strong>网络传输丢包</strong>的问题，也可能是请求时没送到，还有可能是请求到了，<strong>返回结果却丢</strong>了。这时候我们是否可以重试呢？如果<strong>重试</strong>的话，是否会多转了一笔钱呢？</p>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-1.jpg" style="zoom:67%;" /></p>
+
+<p>当前互联网的系统几乎都是解耦隔离后，会存在各个不同系统的相互远程调用。调用远程服务会有三个状态：成功，失败，或者超时。前两者都是明确的状态，而超时则是<strong>未知状态</strong>。我们转账<strong>超时</strong>的时候，如果下游转账系统做好<strong>幂等</strong>控制，我们发起<strong>重试</strong>，那即可以<strong>保证转账正常进行，又可以保证不会多转一笔</strong>。</p>
+
+<p>其实除了转账这个例子，日常开发中，还有<strong>很多很多例子需要考虑幂等</strong>。比如：</p>
+
+<ul>
+  <li>MQ（消息中间件）消费者读取消息时，有可能会读取到重复消息。（<strong>重复消费</strong>）</li>
+  <li>比如提交form表单时，如果快速点击提交按钮，可能产生了两条一样的数据（<strong>前端重复提交</strong>）</li>
+</ul>
+
+<h3 id="接口超时了该如何处理">接口超时了，该如何处理</h3>
+
+<p>有<strong>两种方案</strong>处理：</p>
+
+<ul>
+  <li>
+    <p>方案一：就是下游系统提供一个对应的查询接口。如果接口超时了，先查下对应的记录，如果查到是成功，就走成功流程，如果是失败，就按失败处理。</p>
+
+    <blockquote>
+      <p>拿我们的转账例子来说，转账系统提供一个查询<strong>转账记录</strong>的接口，如果<strong>渠道系统</strong>调用<strong>转账系统</strong>超时时，<strong>渠道系统</strong>先去查询一下这笔记录，看下这笔转账记录成功还是失败，如果成功就走成功流程，失败再重试发起转账。</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p>​	<img src="/assets/images/2022/springboot/api-mideng-2.jpg" style="zoom:67%;" /></p>
+
+<ul>
+  <li>
+    <p>方案二：下游接口<strong>支持幂等</strong>，上游系统如果<strong>调用超时</strong>，发起重试即可。</p>
+
+    <p><img src="/assets/images/2022/springboot/api-mideng-3.jpg" style="zoom:67%;" /></p>
+  </li>
+</ul>
+
+<p>两种方案都是挺不错的，但是如果是<strong>MQ重复消费的场景</strong>，方案一处理并不是很妥，所以，我们还是要求下游系统<strong>对外接口支持幂等</strong></p>
+
+<h3 id="如何设计幂等">如何设计幂等</h3>
+
+<p>既然这么多场景需要考虑幂等，那我们如何设计幂等呢？</p>
+
+<p>幂等意味着一条请求的唯一性。不管是你哪个方案去设计幂等，都需要一个<strong>全局唯一的ID</strong>，去标记这个请求是独一无二的。</p>
+
+<ul>
+  <li>如果你是利用唯一索引控制幂等，那唯一索引是唯一的</li>
+  <li>如果你是利用数据库主键控制幂等，那主键是唯一的</li>
+  <li>如果你是悲观锁的方式，底层标记还是<strong>全局唯一的ID</strong></li>
+</ul>
+
+<blockquote>
+  <p>全局的唯一性ID</p>
+</blockquote>
+
+<p>我们可以使用<code class="highlighter-rouge">UUID</code>，但是UUID的缺点比较明显，它字符串占用的空间比较大，生成的ID过于随机，可读性差，而且没有递增。</p>
+
+<p>我们还可以使用<code class="highlighter-rouge">雪花算法（Snowflake）</code> 生成唯一性ID</p>
+
+<p>雪花算法是一种生成分布式全局唯一ID的算法，生成的ID称为<code class="highlighter-rouge">Snowflake IDs</code>。这种算法由Twitter创建，并用于推文的ID。</p>
+
+<p>一个Snowflake ID有64位。</p>
+
+<ul>
+  <li>第1位：Java中long的最高位是符号位代表正负，正数是0，负数是1，一般生成ID都为正数，所以默认为0。</li>
+  <li>接下来前41位是时间戳，表示了自选定的时期以来的毫秒数。</li>
+  <li>接下来的10位代表计算机ID，防止冲突。</li>
+  <li>其余12位代表每台机器上生成ID的序列号，这允许在同一毫秒内创建多个Snowflake ID。</li>
+</ul>
+
+<p><img src="/assets/images/2022/springboot/api-snowflake-id.jpg" alt="" /></p>
+
+<h3 id="幂等设计的基本流程">幂等设计的基本流程</h3>
+
+<p>幂等处理的过程，说到底其实就是过滤一下已经收到的请求，当然，请求一定要有一个<code class="highlighter-rouge">全局唯一的ID标记</code>哈。然后，怎么判断请求是否之前收到过呢？把请求储存起来，收到请求时，先查下存储记录，记录存在就返回上次的结果，不存在就处理请求，如下图：</p>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-4.jpg" style="zoom:67%;" /></p>
+
+<h2 id="2实现幂等的8种方案">2、实现幂等的8种方案</h2>
+
+<h3 id="selectinsert主键唯一索引冲突">select+insert+主键唯一索引冲突</h3>
+
+<p>日常开发中，为了实现交易接口幂等，我是这样实现的：</p>
+
+<p>交易请求过来，我会先根据请求的<strong>唯一流水号</strong> <code class="highlighter-rouge">bizSeq</code>字段，先<code class="highlighter-rouge">select</code>一下<strong>数据库的流水表</strong></p>
+
+<ul>
+  <li>如果数据已经存在，就拦截是重复请求，直接返回成功；</li>
+  <li>如果数据不存在，就执行<code class="highlighter-rouge">insert</code>插入，如果<code class="highlighter-rouge">insert</code>成功，则直接返回成功，如果<code class="highlighter-rouge">insert</code>产生主键冲突异常，则捕获异常，接着直接返回成功。</li>
+</ul>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-5.jpg" style="zoom:67%;" /></p>
+
+<p>伪代码:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 幂等处理
+ */</span>
+<span class="nc">Rsp</span> <span class="n">idempotent</span><span class="err">（</span><span class="nc">Request</span> <span class="n">req</span><span class="err">）</span><span class="o">{</span>
+  <span class="nc">Object</span> <span class="n">requestRecord</span> <span class="o">=</span><span class="n">selectByBizSeq</span><span class="err">（</span><span class="n">bizSeq</span><span class="err">）</span><span class="o">;</span>
+  
+  <span class="k">if</span><span class="o">(</span><span class="n">requestRecord</span> <span class="o">!=</span><span class="kc">null</span><span class="o">){</span>
+    <span class="c1">//拦截是重复请求</span>
+     <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"重复请求，直接返回成功，流水号：{}"</span><span class="o">,</span><span class="n">bizSeq</span><span class="o">);</span>
+     <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+  <span class="o">}</span>
+  
+  <span class="k">try</span><span class="o">{</span>
+    <span class="n">insert</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+  <span class="o">}</span><span class="k">catch</span><span class="o">(</span><span class="nc">DuplicateKeyException</span> <span class="n">e</span><span class="o">){</span>
+    <span class="c1">//拦截是重复请求，直接返回成功</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"主键冲突，是重复请求，直接返回成功，流水号：{}"</span><span class="o">,</span><span class="n">bizSeq</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+  <span class="o">}</span>
+  
+  <span class="c1">//正常处理请求</span>
+  <span class="n">dealRequest</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+  
+  <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>为什么前面已经<code class="highlighter-rouge">select</code>查询了，还需要<code class="highlighter-rouge">try...catch...</code>捕获重复异常呢？</p>
+
+<blockquote>
+  <p>是因为高并发场景下，两个请求去<code class="highlighter-rouge">select</code>的时候，可能都没查到，然后都走到insert的地方啦。</p>
+</blockquote>
+
+<h3 id="直接insert主键唯一索引冲突">直接insert+主键唯一索引冲突</h3>
+
+<p>上面都会先查一下<strong>流水表</strong>的交易请求，判断是否存在，然后不存在再插入请求记录。如果<strong>重复请求的概率比较低</strong>的话，我们可以直接插入请求，利用<strong>主键/唯一索引冲突</strong>，去判断是<strong>重复请求</strong>。</p>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-6.jpg" style="zoom:67%;" /></p>
+
+<p>伪代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 幂等处理
+ */</span>
+<span class="nc">Rsp</span> <span class="n">idempotent</span><span class="err">（</span><span class="nc">Request</span> <span class="n">req</span><span class="err">）</span><span class="o">{</span>
+  
+  <span class="k">try</span><span class="o">{</span>
+    <span class="n">insert</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+  <span class="o">}</span><span class="k">catch</span><span class="o">(</span><span class="nc">DuplicateKeyException</span> <span class="n">e</span><span class="o">){</span>
+     <span class="c1">//拦截是重复请求，直接返回成功</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"主键冲突，是重复请求，直接返回成功，流水号：{}"</span><span class="o">,</span><span class="n">bizSeq</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+  <span class="o">}</span>
+  
+  <span class="c1">//正常处理请求</span>
+  <span class="n">dealRequest</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>大家别搞混哈，防重和幂等设计其实是有区别的。防重主要为了避免产生重复数据，把重复请求拦截下来即可。而幂等设计除了拦截已经处理的请求，还要求每次<strong>相同的请求都返回一样的效果</strong>。不过呢，很多时候，它们的处理流程可以是类似的。</p>
+</blockquote>
+
+<h3 id="状态机幂等">状态机幂等</h3>
+
+<p>很多业务表，都是有状态的，比如转账流水表，就会有<code class="highlighter-rouge">0-待处理，1-处理中、2-成功、3-失败状态</code>。转账流水更新的时候，都会涉及流水状态更新，即涉及<strong>状态机 (即状态变更图)</strong>。我们可以利用状态机实现幂等，一起来看下它是怎么实现的。</p>
+
+<p>比如转账成功后，把<strong>处理中</strong>的转账流水更新为<strong>成功</strong>状态，SQL这么写：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">update</span> <span class="n">transfr_flow</span> <span class="k">set</span> <span class="n">status</span><span class="o">=</span><span class="mi">2</span> <span class="k">where</span> <span class="n">biz_seq</span><span class="o">=</span><span class="err">‘</span><span class="mi">666</span><span class="err">’</span> <span class="k">and</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>伪代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Rsp</span> <span class="n">idempotentTransfer</span><span class="err">（</span><span class="nc">Request</span> <span class="n">req</span><span class="err">）</span><span class="o">{</span>
+   <span class="nc">String</span> <span class="n">bizSeq</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getBizSeq</span><span class="o">();</span>
+   <span class="kt">int</span> <span class="n">rows</span><span class="o">=</span> <span class="s">"update transfr_flow set status=2 where biz_seq=#{bizSeq} and status=1;"</span>
+   <span class="k">if</span><span class="o">(</span><span class="n">rows</span><span class="o">==</span><span class="mi">1</span><span class="o">){</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="err">“更新成功</span><span class="o">,</span><span class="err">可以处理该请求”</span><span class="o">);</span>
+      <span class="c1">//其他业务逻辑处理</span>
+      <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+   <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">rows</span><span class="o">==</span><span class="mi">0</span><span class="o">){</span>
+      <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="err">“更新不成功，不处理该请求”</span><span class="o">);</span>
+      <span class="c1">//不处理，直接返回</span>
+      <span class="k">return</span> <span class="n">rsp</span><span class="o">;</span>
+   <span class="o">}</span>
+   
+   <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"数据异常"</span><span class="o">)</span>
+   <span class="k">return</span> <span class="n">rsp</span><span class="err">：</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>状态机是怎么<strong>实现幂等</strong>的呢？</p>
+
+<ul>
+  <li>第1次请求来时，bizSeq流水号是 <code class="highlighter-rouge">666</code>，该流水的状态是处理中，值是 <code class="highlighter-rouge">1</code>，要更新为<code class="highlighter-rouge">2-成功的状态</code>，所以该update语句可以正常更新数据，sql执行结果的影响行数是1，流水状态最后变成了2。</li>
+  <li>第2请求也过来了，如果它的流水号还是 <code class="highlighter-rouge">666</code>，因为该流水状态已经<code class="highlighter-rouge">2-成功的状态</code>了，所以更新结果是0，不会再处理业务逻辑，接口直接返回。</li>
+</ul>
+
+<h3 id="抽取防重表">抽取防重表</h3>
+
+<p>很多时候，我们<strong>业务表唯一流水号</strong>希望后端系统生成，又或者我们希望<strong>防重功能与业务表分隔开</strong>来，这时候我们可以单独搞个<strong>防重表</strong>。当然防重表也是利用主键/索引的唯一性，如果插入防重表冲突即直接返回成功，如果插入成功，即去处理请求。</p>
+
+<h3 id="token令牌">token令牌</h3>
+
+<p>token 令牌方案一般包括两个请求阶段：</p>
+
+<ol>
+  <li>客户端请求申请获取token，服务端生成token返回</li>
+  <li>客户端带着token请求，服务端校验token</li>
+</ol>
+
+<p>流程图如下：</p>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-7.jpg" alt="" /></p>
+
+<ol>
+  <li>客户端发起请求，申请获取token。</li>
+  <li>服务端生成全局唯一的token，保存到redis中（一般会设置一个过期时间），然后返回给客户端。</li>
+  <li>客户端带着token，发起请求。</li>
+  <li>服务端去redis确认token是否存在，一般用 <code class="highlighter-rouge">redis.del(token)</code>的方式，如果存在会删除成功，即处理业务逻辑，如果删除失败不处理业务逻辑，直接返回结果。</li>
+</ol>
+
+<h3 id="悲观锁">悲观锁</h3>
+
+<p>悲观锁如何控制幂等的呢？就是<strong>加锁</strong>呀，一般配合事务来实现。</p>
+
+<p>举个更新订单的业务场景：</p>
+
+<blockquote>
+  <p>假设先查出订单，如果查到的是处理中状态，就处理完业务，再然后更新订单状态为完成。如果查到订单，并且是不是处理中的状态，则直接返回</p>
+</blockquote>
+
+<p>整体伪代码</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>  <span class="o">#</span> <span class="mi">1</span><span class="p">.</span><span class="err">开始事务</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">order</span> <span class="k">where</span> <span class="n">order_id</span><span class="o">=</span><span class="s1">'666'</span> <span class="o">#</span> <span class="err">查询订单，判断状态</span>
+<span class="n">if</span><span class="err">（</span><span class="n">status</span> <span class="o">!=</span><span class="err">处理中）{</span>
+   <span class="o">//</span><span class="err">非处理中状态，直接返回；</span>
+   <span class="k">return</span> <span class="p">;</span>
+<span class="err">}</span>
+<span class="o">##</span> <span class="err">处理业务逻辑</span>
+<span class="k">update</span> <span class="k">order</span> <span class="k">set</span> <span class="n">status</span><span class="o">=</span><span class="s1">'完成'</span> <span class="k">where</span> <span class="n">order_id</span><span class="o">=</span><span class="s1">'666'</span> <span class="o">#</span> <span class="err">更新完成</span>
+<span class="k">commit</span><span class="p">;</span> <span class="o">#</span> <span class="mi">5</span><span class="p">.</span><span class="err">提交事务</span>
+</code></pre></div></div>
+
+<p>这种场景是非原子操作的，在高并发环境下，可能会造成一个业务被执行两次的问题：</p>
+
+<p>当一个请求A在执行中时，而另一个请求B也开始状态判断的操作。因为请求A还未来得及更改状态，所以请求B也能执行成功，这就导致一个业务被执行了两次。</p>
+
+<p>可以使用数据库悲观锁（<code class="highlighter-rouge">select ...for update</code>）解决这个问题.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">begin</span><span class="p">;</span>  <span class="o">#</span> <span class="mi">1</span><span class="p">.</span><span class="err">开始事务</span>
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">order</span> <span class="k">where</span> <span class="n">order_id</span><span class="o">=</span><span class="s1">'666'</span> <span class="k">for</span> <span class="k">update</span> <span class="o">#</span> <span class="err">查询订单，判断状态</span><span class="p">,</span><span class="err">锁住这条记录</span>
+<span class="n">if</span><span class="err">（</span><span class="n">status</span> <span class="o">!=</span><span class="err">处理中）{</span>
+   <span class="o">//</span><span class="err">非处理中状态，直接返回；</span>
+   <span class="k">return</span> <span class="p">;</span>
+<span class="err">}</span>
+<span class="o">##</span> <span class="err">处理业务逻辑</span>
+<span class="k">update</span> <span class="k">order</span> <span class="k">set</span> <span class="n">status</span><span class="o">=</span><span class="s1">'完成'</span> <span class="k">where</span> <span class="n">order_id</span><span class="o">=</span><span class="s1">'666'</span> <span class="o">#</span> <span class="err">更新完成</span>
+<span class="k">commit</span><span class="p">;</span> <span class="o">#</span> <span class="mi">5</span><span class="p">.</span><span class="err">提交事务</span>
+</code></pre></div></div>
+
+<ul>
+  <li>这里面order_id需要是<strong>索引</strong>或<strong>主键</strong>哈，要锁住这条记录就好，如果不是<strong>索引或者主键</strong>，会<strong>锁表</strong>的！</li>
+  <li>悲观锁在同一事务操作过程中，锁住了一行数据。别的请求过来只能<strong>等待</strong>，如果当前事务耗时比较长，就很影响接口性能。所以一般不建议用悲观锁做这个事情。</li>
+</ul>
+
+<h3 id="乐观锁">乐观锁</h3>
+
+<p>悲观锁有性能问题，可以试下<strong>乐观锁</strong>。</p>
+
+<blockquote>
+  <p>就是给表的加多一列<code class="highlighter-rouge">version</code>版本号，每次更新记录<code class="highlighter-rouge">version</code>都升级一下（<code class="highlighter-rouge">version=version+1</code>）。具体流程就是先查出当前的版本号<code class="highlighter-rouge">version</code>，然后去更新修改数据时，确认下是不是刚刚查出的版本号，如果是才执行更新</p>
+</blockquote>
+
+<p>我们更新前，先查下数据，查出的版本号是<code class="highlighter-rouge">version =1</code></p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">order_id</span><span class="err">，</span><span class="k">version</span> <span class="k">from</span> <span class="k">order</span> <span class="k">where</span> <span class="n">order_id</span><span class="o">=</span><span class="s1">'666'</span><span class="err">；</span>
+</code></pre></div></div>
+
+<p>然后使用<code class="highlighter-rouge">version =1</code>和<code class="highlighter-rouge">订单Id</code>一起作为条件，再去更新</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">update</span> <span class="k">order</span> <span class="k">set</span> <span class="k">version</span> <span class="o">=</span> <span class="k">version</span> <span class="o">+</span><span class="mi">1</span><span class="err">，</span><span class="n">status</span><span class="o">=</span><span class="s1">'P'</span> <span class="k">where</span>  <span class="n">order_id</span><span class="o">=</span><span class="s1">'666'</span> <span class="k">and</span> <span class="k">version</span> <span class="o">=</span><span class="mi">1</span>
+</code></pre></div></div>
+
+<p>最后更新成功，才可以处理业务逻辑，如果更新失败，默认为重复请求，直接返回。</p>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-8.jpg" style="zoom:67%;" /></p>
+
+<p><strong>版本号建议自增</strong></p>
+
+<p>因为乐观锁存在ABA的问题，如果version版本一直是自增的就不会出现ABA的情况啦。</p>
+
+<h3 id="分布式锁">分布式锁</h3>
+
+<p>分布式锁实现幂等性的逻辑就是，请求过来时，先去尝试获得分布式锁，如果获得成功，就执行业务逻辑，反之获取失败的话，就舍弃请求直接返回成功。执行流程如下图所示：</p>
+
+<p><img src="/assets/images/2022/springboot/api-mideng-9.jpg" style="zoom:67%;" /></p>
+
+<ul>
+  <li>分布式锁可以使用Redis，也可以使用ZooKeeper，不过还是Redis相对好点，因为较轻量级。</li>
+  <li>Redis分布式锁，可以使用命令<code class="highlighter-rouge">SET EX PX NX + 唯一流水号</code>实现，分布式锁的<code class="highlighter-rouge">key</code>必须为业务的唯一标识哈</li>
+  <li>Redis执行设置key的动作时，要设置过期时间哈，这个过期时间不能太短，太短拦截不了重复请求，也不能设置太长，会占存储空间。</li>
+</ul>
+
+<h2 id="3http的幂等">3、HTTP的幂等</h2>
+
+<h3 id="get方法">get方法</h3>
+
+<p>HTTP 的GET方法用于获取资源，可以<strong>类比</strong>于数据库的<code class="highlighter-rouge">select</code>查询，不应该有副作用，所以是幂等的。它不会改变资源的状态，不论你调用一次还是调用多次，效果一样的，都没有副作用。</p>
+
+<blockquote>
+  <p>如果你的GET方法是获取最近最新的新闻，不同时间点调用，返回的资源内容虽然不一样，但是最终对资源本质是没有影响的哈，所以还是幂等的。</p>
+</blockquote>
+
+<h3 id="head方法">head方法</h3>
+
+<p>HTTP HEAD和GET有点像，主要区别是<code class="highlighter-rouge">HEAD</code>不含有呈现数据，而仅仅是HTTP的头信息，所以它也是<strong>幂等</strong>的。如果想判断某个资源是否存在，很多人会使用<code class="highlighter-rouge">GET</code>，实际上用<code class="highlighter-rouge">HEAD</code>则更加恰当。即<code class="highlighter-rouge">HEAD</code>方法通常用来做探活使用。</p>
+
+<h3 id="options方法">options方法</h3>
+
+<p>HTTP OPTIONS 主要用于获取当前URL所支持的方法，也是有点像查询，因此也是幂等的。</p>
+
+<h3 id="delete方法">delete方法</h3>
+
+<p>HTTP DELETE 方法用于删除资源，它是的<strong>幂等的</strong>。比如我们要删除<code class="highlighter-rouge">id=666</code>的帖子，一次执行和多次执行，影响的效果是一样的呢。</p>
+
+<h3 id="post方法">post方法</h3>
+
+<p>HTTP POST 方法用于创建资源，可以类比于<code class="highlighter-rouge">提交信息</code>，显然一次和多次提交是有副作用，执行效果是不一样的，<strong>不满足幂等性</strong>。</p>
+
+<blockquote>
+  <p>比如：POST http://www.tianluo.com/articles的语义是在http://www.tianluo.com/articles下创建一篇帖子，HTTP 响应中应包含帖子的创建状态以及帖子的 URI。两次相同的POST请求会在服务器端创建两份资源，它们具有不同的 URI；所以，<strong>POST方法不具备幂等性</strong>。</p>
+</blockquote>
+
+<h3 id="put方法">put方法</h3>
+
+<p>HTTP PUT 方法用于创建或更新操作，所对应的URI是要创建或更新的资源本身，有副作用，它应该满足幂等性。</p>
+
+<blockquote>
+  <p>比如：PUT http://www.tianluo.com/articles/666的语义是创建或更新 ID 为666的帖子。对同一 URI 进行多次 PUT 的副作用和一次 PUT 是相同的；因此，PUT 方法具有幂等性。</p>
+</blockquote>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/architect/2022/05/29/mideng.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

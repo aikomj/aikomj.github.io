@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringCloud Gateway 教程第2篇：predict
+title: SpringCloud Gateway 教程第2篇：predict断言路由
 category: springcloud
 tags: [springcloud]
 keywords: springcloud

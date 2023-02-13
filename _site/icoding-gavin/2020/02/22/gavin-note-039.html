@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第39节：分布式搜索引擎ElasticSearch实战-5 - 大伟的博客 </title>
+    <meta name="keywords" content="elasticSearch">
+    <meta name="description"
+          content="ES通聚会查询,对text自动聚合、rang聚合、pipeline聚合，Springboot整合ES,Logstash同步DB数据到ES，思维导图回顾ES知识点">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/02/22/gavin-note-039.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第39节：分布式搜索引擎ElasticSearch实战-5">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第39节：分布式搜索引擎ElasticSearch实战-5</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/02/22
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1es桶聚合查询">1、ES桶聚合查询</h2>
+
+<h3 id="对text字段聚合">对text字段聚合</h3>
+
+<p>如果想要对text类型的字段进行分桶，有两种方式：</p>
+
+<ul>
+  <li><mark>第一种方式：给field增加keyword的子字段</mark></li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /index_customer/_mapping
+<span class="o">{</span>
+    <span class="s2">"properties"</span>: <span class="o">{</span>
+        <span class="s2">"nickname"</span>: <span class="o">{</span>
+            <span class="s2">"analyzer"</span>: <span class="s2">"ik_max_word"</span>,
+            <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+            <span class="s2">"fields"</span>: <span class="o">{</span>
+                <span class="s2">"pinyin"</span>: <span class="o">{</span>
+                    <span class="s2">"analyzer"</span>: <span class="s2">"pinyin"</span>,
+                    <span class="s2">"type"</span>: <span class="s2">"text"</span>
+                <span class="o">}</span>,
+                <span class="s2">"keyword"</span>: <span class="o">{</span>
+                    <span class="s2">"ignore_above"</span>: 256,
+                    <span class="s2">"type"</span>: <span class="s2">"keyword"</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="c"># 在数据添加后增加子字段需要将index进行更新</span>
+POST /index_customer/_update_by_query
+</code></pre></div></div>
+
+<ul>
+  <li>第二种方式：给field增加fielddata（不推荐）</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># fielddata是对text文本进行分词后的桶聚合</span>
+<span class="c"># 默认是false，打开会比较占内存，所以没有必要的情况</span>
+POST /index_customer/_mapping
+<span class="o">{</span>
+    <span class="s2">"properties"</span>: <span class="o">{</span>
+        <span class="s2">"nickname"</span>: <span class="o">{</span>
+            <span class="s2">"analyzer"</span>: <span class="s2">"ik_max_word"</span>,
+            <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+            <span class="s2">"fielddata"</span>: <span class="nb">true</span>,
+            <span class="s2">"fields"</span>: <span class="o">{</span>
+                <span class="s2">"pinyin"</span>: <span class="o">{</span>
+                    <span class="s2">"analyzer"</span>: <span class="s2">"pinyin"</span>,
+                    <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+                    <span class="s2">"fielddata"</span>: <span class="nb">true</span>
+                <span class="o">}</span>,
+                <span class="s2">"keyword"</span>: <span class="o">{</span>
+                    <span class="s2">"ignore_above"</span>: 256,
+                    <span class="s2">"type"</span>: <span class="s2">"keyword"</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>分桶返回的参数分析</p>
+
+<ul>
+  <li>
+    <p>doc_count_error_upper_bound：可能存在潜在的结果是聚合后结果排行第二的值</p>
+  </li>
+  <li>sum_other_doc_count：表示本次聚合中还有多少没有统计展示出
+    <ul>
+      <li>桶默认聚合展示10条</li>
+      <li>可以使用size来调整条目数</li>
+      <li>只能指定条目数，不能分页</li>
+    </ul>
+  </li>
+  <li>buckets：会根据结果的统计降序排列</li>
+</ul>
+
+<p>size进行桶查询的展示</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /index_customer/_search
+<span class="o">{</span>
+    <span class="s2">"query"</span>: <span class="o">{</span>
+        <span class="s2">"match_all"</span>: <span class="o">{}</span>
+    <span class="o">}</span>,
+    <span class="s2">"size"</span>: 0,
+    <span class="s2">"aggs"</span>: <span class="o">{</span>
+        <span class="s2">"nickname_term"</span>: <span class="o">{</span>
+            <span class="s2">"terms"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"nickname"</span>,
+                <span class="s2">"size"</span>: 20
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>当doc频繁有数据加入到文档中，并且这个field会频繁进行分桶，需要添加一个缓存配置</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 频繁聚合查询，索引不断有新的doc加入</span>
+<span class="c"># "eager_global_ordinals": true 开启缓存配置</span>
+POST /index_customer/_mapping 
+<span class="o">{</span>
+    <span class="s2">"properties"</span>: <span class="o">{</span>
+        <span class="s2">"nickname"</span>: <span class="o">{</span>
+            <span class="s2">"analyzer"</span>: <span class="s2">"ik_max_word"</span>,
+            <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+            <span class="s2">"fielddata"</span>: <span class="nb">true</span>,
+          	<span class="s2">"eager_global_ordinals"</span>: <span class="nb">true</span>,
+            <span class="s2">"fields"</span>: <span class="o">{</span>
+                <span class="s2">"pinyin"</span>: <span class="o">{</span>
+                    <span class="s2">"analyzer"</span>: <span class="s2">"pinyin"</span>,
+                    <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+                    <span class="s2">"fielddata"</span>: <span class="nb">true</span>,
+                  	<span class="s2">"eager_global_ordinals"</span>: <span class="nb">true</span>
+                <span class="o">}</span>,
+                <span class="s2">"keyword"</span>: <span class="o">{</span>
+                    <span class="s2">"ignore_above"</span>: 256,
+                    <span class="s2">"type"</span>: <span class="s2">"keyword"</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>分组基数查询</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># cardinality统计桶分词的基数(不同值的数量)</span>
+POST /index_customer/_search
+<span class="o">{</span>
+    <span class="s2">"query"</span>: <span class="o">{</span>
+        <span class="s2">"match_all"</span>: <span class="o">{}</span>
+    <span class="o">}</span>,
+    <span class="s2">"size"</span>: 0,
+    <span class="s2">"aggs"</span>: <span class="o">{</span>
+        <span class="s2">"nickname_term"</span>: <span class="o">{</span>
+            <span class="s2">"cardinality"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"nickname"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/buckets-cardinality.jpg" alt="" /></p>
+
+<h3 id="桶range计算">桶range计算</h3>
+
+<blockquote>
+  <p>就是一个区间值的查询</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST POST /index_customer/_search
+<span class="o">{</span>
+    <span class="s2">"query"</span>: <span class="o">{</span>
+        <span class="s2">"match_all"</span>: <span class="o">{}</span>
+    <span class="o">}</span>,
+    <span class="s2">"size"</span>: 0,
+    <span class="s2">"sort"</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">"consume"</span>: <span class="s2">"desc"</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">"aggs"</span>: <span class="o">{</span>
+        <span class="s2">"city_count"</span>: <span class="o">{</span>
+            <span class="s2">"terms"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"city"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+        <span class="s2">"consume_range"</span>: <span class="o">{</span>
+            <span class="s2">"range"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"consume"</span>,
+                <span class="s2">"ranges"</span>: <span class="o">[</span>
+                    <span class="o">{</span>
+                        <span class="s2">"to"</span>: 3000
+                    <span class="o">}</span>,
+                    <span class="o">{</span>
+                        <span class="s2">"from"</span>: 3000,
+                        <span class="s2">"to"</span>: 6000
+                    <span class="o">}</span>,
+                    <span class="o">{</span>
+                        <span class="s2">"from"</span>: 6000,
+                        <span class="s2">"to"</span>: 9000
+                    <span class="o">}</span>,
+                    <span class="o">{</span>
+                        <span class="s2">"from"</span>: 9000
+                    <span class="o">}</span>
+                <span class="o">]</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/buckets-range.jpg" alt="" /></p>
+
+<blockquote>
+  <p>直方图的聚合</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /index_customer/_search
+<span class="o">{</span>
+    <span class="s2">"query"</span>: <span class="o">{</span>
+        <span class="s2">"match_all"</span>: <span class="o">{}</span>
+    <span class="o">}</span>,
+    <span class="s2">"size"</span>: 0,
+    <span class="s2">"sort"</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">"consume"</span>: <span class="s2">"desc"</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">"aggs"</span>: <span class="o">{</span>
+        <span class="s2">"city_count"</span>: <span class="o">{</span>
+            <span class="s2">"terms"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"city"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+        <span class="s2">"consume_histogram"</span>: <span class="o">{</span>
+            <span class="s2">"histogram"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"consume"</span>,
+                <span class="s2">"interval"</span>: 2000,
+                <span class="s2">"extended_bounds"</span>: <span class="o">{</span>
+                    <span class="s2">"min"</span>: 0,
+                    <span class="s2">"max"</span>: 20000
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/buckets-histogram.jpg" alt="" /></p>
+
+<h3 id="pipeline聚合计算">Pipeline聚合计算</h3>
+
+<font color="red">pipeline就是对聚合分析再做一次聚合分析</font>
+
+<blockquote>
+  <p>场景：从所有城市的平均消费中，拿出消费最低的那个城市</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /index_customer/_search
+<span class="o">{</span>
+    <span class="s2">"query"</span>: <span class="o">{</span>
+        <span class="s2">"match_all"</span>: <span class="o">{}</span>
+    <span class="o">}</span>,
+    <span class="s2">"size"</span>: 0,
+    <span class="s2">"sort"</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">"consume"</span>: <span class="s2">"desc"</span>
+        <span class="o">}</span>
+    <span class="o">]</span>,
+    <span class="s2">"aggs"</span>: <span class="o">{</span>
+        <span class="s2">"city_count"</span>: <span class="o">{</span>
+            <span class="s2">"terms"</span>: <span class="o">{</span>
+                <span class="s2">"field"</span>: <span class="s2">"city"</span>
+            <span class="o">}</span>,
+            <span class="s2">"aggs"</span>: <span class="o">{</span>
+                <span class="s2">"avg_consume"</span>: <span class="o">{</span>
+                    <span class="s2">"avg"</span>: <span class="o">{</span>
+                        <span class="s2">"field"</span>: <span class="s2">"consume"</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+        <span class="s2">"min_consume_by_city"</span>: <span class="o">{</span>
+            <span class="s2">"min_bucket"</span>: <span class="o">{</span>
+                <span class="s2">"buckets_path"</span>: <span class="s2">"city_count&gt;avg_consume"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+      	<span class="s2">"max_consume_by_city"</span>: <span class="o">{</span>
+            <span class="s2">"max_bucket"</span>: <span class="o">{</span>
+                <span class="s2">"buckets_path"</span>: <span class="s2">"city_count&gt;avg_consume"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="c"># min_bucket / buckets_path 是关键字</span>
+<span class="c"># 最大、最小、平均、和、全包含</span>
+max_bucket / min_bucket / avg_bucket / sum_bucket / stats_bucket
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/buckets-pipeline.jpg" alt="" /></p>
+
+<h2 id="2springboot整合elasticsearch">2、Springboot整合Elasticsearch</h2>
+
+<p>springboot应用elasticsearch搜索有两种方式：</p>
+
+<ol>
+  <li>
+    <font color="red">利用spring-boot-starter-data-elasticsearch进行整合</font>
+  </li>
+  <li>
+    <font color="red">不整合，自己写search template脚本，http调用查询模版，对返回的结果解析</font>
+  </li>
+</ol>
+
+<h3 id="集成">集成</h3>
+
+<p>新建一个Springboot项目</p>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-elasticsearch<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>注意springboot的版本和es的版本对应，查看pom的依赖</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/springboot-es-version.jpg" alt="" /></p>
+
+<p>而最新的springboot2.3，es的版本是</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/springboot-es-version.gif" alt="" /></p>
+
+<p>所以要知道es的版本</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/springboot-es-version-assign.gif" alt="" /></p>
+
+<p>2、application.yml 配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 端口一定要9300,适合springboot 2.2.x版本</span>
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">data</span><span class="pi">:</span>
+    <span class="na">elasticsearch</span><span class="pi">:</span>
+      <span class="na">cluster-name</span><span class="pi">:</span> <span class="s">icoding-es</span>
+      <span class="na">cluster-nodes</span><span class="pi">:</span> <span class="s">47.92.163.109:9300</span>
+      
+<span class="c1"># 自己搭建时发现，上面的连接方式已过时了，可以使用rest连接</span>
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">elasticsearch</span><span class="pi">:</span>
+    <span class="na">rest</span><span class="pi">:</span>
+      <span class="na">uris</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">http://139.199.13.139:9200"</span><span class="pi">]</span>
+</code></pre></div></div>
+
+<p>如果uris是一个变量值，看下面配置：</p>
+
+<p>bootstrap.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb-demo</span>
+  <span class="na">profiles</span><span class="pi">:</span>
+    <span class="na">active</span><span class="pi">:</span> <span class="s">local</span>
+</code></pre></div></div>
+
+<p>bootstrap.yml配置文件是springcloud项目才会识别的,如果仅仅是springboot项目，就只会识别application.yml配置文件，所以pom.xml要加入以下maven依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-context<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.2.9.RELEASE<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;scope&gt;</span>compile<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>application.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">session</span><span class="pi">:</span>
+    <span class="na">store-type</span><span class="pi">:</span> <span class="s">none</span>
+  <span class="na">elasticsearch</span><span class="pi">:</span>
+    <span class="na">rest</span><span class="pi">:</span>
+      <span class="na">uris</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">${ELASTICSEARCH_URIS}"</span><span class="pi">]</span>
+      <span class="na">username</span><span class="pi">:</span> <span class="s">elastic</span>
+      <span class="na">password</span><span class="pi">:</span> <span class="s">${ELASTICSEARCH_PASSWORD}</span>
+</code></pre></div></div>
+
+<p>application-local.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">spring.profiles.include</span><span class="pi">:</span> <span class="s">local-config,local-secret</span>
+</code></pre></div></div>
+
+<p>application-local-config.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">ELASTICSEARCH_URIS</span><span class="pi">:</span> <span class="s">https://10.213.53.12:19200,https://10.213.53.13:19200</span>
+</code></pre></div></div>
+
+<p>application-local-secret.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">ELASTICSEARCH_PASSWORD</span><span class="pi">:</span> <span class="s">PW_2#1changeme</span>
+</code></pre></div></div>
+
+<p>3、使用</p>
+
+<p><strong>创建映射的</strong>po</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">po</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.annotation.Id</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.annotations.Document</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.annotations.Field</span><span class="o">;</span>
+
+<span class="c1">//indexName相当于给索引明名</span>
+<span class="c1">//type相当于文档类型,默认_doc</span>
+<span class="c1">//indexName 能用别名吗,不能</span>
+<span class="c1">//由于ealsticsearchTemplate的问题，@field的声明不生效</span>
+<span class="nd">@Data</span>
+<span class="nd">@Document</span><span class="o">(</span><span class="n">indexName</span> <span class="o">=</span> <span class="s">"index_user"</span><span class="o">,</span><span class="n">type</span> <span class="o">=</span> <span class="s">"_doc"</span><span class="o">,</span><span class="n">shards</span> <span class="o">=</span> <span class="mi">3</span><span class="o">,</span><span class="n">replicas</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ESUser</span> <span class="o">{</span>
+    <span class="c1">//index的doc的_id和数据的id一致</span>
+    <span class="nd">@Id</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="c1">//默认不是存储节点，要声明</span>
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span><span class="n">index</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span><span class="n">analyzer</span> <span class="o">=</span> <span class="s">"ik_max_word"</span><span class="o">,</span><span class="n">searchAnalyzer</span> <span class="o">=</span> <span class="s">"ik_max_word"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">nickname</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">sex</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Double</span> <span class="n">consume</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span><span class="n">index</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span><span class="n">analyzer</span> <span class="o">=</span> <span class="s">"ik_max_word"</span><span class="o">,</span><span class="n">searchAnalyzer</span> <span class="o">=</span> <span class="s">"ik_max_word"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">review</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>创建索引（包括mapping\document）</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">controller</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.icodingedu.po.UserBo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.core.ElasticsearchTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.core.query.IndexQuery</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.core.query.IndexQueryBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Controller</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+
+<span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ESUserController</span> <span class="o">{</span>
+
+    <span class="c1">// 依赖spring.data.elasticsearch属性创建es连接来注入的bean，所以没配置spring.data.elasticsearch时spring容器没有这个bean</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">ElasticsearchTemplate</span> <span class="n">elasticsearchTemplate</span><span class="o">;</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/create_index"</span><span class="o">)</span>
+    <span class="nd">@ResponseBody</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">createIndex</span><span class="o">(){</span>
+        <span class="nc">ESUser</span> <span class="n">esuser</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ESUser</span><span class="o">();</span>
+        <span class="n">esuser</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="s">"1001"</span><span class="o">);</span>
+        <span class="n">esuser</span><span class="o">.</span><span class="na">setConsume</span><span class="o">(</span><span class="mf">1899.66</span><span class="o">);</span>
+        <span class="n">esuser</span><span class="o">.</span><span class="na">setNickname</span><span class="o">(</span><span class="s">"空中雄鹰"</span><span class="o">);</span>
+        <span class="n">esuser</span><span class="o">.</span><span class="na">setReview</span><span class="o">(</span><span class="s">"icoding edu 艾编程课程非常不错，学起来很给力"</span><span class="o">);</span>
+        <span class="n">esuser</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="nc">IndexQuery</span> <span class="n">indexQuery</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">IndexQueryBuilder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">withObject</span><span class="o">(</span><span class="n">userBo</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">index</span><span class="o">(</span><span class="n">indexQuery</span><span class="o">);</span>
+        <span class="k">return</span> <span class="s">"index/mapping/document 一起创建完成"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="c1">// elasticsearchTemplate.bulkIndex 批量插入</span>
+<span class="c1">// elasticsearchTemplate.bulkUpdage 批量更新</span>
+</code></pre></div></div>
+
+<p><strong>更新索引的mapping</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 只需要在po里加上字段既可以</span>
+<span class="c1">// 创建的时候给赋值</span>
+<span class="c1">// 更新的时候elasticsearchTemplate会根据po的变化判断是否更新</span>
+<span class="c1">// 在elasticsearchTemplate.index(indexQuery)操作时如果没有index则新建，如果有就创建数据</span>
+</code></pre></div></div>
+
+<p><strong>删除index</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/delete-index"</span><span class="o">)</span>
+<span class="nd">@ResponseBody</span>
+<span class="kd">public</span> <span class="nc">String</span> <span class="nf">deleteIndex</span><span class="o">(){</span>
+  <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">deleteIndex</span><span class="o">(</span><span class="nc">ESUser</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+  <span class="k">return</span> <span class="s">"删除成功"</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>ElasticsearchTemplate一般用于对文档数据进行检索应用</strong></p>
+
+<ul>
+  <li>
+    <p>对于index的mapping还是使用json来创建(postman或者kibana提交rest api 来创建修改)</p>
+  </li>
+  <li>
+    <p>映射po的部分注解不一定生效</p>
+  </li>
+</ul>
+
+<h3 id="对es文档进行操作">对ES文档进行操作</h3>
+
+<p>更新document</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/update"</span><span class="o">)</span>
+<span class="nd">@ResponseBody</span>
+<span class="kd">public</span> <span class="nc">String</span> <span class="nf">updateIndex</span><span class="o">(){</span>
+  <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;();</span>
+  <span class="n">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span><span class="s">"jackwang"</span><span class="o">);</span>
+  <span class="n">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"consume"</span><span class="o">,</span><span class="mf">7888.99</span><span class="o">);</span>
+
+  <span class="c1">// 1、创建请求</span>
+  <span class="nc">IndexRequest</span> <span class="n">indexRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">IndexRequest</span><span class="o">();</span>
+  <span class="n">indexRequest</span><span class="o">.</span><span class="na">source</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+
+  <span class="c1">// 2、构建修改</span>
+  <span class="nc">UpdateQuery</span> <span class="n">updateQuery</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UpdateQueryBuilder</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">withClass</span><span class="o">(</span><span class="nc">ESUser</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">withId</span><span class="o">(</span><span class="s">"1001"</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">withIndexRequest</span><span class="o">(</span><span class="n">indexRequest</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+  <span class="c1">// 3、发送请求</span>
+  <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">updateQuery</span><span class="o">);</span>
+  <span class="k">return</span> <span class="s">"更新成功"</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>删除document</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/delete/{id}"</span><span class="o">)</span>
+<span class="nd">@ResponseBody</span>
+<span class="kd">public</span> <span class="nc">String</span> <span class="nf">deleteDocument</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">id</span><span class="o">){</span>
+  <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="nc">ESUser</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">id</span><span class="o">);</span>
+  <span class="k">return</span> <span class="s">"删除id:"</span><span class="o">+</span><span class="n">uid</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>根据id获得doc数据</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/get/{id}"</span><span class="o">)</span>
+<span class="nd">@ResponseBody</span>
+<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getIndex</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">uid</span><span class="o">){</span>
+
+  <span class="nc">GetQuery</span> <span class="n">query</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">GetQuery</span><span class="o">();</span>
+  <span class="n">query</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">uid</span><span class="o">);</span>
+
+  <span class="nc">ESUser</span> <span class="n">esuser</span> <span class="o">=</span> <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">queryForObject</span><span class="o">(</span><span class="n">query</span><span class="o">,</span><span class="nc">ESUser</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">esuser</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="对es文档进行分页查询">对ES文档进行分页查询</h3>
+
+<p>1、索引po</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ES中已有的index映射对象</span>
+<span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">po</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.annotation.Id</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.annotations.Document</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.elasticsearch.annotations.Field</span><span class="o">;</span>
+
+<span class="nd">@Data</span>
+<span class="nd">@Document</span><span class="o">(</span><span class="n">indexName</span> <span class="o">=</span> <span class="s">"index_customer"</span><span class="o">,</span><span class="n">type</span> <span class="o">=</span> <span class="s">"_doc"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ESCustomer</span><span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">age</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">nickname</span><span class="o">;</span>
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Float</span> <span class="n">consume</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">desc</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">sex</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">birthday</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">city</span><span class="o">;</span>
+
+    <span class="nd">@Field</span><span class="o">(</span><span class="n">store</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">faceimg</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、分页封装类PageUtils</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PageUtils</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="o">-</span><span class="mi">503429191696781198L</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 总记录数
+	 */</span>
+	<span class="kd">private</span> <span class="kt">long</span> <span class="n">totalCount</span><span class="o">;</span>
+	<span class="cm">/**
+	 * 每页记录数
+	 */</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="n">pageSize</span><span class="o">;</span>
+	<span class="cm">/**
+	 * 总页数
+	 */</span>
+	<span class="kd">private</span> <span class="kt">long</span> <span class="n">totalPage</span><span class="o">;</span>
+	<span class="cm">/**
+	 * 当前页数
+	 */</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="n">currPage</span><span class="o">;</span>
+	<span class="cm">/**
+	 * 列表数据
+	 */</span>
+	<span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 分页
+	 */</span>
+	<span class="kd">public</span> <span class="nf">PageUtils</span><span class="o">(</span><span class="nc">AggregatedPage</span><span class="o">&lt;?&gt;</span> <span class="n">page</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">list</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="na">getContent</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">totalCount</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="na">getTotalElements</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">pageSize</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="na">getSize</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">currPage</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="na">getNumber</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">totalPage</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="na">getTotalPages</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、业务层接口 ESUserService</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nc">PageUtils</span> <span class="nf">listPage</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>4、接口实现类ESUserServiceImpl</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="nc">PageUtils</span> <span class="nf">listPage</span><span class="o">()</span> <span class="o">{</span>
+  <span class="c1">// 4.增加排序</span>
+  <span class="nc">SortBuilder</span> <span class="n">sortBuilder1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FieldSortBuilder</span><span class="o">(</span><span class="s">"consume"</span><span class="o">).</span><span class="na">order</span><span class="o">(</span><span class="nc">SortOrder</span><span class="o">.</span><span class="na">DESC</span><span class="o">);</span>
+  <span class="nc">SortBuilder</span> <span class="n">sortBuilder2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FieldSortBuilder</span><span class="o">(</span><span class="s">"age"</span><span class="o">).</span><span class="na">order</span><span class="o">(</span><span class="nc">SortOrder</span><span class="o">.</span><span class="na">DESC</span><span class="o">);</span>
+
+
+  <span class="c1">// 3.定义分页</span>
+  <span class="nc">Pageable</span> <span class="n">pageable</span> <span class="o">=</span> <span class="nc">PageRequest</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">5</span><span class="o">);</span>
+
+  <span class="c1">// 2.定义searchquery</span>
+  <span class="nc">SearchQuery</span> <span class="n">searchQuery</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NativeSearchQueryBuilder</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">withQuery</span><span class="o">(</span><span class="nc">QueryBuilders</span><span class="o">.</span><span class="na">matchQuery</span><span class="o">(</span><span class="s">"desc"</span><span class="o">,</span><span class="s">"艾编程 学习"</span><span class="o">))</span>
+    <span class="o">.</span><span class="na">withPageable</span><span class="o">(</span><span class="n">pageable</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">withSort</span><span class="o">(</span><span class="n">sortBuilder1</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">withSort</span><span class="o">(</span><span class="n">sortBuilder2</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+  <span class="c1">// 1.先写查询</span>
+  <span class="nc">AggregatedPage</span><span class="o">&lt;</span><span class="nc">ESCustomer</span><span class="o">&gt;</span> <span class="n">esCustomers</span> <span class="o">=</span> <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">queryForPage</span><span class="o">(</span><span class="n">searchQuery</span><span class="o">,</span><span class="nc">ESCustomer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"总页数:"</span><span class="o">+</span><span class="n">esCustomers</span><span class="o">.</span><span class="na">getTotalPages</span><span class="o">());</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"总记录数:"</span><span class="o">+</span><span class="n">esCustomers</span><span class="o">.</span><span class="na">getTotalElements</span><span class="o">());</span>
+
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">PageUtils</span><span class="o">(</span><span class="n">esCustomers</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>5、web层接口的定义ESCodeController</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="nc">ESUserService</span> <span class="n">esUserService</span><span class="o">;</span>
+
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/list"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">PageUtils</span> <span class="nf">list</span><span class="o">(){</span>
+  <span class="k">return</span> <span class="n">esUserService</span><span class="o">.</span><span class="na">listPage</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="es文档实现高亮查询">ES文档实现高亮查询</h3>
+
+<p>1、业务层接口 ESUserService</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">PageUtils</span> <span class="nf">listHighLignt</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>2、接口实现类ESUserServiceImpl</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">PageUtils</span> <span class="nf">listHighLignt</span><span class="o">()</span> <span class="o">{</span>
+		<span class="c1">// 4.定义高亮字符</span>
+		<span class="nc">String</span> <span class="n">preTags</span> <span class="o">=</span> <span class="s">"&lt;font color='red'&gt;"</span><span class="o">;</span>
+		<span class="nc">String</span> <span class="n">postTags</span> <span class="o">=</span> <span class="s">"&lt;/font&gt;"</span><span class="o">;</span>
+
+		<span class="c1">// 3.定义分页</span>
+		<span class="nc">Pageable</span> <span class="n">pageable</span> <span class="o">=</span> <span class="nc">PageRequest</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">5</span><span class="o">);</span>
+
+		<span class="c1">// 2.定义searchquery</span>
+		<span class="nc">SearchQuery</span> <span class="n">searchQuery</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NativeSearchQueryBuilder</span><span class="o">()</span>
+				<span class="o">.</span><span class="na">withQuery</span><span class="o">(</span><span class="nc">QueryBuilders</span><span class="o">.</span><span class="na">matchQuery</span><span class="o">(</span><span class="s">"desc"</span><span class="o">,</span><span class="s">"艾编程 学习"</span><span class="o">))</span>
+				<span class="o">.</span><span class="na">withHighlightFields</span><span class="o">(</span><span class="k">new</span> <span class="nc">HighlightBuilder</span><span class="o">.</span><span class="na">Field</span><span class="o">(</span><span class="s">"desc"</span><span class="o">).</span><span class="na">preTags</span><span class="o">(</span><span class="n">preTags</span><span class="o">).</span><span class="na">postTags</span><span class="o">(</span><span class="n">postTags</span><span class="o">))</span>
+				<span class="o">.</span><span class="na">withPageable</span><span class="o">(</span><span class="n">pageable</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+		<span class="c1">// 1.先写查询</span>
+		<span class="nc">AggregatedPage</span><span class="o">&lt;</span><span class="nc">ESCustomer</span><span class="o">&gt;</span> <span class="n">esCustomers</span> <span class="o">=</span> <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">queryForPage</span><span class="o">(</span><span class="n">searchQuery</span><span class="o">,</span> <span class="nc">ESCustomer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="nc">SearchResultMapper</span><span class="o">()</span> <span class="o">{</span>
+			<span class="nd">@Override</span>
+			<span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">AggregatedPage</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">mapResults</span><span class="o">(</span><span class="nc">SearchResponse</span> <span class="n">searchResponse</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">aClass</span><span class="o">,</span> <span class="nc">Pageable</span> <span class="n">pageable</span><span class="o">)</span> <span class="o">{</span>
+				<span class="nc">List</span><span class="o">&lt;</span><span class="nc">ESCustomer</span><span class="o">&gt;</span> <span class="n">customerList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+				<span class="nc">SearchHits</span> <span class="n">hits</span> <span class="o">=</span> <span class="n">searchResponse</span><span class="o">.</span><span class="na">getHits</span><span class="o">();</span>
+				<span class="k">for</span><span class="o">(</span><span class="nc">SearchHit</span> <span class="n">h</span> <span class="o">:</span> <span class="n">hits</span><span class="o">){</span>
+					<span class="nc">HighlightField</span> <span class="n">highlightField</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="na">getHighlightFields</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="s">"desc"</span><span class="o">);</span>
+					<span class="nc">String</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">highlightField</span><span class="o">.</span><span class="na">fragments</span><span class="o">()[</span><span class="mi">0</span><span class="o">].</span><span class="na">toString</span><span class="o">();</span>
+					<span class="nc">ESCustomer</span> <span class="n">esCustomer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ESCustomer</span><span class="o">();</span>
+					<span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">sourceMap</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="na">getSourceAsMap</span><span class="o">();</span>
+					<span class="n">sourceMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"desc"</span><span class="o">,</span><span class="n">desc</span><span class="o">);</span>  <span class="c1">// 这就是把高亮字段替换原字段</span>
+					<span class="c1">//BeanUtils.copyProperties(sourceMap,esCustomer); 不支持深拷贝，不支持拷贝List,Map, 使用Json转换</span>
+					<span class="n">esCustomer</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="no">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">sourceMap</span><span class="o">),</span><span class="nc">ESCustomer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+					<span class="n">customerList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">esCustomer</span><span class="o">);</span>
+				<span class="o">}</span>
+
+				<span class="k">if</span><span class="o">(</span><span class="n">customerList</span><span class="o">.</span><span class="na">size</span><span class="o">()&gt;</span><span class="mi">0</span><span class="o">){</span>
+					<span class="k">return</span> <span class="k">new</span> <span class="nf">AggregatedPageImpl</span><span class="o">(</span><span class="n">customerList</span><span class="o">,</span><span class="n">pageable</span><span class="o">,</span><span class="n">hits</span><span class="o">.</span><span class="na">getTotalHits</span><span class="o">().</span><span class="na">value</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+
+			<span class="nd">@Override</span>
+			<span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">mapSearchHit</span><span class="o">(</span><span class="nc">SearchHit</span> <span class="n">searchHit</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">aClass</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
+
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">PageUtils</span><span class="o">(</span><span class="n">esCustomers</span><span class="o">);</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、web层接口的定义ESCodeController</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/listHighlight"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">PageUtils</span> <span class="nf">listHighlight</span><span class="o">(){</span>
+  <span class="k">return</span> <span class="n">esUserService</span><span class="o">.</span><span class="na">listHighLignt</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="es文档进行数据排序">ES文档进行数据排序</h3>
+
+<p>只需要加入排序的构建就ok了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/list"</span><span class="o">)</span>
+<span class="nd">@ResponseBody</span>
+<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getList</span><span class="o">(){</span>
+  <span class="c1">//4.加入排序构建</span>
+  <span class="nc">SortBuilder</span> <span class="n">sortBuilder1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FieldSortBuilder</span><span class="o">(</span><span class="s">"consume"</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">order</span><span class="o">(</span><span class="nc">SortOrder</span><span class="o">.</span><span class="na">DESC</span><span class="o">);</span>
+  <span class="nc">SortBuilder</span> <span class="n">sortBuilder2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FieldSortBuilder</span><span class="o">(</span><span class="s">"age"</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">order</span><span class="o">(</span><span class="nc">SortOrder</span><span class="o">.</span><span class="na">ASC</span><span class="o">);</span>
+
+  <span class="c1">//3.定义分页</span>
+  <span class="nc">Pageable</span> <span class="n">pageable</span> <span class="o">=</span> <span class="nc">PageRequest</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">6</span><span class="o">);</span>
+  <span class="c1">//2.定义query对象</span>
+  <span class="nc">SearchQuery</span> <span class="n">query</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NativeSearchQueryBuilder</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">withQuery</span><span class="o">(</span><span class="nc">QueryBuilders</span><span class="o">.</span><span class="na">matchQuery</span><span class="o">(</span><span class="s">"desc"</span><span class="o">,</span><span class="s">"学习"</span><span class="o">))</span>
+    <span class="o">.</span><span class="na">withPageable</span><span class="o">(</span><span class="n">pageable</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">withSort</span><span class="o">(</span><span class="n">sortBuilder1</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">withSort</span><span class="o">(</span><span class="n">sortBuilder2</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+  <span class="c1">//1.先写查询</span>
+  <span class="nc">AggregatedPage</span><span class="o">&lt;</span><span class="nc">CustomerPo</span><span class="o">&gt;</span> <span class="n">customerPos</span> <span class="o">=</span> <span class="n">elasticsearchTemplate</span><span class="o">.</span><span class="na">queryForPage</span><span class="o">(</span><span class="n">query</span><span class="o">,</span><span class="nc">CustomerPo</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"总页数："</span><span class="o">+</span><span class="n">customerPos</span><span class="o">.</span><span class="na">getTotalPages</span><span class="o">());</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"总记录数："</span><span class="o">+</span><span class="n">customerPos</span><span class="o">.</span><span class="na">getTotalElements</span><span class="o">());</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">CustomerPo</span><span class="o">&gt;</span> <span class="n">customerPoList</span> <span class="o">=</span> <span class="n">customerPos</span><span class="o">.</span><span class="na">getContent</span><span class="o">();</span>
+  <span class="k">for</span> <span class="o">(</span><span class="nc">CustomerPo</span> <span class="nl">customerPo:</span><span class="n">customerPoList</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">customerPo</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="s">"查询完成"</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3通过logstash同步db数据进es">3、通过Logstash同步DB数据进ES</h2>
+
+<h3 id="什么是logstash">什么是Logstash</h3>
+
+<p>思考一个场景：</p>
+
+<p>我们现在要对一些数据统一采集并加入到ES中,进行大数据搜索，怎么做？</p>
+
+<ul>
+  <li>通过手动逐条写入</li>
+  <li>通过Java的程序或其他代码中间件来批量操作，集成到springboot</li>
+</ul>
+
+<p>如果这个时候有一个数据通道能帮我们来做数据的导入，就非常不错，ELK（elasticsearch+logstash+kibana）</p>
+
+<p>logstash是一个数据导入的通道</p>
+
+<ul>
+  <li>数据库：MySQL/SqlServer/Oracle</li>
+  <li>文件：可以将文件日志进行导入</li>
+  <li>Redis：可以导入redis的数据</li>
+  <li>MQ：RabbitMQ里的数据进行导入</li>
+</ul>
+
+<p>logstash除了初始化的数据导入以外，还<strong>支持增量的自动更新</strong></p>
+
+<h3 id="准备工作">准备工作</h3>
+
+<ul>
+  <li>logstash需要数据库的驱动支持</li>
+  <li>logstash要和elasticsearch的版本保持一致</li>
+  <li>安装好jdk来提供代码驱动支持</li>
+  <li>提前要把索引创建好，可以只创建一个空index（没有mapping）</li>
+</ul>
+
+<h3 id="安装logstash">安装Logstash</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、根据ES的版本下载</span>
+wget https://artifacts.elastic.co/downloads/logstash/logstash-7.5.2.tar.gz
+
+<span class="c"># 2、确保已安装Java，配置环境变量</span>
+vi /etc/profile
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk1.8.0_65
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$PATH</span> 
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar
+<span class="nb">source</span> /etc/profile
+
+<span class="c"># 3、解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> logstash-7.5.2.tar.gz
+<span class="c"># 移动到/usr/local/logstash</span>
+<span class="nb">mv </span>logstash-7.5.2 /usr/local/logstash/
+</code></pre></div></div>
+
+<h3 id="定时同步db数据到es">定时同步DB数据到ES</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld home]# <span class="nb">cd</span> /usr/local/logstash/logstash-7.5.2
+<span class="c"># 创建同步目录</span>
+<span class="o">[</span>root@helloworld logstash-7.6.0]# <span class="nb">mkdir sync</span>
+<span class="o">[</span>root@helloworld logstash-7.6.0]# <span class="nb">cd sync</span>
+<span class="c"># 创建一个数据同步的配置文件</span>
+<span class="o">[</span>root@helloworld <span class="nb">sync</span><span class="o">]</span><span class="c"># vim logstash-db-product-sync.conf</span>
+</code></pre></div></div>
+
+<p>logstash-db-product-sync.conf的内容如下：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>input <span class="o">{</span>
+    jdbc <span class="o">{</span>
+        <span class="c"># 设置 MySql/MariaDB 数据库url以及数据库名称</span>
+        jdbc_connection_string <span class="o">=&gt;</span> <span class="s2">"jdbc:mysql://127.0.0.1:3306/icoding_mall?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true"</span>
+        <span class="c"># 用户名和密码</span>
+        jdbc_user <span class="o">=&gt;</span> <span class="s2">"root"</span>
+        jdbc_password <span class="o">=&gt;</span> <span class="s2">"123456"</span>
+        <span class="c"># 数据库驱动所在位置，可以是绝对路径或者相对路径</span>
+        jdbc_driver_library <span class="o">=&gt;</span> <span class="s2">"/usr/local/logstash/logstash-7.5.2/sync/mysql-connector-java-5.1.9.jar"</span>
+        <span class="c"># 驱动类名</span>
+        jdbc_driver_class <span class="o">=&gt;</span> <span class="s2">"com.mysql.jdbc.Driver"</span>
+        <span class="c"># 开启分页</span>
+        jdbc_paging_enabled <span class="o">=&gt;</span> <span class="s2">"true"</span>
+        <span class="c"># 分页每页数量，可以自定义</span>
+        jdbc_page_size <span class="o">=&gt;</span> <span class="s2">"1000"</span>
+        <span class="c"># 执行的sql文件路径</span>
+        statement_filepath <span class="o">=&gt;</span> <span class="s2">"/usr/local/logstash/logstash-7.5.2/sync/icoding-product-task.sql"</span>
+        <span class="c"># 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span>
+        schedule <span class="o">=&gt;</span> <span class="s2">"* * * * *"</span>
+        <span class="c"># 索引类型</span>
+        <span class="nb">type</span> <span class="o">=&gt;</span> <span class="s2">"_doc"</span>
+        <span class="c"># 是否开启记录上次追踪的结果,也就是上次更新的时间,这个会记录到last_run_metadata_path的文件</span>
+        use_column_value <span class="o">=&gt;</span> <span class="nb">true</span>
+        <span class="c"># 记录上一次追踪的结果值</span>
+        last_run_metadata_path <span class="o">=&gt;</span> <span class="s2">"/usr/local/logstash/logstash-7.5.2/sync/track_time"</span>
+        <span class="c"># 如果 use_column_value 为true， 配置本参数，追踪的column名，可以是自增id或者时间</span>
+        <span class="c"># 同步更新SQL的那个update的字段是什么就写什么</span>
+        tracking_column <span class="o">=&gt;</span> <span class="s2">"update_time"</span>
+        <span class="c"># tracking_column 对应字段的类型</span>
+        tracking_column_type <span class="o">=&gt;</span> <span class="s2">"timestamp"</span>
+        <span class="c"># 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span>
+        clean_run <span class="o">=&gt;</span> <span class="nb">false</span>
+        <span class="c"># 数据库字段名称大写转小写</span>
+        lowercase_column_names <span class="o">=&gt;</span> <span class="nb">false</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+output <span class="o">{</span>
+    elasticsearch <span class="o">{</span>
+        <span class="c"># es地址 不能使用127.0.0.1，使用内网ip或外网ip</span>
+        hosts <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"192.168.0.146:9200"</span><span class="o">]</span>
+        <span class="c"># 同步的索引名</span>
+        index <span class="o">=&gt;</span> <span class="s2">"index_products"</span>
+        <span class="c"># 设置_doc ID和数据相同,如果注释掉就自动生成_doc的ID</span>
+        document_id <span class="o">=&gt;</span> <span class="s2">"%{product_id}"</span>
+    <span class="o">}</span>
+    <span class="c"># 这里输出调试，正式运行时可以注释掉</span>
+    stdout <span class="o">{</span>
+        codec <span class="o">=&gt;</span> json_lines
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>时间更新字段 tracking_column 与 tracking_column_type</strong></p>
+
+<ul>
+  <li>numeric（默认）</li>
+  <li>timestamp：时间字段一定要用这个</li>
+</ul>
+
+<p>执行的sql文件icoding-product-task.sql，sql语句如下：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** update_time&gt;= :sql_last_value 就是每次更新大于最后一次执行的时间变量 **/</span>
+<span class="k">select</span> 
+	<span class="n">product_id</span><span class="p">,</span>
+	<span class="n">product_title</span><span class="p">,</span>
+	<span class="n">url_handle</span><span class="p">,</span>
+	<span class="n">first_image_src</span><span class="p">,</span>
+	<span class="n">second_image_src</span><span class="p">,</span>
+	<span class="n">original_price</span><span class="p">,</span>
+	<span class="n">sale_price</span><span class="p">,</span><span class="n">spu</span><span class="p">,</span>
+	<span class="n">short_description</span><span class="p">,</span>
+	<span class="n">detail_description</span><span class="p">,</span>
+	<span class="k">version</span><span class="p">,</span>
+	<span class="n">is_delete</span><span class="p">,</span>
+	<span class="n">create_emp</span><span class="p">,</span>
+	<span class="n">update_emp</span><span class="p">,</span>
+	<span class="n">create_time</span><span class="p">,</span>
+	<span class="n">update_time</span>
+<span class="k">from</span> <span class="n">im_product</span>
+<span class="k">where</span> 
+	<span class="nv">`status`</span><span class="o">=</span><span class="mi">1</span> 
+	<span class="k">and</span> 
+	<span class="n">is_delete</span><span class="o">=</span><span class="mi">0</span>
+	<span class="k">and</span>
+	<span class="n">update_time</span><span class="o">&gt;=</span> <span class="p">:</span><span class="n">sql_last_value</span>
+</code></pre></div></div>
+
+<p>配置完后，</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/logtash-sync-dbdata.jpg" alt="" /></p>
+
+<p><strong>开始执行logstash</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld home]# <span class="nb">cd</span> /usr/local/logstash/logstash-7.5.2/bin
+<span class="o">[</span>root@helloworld bin]# ./logstash <span class="nt">-f</span> /usr/local/logstash/logstash-7.5.2/sync/logstash-db-product-sync.conf
+</code></pre></div></div>
+
+<blockquote>
+  <p>Logstash的数据更新验证</p>
+</blockquote>
+
+<ul>
+  <li>根据你自己的数据入库的更新频率修改logstash同步时间频率</li>
+  <li>如果你在数据库中物理删除了记录，是不会同步到ES中</li>
+  <li>可用通过逻辑删除字段的状态来更新数据</li>
+</ul>
+
+<h3 id="自定义logstash的mapping模版">自定义Logstash的mapping模版</h3>
+
+<p>首先获取一下logstash当前的模版是什么</p>
+
+<p>解决我们首次导入数据时，text字段可以自动添加ik中文分词器，pinyin分词器，可以修改模版</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 向Elasticsearch执行Get请求，获取模版内容</span>
+GET /_template/logstash
+</code></pre></div></div>
+
+<p>获取到模版后我们修改一下</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 这里将order设置大一些，在加载mapping时就会从大到小应用模版</span>
+<span class="o">{</span>
+    <span class="s2">"order"</span>: 9,
+    <span class="s2">"version"</span>: 1,
+    <span class="s2">"index_patterns"</span>: <span class="o">[</span>
+        <span class="s2">"*"</span>
+    <span class="o">]</span>,
+    <span class="s2">"settings"</span>: <span class="o">{</span>
+        <span class="s2">"index"</span>: <span class="o">{</span>
+            <span class="s2">"number_of_shards"</span>: <span class="s2">"1"</span>,
+            <span class="s2">"refresh_interval"</span>: <span class="s2">"5s"</span>
+        <span class="o">}</span>
+    <span class="o">}</span>,
+    <span class="s2">"mappings"</span>: <span class="o">{</span>
+        <span class="s2">"dynamic_templates"</span>: <span class="o">[</span>
+            <span class="o">{</span>
+                <span class="s2">"message_field"</span>: <span class="o">{</span>
+                    <span class="s2">"path_match"</span>: <span class="s2">"message"</span>,
+                    <span class="s2">"mapping"</span>: <span class="o">{</span>
+                        <span class="s2">"norms"</span>: <span class="nb">false</span>,
+                        <span class="s2">"type"</span>: <span class="s2">"text"</span>
+                    <span class="o">}</span>,
+                    <span class="s2">"match_mapping_type"</span>: <span class="s2">"string"</span>
+                <span class="o">}</span>
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                <span class="s2">"string_fields"</span>: <span class="o">{</span>
+                    <span class="s2">"mapping"</span>: <span class="o">{</span>
+                        <span class="s2">"norms"</span>: <span class="nb">false</span>,
+                        <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+                        <span class="s2">"analyzer"</span>: <span class="s2">"ik_max_word"</span>,
+                        <span class="s2">"fields"</span>: <span class="o">{</span>
+                            <span class="s2">"keyword"</span>: <span class="o">{</span>
+                                <span class="s2">"ignore_above"</span>: 256,
+                                <span class="s2">"type"</span>: <span class="s2">"keyword"</span>
+                            <span class="o">}</span>,
+                            <span class="s2">"pinyin"</span>: <span class="o">{</span>
+                                <span class="s2">"type"</span>: <span class="s2">"text"</span>,
+                                <span class="s2">"analyzer"</span>: <span class="s2">"pinyin"</span>
+                            <span class="o">}</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>,
+                    <span class="s2">"match_mapping_type"</span>: <span class="s2">"string"</span>,
+                    <span class="s2">"match"</span>: <span class="s2">"*"</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">]</span>,
+        <span class="s2">"properties"</span>: <span class="o">{</span>
+            <span class="s2">"@timestamp"</span>: <span class="o">{</span>
+                <span class="s2">"type"</span>: <span class="s2">"date"</span>
+            <span class="o">}</span>,
+            <span class="s2">"geoip"</span>: <span class="o">{</span>
+                <span class="s2">"dynamic"</span>: <span class="nb">true</span>,
+                <span class="s2">"properties"</span>: <span class="o">{</span>
+                    <span class="s2">"ip"</span>: <span class="o">{</span>
+                        <span class="s2">"type"</span>: <span class="s2">"ip"</span>
+                    <span class="o">}</span>,
+                    <span class="s2">"latitude"</span>: <span class="o">{</span>
+                        <span class="s2">"type"</span>: <span class="s2">"half_float"</span>
+                    <span class="o">}</span>,
+                    <span class="s2">"location"</span>: <span class="o">{</span>
+                        <span class="s2">"type"</span>: <span class="s2">"geo_point"</span>
+                    <span class="o">}</span>,
+                    <span class="s2">"longitude"</span>: <span class="o">{</span>
+                        <span class="s2">"type"</span>: <span class="s2">"half_float"</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>,
+            <span class="s2">"@version"</span>: <span class="o">{</span>
+                <span class="s2">"type"</span>: <span class="s2">"keyword"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>,
+    <span class="s2">"aliases"</span>: <span class="o">{}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>将创建的模版放到一个配置文件logstash-ik.json里</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi logstash-ik.json
+</code></pre></div></div>
+
+<p>logstash-db-product-sync.conf 配置中增加相关模版信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>output <span class="o">{</span>
+    elasticsearch <span class="o">{</span>
+        <span class="c"># es地址 不能使用127.0.0.1，使用内网ip或外网ip</span>
+        hosts <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"192.168.0.146:9200"</span><span class="o">]</span>
+        <span class="c"># 同步的索引名</span>
+        index <span class="o">=&gt;</span> <span class="s2">"index_products"</span>
+        <span class="c"># 设置_doc ID和数据相同,如果注释掉就自动生成_doc的ID</span>
+        document_id <span class="o">=&gt;</span> <span class="s2">"%{product_id}"</span>
+        <span class="c"># 模版的自定义名字</span>
+        template_name <span class="o">=&gt;</span> <span class="s2">"my-logstash-ik"</span>
+        <span class="c"># 模版所在位置</span>
+        template <span class="o">=&gt;</span> <span class="s2">"/usr/local/logstash/logstash-7.5.2/sync/logstash-ik.json"</span>
+        <span class="c"># 重写模版项</span>
+        template_overwrite <span class="o">=&gt;</span> <span class="nb">true</span>
+        <span class="c"># false是关闭logstash的自动模版管理，true为按照上面的配置创建mapping模版</span>
+        manage_template <span class="o">=&gt;</span> <span class="nb">true</span>
+<span class="c"># 这里改为true表示给ES创建一个新模版，这个模版将应用于所有ES的新建索引中(无论是不是logstash创建的)</span>
+    <span class="o">}</span>
+    <span class="c"># 这里输出调试，正式运行时可以注释掉</span>
+    stdout <span class="o">{</span>
+        codec <span class="o">=&gt;</span> json_lines
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>更新完毕后要重新启动logstash才能加载新的mapping</p>
+
+<p>正常情况下应该是在后台执行这个命令</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">nohup</span> ./logstash <span class="nt">-f</span> /usr/local/logstash/logstash-7.5.2/sync/logstash-db-product-sync.conf <span class="o">&gt;</span> myout.file 2&gt;&amp;1 &amp;
+</code></pre></div></div>
+
+<p>logstash运行到指定时间后开始导入数据</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/logstach-sync-dict.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/logstach-sync-dict2.jpg" alt="" /></p>
+
+<h2 id="4整体看一下elasticsearch都学习了哪些内容">4、整体看一下Elasticsearch都学习了哪些内容</h2>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/what-we-learn-about-elasticsearch.jpg" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/02/22/gavin-note-039.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

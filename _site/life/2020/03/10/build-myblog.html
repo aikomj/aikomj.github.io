@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Jekyll搭建自己的个人博客 - 大伟的博客 </title>
+    <meta name="keywords" content="blog">
+    <meta name="description"
+          content="Jekyll静态博客，markdown文档转换为html文件">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/life/2020/03/10/build-myblog.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Jekyll搭建自己的个人博客">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Jekyll搭建自己的个人博客</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/10
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="前言">前言</h2>
+
+<p>前段时间，阅读了纯洁的微笑的博文<a href="http://www.ityouknow.com/other/2018/09/16/create-blog.html">技术人如何搭建自己的博客</a>这篇文章在github搭建了个人博客，但是github在国外，网络极其不稳定，让人抓狂，于是又阅读了方志朋的<a href="https://www.fangzhipeng.com/life/2018/10/14/how-to-build-blog.html">程序员如果搭建自己的个人博客</a>把博客迁移到腾讯云服务器上，下面是搭建过程。</p>
+
+<p>为什么写博客，这里引用方志朋的话</p>
+
+<ul>
+  <li>其一是它能够迫使你总结你学习的知识，你需要不断的消化自己的知识点，使你对知识有了更深刻的认识</li>
+  <li>其二是你的博客如同你的个人简历，记录了你的学习历程，通过写博客，可以让别人认识你，可以结交更多的行业朋友</li>
+  <li>其三是博客起到了传播知识的作用，特别是技术类的博客能够帮助别人解决技术问题，帮助人是一件快乐的事，何乐而不为</li>
+  <li>其四是写博客让你保持着强劲的学习动力，有合理的作息时间，有自己学习的方法论</li>
+</ul>
+
+<h2 id="1使用自己的服务器部署博客">1、使用自己的服务器部署博客</h2>
+
+<h3 id="搭建jekyll环境">搭建jekyll环境</h3>
+
+<p><strong>安装Node</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://nodejs.org/dist/v12.16.1/node-v12.16.1-linux-x64.tar.gz
+<span class="nb">tar</span> <span class="nt">-zxvf</span> node-v12.16.1-linux-x64.tar.gz
+<span class="c"># 创建软链接</span>
+<span class="nb">ln</span> <span class="nt">-s</span> ~/node-12.16.1/bin/node /usr/bin/node
+<span class="nb">ln</span> <span class="nt">-s</span> ~/node-12.16.1/bin/npm /usr/bin/npm
+node <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p><strong>安装Ruby</strong></p>
+
+<p>Jekyll依赖于Ruby环境，需要安装Ruby</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.5.tar.gz
+<span class="nb">tar</span> <span class="nt">-zxvf</span> ruby-2.6.5.tar.gz
+<span class="nb">mkdir</span> <span class="nt">-p</span> /usr/local/ruby
+<span class="nb">cd </span>ruby-2.6.5
+ ./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/ruby
+ make <span class="o">&amp;&amp;</span> make <span class="nb">install
+ </span>ruby <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p>环境变量设置：</p>
+
+<p>cd ~ vim .bash_profile</p>
+
+<p>在.bash_profile 文件设置以下内容：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">PATH</span><span class="o">=</span>/usr/local/ruby/bin:<span class="nv">$PATH</span>:<span class="nv">$HOME</span>/bin
+<span class="nb">export </span>PATH
+</code></pre></div></div>
+
+<p>使环境变量生效：source .bash_profile</p>
+
+<blockquote>
+  <p>建议用rvm安装ruby，</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_安装rvm_
+<span class="nv">$ </span>curl <span class="nt">-sSL</span> https://raw.githubusercontent.com/rvm/rvm/master/binscripts/rvm-installer | bash <span class="nt">-s</span> stable
+_添加rvm到系统path_
+<span class="nv">$ </span><span class="nb">source</span> /Users/xjw/.rvm/scripts/rvm
+<span class="se">\_</span>列出安装包
+<span class="nv">$ </span>rvm list known
+<span class="se">\_</span>安装ruby，如果安装失败，再执行一次。我执行了三次才成功
+<span class="nv">$ </span>rvm <span class="nb">install </span>ruby-2.6.3
+<span class="se">\_</span>安装成功,查看版本
+<span class="nv">$ </span>ruby <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p><strong>安装gcc</strong></p>
+
+<p>已装忽略</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum <span class="nt">-y</span> update gcc
+yum <span class="nt">-y</span> <span class="nb">install </span>gcc+ gcc-c++
+</code></pre></div></div>
+
+<p><strong>安装jekyll</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll
+<span class="c"># 可以通过jekyll –version查看版本来验证是否安装成功，如果安装成功，则会显示正确的版本号。</span>
+jekyll <span class="nt">-version</span>
+</code></pre></div></div>
+
+<h3 id="编译博客">编译博客</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载github上的博客源码</span>
+git clone https://github.com/aikomj/aikomj.github.io
+<span class="nb">cd</span> /www/aikomj.github.io
+gem <span class="nb">install </span>bundle
+<span class="c">#bundle install</span>
+<span class="c"># 启动博客</span>
+jekyll serve <span class="nt">--port</span> 80
+</code></pre></div></div>
+
+<blockquote>
+  <p>Jekyll serve执行完后老报各种gem缺失，安装多个gem包之后发现是git上多了个Gemfile.lock害的，这个文件是用bundle根据gemfile 的插件依赖生成的。</p>
+
+  <p>第一次运行 <code class="highlighter-rouge">bundle install</code> 时自动生成 Gemfile.lock 文件。
+ 以后每次运行 <code class="highlighter-rouge">bundle install</code> 时,如果 Gemfile 中的条目不变 bundle 就不会再次计算 gem 依赖版本号，直接根据 Gemfile.lock 检查和安装 gem。
+ 如果出现依赖冲突时可以通过 bundle update 更新 Gemfile.lock。</p>
+
+  <p>gemfile.lock已有的情况，应该用bundle update更新，Jekyll serve 启动时就不会老报gem包缺失了</p>
+</blockquote>
+
+<p>安装相关gem包</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@aliserver aikomj.github.io]# gem <span class="nb">install </span>jekyll-geo-pattern
+</code></pre></div></div>
+
+<h3 id="部署到nginx服务器上">部署到nginx服务器上</h3>
+
+<blockquote>
+  <p>Yum 安装nginx</p>
+</blockquote>
+
+<p>通过Jekyll编译后的静态文件需要挂载到Nginx服务器，需要安装Nginx服务器。 安装过程参考了http://nginx.org/en/linux_packages.html#mainline</p>
+
+<p>按照文档，新建文件/etc/yum.repos.d/nginx.repo，在文件中添加以下内容并保存：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>nginx]
+<span class="nv">name</span><span class="o">=</span>nginx repo
+<span class="nv">baseurl</span><span class="o">=</span>http://nginx.org/packages/centos/7/<span class="nv">$basearch</span>/
+<span class="nv">gpgcheck</span><span class="o">=</span>0
+<span class="nv">enabled</span><span class="o">=</span>1
+</code></pre></div></div>
+
+<p>安装nginx</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum <span class="nb">install </span>nginx
+</code></pre></div></div>
+
+<p>配置nginx，文件路径为/etc/nginx/conf.d/default.conf，配置的内容如下：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+    server_name  localhost<span class="p">;</span>
+
+    location / <span class="o">{</span>
+        <span class="nb">alias</span>   /www/jekyll-blog<span class="p">;</span>
+        index  index.html index.htm<span class="p">;</span>
+    <span class="o">}</span>
+
+    error_page  404              /404.html<span class="p">;</span>
+
+    error_page   500 502 503 504  /50x.html<span class="p">;</span>
+    location <span class="o">=</span> /50x.html <span class="o">{</span>
+        root  /www/jekyll-blog<span class="p">;</span>
+    <span class="o">}</span>   
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>将Jekyll编译的博客静态html文件输出到Nginx服务器上</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /www/aikomj.github.io
+jekyll build <span class="nt">--destination</span><span class="o">=</span>/www/jekyll-blog
+</code></pre></div></div>
+
+<p>启动Nginx服务器</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>service nginx start
+</code></pre></div></div>
+
+<p>就可以正常的博客网页了，如果需要在浏览器上访问，需要在阿里云ECS控制台的安全组件暴露80端口。如果想通过域名访问，需要将域名解析设置指向你的服务器。</p>
+
+<p><strong>非www域名的重定向到www</strong></p>
+
+<p>比如我想访问http://fangzhipeng.com重定向到http://www.fangzhipeng.com上，需要在Nginx的配置文件/etc/nginx/conf.d/default.conf，修改配置以下内容：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>listen  80<span class="p">;</span>
+    server_name  fangzhipeng.com www.fangzhipeng.com<span class="p">;</span>
+
+    <span class="k">if</span> <span class="o">(</span> <span class="nv">$host</span> <span class="o">!=</span> <span class="s1">'www.fangzhipeng.com'</span> <span class="o">)</span> <span class="o">{</span>
+    	rewrite <span class="s2">"^/(.*)$"</span> http://www.fangzhipeng.com/<span class="nv">$1</span> permanent<span class="p">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>docker安装nginx</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull nginx:1.10
+
+<span class="c"># 先运行，获取配置文件</span>
+docker run <span class="nt">-p</span> 80:80 <span class="nt">--name</span> nginx <span class="se">\</span>
+<span class="nt">-v</span> /mydata/nginx/html:/usr/share/nginx/html <span class="se">\</span>
+<span class="nt">-v</span> /mydata/nginx/logs:/var/log/nginx  <span class="se">\</span>
+<span class="nt">-d</span> nginx:1.10
+<span class="c"># 将容器内的配置文件拷贝到指定目录：</span>
+docker container <span class="nb">cp </span>nginx:/etc/nginx /mydata/nginx/
+<span class="c"># 修改文件名称：</span>
+<span class="nb">mv </span>nginx conf
+<span class="c"># 终止并删除容器：</span>
+docker stop nginx
+docker <span class="nb">rm </span>nginx
+
+<span class="c"># 重新创建容器，并指定挂载目录</span>
+docker run <span class="nt">-p</span> 80:80 <span class="nt">--name</span> nginx <span class="se">\</span>
+<span class="nt">-v</span> /mydata/nginx/html:/usr/share/nginx/html <span class="se">\</span>
+<span class="nt">-v</span> /mydata/nginx/logs:/var/log/nginx  <span class="se">\</span>
+<span class="nt">-v</span> /mydata/nginx/conf:/etc/nginx <span class="se">\</span>
+<span class="nt">-d</span> nginx:1.10
+</code></pre></div></div>
+
+<blockquote>
+  <p>直接下载解压安装tar包</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1 nginx必备软件，已安装忽略</span>
+<span class="c"># GCC编译工具 PCRE库 支持正则 zlib库 gzip格式的压缩</span>
+<span class="c"># openssl开发库,支持https协议以及md5 和 sha1等散列函数</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> gcc gcc-c++ pcre pcre-devel zlib zlib-devel
+
+yum <span class="nb">install</span> <span class="nt">-y</span> openssl openssl-devel
+
+wget http://nginx.org/download/nginx-1.18.0.tar.gz
+<span class="c"># 1、解压</span>
+<span class="o">[</span>root@helloworld opt]# <span class="nb">tar</span> <span class="nt">-zxvf</span> nginx-1.18.0.tar.gz
+<span class="c"># 2、配置</span>
+<span class="o">[</span>root@helloworld opt] <span class="nb">cd </span>nginx-1.18.0
+<span class="o">[</span>root@helloworld nginx-1.18.0]# ./configure 
+...
+  nginx path prefix: <span class="s2">"/usr/local/nginx"</span>
+  nginx binary file: <span class="s2">"/usr/local/nginx/sbin/nginx"</span>
+  nginx modules path: <span class="s2">"/usr/local/nginx/modules"</span>
+  nginx configuration prefix: <span class="s2">"/usr/local/nginx/conf"</span>
+  nginx configuration file: <span class="s2">"/usr/local/nginx/conf/nginx.conf"</span>
+  nginx pid file: <span class="s2">"/usr/local/nginx/logs/nginx.pid"</span>
+  nginx error log file: <span class="s2">"/usr/local/nginx/logs/error.log"</span>
+  nginx http access log file: <span class="s2">"/usr/local/nginx/logs/access.log"</span>
+  nginx http client request body temporary files: <span class="s2">"client_body_temp"</span>
+  nginx http proxy temporary files: <span class="s2">"proxy_temp"</span>
+  nginx http fastcgi temporary files: <span class="s2">"fastcgi_temp"</span>
+  nginx http uwsgi temporary files: <span class="s2">"uwsgi_temp"</span>
+  nginx http scgi temporary files: <span class="s2">"scgi_temp"</span>
+
+<span class="c"># 如果报错了是不是上面的gcc环境是不是没安装好</span>
+<span class="c"># 3、安装</span>
+<span class="o">[</span>root@helloworld nginx-1.18.0]# make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+<span class="c"># 4、安装成功，到nginx的目录 /usr/local/nginx</span>
+<span class="nb">cd</span> /usr/local/nginx
+<span class="o">[</span>root@helloworld nginx]# <span class="nb">ls
+</span>conf  html  logs  sbin
+<span class="c"># 启动</span>
+<span class="o">[</span>root@helloworld nginx]# ./sbin/nginx
+<span class="c"># 查看nginx是否启动</span>
+ps <span class="nt">-ef</span> | <span class="nb">grep </span>nginx
+<span class="c"># 设置全局的nginx命令</span>
+<span class="nb">cp</span> /usr/local/nginx/sbin/nginx /bin/
+<span class="c"># 设置开机启动</span>
+
+<span class="c"># 5、设置开机启动</span>
+<span class="nb">cd</span> /lib/systemd/system/
+vi nginx.service
+<span class="c"># 编辑nginx.service内容如下</span>
+<span class="o">[</span>Unit]
+<span class="nv">Description</span><span class="o">=</span>nginx service
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service]
+<span class="nv">Type</span><span class="o">=</span>forking
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/nginx/sbin/nginx
+<span class="nv">ExecReload</span><span class="o">=</span>/usr/local/nginx/sbin/nginx <span class="nt">-s</span> reload
+<span class="nv">ExecStop</span><span class="o">=</span>/usr/local/nginx/sbin/nginx <span class="nt">-s</span> quit
+<span class="nv">PrivateTmp</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="o">[</span>Install]
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+
+<span class="c"># 开启nginx开机启动</span>
+systemctl <span class="nb">enable </span>nginx
+<span class="c"># 关闭nginx开机启动</span>
+systemctl disable nginx
+<span class="c"># 查看 所有服务,enable表示开机启动，disabled 表示不开机启动</span>
+systemctl list-unit-files
+<span class="c"># 查看 所有开机启动的服务，centos7已不使用chkconfig --list查看</span>
+systemctl list-unit-files |grep <span class="nb">enable</span>
+<span class="c"># 查看nginx是否已开机启动</span>
+systemctl list-unit-files |grep nginx
+</code></pre></div></div>
+
+<h2 id="2自动化部署">2、自动化部署</h2>
+
+<h4 id="配置webhook">配置webhook</h4>
+
+<p>​		webhook，是一种通过通常的 callback，去增加或者改变 Web page或者 Web app 行为的方法。这些 Callback 可以由第三方用户和开发者维持当前，修改，管理，而这些使用者与网站或者应用的原始开发没有关联。</p>
+
+<p>​		我们的自动部署博客也是利用了这个机制，github 自带了webhook 功能。原理过程是这样的：提交博文或者配置到github仓库，仓库会触发你设置的webhook，向你设置的webhook地址发送一个post请求，比如我设置的请求是在服务器上跑的一个nodejs程序，监听gitub webhook的请求，接受到请求后，会执行shell命令重新构建博客。</p>
+
+<p>​		在 Github 仓库的项目界面，比如本博客项目https://github.com/aikomj/aikomj.github.io，点击 Setting-&gt;Webhooks-&gt;Add Webhook，添加 Webhook 的配置信息：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Payload URL: http://139.199.13.139/deploy  <span class="c">#没有域名，先使用ip</span>
+Content <span class="nb">type</span>: application/json
+Secret: a123456
+</code></pre></div></div>
+
+<h4 id="服务器接受推送">服务器接受推送</h4>
+
+<p>​		我们需要在博客的服务器上面建立一个服务，来接收 Github 提交代码后的推送，从而来触发部署的脚本。 Github 上有一个开源项目可以做这个事情 <a href="https://github.com/rvagg/github-webhook-handler">github-webhook-handler</a>，他是使用 nodeJs 来开发。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装 github-webhook-handler</span>
+npm <span class="nb">install</span> <span class="nt">-g</span> github-webhook-handler
+<span class="c">#如果没有安装成功，可以选择法2来安装</span>
+npm <span class="nb">install</span> <span class="nt">-g</span> cnpm <span class="nt">--registry</span><span class="o">=</span>http://r.cnpmjs.org
+cnpm <span class="nb">install</span> <span class="nt">-g</span> github-webhook-handler
+</code></pre></div></div>
+
+<p>添加部署脚本</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /root/node-12.16.1/lib/node_modules/github-webhook-handler
+vi deploy.js
+<span class="c"># 添加下面的内容</span>
+var http <span class="o">=</span> require<span class="o">(</span><span class="s1">'http'</span><span class="o">)</span>
+var createHandler <span class="o">=</span> require<span class="o">(</span><span class="s1">'github-webhook-handler'</span><span class="o">)</span>
+var handler <span class="o">=</span> createHandler<span class="o">({</span> path: <span class="s1">'/deploy'</span>, secret: <span class="s1">'a123456'</span> <span class="o">})</span> //监听请求路径，和Github 配置的密码
+ 
+<span class="k">function </span>run_cmd<span class="o">(</span>cmd, args, callback<span class="o">)</span> <span class="o">{</span>
+  var spawn <span class="o">=</span> require<span class="o">(</span><span class="s1">'child_process'</span><span class="o">)</span>.spawn<span class="p">;</span>
+  var child <span class="o">=</span> spawn<span class="o">(</span>cmd, args<span class="o">)</span><span class="p">;</span>
+  var resp <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+ 
+  child.stdout.on<span class="o">(</span><span class="s1">'data'</span>, <span class="k">function</span><span class="o">(</span>buffer<span class="o">)</span> <span class="o">{</span> resp +<span class="o">=</span> buffer.toString<span class="o">()</span><span class="p">;</span> <span class="o">})</span><span class="p">;</span>
+  child.stdout.on<span class="o">(</span><span class="s1">'end'</span>, <span class="k">function</span><span class="o">()</span> <span class="o">{</span> callback <span class="o">(</span>resp<span class="o">)</span> <span class="o">})</span><span class="p">;</span>
+<span class="o">}</span>
+ 
+http.createServer<span class="o">(</span><span class="k">function</span> <span class="o">(</span>req, res<span class="o">)</span> <span class="o">{</span>
+  handler<span class="o">(</span>req, res, <span class="k">function</span> <span class="o">(</span>err<span class="o">)</span> <span class="o">{</span>
+    res.statusCode <span class="o">=</span> 404
+    res.end<span class="o">(</span><span class="s1">'no such location'</span><span class="o">)</span>
+  <span class="o">})</span>
+<span class="o">})</span>.listen<span class="o">(</span>3001<span class="o">)</span>//监听的端口
+ 
+handler.on<span class="o">(</span><span class="s1">'error'</span>, <span class="k">function</span> <span class="o">(</span>err<span class="o">)</span> <span class="o">{</span>
+  console.error<span class="o">(</span><span class="s1">'Error:'</span>, err.message<span class="o">)</span>
+<span class="o">})</span>
+ 
+handler.on<span class="o">(</span><span class="s1">'push'</span>, <span class="k">function</span> <span class="o">(</span>event<span class="o">)</span> <span class="o">{</span>
+  console.log<span class="o">(</span><span class="s1">'Received a push event for %s to %s'</span>,
+    event.payload.repository.name,
+    event.payload.ref<span class="o">)</span><span class="p">;</span>
+  run_cmd<span class="o">(</span><span class="s1">'sh'</span>, <span class="o">[</span><span class="s1">',/deploy.sh'</span><span class="o">]</span>, <span class="k">function</span><span class="o">(</span>text<span class="o">){</span> console.log<span class="o">(</span>text<span class="o">)</span> <span class="o">})</span><span class="p">;</span>//成功后，执行的脚本。
+<span class="o">})</span>
+</code></pre></div></div>
+
+<p>相同目录下新建deploy.sh</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 新建部署博客的脚本</span>
+vi deploy.sh
+<span class="c"># 脚本内容</span>
+<span class="nb">echo</span> <span class="sb">`</span><span class="nb">date</span><span class="sb">`</span>
+<span class="nb">cd</span> /www/aikomj.github.io
+<span class="nb">echo </span>start pull from github 
+git pull http://github.com/aikomj/aikomj.github.io.git
+<span class="nb">echo </span>start build..
+jekyll build <span class="nt">--destination</span><span class="o">=</span>/www/jekyll-blog
+</code></pre></div></div>
+
+<p>这个脚本的启动需要借助 Node 中的一个管理 forever 。forever 可以看做是一个 nodejs 的守护进程，能够启动，停止，重启我们的 app 应用。</p>
+
+<p>不过我们先安装 forever，然后需要使用 forever 来启动 deploy.js 的服务。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装forever</span>
+npm <span class="nb">install </span>forever <span class="nt">-g</span>
+<span class="c"># 建立软链接</span>
+<span class="nb">ln</span> <span class="nt">-s</span> /root/node-12.16.1/lib/node_modules/forever/bin/forever /usr/bin/forever
+forever start deploy.js          <span class="c">#启动</span>
+forever stop deploy.js           <span class="c">#关闭</span>
+<span class="nb">cd</span> /root/node-12.16.1/lib/node_modules/github-webhook-handler
+forever start <span class="nt">-l</span> forever.log <span class="nt">-o</span> out.log <span class="nt">-e</span> err.log deploy.js   <span class="c">#输出日志和错误</span>
+如果报错：
+forever start <span class="nt">-a</span> <span class="nt">-l</span> forever.log <span class="nt">-o</span> out.log <span class="nt">-e</span> err.log deploy.js
+
+</code></pre></div></div>
+
+<p>最后一步，需要在nginx服务器的配置文件，需要将监听的/deploy请求转发到nodejs服务上。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">vi</span> <span class="n">/etc/nginx/conf.d/default.conf</span>
+<span class="c1"># 添加转发
+</span><span class="s">location</span> <span class="p">=</span> <span class="n">/deploy</span> <span class="p">{</span>
+     <span class="kn">proxy_pass</span> <span class="s">http://127.0.0.1:3001/deploy</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样自动化部署就完了，每次提交代码时，Github 会发送 Webhook 给地址<code class="highlighter-rouge">http://139.199.13.139/deploy</code>，Nginx 将 <code class="highlighter-rouge">/deploy</code> 地址转发给 Nodejs 端口为 3001 的服务，最后通过 github-webhook-handler 来执行部署脚本。</p>
+
+<h2 id="3jekyll">3、Jekyll</h2>
+
+<p>既然上面用到了Jekyll搭建博客，那就有必要解一下 Jekyll是什么？Jekyll 是一个简单的博客形态的静态站点生产机器。Jekyll 中文官网地址：<a href="http://jekyllcn.com/docs/home/">http://jekyllcn.com/docs/home/</a></p>
+
+<p><img src="/assets/images/2020/blog/jekyll-1.jpg" alt="" /></p>
+
+<h3 id="目录结构">目录结构</h3>
+
+<p>jekyll目录结构主要包含如下目录：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_posts 博客内容
+_pages 其他需要生成的网页，如About页
+_layouts 网页排版模板
+_includes 被模板包含的HTML片段，可在_config.yml中修改位置
+assets 辅助资源 css布局 js脚本 图片等
+_data 动态数据
+_sites 最终生成的静态网页
+_config.yml 网站的一些配置信息
+index.html 网站的入口
+</code></pre></div></div>
+
+<p>那么这些目录是如何运作的呢？</p>
+
+<p>1.我们打开根目录下的index.html可以看到：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>—
+layout: default
+—
+html代码段
+</code></pre></div></div>
+
+<p>2.上面的default我们可以在_layouts目录下找到：
+<img src="/assets/images/2020/blog/jekyll-layout.gif" alt="" />
+上面的content 将由index.html中的html代码填充。</p>
+
+<blockquote>
+  <p>扩展阅读：<a href="http://jmcglone.com/guides/github-pages/">http://jmcglone.com/guides/github-pages/</a></p>
+</blockquote>
+
+<h3 id="常用语法">常用语法</h3>
+
+<p><img src="/assets/images/2020/blog/jekyll-language.gif" alt="" /></p>
+
+<h2 id="4博客迁移到gitee码云上">4、博客迁移到gitee码云上</h2>
+
+<p>下面记录于2020-08-06</p>
+
+<p>博客代码托管到国外的github上，云服务器放在国内，使用了webhook功能自动化部署，但有时侯也会因为网络的原因，没有通知到国内的服务器进行下拉代码自动部署，考虑到这个问题，尝试把博客代码迁移到国内的gitee上。</p>
+
+<h3 id="同步github仓库">同步github仓库</h3>
+
+<p>这里我使用从github导入仓库gitee的方式</p>
+
+<p>参考 <a href="https://gitee.com/help/articles/4284#article-header0">https://gitee.com/help/articles/4284#article-header0</a></p>
+
+<p><img src="/assets/images/2020/blog/jekyll-blog-github-to-gitee.jpg" alt="" /></p>
+
+<p>文章内介绍了gitee 和github同步更新的3种方式，我选择了方式1</p>
+
+<p>首先通过 git remote -v 查看您要同步的仓库的远程库列表，如果在列表中没有您码云的远程库地址，您需要新增一个地址</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote add 远程库名 远程库地址
+eg: git remote add gitee git@github.com:xxx/xxx.git
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/blog/jekyll-blog-github-to-gitee-2.jpg" alt="" /></p>
+
+<p>修改提交到远程仓库的名字</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看项目里的.git文件配置的远程仓库地址，任何时候都不要忘记使用-help命令查看帮助命令</span>
+xjwdeMacBook:aikomj.github.io xjw<span class="nv">$ </span>git remote <span class="nt">-v</span>
+git remote rename  origin github
+git remote rename aikomj.github.io gitee
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/blog/jekyll-blog-github-to-gitee-3.jpg" alt="" /></p>
+
+<p>注意：这里同步的意思是push代码到远程仓库时，分别选择gitee和github各自push</p>
+
+<p><img src="/assets/images/2020/blog/jekyll-blog-github-to-gitee-4.jpg" alt="" /></p>
+
+<p>由于我是新增的gitee远程仓库地址，所以本地git并没有它的提交记录，所以会显示之前全部的github记录给你，让你提交，但没必要提交历史的push，只提交最新的push，因为gitee上的仓库初始化已与github上的仓库一致，所以只需提交最新的。</p>
+
+<p>还有另外一种方式，在gitee上的仓库点击“强制“同步gitee和github上的代码</p>
+
+<p><img src="/assets/images/2020/blog/jekyll-blog-github-to-gitee-5.jpg" alt="" /></p>
+
+<h3 id="自动部署">自动部署</h3>
+
+<p>前面使用github-webhook-handler来触发构建脚本的方式已不适用于码云上的仓库，需要使用这个开源项目</p>
+
+<p><a href="https://gitee.com/GLUESTICK/auto-deployment">https://gitee.com/GLUESTICK/auto-deployment</a></p>
+
+<p><img src="/assets/images/2020/blog/auto-deployment.jpg" alt="" /></p>
+
+<p>它也是运行在nodejs环境下的自动化部署插件，在gitee配置webhook后，push项目即可自动部署至服务器。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建一个目录</span>
+<span class="o">[</span>root@helloworld <span class="nb">local</span><span class="o">]</span><span class="c"># mkdir jekyll-blog-auto-deploy</span>
+<span class="nb">cd </span>jekyll-blog-auto-deploy
+<span class="c"># 执行,初始化一个npm项目，只有一个package.json文件</span>
+<span class="o">[</span>root@helloworld jekyll-blog-auto-deploy]# npm init
+<span class="o">[</span>root@helloworld jekyll-blog-auto-deploy]# npm <span class="nb">install </span>auto-deployment
+<span class="c"># 创建一个js文件</span>
+<span class="o">[</span>root@helloworld jekyll-blog-auto-deploy]# vi deploy.js
+const deployment <span class="o">=</span> require<span class="o">(</span><span class="s1">'auto-deployment'</span><span class="o">)</span><span class="p">;</span>
+deployment<span class="o">({</span>
+    port:7777,
+    method:<span class="s1">'POST'</span>,
+    url:<span class="s1">'/jkwebhook'</span>,		<span class="c"># 这里我使用nginx代理路由</span>
+    acceptToken:<span class="s1">'1qaz2wsx3edc'</span>, <span class="c"># 配置仓库的webhook时填写的密码</span>
+    userAgnet:<span class="s2">"git-oschina-hook"</span>,
+    cmd:[											
+        <span class="s1">'sh /usr/local/jekyll-blog-auto-deploy/deploy.sh'</span>
+    <span class="o">]</span>
+<span class="o">})</span><span class="p">;</span>
+
+<span class="c"># 3、运行这个js</span>
+node deploy.js
+<span class="c"># 使用nohup 后台运行</span>
+<span class="nb">nohup </span>node deploy.js <span class="o">&gt;</span> out.log 2&gt;&amp;1 &amp;
+<span class="c"># 如果运行成功，控制台将会打印出成功的结果</span>
+
+<span class="c"># 4、同目录下创建deploy.sh</span>
+vi deploy.sh
+<span class="nb">cd</span> /www/aikomj.github.io
+<span class="nb">echo </span>start pull from gitee
+git pull http://gitee.com/jacobmj/aikomj.github.io.git
+<span class="nb">echo </span>start build..
+jekyll build <span class="nt">--destination</span><span class="o">=</span>/www/jekyll-blog
+</code></pre></div></div>
+
+<p><strong>参数说明</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>属性名</th>
+      <th>说明</th>
+      <th>类型</th>
+      <th>必填</th>
+      <th>可选值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>port</td>
+      <td>端口</td>
+      <td>Number</td>
+      <td>是</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>method</td>
+      <td>请求方法</td>
+      <td>string</td>
+      <td>是</td>
+      <td>POST/GET</td>
+    </tr>
+    <tr>
+      <td>url</td>
+      <td>链接</td>
+      <td>string</td>
+      <td>是</td>
+      <td>’/’</td>
+    </tr>
+    <tr>
+      <td>acceptToken</td>
+      <td>认证</td>
+      <td>string</td>
+      <td>是</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>userAgnet</td>
+      <td>ua</td>
+      <td>string</td>
+      <td>是</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>执行命令或脚本文件,默认是command</td>
+      <td>string</td>
+      <td>是</td>
+      <td>command/file</td>
+    </tr>
+    <tr>
+      <td>executeFile</td>
+      <td>执行脚本文件的全路径</td>
+      <td>string</td>
+      <td>type=’file’时必填</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>cmd</td>
+      <td>要执行的命令</td>
+      <td>arr</td>
+      <td>是</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>async</td>
+      <td>同步/异步(同步将在命令执行完毕后返回执行结果，异步直接返回成功)，默认同步</td>
+      <td>Boolean</td>
+      <td> </td>
+      <td>true/false</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>2、gitee仓库配置webhook</p>
+
+<p><img src="/assets/images/2020/blog/webhook.jpg" alt="" /></p>
+
+<p>3、nginx添加路由</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location <span class="o">=</span> /jkwebhook <span class="o">{</span>
+          proxy_pass http://127.0.0.1:7777/jkwebhook<span class="p">;</span>
+       <span class="o">}</span>
+       
+<span class="c"># 重启nginx</span>
+<span class="o">[</span>root@helloworld conf]# nginx <span class="nt">-s</span> reload
+</code></pre></div></div>
+
+<p>完成。</p>
+
+<blockquote>
+  <p>发现webhook的请求经常超时</p>
+</blockquote>
+
+<p>查看上面开源的auto-deplyment的源码，webhook触发后它执行的是模块auto-deployment里面的index.js文件，</p>
+
+<p>我把它修改了一下，就是不用等待它把命令都执行完才返回</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">init</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">option</span><span class="p">){</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+        <span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">text/html; charset=utf-8</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="dl">'</span><span class="s1">X-Foo</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">bar</span><span class="dl">'</span><span class="p">);</span>
+       <span class="c1">// console.log(req.method);</span>
+       <span class="c1">// console.log(req.url);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">x-gitee-token</span><span class="dl">'</span><span class="p">]</span><span class="o">===</span><span class="nx">option</span><span class="p">.</span><span class="nx">acceptToken</span> <span class="o">&amp;&amp;</span> <span class="nx">req</span><span class="p">.</span><span class="nx">method</span><span class="o">===</span><span class="nx">option</span><span class="p">.</span><span class="nx">method</span> <span class="o">&amp;&amp;</span> <span class="nx">req</span><span class="p">.</span><span class="nx">url</span> <span class="o">===</span> <span class="nx">option</span><span class="p">.</span><span class="nx">url</span> <span class="o">&amp;&amp;</span> <span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">user-agent</span><span class="dl">'</span><span class="p">]</span><span class="o">===</span><span class="dl">'</span><span class="s1">git-oschina-hook</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// 验证成功</span>
+            <span class="kd">let</span> <span class="nx">loop</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">loop</span><span class="p">(</span><span class="nx">i</span><span class="p">){</span>
+               <span class="nx">run</span><span class="p">().</span><span class="nx">execute</span><span class="p">(</span><span class="nx">option</span><span class="p">.</span><span class="nx">cmd</span><span class="p">[</span><span class="nx">i</span><span class="p">],(</span><span class="nx">success</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
+                    <span class="k">if</span><span class="p">(</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">option</span><span class="p">.</span><span class="nx">cmd</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span><span class="p">(</span><span class="nx">success</span><span class="o">===</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="nx">i</span><span class="o">++</span><span class="p">;</span>
+                            <span class="nx">loop</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="cm">/*
+                            console.log('fail-500');
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('fail');
+                            return false;*/</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                       <span class="cm">/* console.log('success');
+                        res.writeHead(200, { 'Content-Type': 'text/plain' });
+                        res.end('success');*/</span>
+                    <span class="p">}</span>
+                <span class="p">});</span>
+                <span class="c1">// run_cmd(option.cmd[0],option.cmd[1], function(text){ console.log(text) });</span>
+            <span class="p">};</span>
+            <span class="nx">loop</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+            <span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">text/plain</span><span class="dl">'</span> <span class="p">});</span>
+            <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="dl">'</span><span class="s1">success</span><span class="dl">'</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">fail-402</span><span class="dl">'</span><span class="p">)</span>
+            <span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">402</span><span class="p">,</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">text/plain</span><span class="dl">'</span> <span class="p">});</span>
+            <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="dl">'</span><span class="s1">fail</span><span class="dl">'</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">option</span><span class="p">.</span><span class="nx">port</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">自动部署服务启动于：</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">system</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">操作系统，端口号：</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">option</span><span class="p">.</span><span class="nx">port</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>2021年11月21日，腾讯云服务器差不多到期了，要把博客转移到阿里云服务器上，再看这个自动部署项目，已更新了，支持异步与直接执行脚本文件，所以把deploy.js修改</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">deployment</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">auto-deployment</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">deployment</span><span class="p">({</span>
+    <span class="na">port</span><span class="p">:</span><span class="mi">7788</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span><span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">url</span><span class="p">:</span><span class="dl">'</span><span class="s1">/jkwebhook</span><span class="dl">'</span><span class="p">,</span>		<span class="err">#</span> <span class="err">这里我使用</span><span class="nx">nginx</span><span class="err">代理路由</span>
+    <span class="na">acceptToken</span><span class="p">:</span><span class="dl">'</span><span class="s1">1qaz2wsx3edc</span><span class="dl">'</span><span class="p">,</span> <span class="err">#</span> <span class="err">配置仓库的</span><span class="nx">webhook</span><span class="err">时填写的密码</span>
+    <span class="na">userAgnet</span><span class="p">:</span><span class="dl">"</span><span class="s2">git-oschina-hook</span><span class="dl">"</span><span class="p">,</span>
+  	<span class="na">type</span><span class="p">:</span><span class="dl">'</span><span class="s1">file</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">executeFile</span><span class="p">:</span><span class="dl">'</span><span class="s1">/usr/local/jekyll-blog-auto-deploy/deploy.sh</span><span class="dl">'</span><span class="p">,</span>
+  	<span class="na">async</span><span class="p">:</span><span class="kc">true</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>执行deploy.js查看out.log，报错缺少模块iconv-lite</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@aliserver jekyll-blog-auto-deploy]# npm <span class="nb">install </span>iconv-lite
+<span class="c"># 使用nohup 后台运行</span>
+<span class="nb">nohup </span>node deploy.js <span class="o">&gt;</span> out.log 2&gt;&amp;1 &amp;
+<span class="c"># 执行成功</span>
+<span class="o">[</span>root@aliserver jekyll-blog-auto-deploy]# <span class="nb">cat </span>out.log 
+<span class="nb">nohup</span>: ignoring input
+自动部署服务启动于：linux操作系统，端口号：7788
+</code></pre></div></div>
+
+<p>nginx的配置文件增加了路由，需要重新reload</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld conf]# nginx <span class="nt">-s</span> reload
+</code></pre></div></div>
+
+<h3 id="开机启动脚本">开机启动脚本</h3>
+
+<p>参考博客：<a href="https://www.cnblogs.com/liujunjun/p/11849907.html">https://www.cnblogs.com/liujunjun/p/11849907.html</a></p>
+
+<p>在centos7中增加脚本有两种常用的方法，以脚本autostart.sh为例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c">#description:开机自启脚本</span>
+/usr/local/tomcat/bin/startup.sh  <span class="c">#启动tomcat</span>
+<span class="nb">nohup </span>node /usr/local/jekyll-blog-auto-deploy/deploy.js <span class="o">&gt;</span> out.log 2&gt;&amp;1 &amp;  <span class="c"># 后台执行</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>方法一</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、赋予脚本可执行权限（/opt/script/autostart.sh是你的脚本路径）</span>
+<span class="nb">chmod</span> +x /opt/script/autostart.sh 
+
+<span class="c"># 2、打开/etc/rc.d/rc.local文件，在末尾增加如下内容</span>
+/opt/script/autostart.sh 
+
+<span class="c"># 3、在centos7中，/etc/rc.d/rc.local的权限被降低了，所以需要执行如下命令赋予其可执行权限</span>
+<span class="nb">chmod</span> +x /etc/rc.d/rc.local
+</code></pre></div></div>
+
+<blockquote>
+  <p>方法二</p>
+</blockquote>
+
+<p>service httpd start 其实是启动了存放在/etc/init.d目录下的脚本。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、将脚本移动到/etc/rc.d/init.d目录下</span>
+<span class="nb">mv</span>  /opt/script/autostart.sh /etc/rc.d/init.d
+
+<span class="c"># 2、增加脚本的可执行权限</span>
+<span class="nb">chmod</span> +x  /etc/rc.d/init.d/autostart.sh
+
+<span class="c"># 3、添加脚本到开机自动启动项目中</span>
+<span class="nb">cd</span> /etc/rc.d/init.d
+chkconfig <span class="nt">--add</span> autostart.sh
+chkconfig autostart.sh on
+</code></pre></div></div>
+
+<h2 id="5整合gitalk-评论插件">5、整合gitalk 评论插件</h2>
+
+<p>这个jekyll博客，我使用的评论插件是gitalk，它需要使用github账号登录后对当前文章进行评论，效果如下</p>
+
+<p><img src="/assets/images/2020/blog/gitalk-github-login.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/blog/gitalk-github-login-2.jpg" alt="" /></p>
+
+<p>我们来看一下怎么整合到博客吧</p>
+
+<p><strong>第一步，登录github注册授权应用</strong>，地址：<a href="https://github.com/settings/applications/new">https://github.com/settings/applications/new</a></p>
+
+<p><img src="/assets/images/2020/blog/jekyll-theme-gitalk-register.png" alt="" /></p>
+
+<p>注册完就会有自己的 Client ID 和 Client Secret</p>
+
+<p><img src="/assets/images/2020/blog/jekyll-theme-gitalk-client.png" alt="" /></p>
+
+<p><strong>第二步，配置config.yml</strong></p>
+
+<p>在评论页面comments添加，</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  gitalk: <span class="nb">true
+  </span>gitalk_clientID: <span class="s1">'Client ID'</span>
+  gitalk_Secret: <span class="s1">'Client Secret'</span>
+  gitalk_repo: <span class="s1">'用户名.github.io'</span>
+  gitalk_owner: <span class="s1">'用户名'</span>
+  gitalk_admin: <span class="s1">'用户名'</span>
+  distractionFreeMode: <span class="nb">true</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/blog/jekyll-theme-gitalk-config.png" alt="" /></p>
+
+<p>在当前博客代码里我修改了_config.yml配置文件：</p>
+
+<p><img src="/assets/images/2020/blog/gitalk-comment-plugin.png" alt="" /></p>
+
+<p><strong>第三步，配置post.html</strong></p>
+
+<p>文件的位置在 <code class="highlighter-rouge">_layouts\post.html</code>，提交gitalk.css、gitalk.min.js</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"</span><span class="nt">&gt;&lt;/link&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/blog/gitalk-comment-plugin-2.jpg" alt="" /></p>
+
+<p>根据实际代码放置css、js文件，我在head.html引入了css</p>
+
+<p><img src="/assets/images/2020/blog/gitalk-css-import.jpg" alt="" /></p>
+
+<p>然后在comments.html页面引入js，创建gitalk对象并渲染到div元素</p>
+
+<p><img src="/assets/images/2020/blog/gitalk-js-import.jpg" alt="" /></p>
+
+<p><strong>第四步，开issues</strong></p>
+
+<p>登录github，进入托管仓库中的博客项目，点击设置，如下图：</p>
+
+<p><img src="/assets/images/2020/blog/jekyll-theme-gitalk-issue.png" alt="" /></p>
+
+<p>勾选issues</p>
+
+<p><img src="/assets/images/2020/blog/jekyll-theme-issue-check.png" alt="" /></p>
+
+<p>参考原文：<a href="https://www.tinymind.net.cn/articles/6b542e37702d63">https://www.tinymind.net.cn/articles/6b542e37702d63</a></p>
+
+<p>使用主题：https://github.com/kaeyleo/jekyll-theme-H2O/</p>
+
+<blockquote>
+  <p>整合中踩过的坑</p>
+</blockquote>
+
+<p>我的博客是一开始是使用github的page服务，后面迁移到了自己的腾讯云服务器上，所以授权博客的首页url要变化一下</p>
+
+<p><img src="/assets/images/2020/blog/gitalk-ouath-app.png" alt="image-20200315023355795" /></p>
+
+<p>2、在使用gitalk的页面里引用官方提供的gitalk js 和 css</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"</span><span class="nt">&gt;&lt;/link&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>3、你是给自己账号下的仓库创建App还是给组织账号下的仓库创建App,如果是给自己用，直接从Developer settings进去建App,如果是给组织建，就要从Organization settings 进到组织账号下的Developer settings建App。</p>
+
+<p><img src="/assets/images/2020/blog/gitalk-issue.png" alt="image-20200315023841097" /></p>
+
+<p>4、repo仓库下如果一个issues都没有，就手动创建一条issues</p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/life/2020/03/10/build-myblog.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

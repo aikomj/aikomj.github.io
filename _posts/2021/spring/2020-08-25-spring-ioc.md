@@ -10,7 +10,7 @@ lock: noneed
 
 <mark>Spring是一个轻量级的控制反转(IoC)和面向切面(AOP)的容器（框架）</mark>
 
-## 1、spring组成
+## 1、Spring组成
 
 ![img](/assets/images/2020/spring/640.png)
 
@@ -28,15 +28,13 @@ Spring 框架是一个分层架构，由 7 个定义良好的模块组成。Spri
 - **Spring Web 模块**：Web 上下文模块建立在应用程序上下文模块之上，为基于 Web 的应用程序提供了上下文。所以，Spring 框架支持与 Jakarta Struts 的集成。Web 模块还简化了处理多部分请求以及将请求参数绑定到域对象的工作。
 - **Spring MVC 框架**：MVC 框架是一个全功能的构建 Web 应用程序的 MVC 实现。通过策略接口，MVC 框架变成为高度可配置的，MVC 容纳了大量视图技术，其中包括 JSP、Velocity、Tiles、iText 和 POI。
 
-## 2、springboot与springcloud
+## 2、SpringBoot与SpringCloud
 
 - Spring Boot 是 Spring 的一套快速配置脚手架，可以基于Spring Boot 快速开发单个微服务;
 - Spring Cloud是基于Spring Boot实现的；
 - Spring Boot专注于快速、方便集成的单个微服务个体，Spring Cloud关注全局的服务治理框架；
 - Spring Boot使用了约束优于配置的理念，很多集成方案已经帮你选择好了，能不配置就不配置 , Spring Cloud很大的一部分是基于Spring Boot来实现，Spring Boot可以离开Spring Cloud独立使用开发项目，但是Spring Cloud离不开Spring Boot，属于依赖的关系。
 - SpringBoot在SpringClound中起到了承上启下的作用，如果你要学习SpringCloud必须要学习SpringBoot。
-
-![img](/assets/images/2020/spring/640-spring-boot-cloud-data.png)
 
 ## 3、IOC理论推导
 
@@ -168,7 +166,7 @@ public void test(){
 
 大家发现了区别没有 ? 可能很多人说没啥区别 . 但是同学们 , 他们已经发生了根本性的变化 , 很多地方都不一样了 . 仔细去思考一下 , 以前所有东西都是由程序去进行控制创建 , 而现在是由我们自行控制创建对象 , 把主动权交给了调用者 . 程序不用去管怎么创建,怎么实现了 . 它只负责提供一个接口 .这也是oop编程里多态的思想.
 
-这种思想 , 从本质上解决了问题 , 我们程序员不再去管理对象的创建了 , 更多的去关注业务的实现 . 耦合性大大降低 . 这也就是IOC的原型 !
+这种思想 , 从本质上解决了问题 , 我们程序员不再去管理对象的创建了 , 更多的去关注业务的实现 . 耦合性大大降低 . 这也就是IOC的原型 
 
 ### IOC本质
 
@@ -186,6 +184,162 @@ Spring容器在初始化时先读取配置文件，根据配置文件或元数�
 
 **控制反转是一种通过描述（XML或注解）并通过第三方去生产或获取特定对象的方式。在Spring中实现控制反转的是IoC容器，其实现方法是依赖注入（Dependency Injection,DI）。**
 
+IOC中文就是控制反转，依赖注入的意思，调用类对某个接口实现类的依赖调用由spring容器来实现，不再是调用类自己去实现，从而减少代码的耦合度。在没有引入ioc容器前，对象A依赖对象B，那么A对象在实例化运行到某一个点的时候，自己就必须主动创建对象B或者引用已经创建的对象B，控制权在我们自己手上。引入了IOC容器后，对象A实例化运行时，IOC容器会主动创建一个对象B注入到对象A所需要的地方。这时侯对象的生命周期交给了IOC容器处理，控制权颠倒了过来，这就是控制反转的由来。
 
+## 4、IOC的主流程
 
-> 此文章为转载文章，原创狂神说
+### applicationContext接口
+
+spring容器的顶层接口是：`BeanFactory`，但我们使用更多的是它的子接口：`ApplicationContext`。
+
+通常情况下，如果我们想要手动初始化通过`xml文件`配置的spring容器时，代码是这样的：
+
+```java
+ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+User user = (User)applicationContext.getBean("name");
+```
+
+手动初始化通过`配置类`配置的spring容器时，
+
+```java
+AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(Config.class);
+User user = (User)applicationContext.getBean("name");
+```
+
+这两个类应该是最常见的入口了，它们却殊途同归，最终都会调用`refresh`方法，该方法才是spring容器初始化的真正入口。如下图
+
+![](\assets\images\2021\spring\application-context-refresh.png)
+
+![](\assets\images\2021\spring\application-context-refresh-2.png)
+
+其实调用`refresh`方法的类并非只有这两个，我们用一张图整体认识一下：
+
+![](\assets\images\2021\spring\application-context-refresh-3.png)
+
+虽说调用`refresh`方法的类有这么多，但我决定用`ClassPathXmlApplicationContext`类作为列子给大家讲解，因为它足够经典，而且难度相对来说要小一些。
+
+### refresh方法
+
+`refresh`方法是`spring ioc`的真正入口，它负责初始化spring容器。既然这个方法的作用是初始化spring容器，那方法名为啥不叫`init`？答案很简单，因为它不只被调用一次。
+
+在`springboot`的`SpringAppication`类中的`run`方法会调用`refreshContext`方法，该方法会调用一次`refresh`方法。
+
+在`springcloud`的`BootstrapApplicationListener`类中的`onApplicationEvent`方法会调用`SpringAppication`类中的`run`方法。也会调用一次`refresh`方法。
+
+> 这是springboot项目中如果引入了springcloud，则refresh方法会被调用两次的原因。
+
+在`springmvc`的`FrameworkServlet`类中的`initWebApplicationContext`方法会调用`configureAndRefreshWebApplicationContext`方法，该方法会调用一次`refresh`方法，不过会提前判断容器是否激活。
+
+所以这里的`refresh`表示重新构建的意思。
+
+下面重点看看`refresh`的关键步骤：
+
+![](\assets\images\2021\spring\refresh-steps.png)
+
+其实上图中一眼看过去好像有很多方法，但是真正的核心的方法不多，我主要讲其中最重要的：
+
+- obtainFreshBeanFactory
+- invokeBeanFactoryPostProcessors
+- registerBeanPostProcessors
+- finishBeanFactoryInitialization
+
+### 解析xml配置文件
+
+`obtainFreshBeanFactory`方法会解析xml的bean配置，生成`BeanDefinition`对象，并且注册到spring容器中（说白了就是很多map集合中）。
+
+经过几层调用（细节不说，很简单），会调到`AbstractBeanDefinitionReader`类的`loadBeanDefinitions`方法：
+
+![](\assets\images\2021\spring\application-context-refresh-4.png)
+
+该方法会循环`locations`（applicationContext.xml文件路径）,调用另外一个`loadBeanDefinitions`方法，一个文件一个文件解析。
+
+经过一些列的骚操作，会将location转换成inputSource和resource，然后再转换成Document对象，方面解析。
+
+![](\assets\images\2021\spring\application-context-refresh-5.png)
+
+在解析xml文件时，需要判断是默认标签，还是自定义标签，处理逻辑不一样：
+
+![](\assets\images\2021\spring\application-context-refresh-6.png)
+
+spring的默认标签只有4种：
+
+- `<import/>`
+- `<alias/>`
+- `<bean/>`
+- `<beans/>`
+
+对应的处理方法是：
+
+![](\assets\images\2021\spring\application-context-refresh-7.png)
+
+注意常见的：`<aop/>`、`<context/>`、`<mvc/>`等都是自定义标签。
+
+从上图中处理`<bean/>`标签的`processBeanDefinition`方法开始，经过一系列调用，最终会调到`DefaultBeanDefinitionDocumentReader`类的`processBeanDefinition`方法。
+
+![](\assets\images\2021\spring\application-context-refresh-8.png)
+
+这个方法包含了关键步骤：解析元素生成BeanDefinition 和 注册BeanDefinition。
+
+### 生成BeanDefinition
+
+下面重点看看BeanDefinition是如何生成的。
+
+上面的方法会调用`BeanDefinitionParserDelegate`类的`parseBeanDefinitionElement`方法：
+
+![](\assets\images\2021\spring\application-context-refresh-9.png)
+
+一个`<bean/>`标签会对应一个`BeanDefinition`对象。
+
+该方法又会调用同名的重载方法：`processBeanDefinition`，真正创建`BeanDefinition`对象，并且解析一系列参数填充到对象中：
+
+![](\assets\images\2021\spring\application-context-refresh-10.png)
+
+其实真正创建BeanDefinition的逻辑是非常简单的，直接new了一个对象：
+
+![](\assets\images\2021\spring\application-context-refresh-11.png)
+
+真正复杂的地方是在前面的各种属性的解析和赋值上。
+
+### 注册BeanDefinition
+
+上面通过解析xml文件生成了很多`BeanDefinition`对象，下面就需要把`BeanDefinition`对象注册到spring容器中，这样spring容器才能初始化bean。
+
+在`BeanDefinitionReaderUtils`类的`registerBeanDefinition`方法很简单，只有两个流程：
+
+![](\assets\images\2021\spring\application-context-refresh-12.png)
+
+先看看`DefaultListableBeanFactory`类的`registerBeanDefinition`方法是如何注册`beanName`的
+
+![](\assets\images\2021\spring\application-context-refresh-13.png)
+
+接下来看看`SimpleAliasRegistry`类的`registerAlias`方法是如何注册`alias`别名的：
+
+![](\assets\images\2021\spring\application-context-refresh-14.png)
+
+这样就能通过多个不同的`alias`找到同一个`name`，再通过`name`就能找到`BeanDefinition`。
+
+### 修改BeanDefinition
+
+上面`BeanDefinition`对象已经注册到spring容器当中了，接下来，如果想要修改已经注册的`BeanDefinition`对象该怎么办呢？
+
+`refresh`方法中通过`invokeBeanFactoryPostProcessors`方法修改`BeanDefinition`对象。
+
+经过一系列的调用，最终会到`PostProcessorRegistrationDelegate`类的`invokeBeanFactoryPostProcessors`方法：
+
+![](\assets\images\2021\spring\application-context-refresh-15.png)
+
+流程看起来很长，其实逻辑比较简单，主要是在处理`BeanDefinitionRegistryPostProcessor`和`BeanFactoryPostProcessor`。
+
+而`BeanDefinitionRegistryPostProcessor`本身是一种特殊的`BeanFactoryPostProcessor`，它也会执行`BeanFactoryPostProcessor`的逻辑，只是加了一个额外的方法。
+
+![](\assets\images\2021\spring\application-context-refresh-16.png)
+
+`ConfigurationClassPostProcessor`可能是最重要的`BeanDefinitionRegistryPostProcessor`，它负责处理`@Configuration`注解。
+
+### 注册BeanPostProcessor
+
+处理完前面的逻辑，`refresh`方法接着会调用`registerBeanPostProcessors`注册`BeanPostProcessor`，它的功能非常强大，后面的文章会详细讲解。经过一系列的调用，最终会到`PostProcessorRegistrationDelegate`类的`registerBeanPostProcessors`方法：
+
+![](\assets\images\2021\spring\application-context-refresh-17.png)
+
+注意，这一步只是注册`BeanPostProcessor`，真正的使用在后面。

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 自动售卖机是怎么知道我拿走那个商品 - 大伟的博客 </title>
+    <meta name="keywords" content="life">
+    <meta name="description"
+          content="每次从自动售卖机买东西思考那个问题">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/life/2021/01/19/about-vending-machine.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="自动售卖机是怎么知道我拿走那个商品">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>自动售卖机是怎么知道我拿走那个商品</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/01/19
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="自动售卖机">自动售卖机</h2>
+
+<p>隔壁小伙伴今天又从自动售卖机买了早餐，把标签贴在桌子上，于是大脑又思考那个问题：售卖机怎么知道我拿走了的商品，于是不自觉的与隔壁的小伙伴讨论了一番，结果还是靠百度解决心中的疑问，哈哈哈。</p>
+
+<p>自动售卖机的购物流程很简单：1.扫码/刷脸开门；2.选取商品；3.关门；4.系统自动结算。看起来分为4步，其实顾客实际购物体验要简洁的多，刷脸开门拿取商品关门就行了，就是这么简单。无人售货柜主要有一下三种识别方案，下面简单介绍一下</p>
+
+<h3 id="称重识别">称重识别</h3>
+
+<p>1.称重识别。这是一种比较古老的识别方式，每层货架上都有一个很精密的电子秤，顾客拿走商品后根据商品重量发生的变化，系统就能判断出顾客拿走了哪些商品。当然，该方案的弊端也是很明显的，重量相同或者非常相近的商品无法有限判断。</p>
+
+<p><img src="\assets\images\2021\life\vending-machine-1.jpg" alt="" /></p>
+
+<h3 id="rfid方案">RFID方案</h3>
+
+<p>2.RFID方案。这种方案大家都很熟悉，各种门禁各种刷卡就是这种原理。在每件商品上张贴电子标签，顾客拿走商品时在商品经过无人售货柜门框的时候就会被感知到，系统以此进行结算。该方案的弊端是电子标签有单独的物料成本（0.1-0.2元一个），还需要单独粘贴，也有额外的人工成本。用得越多，成本越高！</p>
+
+<p><img src="\assets\images\2021\life\vending-machine-2.jpg" alt="" /></p>
+
+<p>公司使用的就是这种方案，售卖小哥把贴有电子标签的商品放入售卖机，把门关上。当我们扫码后，售卖机打开门前会感应一下里面的所有电子标签，我们拿出商品后关上门，售卖机重新感应一下里面的所有电子标签，做比对就知道我们拿走了什么商品（少了的标签），电子标签上记录对应的商品信息，然后再触发支付流程。以上就是我个人思考得出的原理，仅代表个人观点。</p>
+
+<p>RFID射频技术是个什么。百度百科如下：</p>
+
+<p><img src="\assets\images\2021\life\vending-machine-4.jpg" alt="" /></p>
+
+<p>电子标签是<a href="https://baike.baidu.com/item/RFID">RFID</a>技术的载体，RFID是Radio Frequency Identification的缩写，术语为<a href="https://baike.baidu.com/item/射频识别">射频识别</a>。工作频率如下：</p>
+
+<ul>
+  <li>125KHZ</li>
+  <li>13.56MHz</li>
+  <li>915MHz</li>
+  <li>2.45GHz</li>
+  <li>5.8GHz</li>
+</ul>
+
+<blockquote>
+  <p>组成</p>
+</blockquote>
+
+<p>最基本的<a href="https://baike.baidu.com/item/电子标签系统">电子标签系统</a>由三部分组成：</p>
+
+<ul>
+  <li>
+    <p>标签(Tag)：由耦合元件及芯片组成，每个<a href="https://baike.baidu.com/item/标签">标签</a>具有唯一的电子编码，高容量电子标签有用户可写入的存储空间，附着在物体上标识目标对象；</p>
+  </li>
+  <li>
+    <p>阅读器(Reader)：读取(有时还可以写入)标签信息的设备，可设计为手持式或固定式；</p>
+  </li>
+  <li>
+    <p>天线(Antenna)：在标签和读取器间传递<a href="https://baike.baidu.com/item/射频">射频</a>信号。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>特性</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>数据存储：与传统形式的标签相比，容量更大(1bit—1024bit)，数据可随时更新，可读写。</p>
+
+    <p>1B=1字节=8bit(比特)，128b=128字节=1024bit</p>
+
+    <p>1KB=1024B</p>
+  </li>
+  <li>
+    <p>读写速度：与<a href="https://baike.baidu.com/item/条码">条码</a>相比，无须直线对准扫描，读写速度更快，可多目标识别、运动识别。</p>
+  </li>
+  <li>
+    <p>使用方便：体积小，容易封装，可以嵌入产品内。</p>
+  </li>
+  <li>
+    <p>安全：专用芯片、序列号唯一、很难复制。</p>
+  </li>
+  <li>
+    <p>耐用：无机械故障、寿命长、抗恶劣环境。</p>
+  </li>
+  <li>
+    <p>感应效果：比一般的要好很多</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>工作原理</p>
+</blockquote>
+
+<p>电子标签是一种突破性的技术：</p>
+
+<ul>
+  <li>
+    <p>第一，可以识别单个的非常具体的物体，而不是像条形码那样只能识别一类物体；</p>
+  </li>
+  <li>第二，其采用无线电射频，可以透过外部材料读取数据，而条形码必须靠激光来读取信息；</li>
+  <li>第三，可以同时对多个物体进行识读，而<a href="https://baike.baidu.com/item/条形码">条形码</a>只能一个一个地读。此外，储存的信息量也非常大。</li>
+</ul>
+
+<p>RFID技术的基本工作原理并不复杂：标签进入阅读器后，接收阅读器发出的射频信号，凭借感应电流所获得的能量发送出存储在芯片中的产品信息（<em>Passive Tag</em>，无源标签或被动标签），或者由标签主动发送某一频率的信号（Active Tag，有源标签或主动标签），阅读器读取信息并解码后，送至中央信息系统进行有关数据处理。</p>
+
+<p>RFID(射频识别)系统由两部分组成：读/写单元和电子收发器。阅读器通过天线发出<a href="https://baike.baidu.com/item/电磁脉冲">电磁脉冲</a>，收发器接收这些脉冲并发送已存储的信息到<a href="https://baike.baidu.com/item/阅读器">阅读器</a>作为响应。实际上，这就是对存储器的数据进行非接触读、写或删除处理。</p>
+
+<p>从技术上来说，“<a href="https://baike.baidu.com/item/智能标签">智能标签</a>”包含了包括具有RFID射频部分和一个超薄天线环路的RFID芯片的RFID电路，这个天线与一个塑料薄片一起嵌入到标签内。通常，在这个标签上还粘一个纸标签，在纸标签上可以清晰地印上一些重要信息。当前的智能标签一般为信用卡大小，对于小的货物还有4.5×4.5cm尺寸的标签，也有CD和DVD上用的直径为4.7厘米的圆形标签。</p>
+
+<p>与像条形码或<a href="https://baike.baidu.com/item/磁条">磁条</a>等其他ID技术相比较而言，收发器技术的优势在于阅读器和<a href="https://baike.baidu.com/item/收发器">收发器</a>之间的无线链接：读/写单元不需要与收发器之间的可视接触，因此可以完全集成到产品里面。这意味着收发器适合于恶劣的环境，收发器对潮湿、肮脏和机械影响不敏感。因此，收发器系统具有非常高的读可靠性、快速数据获取，最后一点也是重要的一点就是节省劳力和纸张。</p>
+
+<h3 id="视觉识别">视觉识别</h3>
+
+<p>3.视觉识别。该方案依靠摄像头实时监控把画面上传到后台服务器，后台服务器使用人工智能+图像识别技术进行对比判断，从而判断出顾客拿走了哪些商品从而自动结算。该方案后期使用成本低，但前期软件开发以及服务器成本比较高，只有大批量运营时才有优势。</p>
+
+<p>AI 动态视觉，提前扫码支付宝或者微信信用授权。开门关门直接无感结算，视觉摄像头会抓取商品图像后台结算无感支付。</p>
+
+<p><img src="\assets\images\2021\life\vending-machine-3.jpg" alt="" /></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/life/2021/01/19/about-vending-machine.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

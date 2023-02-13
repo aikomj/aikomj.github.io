@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 5种限流算法，7种限流方式 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="固定窗口算法，滑动窗口算法，漏桶算法，令牌桶算法，Redis分布式限流，Google 的 Java 开发工具包 Guava 中的限流工具类 RateLimiter，阿里开源的 Sentinel 限流卫兵">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2022/03/22/limit.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="5种限流算法，7种限流方式">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>5种限流算法，7种限流方式</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/03/22
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>以下文章来源于程序猿阿朗</p>
+
+<h2 id="前言">前言</h2>
+
+<p>微服务的流行，服务和服务之间的依赖越来越强，调用关系越来越复杂，服务和服务之间的<strong>稳定性</strong>越来越重要。在遇到突发的请求量激增，恶意的用户访问，亦或请求频率过高给下游服务带来较大压力时，我们常常需要通过缓存、限流、熔断降级、负载均衡等多种方式保证服务的稳定性。</p>
+
+<p>其中<strong>限流</strong>是不可或缺的一环，这篇文章介绍<strong>限流</strong>相关知识</p>
+
+<h2 id="1限流">1、限流</h2>
+
+<p><strong>限流</strong>顾名思义，就是对请求或并发数进行限制；通过对一个时间窗口内的请求量进行限制来保障系统的正常运行。如果我们的服务资源有限、处理能力有限，就需要对调用我们服务的上游请求进行限制，以防止自身服务由于资源耗尽而停止服务。</p>
+
+<p>两个重要概念</p>
+
+<ul>
+  <li><strong>阈值</strong>：在一个单位时间内允许的请求量。如 QPS 限制为10，说明 1 秒内最多接受 10 次请求。</li>
+  <li><strong>拒绝策略</strong>：超过阈值的请求的拒绝策略，常见的拒绝策略有直接拒绝、排队等待等。</li>
+</ul>
+
+<h3 id="固定窗口算法">固定窗口算法</h3>
+
+<p><strong>固定窗口算法</strong>又叫<strong>计数器算法</strong>，是一种<strong>简单</strong>方便的限流算法。主要通过一个支持<strong>原子操作</strong>的计数器来累计 1 秒内的请求次数，当 1 秒内计数达到限流阈值时触发拒绝策略。每过 1 秒，计数器重置为 0 开始重新计数。</p>
+
+<p><strong>代码实现</strong></p>
+
+<p>下面是简单的代码实现，QPS 限制为 2，这里的代码做了一些<strong>优化</strong>，并没有单独开一个线程去每隔 1 秒重置计数器，而是在每次调用时进行时间间隔计算来确定是否先重置计数器。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RateLimiterSimpleWindow</span> <span class="o">{</span>
+    <span class="c1">// 阈值</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Integer</span> <span class="no">QPS</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="c1">// 时间窗口（毫秒）</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">long</span> <span class="no">TIME_WINDOWS</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+    <span class="c1">// 计数器</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">AtomicInteger</span> <span class="no">REQ_COUNT</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">();</span>
+    
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">long</span> <span class="no">START_TIME</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+    <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">((</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="no">START_TIME</span><span class="o">)</span> <span class="o">&gt;</span> <span class="no">TIME_WINDOWS</span><span class="o">)</span> <span class="o">{</span>
+            <span class="no">REQ_COUNT</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+            <span class="no">START_TIME</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="no">REQ_COUNT</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="no">QPS</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">250</span><span class="o">);</span>
+            <span class="nc">LocalTime</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">tryAcquire</span><span class="o">())</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">now</span> <span class="o">+</span> <span class="s">" 被限流"</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">now</span> <span class="o">+</span> <span class="s">" 做点什么"</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>20:53:43.038922 做点什么
+20:53:43.291435 做点什么
+20:53:43.543087 被限流
+20:53:43.796666 做点什么
+20:53:44.050855 做点什么
+20:53:44.303547 被限流
+20:53:44.555008 被限流
+20:53:44.809083 做点什么
+20:53:45.063828 做点什么
+20:53:45.314433 被限流
+</code></pre></div></div>
+
+<p>从输出结果中可以看到大概每秒操作 3 次，由于限制 QPS 为 2，所以平均会有一次被限流。看起来可以了，不过我们思考一下就会发现这种简单的限流方式是有问题的，虽然我们限制了 QPS 为 2，但是当遇到时间窗口的临界突变时，如 1s 中的后 500 ms 和第 2s 的前 500ms 时，虽然是加起来是 1s 时间，却可以被请求 4 次。</p>
+
+<p><img src="/assets/images/2022/springboot/limit-1.jpg" alt="" /></p>
+
+<p>简单修改测试代码，可以进行验证</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 先休眠 400ms，可以更快的到达时间窗口。</span>
+<span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">400</span><span class="o">);</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">250</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">tryAcquire</span><span class="o">())</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"被限流"</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"做点什么"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>20:51:17.395087 做点什么
+20:51:17.653114 做点什么
+20:51:17.903543 做点什么
+20:51:18.154104 被限流
+20:51:18.405497 做点什么
+20:51:18.655885 做点什么
+20:51:18.906177 做点什么
+20:51:19.158113 被限流
+20:51:19.410512 做点什么
+20:51:19.661629 做点什么
+</code></pre></div></div>
+
+<h3 id="滑动窗口算法">滑动窗口算法</h3>
+
+<p>我们已经知道固定窗口算法的实现方式以及它所存在的问题，而滑动窗口算法是对固定窗口算法的改进。既然固定窗口算法在遇到时间窗口的临界突变时会有问题，那么我们在遇到下一个时间窗口前也调整时间窗口不就可以了吗？示意图如下：</p>
+
+<p><img src="/assets/images/2022/springboot/limit-2.jpg" alt="" /></p>
+
+<p>上图的示例中，每 500ms 滑动一次窗口，可以发现窗口滑动的间隔越短，时间窗口的临界突变问题发生的概率也就越小，不过只要有时间窗口的存在，还是有可能发生<strong>时间窗口的临界突变问题</strong>。</p>
+
+<p><strong>代码实现</strong></p>
+
+<p>滑动窗口限流工具类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">wdbyte</span><span class="o">.</span><span class="na">rate</span><span class="o">.</span><span class="na">limiter</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.time.LocalTime</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.atomic.AtomicInteger</span><span class="o">;</span>
+
+<span class="cm">/**
+ * 滑动窗口限流工具类
+ *
+ * @author https://www.wdbyte.com
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RateLimiterSlidingWindow</span> <span class="o">{</span>
+    <span class="cm">/**
+     * 阈值
+     */</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">qps</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="cm">/**
+     * 时间窗口总大小（毫秒）
+     */</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">windowSize</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+    <span class="cm">/**
+     * 多少个子窗口
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">windowCount</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="cm">/**
+     * 窗口列表
+     */</span>
+    <span class="kd">private</span> <span class="nc">WindowInfo</span><span class="o">[]</span> <span class="n">windowArray</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WindowInfo</span><span class="o">[</span><span class="n">windowCount</span><span class="o">];</span>
+
+    <span class="kd">public</span> <span class="nf">RateLimiterSlidingWindow</span><span class="o">(</span><span class="kt">int</span> <span class="n">qps</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">qps</span> <span class="o">=</span> <span class="n">qps</span><span class="o">;</span>
+        <span class="kt">long</span> <span class="n">currentTimeMillis</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">windowArray</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">windowArray</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WindowInfo</span><span class="o">(</span><span class="n">currentTimeMillis</span><span class="o">,</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 1. 计算当前时间窗口
+     * 2. 更新当前窗口计数 &amp; 重置过期窗口计数
+     * 3. 当前 QPS 是否超过限制
+     *
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">currentTimeMillis</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="c1">// 1. 计算当前时间窗口</span>
+        <span class="kt">int</span> <span class="n">currentIndex</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)(</span><span class="n">currentTimeMillis</span> <span class="o">%</span> <span class="n">windowSize</span> <span class="o">/</span> <span class="o">(</span><span class="n">windowSize</span> <span class="o">/</span> <span class="n">windowCount</span><span class="o">));</span>
+        <span class="c1">// 2.  更新当前窗口计数 &amp; 重置过期窗口计数</span>
+        <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">windowArray</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="nc">WindowInfo</span> <span class="n">windowInfo</span> <span class="o">=</span> <span class="n">windowArray</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+            <span class="k">if</span> <span class="o">((</span><span class="n">currentTimeMillis</span> <span class="o">-</span> <span class="n">windowInfo</span><span class="o">.</span><span class="na">getTime</span><span class="o">())</span> <span class="o">&gt;</span> <span class="n">windowSize</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">windowInfo</span><span class="o">.</span><span class="na">getNumber</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+                <span class="n">windowInfo</span><span class="o">.</span><span class="na">setTime</span><span class="o">(</span><span class="n">currentTimeMillis</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">currentIndex</span> <span class="o">==</span> <span class="n">i</span> <span class="o">&amp;&amp;</span> <span class="n">windowInfo</span><span class="o">.</span><span class="na">getNumber</span><span class="o">().</span><span class="na">get</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">qps</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">windowInfo</span><span class="o">.</span><span class="na">getNumber</span><span class="o">().</span><span class="na">incrementAndGet</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">windowInfo</span><span class="o">.</span><span class="na">getNumber</span><span class="o">().</span><span class="na">get</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="c1">// 3. 当前 QPS 是否超过限制</span>
+        <span class="k">return</span> <span class="n">sum</span> <span class="o">&lt;=</span> <span class="n">qps</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">WindowInfo</span> <span class="o">{</span>
+        <span class="c1">// 窗口开始时间</span>
+        <span class="kd">private</span> <span class="nc">Long</span> <span class="n">time</span><span class="o">;</span>
+        <span class="c1">// 计数器</span>
+        <span class="kd">private</span> <span class="nc">AtomicInteger</span> <span class="n">number</span><span class="o">;</span>
+
+        <span class="kd">public</span> <span class="nf">WindowInfo</span><span class="o">(</span><span class="kt">long</span> <span class="n">time</span><span class="o">,</span> <span class="nc">AtomicInteger</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">number</span> <span class="o">=</span> <span class="n">number</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// get...set...</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>下面是测试用例，设置 QPS 为 2,测试次数 20 次，每次间隔 300 毫秒，预计成功次数在 12 次左右。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">qps</span> <span class="o">=</span> <span class="mi">2</span><span class="o">,</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">20</span><span class="o">,</span> <span class="n">sleep</span> <span class="o">=</span> <span class="mi">300</span><span class="o">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">count</span> <span class="o">*</span> <span class="n">sleep</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">qps</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"当前QPS限制为:%d,当前测试次数:%d,间隔:%dms,预计成功次数:%d"</span><span class="o">,</span> <span class="n">qps</span><span class="o">,</span> <span class="n">count</span><span class="o">,</span> <span class="n">sleep</span><span class="o">,</span> <span class="n">success</span><span class="o">));</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="nc">RateLimiterSlidingWindow</span> <span class="n">myRateLimiter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RateLimiterSlidingWindow</span><span class="o">(</span><span class="n">qps</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">sleep</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">myRateLimiter</span><span class="o">.</span><span class="na">tryAcquire</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">success</span><span class="o">++;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">success</span> <span class="o">%</span> <span class="n">qps</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">": success, "</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">": success, "</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">": fail"</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"实际测试成功次数:"</span> <span class="o">+</span> <span class="n">success</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>当前QPS限制为:2,当前测试次数:20,间隔:300ms,预计成功次数:12
+16:04:27.077782: success, 16:04:27.380715: success, 
+16:04:27.684244: fail
+16:04:27.989579: success, 16:04:28.293347: success, 
+16:04:28.597658: fail
+16:04:28.901688: fail
+16:04:29.205262: success, 16:04:29.507117: success, 
+16:04:29.812188: fail
+16:04:30.115316: fail
+16:04:30.420596: success, 16:04:30.725897: success, 
+16:04:31.028599: fail
+16:04:31.331047: fail
+16:04:31.634127: success, 16:04:31.939411: success, 
+16:04:32.242380: fail
+16:04:32.547626: fail
+16:04:32.847965: success, 
+实际测试成功次数:11
+</code></pre></div></div>
+
+<h3 id="滑动日志算法">滑动日志算法</h3>
+
+<p>滑动日志算法是实现限流的另一种方法，这种方法比较简单。基本逻辑就是记录下所有的请求时间点，新请求到来时先判断最近指定时间范围内的请求数量是否超过指定阈值，由此来确定是否达到限流，这种方式没有了时间窗口突变的问题，限流比较准确，但是因为要记录下每次请求的时间点，所以<strong>占用的内存较多</strong>。</p>
+
+<p><strong>代码实现</strong></p>
+
+<p>下面是简单实现的 一个滑动日志算法，因为滑动日志要每次请求单独存储一条记录，可能占用内存过多。所以下面这个实现其实不算严谨的滑动日志，更像一个把 1 秒时间切分成 1000 个时间窗口的滑动窗口算法。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 滑动日志方式限流
+ * 设置 QPS 为 2.
+ *
+ * @author https://www.wdbyte.com
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RateLimiterSildingLog</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 阈值
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">qps</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="cm">/**
+     * 记录请求的时间戳,和数量
+     */</span>
+    <span class="kd">private</span> <span class="nc">TreeMap</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">Long</span><span class="o">&gt;</span> <span class="n">treeMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TreeMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="cm">/**
+     * 清理请求记录间隔, 60 秒
+     */</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">claerTime</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">RateLimiterSildingLog</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">qps</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">qps</span> <span class="o">=</span> <span class="n">qps</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">tryAcquire</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="c1">// 清理过期的数据老数据，最长 60 秒清理一次</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">treeMap</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">treeMap</span><span class="o">.</span><span class="na">firstKey</span><span class="o">()</span> <span class="o">-</span> <span class="n">now</span><span class="o">)</span> <span class="o">&gt;</span> <span class="n">claerTime</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">keySet</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;(</span><span class="n">treeMap</span><span class="o">.</span><span class="na">subMap</span><span class="o">(</span><span class="mi">0L</span><span class="o">,</span> <span class="n">now</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">).</span><span class="na">keySet</span><span class="o">());</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Long</span> <span class="n">key</span> <span class="o">:</span> <span class="n">keySet</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">treeMap</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// 计算当前请求次数</span>
+        <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">Long</span> <span class="n">value</span> <span class="o">:</span> <span class="n">treeMap</span><span class="o">.</span><span class="na">subMap</span><span class="o">(</span><span class="n">now</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">now</span><span class="o">).</span><span class="na">values</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">sum</span> <span class="o">+=</span> <span class="n">value</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 超过QPS限制，直接返回 false</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">qps</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 记录本次请求</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">treeMap</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">now</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">treeMap</span><span class="o">.</span><span class="na">compute</span><span class="o">(</span><span class="n">now</span><span class="o">,</span> <span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">v</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">treeMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">now</span><span class="o">,</span> <span class="mi">1L</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">sum</span> <span class="o">&lt;=</span> <span class="n">qps</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="nc">RateLimiterSildingLog</span> <span class="n">rateLimiterSildingLog</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RateLimiterSildingLog</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">250</span><span class="o">);</span>
+            <span class="nc">LocalTime</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">rateLimiterSildingLog</span><span class="o">.</span><span class="na">tryAcquire</span><span class="o">())</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">now</span> <span class="o">+</span> <span class="s">" 做点什么"</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">now</span> <span class="o">+</span> <span class="s">" 被限流"</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>代码中把阈值 QPS 设定为 3，运行可以得到如下日志：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>20:51:17.395087 做点什么
+20:51:17.653114 做点什么
+20:51:17.903543 做点什么
+20:51:18.154104 被限流
+20:51:18.405497 做点什么
+20:51:18.655885 做点什么
+20:51:18.906177 做点什么
+20:51:19.158113 被限流
+20:51:19.410512 做点什么
+20:51:19.661629 做点什么
+</code></pre></div></div>
+
+<h3 id="漏桶算法">漏桶算法</h3>
+
+<p>漏桶算法中的漏桶是一个形象的比喻，这里可以用生产者消费者模式进行说明，请求是一个生产者，每一个请求都如一滴水，请求到来后放到一个队列（漏桶）中，而桶底有一个孔，不断的漏出水滴，就如消费者不断的在消费队列中的内容，消费的速率（漏出的速度）等于限流阈值。即假如 QPS  为 2，则每 <code class="highlighter-rouge">1s / 2= 500ms</code> 消费一次。漏桶的桶有大小，就如队列的容量，当请求堆积超过指定容量时，会触发拒绝策略。示意图：</p>
+
+<p><img src="/assets/images/2022/springboot/limit-3.jpg" alt="" /></p>
+
+<p>由介绍可以知道，漏桶模式中的消费处理总是能以恒定的速度进行，可以很好的<strong>保护自身系统</strong>不被突如其来的流量冲垮；但是这也是漏桶模式的缺点，假设 QPS 为 2，同时 2 个请求进来，2 个请求并不能同时进行处理响应，因为每 <code class="highlighter-rouge">1s / 2= 500ms</code> 只能处理一个请求。</p>
+
+<h3 id="令牌桶算法">令牌桶算法</h3>
+
+<p>令牌桶算法同样是实现限流是一种常见的思路，最为常用的 Google 的 Java 开发工具包 Guava 中的限流工具类 RateLimiter 就是令牌桶的一个实现。令牌桶的实现思路类似于生产者和消费之间的关系。SpringCloud 的gateway支持令牌桶算法。</p>
+
+<p>系统服务作为生产者，按照指定频率向桶（容器）中添加令牌，如 QPS 为 2，每 500ms 向桶中添加一个令牌，如果桶中令牌数量达到阈值，则不再添加。</p>
+
+<p>请求执行作为消费者，每个请求都需要去桶中拿取一个令牌，取到令牌则继续执行；如果桶中无令牌可取，就触发拒绝策略，可以是超时等待，也可以是直接拒绝本次请求，由此达到限流目的。</p>
+
+<p><img src="/assets/images/2022/springboot/limit-4.jpg" alt="" /></p>
+
+<p>有以下特点：</p>
+
+<ol>
+  <li>1s / 阈值（QPS）  = 令牌添加时间间隔。</li>
+  <li>桶的容量等于限流的阈值，令牌数量达到阈值时，不再添加。</li>
+  <li>可以适应流量突发，N 个请求到来只需要从桶中获取 N 个令牌就可以继续处理。</li>
+  <li>有启动过程，令牌桶启动时桶中无令牌，然后按照令牌添加时间间隔添加令牌，若启动时就有阈值数量的请求过来，会因为桶中没有足够的令牌而触发拒绝策略，不过如 RateLimiter 限流工具已经优化了这类问题</li>
+</ol>
+
+<p><strong>代码实现</strong></p>
+
+<p>Google 的 Java 开发工具包 Guava 中的限流工具类 RateLimiter 就是令牌桶的一个实现，日常开发中我们也不会手动实现了，这里直接使用 RateLimiter 进行测试。</p>
+
+<p>引入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;exclusion&gt;</span>
+   <span class="nt">&lt;groupId&gt;</span>com.google.guava<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>guava<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;version&gt;</span>31.0.1-jre<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/exclusion&gt;</span>
+</code></pre></div></div>
+
+<p>RateLimiter 限流体验</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">RateLimiter</span> <span class="n">rateLimiter</span> <span class="o">=</span> <span class="nc">RateLimiter</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">time</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">format</span><span class="o">(</span><span class="nc">DateTimeFormatter</span><span class="o">.</span><span class="na">ISO_LOCAL_TIME</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">time</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">rateLimiter</span><span class="o">.</span><span class="na">tryAcquire</span><span class="o">());</span>
+    <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">250</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>代码中限制 QPS 为 2，也就是每隔 500ms 生成一个令牌，但是程序每隔 250ms 获取一次令牌，所以两次获取中只有一次会成功。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">06.797557</span><span class="o">:</span><span class="kc">true</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">07.061419</span><span class="o">:</span><span class="kc">false</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">07.316283</span><span class="o">:</span><span class="kc">true</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">07.566746</span><span class="o">:</span><span class="kc">false</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">07.817035</span><span class="o">:</span><span class="kc">true</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">08.072483</span><span class="o">:</span><span class="kc">false</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">08.326347</span><span class="o">:</span><span class="kc">true</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">08.577661</span><span class="o">:</span><span class="kc">false</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">08.830252</span><span class="o">:</span><span class="kc">true</span>
+<span class="mi">17</span><span class="o">:</span><span class="mi">19</span><span class="o">:</span><span class="mf">09.085327</span><span class="o">:</span><span class="kc">false</span>
+</code></pre></div></div>
+
+<p><strong>思考</strong></p>
+
+<p>虽然演示了 Google Guava 工具包中的 RateLimiter 的实现，但是我们需要思考一个问题，就是令牌的添加方式，如果按照指定间隔添加令牌，那么需要开一个线程去定时添加，如果有很多个接口很多个 RateLimiter 实例，<strong>线程数会随之增加</strong>，这显然不是一个好的办法。显然 Google 也考虑到了这个问题，在 RateLimiter 中，是<strong>在每次令牌获取时才进行计算令牌是否足够的</strong>。它通过存储的下一个令牌生成的时间，和当前获取令牌的时间差，再结合阈值，去计算令牌是否足够，同时再记录下一个令牌的生成时间以便下一次调用。</p>
+
+<p>下面是 Guava 中 RateLimiter 类的子类 SmoothRateLimiter 的 <code class="highlighter-rouge">resync()</code> 方法的代码分析，可以看到其中的令牌计算逻辑。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">resync</span><span class="o">(</span><span class="kt">long</span> <span class="n">nowMicros</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 当前微秒时间</span>
+    <span class="c1">// 当前时间是否大于下一个令牌生成时间</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">nowMicros</span> <span class="o">&gt;</span> <span class="k">this</span><span class="o">.</span><span class="na">nextFreeTicketMicros</span><span class="o">)</span> <span class="o">{</span> 
+       <span class="c1">// 可生成的令牌数 newPermits = （当前时间 - 下一个令牌生成时间）/ 令牌生成时间间隔。</span>
+       <span class="c1">// 如果 QPS 为2，这里的 coolDownIntervalMicros 就是 500000.0 微秒(500ms)</span>
+        <span class="kt">double</span> <span class="n">newPermits</span> <span class="o">=</span> <span class="o">(</span><span class="kt">double</span><span class="o">)(</span><span class="n">nowMicros</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="na">nextFreeTicketMicros</span><span class="o">)</span> <span class="o">/</span> <span class="k">this</span><span class="o">.</span><span class="na">coolDownIntervalMicros</span><span class="o">();</span>
+    <span class="c1">// 更新令牌库存 storedPermits。</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">storedPermits</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">maxPermits</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">storedPermits</span> <span class="o">+</span> <span class="n">newPermits</span><span class="o">);</span>
+    <span class="c1">// 更新下一个令牌生成时间 nextFreeTicketMicros</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">nextFreeTicketMicros</span> <span class="o">=</span> <span class="n">nowMicros</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="redis分布式限流">Redis分布式限流</h3>
+
+<p>Redis 是一个开源的内存数据库，可以用来作为数据库、缓存、消息中间件等。Redis 是单线程的，又在内存中操作，所以速度极快，得益于 Redis 的各种特性，所以使用 Redis 实现一个限流工具是十分方便的。</p>
+
+<p>springboot项目导入依赖</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">spring</span><span class="o">-</span><span class="n">boot</span><span class="o">-</span><span class="n">starter</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">redis</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>配置Redis信息</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring:
+  redis:
+    database: 0
+    password: 
+    port: 6379
+    host: 127.0.0.1
+    lettuce:
+      shutdown-timeout: 100ms
+      pool:
+        min-idle: 5
+        max-idle: 10
+        max-active: 8
+        max-wait: 1ms
+</code></pre></div></div>
+
+<blockquote>
+  <p>固定窗口限流</p>
+</blockquote>
+
+<p>Redis 中的固定窗口限流是使用 <code class="highlighter-rouge">incr</code> 命令实现的，<code class="highlighter-rouge">incr</code> 命令通常用来自增计数；如果我们使用时间戳信息作为 key，自然就可以统计每秒的请求量了，以此达到限流目的。</p>
+
+<p>要注意两点：</p>
+
+<ol>
+  <li>对于不存在的 key，第一次新增时，value 始终为 1。</li>
+  <li>INCR 和 EXPIRE 命令操作应该在一个<strong>原子操作</strong>中提交，以保证每个 key 都正确设置了过期时间，不然会有 key 值无法自动删除而导致的内存溢出。</li>
+</ol>
+
+<p>由于 Redis 中实现事务的复杂性，所以这里直接只用 <code class="highlighter-rouge">lua</code> 脚本来实现原子操作，lua脚本内容</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">local </span>count <span class="o">=</span> redis.call<span class="o">(</span><span class="s2">"incr"</span>,KEYS[1]<span class="o">)</span>
+<span class="k">if </span>count <span class="o">==</span> 1 <span class="k">then
+  </span>redis.call<span class="o">(</span><span class="s1">'expire'</span>,KEYS[1],ARGV[2]<span class="o">)</span>
+end
+<span class="k">if </span>count <span class="o">&gt;</span> tonumber<span class="o">(</span>ARGV[1]<span class="o">)</span> <span class="k">then
+  return </span>0
+end
+<span class="k">return </span>1
+</code></pre></div></div>
+
+<p>下面是使用 Spring Boot 中 <code class="highlighter-rouge">RedisTemplate</code> 来实现的 <code class="highlighter-rouge">lua</code> 脚本调用测试代码。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootTest</span>
+<span class="kd">class</span> <span class="nc">RedisLuaLimiterByIncr</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="no">KEY_PREFIX</span> <span class="o">=</span> <span class="s">"limiter_"</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="no">QPS</span> <span class="o">=</span> <span class="s">"4"</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="no">EXPIRE_TIME</span> <span class="o">=</span> <span class="s">"1"</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">StringRedisTemplate</span> <span class="n">stringRedisTemplate</span><span class="o">;</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">redisLuaLimiterTests</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span><span class="o">,</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">200</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">acquire</span><span class="o">(</span><span class="s">"user1"</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 计数器限流
+     *
+     * @param key
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">acquire</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 当前秒数作为 key</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="no">KEY_PREFIX</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">/</span> <span class="mi">1000</span><span class="o">;</span>
+        <span class="nc">DefaultRedisScript</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">redisScript</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultRedisScript</span><span class="o">&lt;&gt;();</span>
+        <span class="n">redisScript</span><span class="o">.</span><span class="na">setResultType</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="c1">//lua文件存放在resources目录下</span>
+        <span class="n">redisScript</span><span class="o">.</span><span class="na">setScriptSource</span><span class="o">(</span><span class="k">new</span> <span class="nc">ResourceScriptSource</span><span class="o">(</span><span class="k">new</span> <span class="nc">ClassPathResource</span><span class="o">(</span><span class="s">"limiter.lua"</span><span class="o">)));</span>
+        <span class="k">return</span> <span class="n">stringRedisTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">redisScript</span><span class="o">,</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">key</span><span class="o">),</span> <span class="no">QPS</span><span class="o">,</span> <span class="no">EXPIRE_TIME</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>代码中虽然限制了 QPS 为 4，但是因为这种限流实现是把毫秒时间戳作为 key 的，所以会有临界窗口突变的问题，下面是运行结果，可以看到因为时间窗口的变化，导致了 QPS 超过了限制值 4。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>17:38:23.122044 <span class="nb">true
+</span>17:38:23.695124 <span class="nb">true
+</span>17:38:23.903220 <span class="nb">true</span>
+<span class="c"># 此处有时间窗口变化，所以下面继续 true</span>
+17:38:24.106206 <span class="nb">true
+</span>17:38:24.313458 <span class="nb">true
+</span>17:38:24.519431 <span class="nb">true
+</span>17:38:24.724446 <span class="nb">true
+</span>17:38:24.932387 <span class="nb">false
+</span>17:38:25.137912 <span class="nb">true
+</span>17:38:25.355595 <span class="nb">true
+</span>17:38:25.558219 <span class="nb">true
+</span>17:38:25.765801 <span class="nb">true
+</span>17:38:25.969426 <span class="nb">false
+</span>17:38:26.176220 <span class="nb">true
+</span>17:38:26.381918 <span class="nb">true</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>滑动窗口限流</p>
+</blockquote>
+
+<p>通过对上面的基于 <code class="highlighter-rouge">incr</code> 命令实现的 Redis 限流方式的测试，我们已经发现了固定窗口限流所带来的问题，在这篇文章的第三部分已经介绍了滑动窗口限流的优势，它可以大幅度降低因为窗口临界突变带来的问题，那么如何使用 Redis 来实现滑动窗口限流呢？</p>
+
+<p>这里主要使用 <code class="highlighter-rouge">ZSET</code> 有序集合来实现滑动窗口限流，<code class="highlighter-rouge">ZSET</code> 集合有下面几个特点：</p>
+
+<ol>
+  <li>ZSET 集合中的  key 值可以自动排序。</li>
+  <li>ZSET 集合中的 value 不能有重复值。</li>
+  <li>ZSET 集合可以方便的使用 ZCARD 命令获取元素个数。</li>
+  <li>ZSET 集合可以方便的使用 ZREMRANGEBYLEX 命令移除指定范围的 key 值。</li>
+</ol>
+
+<p>基于上面的四点特性，可以编写出基于 <code class="highlighter-rouge">ZSET </code>的滑动窗口限流 <code class="highlighter-rouge">lua</code> 脚本。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">--KEYS</span><span class="o">[</span>1]: 限流 key
+<span class="nt">--ARGV</span><span class="o">[</span>1]: 时间戳 - 时间窗口
+<span class="nt">--ARGV</span><span class="o">[</span>2]: 当前时间戳（作为score）
+<span class="nt">--ARGV</span><span class="o">[</span>3]: 阈值
+<span class="nt">--ARGV</span><span class="o">[</span>4]: score 对应的唯一value
+<span class="nt">--</span> 1. 移除时间窗口之前的数据
+redis.call<span class="o">(</span><span class="s1">'zremrangeByScore'</span>, KEYS[1], 0, ARGV[1]<span class="o">)</span>
+<span class="nt">--</span> 2. 统计当前元素数量
+<span class="nb">local </span>res <span class="o">=</span> redis.call<span class="o">(</span><span class="s1">'zcard'</span>, KEYS[1]<span class="o">)</span>
+<span class="nt">--</span> 3. 是否超过阈值
+<span class="k">if</span> <span class="o">(</span>res <span class="o">==</span> nil<span class="o">)</span> or <span class="o">(</span>res &lt; tonumber<span class="o">(</span>ARGV[3]<span class="o">))</span> <span class="k">then
+    </span>redis.call<span class="o">(</span><span class="s1">'zadd'</span>, KEYS[1], ARGV[2], ARGV[4]<span class="o">)</span>
+    <span class="k">return </span>1
+<span class="k">else
+    return </span>0
+end
+</code></pre></div></div>
+
+<p>下面是使用 Spring Boot 中 <code class="highlighter-rouge">RedisTemplate</code> 来实现的 <code class="highlighter-rouge">lua</code> 脚本调用测试代码。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootTest</span>
+<span class="kd">class</span> <span class="nc">RedisLuaLimiterByZset</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">String</span> <span class="no">KEY_PREFIX</span> <span class="o">=</span> <span class="s">"limiter_"</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="no">QPS</span> <span class="o">=</span> <span class="s">"4"</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">StringRedisTemplate</span> <span class="n">stringRedisTemplate</span><span class="o">;</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">redisLuaLimiterTests</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span><span class="o">,</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">200</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">acquire</span><span class="o">(</span><span class="s">"user1"</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 计数器限流
+     *
+     * @param key
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">acquire</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="no">KEY_PREFIX</span> <span class="o">+</span> <span class="n">key</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">oldest</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">now</span> <span class="o">-</span> <span class="mi">1_000</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">score</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">now</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">scoreValue</span> <span class="o">=</span> <span class="n">score</span><span class="o">;</span>
+        <span class="nc">DefaultRedisScript</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">redisScript</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultRedisScript</span><span class="o">&lt;&gt;();</span>
+        <span class="n">redisScript</span><span class="o">.</span><span class="na">setResultType</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="c1">//lua文件存放在resources目录下</span>
+        <span class="n">redisScript</span><span class="o">.</span><span class="na">setScriptSource</span><span class="o">(</span><span class="k">new</span> <span class="nc">ResourceScriptSource</span><span class="o">(</span><span class="k">new</span> <span class="nc">ClassPathResource</span><span class="o">(</span><span class="s">"limiter2.lua"</span><span class="o">)));</span>
+        <span class="k">return</span> <span class="n">stringRedisTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">redisScript</span><span class="o">,</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">key</span><span class="o">),</span> <span class="n">oldest</span><span class="o">,</span> <span class="n">score</span><span class="o">,</span> <span class="no">QPS</span><span class="o">,</span> <span class="n">scoreValue</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>代码中限制 QPS 为 4，运行结果信息与之一致。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>17:36:37.150370 <span class="nb">true
+</span>17:36:37.716341 <span class="nb">true
+</span>17:36:37.922577 <span class="nb">true
+</span>17:36:38.127497 <span class="nb">true
+</span>17:36:38.335879 <span class="nb">true
+</span>17:36:38.539225 <span class="nb">false
+</span>17:36:38.745903 <span class="nb">true
+</span>17:36:38.952491 <span class="nb">true
+</span>17:36:39.159497 <span class="nb">true
+</span>17:36:39.365239 <span class="nb">true
+</span>17:36:39.570572 <span class="nb">false
+</span>17:36:39.776635 <span class="nb">true
+</span>17:36:39.982022 <span class="nb">true
+</span>17:36:40.185614 <span class="nb">true
+</span>17:36:40.389469 <span class="nb">true</span>
+</code></pre></div></div>
+
+<p>这里介绍了 Redis 实现限流的两种方式，当然使用 Redis 也可以实现漏桶和令牌桶两种限流算法，这里就不做演示了，感兴趣的可以自己研究下。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>这篇文章介绍实现限流的几种方式，主要是<strong>窗口算法和桶算法</strong>，两者各有优势。</p>
+
+<ul>
+  <li><strong>窗口算法实现</strong>简单，逻辑清晰，可以很直观的得到当前的 QPS 情况，但是会有时间窗口的临界突变问题，而且不像桶一样有队列可以缓冲</li>
+  <li><strong>桶算法</strong>虽然稍微复杂，不好统计 QPS 情况，但是桶算法也有优势所在。</li>
+  <li>
+    <p>漏桶模式消费速率恒定，可以很好的<strong>保护自身系统</strong>，可以对流量进行整形，但是面对突发流量不能快速响应。</p>
+  </li>
+  <li>令牌桶模式可以面对突发流量，但是启动时会有缓慢加速的过程，不过常见的开源工具中已经对此优化。</li>
+</ul>
+
+<p><strong>单机限流</strong></p>
+
+<p>上面演示的基于代码形式的窗口算法和桶算法限流都适用于单机限流，如果需要分布式限流可以结合注册中心、负载均衡计算每个服务的限流阈值，但这样会降低一定精度，如果对精度要求不是太高，可以使用。</p>
+
+<p><strong>分布式限流</strong></p>
+
+<p>Redis 的限流，由于 Redis 的单机性，本身就可以用于分布式限流。使用 Redis 可以实现各种可以用于限流算法，如果觉得麻烦也可以使用开源工具如 redisson，已经封装了基于 Redis 的限流。</p>
+
+<p><strong>其他限流工具</strong></p>
+
+<p>文中已经提到了 <code class="highlighter-rouge">Guava</code> 的限流工具包，不过它毕竟是单机的，开源社区中也有很多分布式限流工具，如阿里开源的 Sentinel 就是不错的工具，Sentinel 以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2022/03/22/limit.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

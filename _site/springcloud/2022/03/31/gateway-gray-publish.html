@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Spring Cloud Gateway网关如何实现灰度发布 - 大伟的博客 </title>
+    <meta name="keywords" content="springcloud">
+    <meta name="description"
+          content="如何解决多环境统一注册中心服务实例乱窜？灰度发布实例，请求时添加标签区分服务实例">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springcloud/2022/03/31/gateway-gray-publish.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Spring Cloud Gateway网关如何实现灰度发布">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Spring Cloud Gateway网关如何实现灰度发布</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/03/31
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1问题">1、问题</h2>
+
+<p>如何解决多环境统一注册中心服务实例乱窜？</p>
+
+<p>怎么理解呢？</p>
+
+<p>假设现在开发环境的AccountService已经在Nacos中注册了，现在小张需要对它进行修改升级，本地启动AccountService后也注册到了Nacos，但是在调试的时候请求通过网关经常直接跳转到开发环境，这样的话小张就没办法安心debug了。</p>
+
+<p>其实这个问题归根结底是如何基于SpringCloud Gateway实现灰度发布，通过指定的规则让请求流量到达特定的实例。</p>
+
+<p>在SpringCloud 2020 版本中官方推荐使用Spring Cloud LoadBalancer 来替换原Ribbon的负载均衡器。所以本篇文章我们直接基于Spring Cloud LoadBalancer来实现。</p>
+
+<p><strong>何为灰度发布</strong></p>
+
+<p>灰度发布（又名金丝雀发布）是指在黑与白之间，能够平滑过渡的一种发布方式。在其上可以进行A/B testing，即让一部分用户继续用产品特性A，一部分用户开始用产品特性B，如果用户对B没有什么反对意见，那么逐步扩大范围，把所有用户都迁移到B上面来。灰度发布可以保证整体系统的稳定，在初始灰度的时候就可以发现、调整问题，以保证其影响度。</p>
+
+<p><strong>实现目标</strong></p>
+
+<p>目标很明确，小张希望在调试的时候发出的请求能直接到达自己的本地开发环境，方便调试。</p>
+
+<p><strong>实现思路</strong>
+要实现此目标我们需要解决两个关键的问题：</p>
+
+<ol>
+  <li>
+    <p>如何区分不同的实例</p>
+
+    <p>需要给小张本地启动的AccountService服务实例一个特殊标识，让它与开发环境的区分开。</p>
+
+    <p>这里我们可以使用注册中心的元数据metadata来区分，可以通过项目的applicaiton.properties配置<code class="highlighter-rouge">spring.cloud.nacos.discovery.metadata.version = dev</code>指定，也可以在nacos服务列表中直接添加元数据信息:</p>
+
+    <p><img src="/assets/images/2022/springcloud/nacos-metadata-vesion.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>实现自定义的负载均衡规则，通过自定义规则让负载均衡器能找到我们需要的服务实例</p>
+
+    <p>小张在请求服务的时候需要在请求头上添加标签，<code class="highlighter-rouge">version=dev</code>，自定义负载均衡器在获取到请求头信息后去服务实例中查找配置了mtadata.version=dev的服务实例。</p>
+  </li>
+</ol>
+
+<h2 id="2scl负载均衡策略">2、SCL负载均衡策略</h2>
+
+<p>在Spring Cloud LoadBalancer 官方文档上有这样一段说明：</p>
+
+<blockquote>
+  <p>Spring Cloud provides its own client-side load-balancer abstraction and implementation. For the load-balancing mechanism, <code class="highlighter-rouge">ReactiveLoadBalancer</code> interface has been added and a <strong>Round-Robin-based</strong> and <strong>Random</strong> implementations have been provided for it. In order to get instances to select from reactive <code class="highlighter-rouge">ServiceInstanceListSupplier</code> is used. Currently we support a service-discovery-based implementation of <code class="highlighter-rouge">ServiceInstanceListSupplier</code> that retrieves available instances from Service Discovery using a Discovery Client available in the classpath.</p>
+</blockquote>
+
+<p>结合文档中的其他内容，提取出几条关键信息：</p>
+
+<ol>
+  <li>
+    <p>Spring Cloud LoadBalancer提供了两种负载均衡算法：<strong>Round-Robin-based</strong> 和 <strong>Random</strong>，默认使用<strong>Round-Robin-based</strong></p>
+
+    <p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/springcloud/reative-load-balancer.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>可以通过实现<code class="highlighter-rouge">ServiceInstanceListSupplier</code>来筛选符合要求的服务实例</p>
+  </li>
+  <li>
+    <p>需要通过 <code class="highlighter-rouge">LoadBalancerClient</code> 注解，指定服务级别的负载均衡策略以及实例选择策略</p>
+  </li>
+</ol>
+
+<h3 id="自定义灰度发布">自定义灰度发布</h3>
+
+<p>结合上文，利用Spring Cloud LoadBalancer实现灰度我们有两种实现方式：</p>
+
+<ol>
+  <li>简单粗暴，直接实现一个新的负载均衡策略，然后通过<code class="highlighter-rouge">LoadBalancerClient</code>注解指定服务实例使用此策略。</li>
+  <li>自定义服务实例筛选逻辑，在返回给前端实例时筛选出符合要求的服务实例，当然也需要通过<code class="highlighter-rouge">LoadBalancerClient</code>注解指定服务实例使用此选择器。</li>
+</ol>
+
+<p>代码实现</p>
+
+<p>SpringCloud 项目使用的版本是SpringCloud alibaba推荐的毕业版本</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;spring-boot.version&gt;</span>2.4.2<span class="nt">&lt;/spring-boot.version&gt;</span>
+<span class="nt">&lt;alibaba-cloud.version&gt;</span>2021.1<span class="nt">&lt;/alibaba-cloud.version&gt;</span>
+<span class="nt">&lt;springcloud.version&gt;</span>2020.0.0<span class="nt">&lt;/springcloud.version&gt;</span>
+</code></pre></div></div>
+
+<h3 id="自定义负载均衡策略">自定义负载均衡策略</h3>
+
+<p>首先我们来看第一种实现方式，通过自定义负载均衡策略来实现。</p>
+
+<ol>
+  <li>
+    <p>在网关模块引入 SCL ,同时需要剔除nacos注册中心自带的Ribbon负载均衡器。</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.alibaba.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-alibaba-nacos-discovery<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;exclusions&gt;</span>
+        <span class="nt">&lt;exclusion&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-ribbon<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;/exclusion&gt;</span>
+    <span class="nt">&lt;/exclusions&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+   
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-loadbalancer<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>自定义负载均衡策略 VersionGrayLoadBalancer</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Description:
+ * 自定义灰度
+ * 通过给请求头添加Version 与 Service Instance 元数据属性进行对比
+ * @author Jam
+ * @date 2021/6/1 17:26
+ */</span>
+<span class="nd">@Log4j2</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VersionGrayLoadBalancer</span> <span class="kd">implements</span> <span class="nc">ReactorServiceInstanceLoadBalancer</span> <span class="o">{</span>
+   
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">ObjectProvider</span><span class="o">&lt;</span><span class="nc">ServiceInstanceListSupplier</span><span class="o">&gt;</span> <span class="n">serviceInstanceListSupplierProvider</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">serviceId</span><span class="o">;</span>
+   
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="n">position</span><span class="o">;</span>
+   
+    <span class="kd">public</span> <span class="nf">VersionGrayLoadBalancer</span><span class="o">(</span><span class="nc">ObjectProvider</span><span class="o">&lt;</span><span class="nc">ServiceInstanceListSupplier</span><span class="o">&gt;</span> <span class="n">serviceInstanceListSupplierProvider</span><span class="o">,</span> <span class="nc">String</span> <span class="n">serviceId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="n">serviceInstanceListSupplierProvider</span><span class="o">,</span><span class="n">serviceId</span><span class="o">,</span><span class="k">new</span> <span class="nc">Random</span><span class="o">().</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">1000</span><span class="o">));</span>
+    <span class="o">}</span>
+   
+    <span class="kd">public</span> <span class="nf">VersionGrayLoadBalancer</span><span class="o">(</span><span class="nc">ObjectProvider</span><span class="o">&lt;</span><span class="nc">ServiceInstanceListSupplier</span><span class="o">&gt;</span> <span class="n">serviceInstanceListSupplierProvider</span><span class="o">,</span>
+                                   <span class="nc">String</span> <span class="n">serviceId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">seedPosition</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">serviceId</span> <span class="o">=</span> <span class="n">serviceId</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">serviceInstanceListSupplierProvider</span> <span class="o">=</span> <span class="n">serviceInstanceListSupplierProvider</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">position</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="n">seedPosition</span><span class="o">);</span>
+    <span class="o">}</span>
+   
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Response</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;&gt;</span> <span class="nf">choose</span><span class="o">(</span><span class="nc">Request</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+   
+        <span class="nc">ServiceInstanceListSupplier</span> <span class="n">supplier</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">serviceInstanceListSupplierProvider</span><span class="o">.</span><span class="na">getIfAvailable</span><span class="o">(</span><span class="nl">NoopServiceInstanceListSupplier:</span><span class="o">:</span><span class="k">new</span><span class="o">);</span>
+   
+        <span class="k">return</span> <span class="n">supplier</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="na">next</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">serviceInstances</span> <span class="o">-&gt;</span> <span class="n">processInstanceResponse</span><span class="o">(</span><span class="n">serviceInstances</span><span class="o">,</span><span class="n">request</span><span class="o">));</span>
+   
+    <span class="o">}</span>
+   
+   
+    <span class="kd">private</span> <span class="nc">Response</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="nf">processInstanceResponse</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="n">instances</span><span class="o">,</span> <span class="nc">Request</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">instances</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"No servers available for service: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">serviceId</span><span class="o">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">EmptyResponse</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nc">DefaultRequestContext</span> <span class="n">requestContext</span> <span class="o">=</span> <span class="o">(</span><span class="nc">DefaultRequestContext</span><span class="o">)</span> <span class="n">request</span><span class="o">.</span><span class="na">getContext</span><span class="o">();</span>
+            <span class="nc">RequestData</span> <span class="n">clientRequest</span> <span class="o">=</span> <span class="o">(</span><span class="nc">RequestData</span><span class="o">)</span> <span class="n">requestContext</span><span class="o">.</span><span class="na">getClientRequest</span><span class="o">();</span>
+            <span class="nc">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">clientRequest</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">();</span>
+   
+            <span class="c1">// get Request Header</span>
+            <span class="nc">String</span> <span class="n">reqVersion</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="na">getFirst</span><span class="o">(</span><span class="s">"version"</span><span class="o">);</span>
+   
+            <span class="k">if</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">reqVersion</span><span class="o">)){</span>
+                <span class="k">return</span> <span class="nf">processRibbonInstanceResponse</span><span class="o">(</span><span class="n">instances</span><span class="o">);</span>
+            <span class="o">}</span>
+   
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"request header version : {}"</span><span class="o">,</span><span class="n">reqVersion</span> <span class="o">);</span>
+   <span class="c1">// filter service instances</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="n">serviceInstances</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">instance</span> <span class="o">-&gt;</span> <span class="n">reqVersion</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">instance</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="s">"version"</span><span class="o">)))</span>
+                    <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+   
+            <span class="k">if</span><span class="o">(</span><span class="n">serviceInstances</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">){</span>
+                <span class="k">return</span> <span class="nf">processRibbonInstanceResponse</span><span class="o">(</span><span class="n">serviceInstances</span><span class="o">);</span>
+            <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+                <span class="k">return</span> <span class="nf">processRibbonInstanceResponse</span><span class="o">(</span><span class="n">instances</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+   
+    <span class="cm">/**
+     * 负载均衡器
+     * 参考 org.springframework.cloud.loadbalancer.core.RoundRobinLoadBalancer#getInstanceResponse
+     * @author javadaily
+     */</span>
+    <span class="kd">private</span> <span class="nc">Response</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="nf">processRibbonInstanceResponse</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="n">instances</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">position</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">());</span>
+        <span class="nc">ServiceInstance</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pos</span> <span class="o">%</span> <span class="n">instances</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DefaultResponse</span><span class="o">(</span><span class="n">instance</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>获取请求头中的version属性，然后根据服务实例元数据中的version属性进行匹配，对于符合条件的实例参考Round-Robin-based实现方法。</p>
+  </li>
+  <li>
+    <p>编写配置类<code class="highlighter-rouge">VersionLoadBalancerConfiguration</code>，用于替换默认的负载均衡算法</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VersionLoadBalancerConfiguration</span> <span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="nc">ReactorLoadBalancer</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="nf">versionGrayLoadBalancer</span><span class="o">(</span><span class="nc">Environment</span> <span class="n">environment</span><span class="o">,</span>
+                                                                 <span class="nc">LoadBalancerClientFactory</span> <span class="n">loadBalancerClientFactory</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">LoadBalancerClientFactory</span><span class="o">.</span><span class="na">PROPERTY_NAME</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">VersionGrayLoadBalancer</span><span class="o">(</span>
+                <span class="n">loadBalancerClientFactory</span><span class="o">.</span><span class="na">getLazyProvider</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="nc">ServiceInstanceListSupplier</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="n">name</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p><strong>VersionLoadBalancerConfiguration</strong>配置类不能添加@Configuration注解。</p>
+  </li>
+  <li>
+    <p>在网关启动类使用注解<code class="highlighter-rouge">@LoadBalancerClient</code>指定哪些服务使用自定义负载均衡算法</p>
+
+    <p>通过<code class="highlighter-rouge">@LoadBalancerClient(value = "auth-service", configuration = VersionLoadBalancerConfiguration.class)</code>，对于auth-service启用自定义负载均衡算法；
+或通过<code class="highlighter-rouge">@LoadBalancerClients(defaultConfiguration = VersionLoadBalancerConfiguration.class)</code>为所有服务启用自定义负载均衡算法。</p>
+  </li>
+</ol>
+
+<h3 id="自定义服务实例筛选逻辑">自定义服务实例筛选逻辑</h3>
+
+<p>接下来我们看第二种实现方法，通过实现ServiceInstanceListSupplier来自定义服务筛选逻辑，我们可以直接继承DelegatingServiceInstanceListSupplier来实现。</p>
+
+<ol>
+  <li>
+    <p>在网关模块引入Spring Cloud LoadBalancer（同上）</p>
+  </li>
+  <li>
+    <p>自定义服务实例筛选逻辑<code class="highlighter-rouge">VersionServiceInstanceListSupplier</code></p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Log4j2</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VersionServiceInstanceListSupplier</span> <span class="kd">extends</span> <span class="nc">DelegatingServiceInstanceListSupplier</span> <span class="o">{</span>
+   
+   
+    <span class="kd">public</span> <span class="nf">VersionServiceInstanceListSupplier</span><span class="o">(</span><span class="nc">ServiceInstanceListSupplier</span> <span class="n">delegate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">delegate</span><span class="o">);</span>
+    <span class="o">}</span>
+   
+   
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Flux</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;&gt;</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">delegate</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span>
+   
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Flux</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;&gt;</span> <span class="nf">get</span><span class="o">(</span><span class="nc">Request</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">delegate</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="na">map</span><span class="o">(</span><span class="n">instances</span> <span class="o">-&gt;</span> <span class="n">filteredByVersion</span><span class="o">(</span><span class="n">instances</span><span class="o">,</span><span class="n">getVersion</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getContext</span><span class="o">())));</span>
+    <span class="o">}</span>
+   
+   
+    <span class="cm">/**
+     * filter instance by requestVersion
+     * @author javadaily
+     */</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="nf">filteredByVersion</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="n">instances</span><span class="o">,</span> <span class="nc">String</span> <span class="n">requestVersion</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"request version is {}"</span><span class="o">,</span><span class="n">requestVersion</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">requestVersion</span><span class="o">)){</span>
+            <span class="k">return</span> <span class="n">instances</span><span class="o">;</span>
+        <span class="o">}</span>
+   
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="n">filteredInstances</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">instance</span> <span class="o">-&gt;</span> <span class="n">requestVersion</span><span class="o">.</span><span class="na">equalsIgnoreCase</span><span class="o">(</span><span class="n">instance</span><span class="o">.</span><span class="na">getMetadata</span><span class="o">().</span><span class="na">getOrDefault</span><span class="o">(</span><span class="s">"version"</span><span class="o">,</span><span class="s">""</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+   
+        <span class="k">if</span> <span class="o">(</span><span class="n">filteredInstances</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">filteredInstances</span><span class="o">;</span>
+        <span class="o">}</span>
+   
+        <span class="k">return</span> <span class="n">instances</span><span class="o">;</span>
+    <span class="o">}</span>
+   
+    <span class="kd">private</span> <span class="nc">String</span> <span class="nf">getVersion</span><span class="o">(</span><span class="nc">Object</span> <span class="n">requestContext</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">requestContext</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">String</span> <span class="n">version</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">requestContext</span> <span class="k">instanceof</span> <span class="nc">RequestDataContext</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">getVersionFromHeader</span><span class="o">((</span><span class="nc">RequestDataContext</span><span class="o">)</span> <span class="n">requestContext</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">version</span><span class="o">;</span>
+    <span class="o">}</span>
+   
+    <span class="cm">/**
+     * get version from header
+     * @author javadaily
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="nf">getVersionFromHeader</span><span class="o">(</span><span class="nc">RequestDataContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="na">getClientRequest</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getClientRequest</span><span class="o">().</span><span class="na">getHeaders</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">headers</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">//could extract to the properties</span>
+                <span class="k">return</span> <span class="n">headers</span><span class="o">.</span><span class="na">getFirst</span><span class="o">(</span><span class="s">"version"</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>实现原理跟自定义负载均衡策略一样，根据version匹配符合要求的服务实例。</p>
+  </li>
+  <li>
+    <p>编写配置类<code class="highlighter-rouge">VersionServiceInstanceListSupplierConfiguration</code>，用于替换默认服务实例筛选逻辑</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VersionServiceInstanceListSupplierConfiguration</span> <span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="nc">ServiceInstanceListSupplier</span> <span class="nf">serviceInstanceListSupplier</span><span class="o">(</span><span class="nc">ConfigurableApplicationContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ServiceInstanceListSupplier</span> <span class="n">delegate</span> <span class="o">=</span> <span class="nc">ServiceInstanceListSupplier</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">withDiscoveryClient</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">withCaching</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">VersionServiceInstanceListSupplier</span><span class="o">(</span><span class="n">delegate</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在网关启动类使用注解@LoadBalancerClient指定哪些服务使用自定义负载均衡算法
+通过<code class="highlighter-rouge">@LoadBalancerClient(value = "auth-service", configuration = VersionServiceInstanceListSupplierConfiguration.class)</code>，对于auth-service启用自定义负载均衡算法；
+或通过<code class="highlighter-rouge">@LoadBalancerClients(defaultConfiguration = VersionServiceInstanceListSupplierConfiguration.class)</code>为所有服务启用自定义负载均衡算法。</p>
+  </li>
+</ol>
+
+<h3 id="测试">测试</h3>
+
+<ol>
+  <li>
+    <p>启动多个AccountService实例，对于58302端口的实例配置元数据version = dev</p>
+
+    <p><img src="/assets/images/2022/springcloud/accountservice-application-dev.jpg" alt="" /></p>
+
+    <p><img src="/assets/images/2022/springcloud/nacos-metadata-vesion-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>postman 调用接口时指定请求头</p>
+
+    <p><img src="/assets/images/2022/springcloud/nacos-metadata-vesion-3.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>通过debug模式观察两种实现逻辑，观察结果是否符合预期。</p>
+  </li>
+</ol>
+
+<p>本篇文章咱们基于SCL通过扩展负载均衡算法以及修改服务实例筛选逻辑两种方式实现了简单的灰度发布功能，大家可以参考此实现扩展SCL的负载均衡算法或者定制自己的服务筛选逻辑</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springcloud/2022/03/31/gateway-gray-publish.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

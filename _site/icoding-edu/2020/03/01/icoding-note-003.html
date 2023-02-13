@@ -1,0 +1,2716 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第3节：JUC并发编程（1） - 大伟的博客 </title>
+    <meta name="keywords" content="juc">
+    <meta name="description"
+          content="什么是JUC,wait和sleep的区别，并发Synchronized 和 Lock锁的区别,生产者和消费者线程间通信唤醒旧方案wait和notify,新方案ReentrantLock和Condition接口精准唤醒控制，使用线程安全的集合类CopyOnWriteArrayList、CopyOnWriteArraySet、ConcurrentHashMap,hashmap的值覆盖问题和底层数据结构">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/03/01/icoding-note-003.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第3节：JUC并发编程（1）">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第3节：JUC并发编程（1）</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/01
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="0什么是juc">0、什么是JUC</h2>
+
+<p>JUC：就是我们Java原生的并发包，和一些常用的工具类！</p>
+
+<p><img src="/assets/images/2020/juc/what-is-juc.png" alt="" /></p>
+
+<p>学完之后，很多知识，但是不知道怎么去用！每学习一个知识点，学完之后，可以替换工作中用到的代码！</p>
+
+<h2 id="1并发基础知识">1、并发基础知识</h2>
+
+<h3 id="进程与线程">进程与线程</h3>
+
+<ul>
+  <li>
+    <p>进程</p>
+
+    <p>就是正在运行的程序，<mark>操作系统调用的最小单位</mark>，是系统进行资源分配（cpu、内存）和调度的独立单位。</p>
+  </li>
+  <li>
+    <p>线程</p>
+
+    <p>因为进程的创建、销毁、切换产生大量的时间和空间的开销，进程的数量不能太多，而线程是比进程更小的能独立运行的基本单位，是进程的一个子任务，是<mark>CPU调度的最小单位</mark>。线程可以减少程序（进程）并发执行时的时间和空间开销，使得操作系统具有更好的并发性。</p>
+
+    <p>线程基本不拥有系统资源，只有一些运行时必不可少的资源，运行完后就会释放，比如程序计数器、寄存器和栈，进程则占有堆、栈。线程，Java默认有两个线程  main 跟GC。Java是没有权限开线程的，无法操作硬件，都是调用的  <strong>native</strong> 的  <strong>start0</strong> 方法 由 <strong>C++</strong> 实现</p>
+
+    <p>Java程序运行后至少有两个线程：GC垃圾回收和Main主线程。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>进程相当于一个空盒，它只提供资源装载的空间，具体的调度并不是由进程来完成的，而是由线程来完成的。一个java程序从main线程开始，进程启动，为整个程序提供各种资源，而此时将启动一个线程，这个线程就是主线程，它将调度资源，进行具体的操作。Thread、Runnable开启的线程是主线程下的子线程，是父子关系，此时该java程序即为多线程的，这些线程共同进行资源的调度和执行</p>
+</blockquote>
+
+<p>操作系统中，CPU是采用时间片轮转的方式运行进程的：CPU为每个进程分配一个时间段。如果时间片结束时进程还在运行，则暂停这个进程的运行，并且CPU分配给另一个进程，这个叫做进程的上下文切换。注意：如果进程在时间片结束前被阻塞或结束，则CPU立即进行切换，不用等待时间片用完。</p>
+
+<p>进程+CPU时间片轮转的方式体现了操作系统的并发，即同一时间段可以执行多个任务，一个进程执行一个任务。但是一个进程在一段时间只能做一件事情，如果一个进程有多个子任务，只能逐个执行，很影响效率。于是就诞生线程的概念，每个线程负责一个单独的子任务，CPU时间片在线程粒度轮流切换，并发执行多个子任务，使操作系统具有更好的并发性。</p>
+
+<p>下面转载阮一峰老师的解释，加深对进程和线程的理解，原文<a href="https://www.ruanyifeng.com/blog/2013/04/processes_and_threads.html">https://www.ruanyifeng.com/blog/2013/04/processes_and_threads.html</a></p>
+
+<p>计算机的核心是CPU，它承担了所有的计算任务。它就像一座工厂，时刻在运行。假定工厂的电力有限，一次只能供给一个车间使用。也就是说，一个车间开工的时候，其他车间都必须停工。背后的含义就是，单个CPU一次只能运行一个任务。</p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory.jpg" alt="" /></p>
+
+<p>进程就好比工厂的车间，它代表CPU所能处理的单个任务。任一时刻，CPU总是运行一个进程，其他进程处于非运行状态。</p>
+
+<p>一个车间里，可以有很多工人。他们协同完成一个任务。</p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-2.jpg" alt="" /></p>
+
+<p>线程就好比车间里的工人。一个进程可以包括多个线程</p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-3.jpg" style="zoom:67%;" /></p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-4.jpg" alt="" /></p>
+
+<p>车间的空间是工人们共享的，比如许多房间是每个工人都可以进出的。这象征一个进程的内存空间是共享的，每个线程都可以使用这些共享内存。</p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-5.jpg" alt="" /></p>
+
+<p>可是，每间房间的大小不同，有些房间最多只能容纳一个人，比如厕所。里面有人的时候，其他人就不能进去了。这代表一个线程使用某些共享内存时，其他线程必须等它结束，才能使用这一块内存。一个防止他人进入的简单方法，就是门口加一把锁。先到的人锁上门，后到的人看到上锁，就在门口排队，等锁打开再进去。这就叫”互斥锁”（Mutual exclusion，缩写 Mutex），防止多个线程同时读写某一块内存区域。</p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-6.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-7.jpg" alt="" /></p>
+
+<p>还有些房间，可以同时容纳n个人，比如厨房。也就是说，如果人数大于n，多出来的人只能在外面等着。这好比某些内存区域，只能供给固定数目的线程使用。</p>
+
+<p>这时的解决方法，就是在门口挂n把钥匙。进去的人就取一把钥匙，出来时再把钥匙挂回原处。后到的人发现钥匙架空了，就知道必须在门口排队等着了。这种做法叫做”信号量”（Semaphore），用来保证多个线程不会互相冲突。</p>
+
+<p><img src="/assets/images/2021/javabase/cpu-factory-8.jpg" alt="" /></p>
+
+<p>不难看出，互斥锁mutex是信号量semaphore的一种特殊情况（n=1时）。也就是说，完全可以用后者替代前者。但是，因为mutex较为简单，且效率高，所以在必须保证资源独占的情况下，还是采用这种设计。</p>
+
+<p>操作系统的设计，因此可以归结为三点：</p>
+
+<ul>
+  <li>以多进程形式，允许多个任务同时运行；</li>
+  <li>以多线程形式，允许单个任务分成不同的部分运行；</li>
+  <li>提供协调机制，一方面防止进程之间和线程之间产生冲突，另一方面允许进程之间和线程之间共享资源。</li>
+</ul>
+
+<h3 id="java-不能创建线程">Java 不能创建线程</h3>
+
+<p>Java 不能创建线程，从new Thread().start()查看源码就可以看到它底层调用的是一个native start0()的本地方法来创建线程的，一个native 方法就是一个java调用非java代码的接口，该方法由C++实现。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="o">{</span>
+  <span class="cm">/**
+         * This method is not invoked for the main method thread or "system"
+         * group threads created/set up by the VM. Any new functionality added
+         * to this method in the future may have to also be added to the VM.
+         *
+         * A zero status value corresponds to state "NEW".
+         */</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">threadStatus</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalThreadStateException</span><span class="o">();</span>
+
+  <span class="cm">/* Notify the group that this thread is about to be started
+         * so that it can be added to the group's list of threads
+         * and the group's unstarted count can be decremented. */</span>
+  <span class="n">group</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+
+  <span class="kt">boolean</span> <span class="n">started</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="n">start0</span><span class="o">();</span>
+    <span class="n">started</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="n">started</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">group</span><span class="o">.</span><span class="na">threadStartFailed</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">ignore</span><span class="o">)</span> <span class="o">{</span>
+      <span class="cm">/* do nothing. If start0 threw a Throwable then
+                  it will be passed up the call stack */</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kd">native</span> <span class="kt">void</span> <span class="nf">start0</span><span class="o">();</span>
+</code></pre></div></div>
+
+<h3 id="并发与并行">并发与并行</h3>
+
+<ul>
+  <li>
+    <p>并发：多个线程操作同一个资源，单核CPU极速的切换运行多个任务交替执行的过程</p>
+  </li>
+  <li>
+    <p>并行：多个线程同时执行，只有在多核CPU下才能完成</p>
+  </li>
+</ul>
+
+<p>所以我们使用多线程或者并发编程的目的：<mark>提高效率，让CPU一直工作，达到最高处理性能！</mark></p>
+
+<p>并发编程的出发点：<strong>充分利用CPU计算资源</strong>，多线程并不是一定比单线程快，要不为什么<a href="https://mp.weixin.qq.com/s?__biz=MzI4NjI1OTI4Nw==&amp;mid=2247488832&amp;idx=1&amp;sn=5999893d7fe773f54f7d097ac1c2074d&amp;scene=21#wechat_redirect">Redis</a>6.0版本的核心操作指令仍然是单线程呢？对吧！</p>
+
+<h3 id="线程的6种状态">线程的6种状态</h3>
+
+<p>查看Thread.java的源码，线程有6种状态</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="nc">State</span> <span class="o">{</span>
+        <span class="cm">/**
+         * Thread state for a thread which has not yet started.
+         */</span>
+        <span class="no">NEW</span><span class="o">,</span>
+
+        <span class="cm">/**
+         * Thread state for a runnable thread.  A thread in the runnable
+         * state is executing in the Java virtual machine but it may
+         * be waiting for other resources from the operating system
+         * such as processor.
+         */</span>
+        <span class="no">RUNNABLE</span><span class="o">,</span>
+
+        <span class="cm">/**
+         * Thread state for a thread blocked waiting for a monitor lock.
+         * A thread in the blocked state is waiting for a monitor lock
+         * to enter a synchronized block/method or
+         * reenter a synchronized block/method after calling
+         * {@link Object#wait() Object.wait}.
+         */</span>
+        <span class="no">BLOCKED</span><span class="o">,</span>
+
+        <span class="cm">/**
+         * Thread state for a waiting thread.
+         * A thread is in the waiting state due to calling one of the
+         * following methods:
+         * &lt;ul&gt;
+         *   &lt;li&gt;{@link Object#wait() Object.wait} with no timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link #join() Thread.join} with no timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#park() LockSupport.park}&lt;/li&gt;
+         * &lt;/ul&gt;
+         *
+         * &lt;p&gt;A thread in the waiting state is waiting for another thread to
+         * perform a particular action.
+         *
+         * For example, a thread that has called &lt;tt&gt;Object.wait()&lt;/tt&gt;
+         * on an object is waiting for another thread to call
+         * &lt;tt&gt;Object.notify()&lt;/tt&gt; or &lt;tt&gt;Object.notifyAll()&lt;/tt&gt; on
+         * that object. A thread that has called &lt;tt&gt;Thread.join()&lt;/tt&gt;
+         * is waiting for a specified thread to terminate.
+         */</span>
+        <span class="no">WAITING</span><span class="o">,</span>
+
+        <span class="cm">/**
+         * Thread state for a waiting thread with a specified waiting time.
+         * A thread is in the timed waiting state due to calling one of
+         * the following methods with a specified positive waiting time:
+         * &lt;ul&gt;
+         *   &lt;li&gt;{@link #sleep Thread.sleep}&lt;/li&gt;
+         *   &lt;li&gt;{@link Object#wait(long) Object.wait} with timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link #join(long) Thread.join} with timeout&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#parkNanos LockSupport.parkNanos}&lt;/li&gt;
+         *   &lt;li&gt;{@link LockSupport#parkUntil LockSupport.parkUntil}&lt;/li&gt;
+         * &lt;/ul&gt;
+         */</span>
+        <span class="no">TIMED_WAITING</span><span class="o">,</span>
+
+        <span class="cm">/**
+         * Thread state for a terminated thread.
+         * The thread has completed execution.
+         */</span>
+        <span class="no">TERMINATED</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们一般会加一个RUNNING状态，是由CPU决定线程是处于RUNNABLE还是RUNNING（获取到cpu时间片）</p>
+
+<p><img src="\assets\images\2020\juc\thread-status.jpg" alt="" /></p>
+
+<h3 id="并发可见性">并发可见性</h3>
+
+<p><strong>可见性</strong> 的定义是：一个线程对共享变量的修改，另外一个线程能够立刻看到。</p>
+
+<p>首先内存是不直接与cpu打交道的，而是通过高速缓存与cpu打交道</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cpu  &lt;——&gt; 高速缓存  &lt;———&gt;  内存
+</code></pre></div></div>
+
+<p>可见性问题就是由于cpu缓存不一致，在并发编程时表现出来的问题，而其中的主要发生的场景有下面三种：</p>
+
+<ul>
+  <li>
+    <p>线程交叉执行</p>
+
+    <p>线程交叉执行多数情况是由于线程切换导致的，例如下图中的线程A在执行过程中切换到线程B执行完成后，再切换回线程A执行剩下的操作；此时线程B对变量的修改不能对线程A立即可见，这就导致了计算结果和理想结果不一致的情况。</p>
+
+    <p><img src="\assets\images\2020\juc\thread-visibility.png" alt="" /></p>
+  </li>
+  <li>
+    <p>重排序结合线程交叉执行</p>
+
+    <p>例如下面这段代码</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="c1">// 行1</span>
+<span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="c1">// 行2</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="mi">10</span><span class="o">;</span> <span class="c1">// 行3</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">9</span><span class="o">;</span> <span class="c1">// 行4</span>
+</code></pre></div>    </div>
+
+    <p>如果行1和行2在编译的时候改变顺序，执行结果不会受到影响；</p>
+
+    <p>如果将行3和行4在编译的时候交换顺序，执行结果就会受到影响，因为b的值得不到预期的19，怎么像cpu指令重排。</p>
+
+    <p><img src="\assets\images\2020\juc\thread-visibility-2.png" alt="" /></p>
+
+    <p>由图知：由于编译时改变了执行顺序，导致结果不一致；而两个线程的交叉执行又导致线程改变后的结果也不是预期值，简直雪上加霜!</p>
+  </li>
+  <li>
+    <p>共享变量更新后的值没有在工作内存及主内存间及时更新</p>
+
+    <p>因为主线程对共享变量的修改没有及时更新，子线程中不能立即得到最新值，导致程序不能按照预期结果执行。</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">itquan</span><span class="o">.</span><span class="na">service</span><span class="o">.</span><span class="na">share</span><span class="o">.</span><span class="na">resources</span><span class="o">.</span><span class="na">controller</span><span class="o">;</span>
+  
+<span class="kn">import</span> <span class="nn">java.time.LocalDateTime</span><span class="o">;</span>
+  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VisibilityDemo</span> <span class="o">{</span>
+  
+    <span class="c1">// 状态标识flag</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+  
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">"主线程启动计数子线程"</span><span class="o">);</span>
+        <span class="k">new</span> <span class="nf">CountThread</span><span class="o">().</span><span class="na">start</span><span class="o">();</span>
+  
+        <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+        <span class="c1">// 设置flag为false，使上面启动的子线程跳出while循环，结束运行</span>
+        <span class="nc">VisibilityDemo</span><span class="o">.</span><span class="na">flag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">"主线程将状态标识flag被置为false了"</span><span class="o">);</span>
+    <span class="o">}</span>
+  
+    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CountThread</span> <span class="kd">extends</span> <span class="nc">Thread</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">"计数子线程start计数"</span><span class="o">);</span>
+            <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="k">while</span> <span class="o">(</span><span class="nc">VisibilityDemo</span><span class="o">.</span><span class="na">flag</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">i</span><span class="o">++;</span> <span class="c1">// 不是原子性操作</span>
+            <span class="o">}</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">+</span> <span class="s">"计数子线程end计数，运行结束：i的值是"</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>执行结果：</p>
+
+    <p><img src="\assets\images\2020\juc\thread-visibility-3.png" alt="" /></p>
+
+    <p>从结果可见，主线程对flag的修改，对计数子线程没有立即可见，所以导致了计数子线程久久不能跳出while循环，结束子线程。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>可见性问题的解决</p>
+</blockquote>
+
+<p>1、volatile 保证可见性，不保证原子性</p>
+
+<p><code class="highlighter-rouge">volatile</code>关键字能保证可见性，但也只能保证可见性，在此处就能保证flag的修改能立即被计数子线程获取到。volatile关键字要求被修改之后的变量要求立即更新到主内存(堆heap，共享可见)，每次使用前必须从主内存处进行读取</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 状态标识flag</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="kt">boolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>2、Atomic相关类:原子类保证可见性和原子性</p>
+
+<p><img src="\assets\images\2020\juc\volatile-3.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 状态标识flag，原子类</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="nc">AtomicBoolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicBoolean</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>不过值得注意的一点是，此时原子类相关的方法设置新值和得到值的放的是有点变化，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 设置flag的值</span>
+<span class="nc">VisibilityDemo</span><span class="o">.</span><span class="na">flag</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+
+<span class="c1">// 获取flag的值</span>
+<span class="nc">VisibilityDemo</span><span class="o">.</span><span class="na">flag</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
+</code></pre></div></div>
+
+<p>3、Lock: 保证可见性和原子性</p>
+
+<p>此处我们使用的是Java常见的synchronized关键字。</p>
+
+<p>此时纠正上面例子出现的问题，只需在为计数操作<code class="highlighter-rouge">i++</code>添加<code class="highlighter-rouge">synchronized</code>关键字修饰</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">i</span><span class="o">++;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>也可以使用ReentrantLock</p>
+
+<h3 id="并发原子性">并发原子性</h3>
+
+<p>一个操作不可再分，即为<strong>原子性</strong>。而在并发编程的环境中，原子性的含义就是只要该线程开始执行这一系列操作，要么全部执行，要么全部未执行，不允许存在执行一半的情况。</p>
+
+<p>我们试着从数据库事务和并发编程两个方面来进行对比：</p>
+
+<p>1、在数据库中</p>
+
+<p>原子性概念是这样子的：事务被当做一个不可分割的整体，包含在其中的操作要么全部执行，要么全部不执行。且事务在执行过程中如果发生错误，会被回滚到事务开始前的状态，就像这个事务没有执行一样。（也就是说：事务要么被执行，要么一个都没被执行）</p>
+
+<p>2、在并发编程中</p>
+
+<p>原子性概念是这样子的：</p>
+
+<ul>
+  <li>第一种理解：一个线程或进程在执行过程中，没有发生上下文切换。</li>
+  <li>上下文切换：指 <strong>CPU</strong> 从一个进程/线程切换到另外一个进程/线程(切换的前提就是获取 <strong>CPU</strong> 的使用权)。</li>
+  <li>第二种理解：我们把一个线程中的一个或多个操作(不可分割的整体)，在 <strong>CPU</strong> 执行过程中不被中断的特性，称为原子性。(执行过程中，一旦发生中断，就会发生上下文切换)</li>
+</ul>
+
+<p>从上文中对原子性的描述可以看出，并发编程和数据库两者之间的原子性概念有些相似：<strong>都是强调，一个原子操作不能被打断！</strong>！</p>
+
+<p>而非原子操作用图片表示就是这样子的：</p>
+
+<p><img src="\assets\images\2020\juc\juc-thread-2.jpg" alt="" /></p>
+
+<p>线程 A 在执行一会儿（还没有执行完成），就出 让 <strong>CPU</strong> 让线程 B 执行。这样的操作在操作系统中有很多，牺牲切换线程的极短耗时，来提高 CPU 的利用率，从而在整体上提高系统性能；操作系统的这种操作就被称为『时间片』切换。</p>
+
+<blockquote>
+  <p>共享变量的原子性问题解决</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>synchronized 关键字同步控制</p>
+  </li>
+  <li>
+    <p>Lock锁</p>
+  </li>
+  <li>
+    <p>原子类操作</p>
+
+    <p><code class="highlighter-rouge">JDK</code> 提供了很多原子操作类来保证操作的原子性。比如最常见的基本类型：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">AtomicBoolean</span>
+<span class="nc">AtomicLong</span>
+<span class="nc">AtomicDouble</span>
+<span class="nc">AtomicInteger</span>
+</code></pre></div>    </div>
+
+    <p>底层使用的是CAS（compare and set）比较交换机制，这个机制保证了整个赋值操作是原子的不能被打断的，从而保证了最终结果的正确性。CAS也可以理解为自旋锁，和 synchronized 相比，原子操作类型相当于是从微观上保证原子性，而 synchronized 是从宏观上保证原子性。</p>
+
+    <p>但是，不要以为使用了线程安全类，你的所有代码就都是线程安全的！这总归都要从审查你代码的整体原子性出发。就比如下面的例子：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@NotThreadSafe</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeFactorizer</span> <span class="kd">implements</span> <span class="nc">Servlet</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">AtomicReference</span><span class="o">&lt;</span><span class="nc">BigInteger</span><span class="o">&gt;</span> <span class="n">lastNum</span> <span class="o">=</span> <span class="k">new</span> 		<span class="nc">AtomicReference</span><span class="o">&lt;</span><span class="nc">BigInteger</span><span class="o">&gt;();</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">AtomicReference</span><span class="o">&lt;</span><span class="nc">BigInteger</span><span class="o">[]&gt;</span> <span class="n">lastFactors</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicReference</span><span class="o">&lt;</span><span class="nc">BigInteger</span><span class="o">[]&gt;();</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">service</span><span class="o">(</span><span class="nc">ServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">ServletResponse</span> <span class="n">response</span><span class="o">){</span>
+    <span class="nc">BigInteger</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">extractFromRequest</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">tmp</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">lastNum</span><span class="o">.</span><span class="na">get</span><span class="o">()))</span> <span class="o">{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">lastFactors</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="nc">BigInteger</span><span class="o">[]</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">factor</span><span class="o">(</span><span class="n">tmp</span><span class="o">);</span>
+      <span class="n">lastNum</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">tmp</span><span class="o">);</span>
+      <span class="n">lastFactors</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">factors</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">factors</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>虽然它全部用了原子类来进行操作，但是各个操作之间不是原子性的。也就是说：比如线程 A 在执行 <code class="highlighter-rouge">else</code> 语句里的<code class="highlighter-rouge">lastNumber.set(tmp)</code>完后，也许其他线程执行了 <code class="highlighter-rouge">if</code>语句里的<code class="highlighter-rouge">lastFactorys.get()</code>方法，随后线程 <code class="highlighter-rouge">A</code> 才继续执行<code class="highlighter-rouge">lastFactors.set(factors)</code>方法更新<code class="highlighter-rouge">factors</code>！</p>
+
+    <p>从这个逻辑过程中，线程安全问题就已经发生了。</p>
+
+    <p>它破坏了方法的<code class="highlighter-rouge">读取 A- 读取 B- 修改 A- 修改 B- 写入 A- 写入 B</code>这一整体过程，在写入 A 完成以后其他线程去执行了读取 B，就导致了读取到的 B 值不是写入后的 B 值。就这样原子性就出现了。</p>
+  </li>
+</ul>
+
+<p><mark>最后</mark></p>
+
+<p>贴一段经常看到的原子性实例问题。</p>
+
+<p><strong>问</strong>：常听人说，在32位的机器上对long型变量进行加减操作存在并发隐患，到底是不是这样呢？</p>
+
+<p><strong>答</strong>：在32位的机器上对long型变量进行加减操作存在并发隐患的说法是正确的。</p>
+
+<p><strong>原因就是</strong>：线程切换带来的原子性问题。</p>
+
+<p>非 <code class="highlighter-rouge">volatile</code> 类型的 <code class="highlighter-rouge">long</code> 和 <code class="highlighter-rouge">double</code> 型变量是 8 字节 64 位的，32 位机器读或写这个变量时得把人家咔嚓分成两个 32 位操作，可能一个线程读了某个值的高 32 位，低 32 位已经被另一个线程改了。所以官方推荐最好把 <code class="highlighter-rouge">long\double</code> 变量声明为<code class="highlighter-rouge">volatile</code> 或是同步加锁 <code class="highlighter-rouge">synchronize</code> 以避免并发问题。</p>
+
+<h3 id="并发有序性">并发有序性</h3>
+
+<p>操作系统为了提升性能，将 Java 语言转换成机器语言的时候，吩咐编译器对语句的执行顺序进行了一定的修改，以促使系统性能达到最优，这就是指令重排。所以在很多情况下，访问一个程序变量（对象实例字段，类静态字段和数组元素）可能会使用不同的顺序执行，而不是程序语义所指定的顺序执行，你写的代码并不是按照你的意思执行指的就是这个意思。</p>
+
+<p>在单核时代，指令重排没有问题，但在多核时代，这种优化碰上线程切换就大大的增加了事故的出现几率！</p>
+
+<p>也就是说，<strong>有序性</strong> 指的是在代码顺序结构中，我们可以直观的指定代码的执行顺序, 即从上到下按序执行。但编译器和CPU处理器会根据自己的决策，对代码的执行顺序进行重新排序。优化指令的执行顺序，提升程序的性能和执行速度，使语句执行顺序发生改变，出现重排序，但最终结果看起来没什么变化（单核）。</p>
+
+<p><mark>有序性问题</mark> 指的是在多线程环境下（多核），由于执行语句重排序后，重排序的这一部分没有一起执行完，就切换到了其它线程，导致的结果与预期不符的问题。这就是编译器的编译优化给并发编程带来的程序有序性问题。</p>
+
+<p><img src="\assets\images\2020\juc\juc-order-1.jpg" alt="" /></p>
+
+<p><strong>场景：</strong></p>
+
+<p>如果一个线程写入值到字段 a，然后写入值到字段 b ，而且b的值不依赖于  a 的值，那么，处理器就能够自由的调整它们的执行顺序，而且缓冲区能够在 a 之前刷新b的值到主内存。此时就可能会出现有序性问题。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.time.LocalDateTime</span><span class="o">;</span>
+ 
+ <span class="cm">/**
+  * @author ：mmzsblog
+  * @description：并发中的有序性问题
+  * @date ：2020年2月26日 15:22:05
+  */</span>
+ <span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderlyDemo</span> <span class="o">{</span>
+ 
+    <span class="kd">static</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">199</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nc">Thread</span> <span class="n">thread1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DisplayThread</span><span class="o">();</span>
+            <span class="nc">Thread</span> <span class="n">thread2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CountThread</span><span class="o">();</span>
+            <span class="n">thread1</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+            <span class="n">thread2</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"========================================================="</span><span class="o">);</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">6000</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">DisplayThread</span> <span class="kd">extends</span> <span class="nc">Thread</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" DisplayThread begin, time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" change flag, time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" DisplayThread end, time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CountThread</span> <span class="kd">extends</span> <span class="nc">Thread</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">flag</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" value的值是："</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span> <span class="s">", time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" CountThread flag is true,  time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" value的值是："</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span> <span class="s">", time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" CountThread flag is false, time:"</span> <span class="o">+</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<p><img src="\assets\images\2020\juc\juc-order-4.jpg" alt="" /></p>
+
+<p>从打印的可以看出：在 <code class="highlighter-rouge">DisplayThread</code> 线程执行的时候肯定是发生了重排序，导致先为 <code class="highlighter-rouge">flag</code> 赋值，然后切换到 <code class="highlighter-rouge">CountThread</code> 线程，这才出现了打印的 <code class="highlighter-rouge">value</code> 值是1，<code class="highlighter-rouge">falg</code> 值是 <code class="highlighter-rouge">true</code> 的情况，再为 <code class="highlighter-rouge">value</code> 赋值；不过出现这种情况的原因就是这两个赋值语句之间没有联系，所以编译器在进行代码编译的时候就可能进行指令重排序。</p>
+
+<p><img src="\assets\images\2020\juc\juc-order-2.jpg" alt="" /></p>
+
+<blockquote>
+  <p>解决有序性问题</p>
+</blockquote>
+
+<p>1、volatile 关键字禁止指令重排</p>
+
+<p><code class="highlighter-rouge">volatile</code> 的底层是使用内存屏障来保证有序性的（让一个 <code class="highlighter-rouge">CPU</code> 缓存中的状态(变量)对其他 <code class="highlighter-rouge">CPU</code> 缓存可见的一种技术）。</p>
+
+<p><code class="highlighter-rouge">volatile</code> 变量有条规则是指对一个 <code class="highlighter-rouge">volatile</code> 变量的写操作， <strong>Happens-Before</strong>于后续对这个 <code class="highlighter-rouge">volatile</code> 变量的读操作。并且这个规则具有传递性，也就是说：</p>
+
+<p><img src="\assets\images\2020\juc\juc-order-3.jpg" alt="" /></p>
+
+<p>此时，我们定义变量 <code class="highlighter-rouge">flag</code> 时使用 <code class="highlighter-rouge">volatile</code> 关键字修饰，如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="kt">boolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>也就是说，只要读取到 <code class="highlighter-rouge">flag=true;</code> 就能读取到 <code class="highlighter-rouge">value=1024</code>；否则就是读取到<code class="highlighter-rouge">flag=false;</code> 和 <code class="highlighter-rouge">value=1</code> 的还没被修改过的初始状态；</p>
+
+<p><img src="\assets\images\2020\juc\juc-order-5.jpg" alt="" /></p>
+
+<p>但也有可能会出现线程切换带来的原子性问题，就是读取到 <code class="highlighter-rouge">flag=false;</code> 而<code class="highlighter-rouge">value=1024</code> 的情况；看过上一篇讲述<a href="">原子性</a>的文章的小伙伴，可能就立马明白了，这是线程切换导致的。</p>
+
+<p><img src="\assets\images\2020\juc\juc-order-6.jpg" alt="" /></p>
+
+<p>2、第二种方法，加锁</p>
+
+<p>此处我们直接采用Java语言内置的关键字 <code class="highlighter-rouge">synchronized</code>，为可能会重排序的部分加锁，让其在宏观上或者说执行结果上看起来没有发生重排序。代码修改也很简单，只需用 <code class="highlighter-rouge">synchronized</code> 关键字修饰 <code class="highlighter-rouge">run</code> 方法即可,代码如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">value</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span><span class="n">flag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>当然也可以使用 <code class="highlighter-rouge">Lock</code> 加锁，但 <code class="highlighter-rouge">Lock</code> 必须要用户去手动释放锁，如果没有主动释放锁，就有可能导致出现死锁现象。这点在使用的时候一定要注意!</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">readWriteLock</span><span class="o">.</span><span class="na">writeLock</span><span class="o">().</span><span class="na">lock</span><span class="o">();</span>
+<span class="k">try</span> <span class="o">{</span>
+          <span class="n">value</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+          <span class="n">flag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+          <span class="n">readWriteLock</span><span class="o">.</span><span class="na">writeLock</span><span class="o">().</span><span class="na">unlock</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="线程封闭">线程封闭</h3>
+
+<p>在《Java并发编程实战》中，是这样解释的，当我们访问共享的可变数据的时候，我们通常是需要使用同步的，而不使用同步的话，那么我们就不能共享收据，如果说仅仅是在单线程内访问数据的话，就不需要同步，这种技术被称之为线程封闭。</p>
+
+<p>同步是为了保证可变数据共享的时候的安全，如果可变数据不需要被多个线程共享，也就是单线程内访问数据，那么就不需要同步，从而确保安全性和正确性</p>
+
+<blockquote>
+  <p>线程封闭有哪些类</p>
+</blockquote>
+
+<p>1、ThreadLocal类</p>
+
+<p>首先我们先说第一种，使用ThreadLocal，这个类能够使线程中的某个值和保存值进行关联，它提供了一系列的方法：ThreadLocal.get()、ThreadLocal.set()、ThreadLocal.initialValue()，这些方法都会使该变量在内存中保存一个副本，</p>
+
+<p>而这三个方法总的来说，都是对共享变量的一个改变，不论是进行初始化，还是进行赋值和改变，都是对共享变量的修改。</p>
+
+<p>怎么使用ThreadLocal类来维持线程的封闭呢？</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Connection</span><span class="o">&gt;</span> <span class="n">connectionHolder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Connection</span><span class="o">&gt;(){</span>
+    <span class="c1">//初始化ThreadLocal对象connectionHolder的共享变量为Connection类型的对象</span>
+    <span class="kd">public</span> <span class="nc">Connection</span> <span class="nf">initialValue</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="nc">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="no">DB_URL</span><span class="o">);</span>  
+    <span class="o">}</span>
+<span class="o">};</span>
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="nc">Connection</span> <span class="nf">getConnection</span><span class="o">(){</span>
+    <span class="c1">//使用ThreadLocal对象的get()方法获取其共享变量</span>
+    <span class="k">return</span> <span class="n">connectionHolder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>以上代码来自于《Java并发编程实战》，那么我们就来分析一下ThreadLocal这个类，它用于防止对可变的变量进行共享的时候出现不安全的操作所针对的，在单线程的程序中我们需要时刻保证数据库的连接，也就是我们只有这一个 Connection，而JDBC的链接对象它是不安全的，所以，我们把这个JDBC的连接保存在ThreadLocal中，让每个线程都拥有自己的连接。</p>
+
+<p>这么说是不是就很好理解了，那么为什么ThreadLocal这个类能够保存线程局部变量的状态，使得每次访问此变量时都能获得实时的、正确的值呢？这个就得看源码了，阿粉在这里也给大家讲一点，大家有兴趣的也可以自己去看看源码里面是怎么写的。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+         <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ThreadLocalMap</span> <span class="o">{</span>
+             <span class="cm">/**
+             * The entries in this hash map extend WeakReference, using
+             * its main ref field as the key (which is always a
+             * ThreadLocal object).  Note that null keys (i.e. entry.get()
+             * == null) mean that the key is no longer referenced, so the
+             * entry can be expunged from table.  Such entries are referred to
+             * as "stale entries" in the code that follows.
+             */</span>
+            <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Entry</span> <span class="kd">extends</span> <span class="nc">WeakReference</span><span class="o">&lt;</span><span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;&gt;</span> <span class="o">{</span>
+                <span class="cm">/** The value associated with this ThreadLocal. */</span>
+                <span class="nc">Object</span> <span class="n">value</span><span class="o">;</span>
+    
+                <span class="nc">Entry</span><span class="o">(</span><span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;</span> <span class="n">k</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kd">super</span><span class="o">(</span><span class="n">k</span><span class="o">);</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+         <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>ThreadLocalMap内创建了Entry数组，其构造行为和HashMap那真的是有点兄弟的意思了，而阿粉刚才也说了它的get，initialValue，和set方法都是为了对共享变量进行操作，就是在这里，当第一次调用get()方法时，会调用initialValue()方法，默认返回一个空值。所以在使用ThreadLocal时需要将其子类化并重写此方法，创建需要关联的变量，</p>
+
+<p>而初始化的过程，就是建立新的ThreadLocalMap对象，将ThreadLocal对象与变量关联起来，而我们在Thread的方法中就能找到ThreadLocal和ThreadLocalMap关联的证明，这里不给大家去寻找了，大家去源码里面搜一下一定可以看到,位置在180行附近。</p>
+
+<p>2、使用栈封闭来进行线程封闭</p>
+
+<p>而在《Java并发编程实战》当中，说了一句话叫做栈封闭是线程封闭的一种特例，在栈封闭中，只能通过局部变量才能访问对象。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">int</span> <span class="nf">loadTheArk</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">candidates</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">SortedSet</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;</span> <span class="n">animals</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">numPairs</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="nc">Animal</span> <span class="n">candidate</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+ 
+    <span class="c1">// animals被封闭在方法中，不要使它们逸出！</span>
+    <span class="n">animals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TreeSet</span><span class="o">&lt;</span><span class="nc">Animal</span><span class="o">&gt;(</span><span class="k">new</span> <span class="nc">SpeciesGenderComparator</span><span class="o">());</span>
+    <span class="n">animals</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">candidates</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">Animal</span> <span class="n">a</span> <span class="o">:</span> <span class="n">animals</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">candidate</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">candidate</span><span class="o">.</span><span class="na">isPotentialMate</span><span class="o">(</span><span class="n">a</span><span class="o">))</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="n">ark</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="k">new</span> <span class="nc">AnimalPair</span><span class="o">(</span><span class="n">candidate</span><span class="o">,</span> <span class="n">a</span><span class="o">));</span>
+            <span class="o">++</span><span class="n">numPairs</span><span class="o">;</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">numPairs</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们可以看一下，numPairs这个局部的基本类型的变量，就是你不管干什么，你都无法去破坏这个numPairs，也无法去破坏栈的封闭性，因为你这个局部变量出不去，只是定义在这loadTheArk的程序中，外边的任何方法想搞事情，不好意思，完全不存在，所以，我们就明白这种栈的封闭是如何实现线程封闭的了。</p>
+
+<p>3、Ad-hoc线程封闭</p>
+
+<p>Ad-hoc的翻译是来自拉丁语，这个短语的意思是’特设的、特定目的的（地）、即席的、临时的、将就的、专案的’。这个短语通常用来形容一些特殊的、不能用于其它方面的的，为一个特定的问题、任务而专门设定的解决方案。这个词汇须与apriori区分。</p>
+
+<p>其实这Ad-hoc线程封闭最简单的一句话，就是维护线程封闭性，让程序自己负责，就这么low，一个这么高大上的词汇，解释了半天意思就这么直白，但是还是得把他原来翻译的解释出来</p>
+
+<p>Ad-hoc线程封闭是指，维护线程封闭性的职责完全由程序实现来承担。Ad-hoc线程封闭是非常脆弱的，因为没有任何一种语言特性，例如可见性修饰符或局部变量，能将对象封闭到目标线程上。事实上，对线程封闭对象（例如，GUI应用程序中的可视化组件或数据模型等）的引用通常保存在公有变量中。这个只做了解。</p>
+
+<p><strong>总结</strong></p>
+
+<p><img src="\assets\images\2020\juc\juc-thread.jpg" alt="" /></p>
+
+<h2 id="2wait和sleep的区别">2、wait和sleep的区别</h2>
+
+<p>juc编程中，线程休眠要用TimeUnit实现</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>wait是Object类，sleep是Thread类</p>
+  </li>
+  <li>
+    <p><mark>wait会释放锁</mark>，sleep不会(抱着锁睡觉)</p>
+  </li>
+  <li>
+    <p>用法不同</p>
+
+    <p>wait和notify一组，在线程通信时使用；</p>
+
+    <p>sleep一个单独方法，那里都可以使用</p>
+  </li>
+</ul>
+
+<h2 id="3lock锁">3、Lock锁</h2>
+
+<blockquote>
+  <p>传统方式synchronized 同步关键字</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">coding</span><span class="o">.</span><span class="na">demo01</span><span class="o">;</span>
+<span class="c1">// 传统的 Synchronized</span>
+<span class="c1">// Synchronized 方法 和 Synchronized 块</span>
+<span class="cm">/*
+ * 我们的学习是基于企业级的开发进行的；
+ * 1、架构：高内聚，低耦合
+ * 2、套路：线程操作资源类，资源类是单独的
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo01</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="c1">// 1、新建资源类</span>
+        <span class="nc">Ticket</span> <span class="n">ticket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Ticket</span><span class="o">();</span>
+
+        <span class="c1">// 2、线程操纵资源类</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">40</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">40</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">40</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"C"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 单独的资源类，属性和方法！</span>
+<span class="c1">// 这样才能实现复用！</span>
+<span class="kd">class</span> <span class="nc">Ticket</span><span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
+
+    <span class="c1">// 同步锁，厕所 =&gt;close=&gt;</span>
+    <span class="c1">// synchronized 这是一个关键字</span>
+    <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">saleTicket</span><span class="o">(){</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">){</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"卖出第"</span><span class="o">+(</span><span class="n">number</span><span class="o">--)+</span><span class="s">"票，还剩:"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Lock 锁</p>
+</blockquote>
+
+<p>juc编程使用lock锁与lambda表达式，代码更简洁易懂</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo02</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 1、新建资源类</span>
+        <span class="nc">Ticket2</span> <span class="n">ticket</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Ticket2</span><span class="o">();</span>
+        <span class="c1">// 2、线程操作资源类 , 所有的函数式接口都可以用 lambda表达式简化！</span>
+        <span class="c1">// lambda表达式 (参数)-&gt;{具体的代码}</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">40</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">40</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">40</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();},</span><span class="s">"C"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 依旧是一个资源类</span>
+<span class="kd">class</span> <span class="nc">Ticket2</span><span class="o">{</span>
+    <span class="c1">// 使用Lock，它是一个对象</span>
+    <span class="c1">// ReentrantLock 可重入锁：回家：大门 (卧室门，厕所门...)</span>
+    <span class="c1">// ReentrantLock 默认是非公平锁！</span>
+    <span class="c1">// 非公平锁: 不公平 （插队，后面的线程可以插队）</span>
+    <span class="c1">// 公平锁: 公平（只能排队，后面的线程无法插队）</span>
+    <span class="kd">private</span> <span class="nc">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">saleTicket</span><span class="o">(){</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span> <span class="c1">// 加锁</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 业务代码</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">){</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"卖出第"</span><span class="o">+(</span><span class="n">number</span><span class="o">--)+</span><span class="s">"票，还剩:"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span> <span class="c1">// 解锁</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>执行结果：
+<img src="/assets/images/2020/juc/reentrant-lock.jpg" alt="" /></p>
+
+<blockquote>
+  <p>Synchronized 和 Lock 的区别</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>Synchronized 是一个关键字，Lock是一个对象</p>
+  </li>
+  <li>
+    <p>Synchronized 无法尝试获取锁，Lock可以</p>
+  </li>
+  <li>
+    <p>Synchronized 会自动释放锁（A线程执行完毕，或者B线程异常，也会释放锁）</p>
+
+    <p>Lock锁是手动释放的，如果不释放会造成死锁</p>
+  </li>
+  <li>
+    <p>Synchronized 会让线程一直等待直到获取锁，Lock可以尝试获取锁，不会一直等待</p>
+
+    <p><img src="/assets/images/2020/juc/lock-trylock.gif" alt="" /></p>
+  </li>
+  <li>
+    <p>Synchronized一定是非公平的，Lock是公平的锁，通过参数设置</p>
+  </li>
+  <li>
+    <p>Synchronized 适合代码量小的同步问题</p>
+
+    <p>Lock 适合代码量大的时候，可以实现精准控制</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>对synchronized关键字做一些总结：</p>
+</blockquote>
+
+<p><img src="\assets\images\2020\juc\synchronized.png" alt="" /></p>
+
+<p>synchronized关键字的作用域有二种：</p>
+
+<ul>
+  <li>
+    <p>是某个对象实例内，<code class="highlighter-rouge">synchronized aMethod(){}</code>可以防止多个线程同时访问这个对象的synchronized方法。</p>
+
+    <p>如果一个对象有多个synchronized方法，只要一个线程访问了其中的一个synchronized方法，其它线程不能同时访问这个对象中任何一个synchronized方法。</p>
+
+    <p>这时，不同的对象实例的synchronized方法是不相干扰的。也就是说，其它线程照样可以同时访问相同类的另一个对象实例中的synchronized方法。</p>
+
+    <p>因为当修饰非静态方法的时候，锁定的是当前实例对象。</p>
+  </li>
+  <li>
+    <p>是某个类的范围，<code class="highlighter-rouge">synchronized static aStaticMethod{}</code>防止多个线程同时访问这个类中的synchronized static 方法。它可以对类的所有对象实例起作用。</p>
+
+    <p>因为当修饰静态方法的时候，锁定的是当前类的 Class 对象。</p>
+  </li>
+  <li>
+    <p>用于方法中的某个区块中，表示只对这个区块的资源实行互斥访问。</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">synchronized</span><span class="o">(</span><span class="k">this</span><span class="o">){</span>
+    <span class="cm">/*区块*/</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>synchronized关键字是不能继承的，也就是说，基类的方法</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">synchronized</span> <span class="nf">f</span><span class="o">(){</span>
+    <span class="c1">// 具体操作</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>在继承类中并不自动是</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">synchronized</span> <span class="nf">f</span><span class="o">(){</span>
+    <span class="c1">// 具体操作</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>而是变成了</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">f</span><span class="o">(){</span>
+    <span class="c1">// 具体操作</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<blockquote>
+  <p>JVM关于synchronized的两条规定：</p>
+</blockquote>
+
+<p>1、线程解锁前，必须把共享变量的最新值刷新到主内存</p>
+
+<p>2、线程加锁时，将清空工作内存中共享变量的值，从而是使用共享变量时，需要从主内存中重新读取最新的值（注意：加锁与解锁是同一把锁）</p>
+
+<p>使用过程中，注意以下几点：</p>
+
+<ul>
+  <li>A．无论synchronized关键字加在方法上还是对象上，它取得的锁都是对象；而不是把一段代码或函数当作锁――而且同步方法很可能还会被其他线程的对象访问。</li>
+  <li>
+    <p>B. 每个对象只有一个锁（lock）与之相关联。Java 编译器会在 synchronized 修饰的方法或代码块前后自动加上加锁 lock() 和解锁 unlock()，这样做的好处就是加锁 lock() 和解锁 unlock() 一定是成对出现的，毕竟忘记解锁 unlock() 可是个致命的 Bug（意味着其他线程只能死等下去了）。</p>
+  </li>
+  <li>C．实现同步是要很大的系统开销作为代价的，甚至可能造成死锁，所以尽量避免无谓的同步控制。</li>
+</ul>
+
+<h2 id="4生产者消费者问题">4、生产者消费者问题</h2>
+
+<p>实现多线程交替执行，给资源类加锁实现同步，有两种方案：</p>
+
+<h3 id="第一种方案">第一种方案</h3>
+
+<p>传统方法使用 synchronized 结合对象监视器方法wait 与notifyall</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+目的：有两个线程：A  B ，还有一个值初始为0，
+     实现两个线程交替执行，对该变量 + 1，-1；交替10次
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo03</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Data</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Data</span><span class="o">();</span>
+
+        <span class="c1">// +1</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">increment</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="c1">// -1</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">decrement</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 资源类</span>
+<span class="c1">// 线程之间的通信： 判断  执行  通知</span>
+<span class="kd">class</span> <span class="nc">Data</span><span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="c1">// +1</span>
+    <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">increment</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">!=</span><span class="mi">0</span><span class="o">){</span> <span class="c1">// 判断是否需要等待</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span> <span class="c1">// 当前线程等待，释放锁，直到另外一个线程调用该对象的notify()或notifyAll()方法</span>
+        <span class="o">}</span>
+        <span class="n">number</span><span class="o">++;</span> <span class="c1">// 执行</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">"\t"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+        <span class="c1">// 通知</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">//唤醒所有线程</span>
+    <span class="o">}</span>
+
+    <span class="c1">// -1</span>
+    <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">decrement</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">==</span><span class="mi">0</span><span class="o">){</span> <span class="c1">// 判断是否需要等待</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span> <span class="c1">// 等待，释放锁</span>
+        <span class="o">}</span>
+        <span class="n">number</span><span class="o">--;</span> <span class="c1">// 执行</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">"\t"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+        <span class="c1">// 通知</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">//唤醒所有线程</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果：实现了交替执行</p>
+
+<p><img src="/assets/images/2020/juc/wait-notifyall.jpg" alt="" /></p>
+
+<blockquote>
+  <p>四条线程可以实现交替吗？不能，会产生虚假唤醒问题！</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo04</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Data04</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Data04</span><span class="o">();</span>
+
+        <span class="c1">// +1</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">increment</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+        <span class="c1">// +1</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">increment</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+      
+       <span class="c1">// -1</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">decrement</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"C"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="c1">// -1</span>
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">decrement</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"D"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Data04</span><span class="o">{</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="c1">// +1</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">increment</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		 <span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">!=</span><span class="mi">0</span><span class="o">){</span> <span class="c1">// 判断是否需要等待</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">number</span><span class="o">++;</span> <span class="c1">// 执行</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">"\t"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+		<span class="c1">// 通知</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">//唤醒所有线程</span>
+	<span class="o">}</span>
+
+	<span class="c1">// -1</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">decrement</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">number</span><span class="o">==</span><span class="mi">0</span><span class="o">){</span> <span class="c1">// 判断是否需要等待</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">number</span><span class="o">--;</span> <span class="c1">// 执行</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">"\t"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+		<span class="c1">// 通知</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">//唤醒所有线程</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Data 类不变，执行结果：</p>
+
+<p><img src="/assets/images/2020/juc/wait-notifyall-2.jpg" alt="" /></p>
+
+<p>会产生虚假唤醒问题，导致没有交替执行</p>
+
+<p>查看jdk帮助文档</p>
+
+<p><img src="/assets/images/2020/juc/icoding-edu-jdkchw-wait.png" alt="" /></p>
+
+<p>wait方法不能放在if判断中使用，应该放在while循环中，因为if只会判断一次，在线程被中断和虚假唤醒(就是被唤醒后线程不会去重新判断条件，而是往下走)的情况下，会导致资源数据不正确，即线程安全问题。</p>
+
+<p><strong>解决</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 修改Data，使用while代替if，解决虚假唤醒问题</span>
+<span class="kd">class</span> <span class="nc">Data04</span><span class="o">{</span>
+	<span class="kd">private</span> <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="c1">// +1</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">increment</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		 <span class="k">while</span><span class="o">(</span><span class="n">number</span><span class="o">!=</span><span class="mi">0</span><span class="o">){</span> <span class="c1">// 判断是否需要等待</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span> 
+		<span class="o">}</span>
+		<span class="n">number</span><span class="o">++;</span> <span class="c1">// 执行</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">"\t"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+		<span class="c1">// 通知</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">//唤醒所有线程</span>
+	<span class="o">}</span>
+
+	<span class="c1">// -1</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">decrement</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="k">while</span> <span class="o">(</span><span class="n">number</span><span class="o">==</span><span class="mi">0</span><span class="o">){</span> <span class="c1">// 判断是否需要等待</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">wait</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">number</span><span class="o">--;</span> <span class="c1">// 执行</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()+</span><span class="s">"\t"</span><span class="o">+</span><span class="n">number</span><span class="o">);</span>
+		<span class="c1">// 通知</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">//唤醒所有线程</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<p><img src="/assets/images/2020/juc/wait-notifyall-3.jpg" alt="" /></p>
+
+<h3 id="第二种方案">第二种方案</h3>
+
+<p>使用juc包的Lock 接口 与 Condition接口，lock替换synchronized方法和语句的使用，Condition取代了对象监视器方法的使用，可实现更精准的访问</p>
+
+<p>注意，wait方法不能放在if判断中使用，应该放在while循环中，因为if只会判断一次，在线程被中断和虚假唤醒的情况下，会导致资源数据不正确，即线程安全问题。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">coding</span><span class="o">.</span><span class="na">demo01</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.concurrent.locks.Condition</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.locks.Lock</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.locks.ReentrantLock</span><span class="o">;</span>
+
+<span class="cm">/*
+实现线程交替执行！
+主要的实现目标：精准的唤醒线程！
+    三个线程：A B C
+    三个方法：A p5  B p10  C p15 依次循环
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo05</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Data05</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Data05</span><span class="o">();</span>
+
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">print5</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">print10</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+        <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">data</span><span class="o">.</span><span class="na">print15</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span><span class="s">"C"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 资源类</span>
+<span class="kd">class</span> <span class="nc">Data05</span><span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">// 1A 2B  3C</span>
+    <span class="c1">// 一把锁</span>
+    <span class="kd">private</span> <span class="nc">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">();</span>
+    <span class="c1">// 实现精准访问</span>
+    <span class="kd">private</span> <span class="nc">Condition</span> <span class="n">condition1</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">Condition</span> <span class="n">condition2</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">Condition</span> <span class="n">condition3</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">print5</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 判断</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">number</span><span class="o">!=</span><span class="mi">1</span><span class="o">){</span>
+                <span class="n">condition1</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="c1">// 执行</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="c1">// 通知第二个线程干活！</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+            <span class="n">condition2</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span> <span class="c1">// 唤醒</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span> <span class="c1">// 一定要解锁</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">print10</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 判断</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">number</span><span class="o">!=</span><span class="mi">2</span><span class="o">){</span>
+                <span class="n">condition2</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="c1">// 执行</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="c1">// 通知3干活</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+            <span class="n">condition3</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">print15</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 判断</span>
+            <span class="k">while</span> <span class="o">(</span><span class="n">number</span><span class="o">!=</span><span class="mi">3</span><span class="o">){</span>
+                <span class="n">condition3</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="c1">// 执行</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="c1">// 通知 1 干活</span>
+            <span class="n">number</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="n">condition1</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果，达到目的线程A、B、C交替执行</p>
+
+<p><img src="/assets/images/2020/juc/wait-notifyall-4.jpg" alt="" /></p>
+
+<p><strong>总结</strong></p>
+
+<p><img src="/assets/images/2020/juc/juc-compare.png" alt="" /></p>
+
+<p>新的技术出来，一定是可以替换一些旧技术的！</p>
+
+<h2 id="5八锁现象线程彻底理解锁">5、八锁现象线程彻底理解锁</h2>
+
+<p>要区分synchronized 锁的是对象还是类模版，是两个不同的锁。下面是例子代码</p>
+
+<blockquote>
+  <p>synchronized 锁对象1</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+1、标准的访问情况下，先执行 sendEmail 还是 sendSMS
+
+   答案：sendEmail
+   被 synchronized 修饰的方式，锁的对象是方法的调用者，所以说这里两个方法调用的对象是同一个
+   先调用的先执行！
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo1</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+		<span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+	<span class="o">}</span>
+
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSms"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁对象2</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 2、sendEmail休眠3秒后 ，先执行 sendEmail 还是 sendSMS
+ 
+ * 答案：sendEmail
+ *    被 synchronized 修饰的方式，锁的对象是方法的调用者，所以说这里两个方法调用的对象是同一个
+ *    先调用的先执行！
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo2</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone2</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone2</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone2</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSms"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁对象3</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 3、一个普通方法，一个synchronized 修饰的方法，先执行sendEmail还是sendSMS
+ *
+ * 答案：sendSMS
+ * sendSMS方法没有synchronized 修饰，不是同步方法，不受锁影响
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo3</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone3</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone3</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone3</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span>  <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSms"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁不同对象4</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 4、两个手机，请问先执行sendEmail 还是 sendSMS
+*   答案：sendSMS
+ *  被 synchronized 修饰的方法，锁的对象是调用者；我们这里有两个调用者，两个方法在这里是两个锁
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo4</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone4</span> <span class="n">phone1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone4</span><span class="o">();</span>
+		<span class="nc">Phone4</span> <span class="n">phone2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone4</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone1</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone2</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone4</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSms"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁Class类 5</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 5、两个静态同步方法，同一个手机访问，先执行sendEmail还是sendSMS
+ *
+ * 答案：sendEmail
+ * 方法被static 修饰，synchronized 锁的对象的Class 类模版，这个全局唯一，所以说这里说同一个锁
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo5</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone5</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone5</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">},</span><span class="s">"B"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+	<span class="o">}</span>
+
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone5</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSMS"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁Class类模版 6</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 6、两个静态同步方法，两个手机访问，先执行sendEmail，还是sendSMS
+ *
+ * 答案：sendEmail
+ * 只要方法被static修饰，synchronized锁的对象锁Class类模版，全局唯一，所以说这里是同一个锁，谁先获取谁先执行，执行完毕才释放锁
+ *
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo6</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone6</span> <span class="n">phone1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone6</span><span class="o">();</span>
+		<span class="nc">Phone6</span> <span class="n">phone2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone6</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone1</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone2</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone6</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSMS"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁Class类模版和调用的对象，两个不同的锁 7</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 7、一个静态同步方法，一个普通同步方法，只有一个手机，先执行sendEmail还是sendSMS
+ * 答案：sendSMS
+ * 静态同步方法，锁的是Class类模版
+ * 普通同步方法，锁的是方法调用的对象
+ * 这里是两个不同的锁
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo7</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone7</span> <span class="n">phone</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone7</span><span class="o">();</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone7</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span>  <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSMS"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>synchronized 锁Class类模版和调用的对象，两个不同的锁 8</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 8、一个静态同步方法，一个普通同步方法，两个手机，先输出sendEmail还是sendSMS
+ * 答案：sendSMS
+ * 静态同步方法，锁的是Class类模版
+ * 普通同步方法，锁的是方法调用的对象
+ * 这里是两个不同的锁
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LockDemo8</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">Phone8</span> <span class="n">phone1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone8</span><span class="o">();</span>
+		<span class="nc">Phone8</span> <span class="n">phone2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Phone8</span><span class="o">();</span>
+
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="n">phone1</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">();</span>
+			<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+		<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+			<span class="n">phone2</span><span class="o">.</span><span class="na">sendSMS</span><span class="o">();</span>
+		<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Phone8</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendEmail</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+		<span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendEmail"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span>  <span class="kd">synchronized</span> <span class="kt">void</span> <span class="nf">sendSMS</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"sendSMS"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p>new   this 一个具体的对象</p>
+
+<p>Static class  类，唯一的模版</p>
+
+<p>我们编写多线程时，只要搞明白锁的是什么就不出错了。</p>
+
+<h2 id="6不安全的集合类">6、不安全的集合类</h2>
+
+<p>只要是并发环境，你的集合类都是不安全的（List、Map、Set）</p>
+
+<h3 id="list不安全">List不安全</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeList</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+			<span class="o">},</span><span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">)).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-list-1.gif" alt="" /></p>
+
+<p>再运行</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-list-2.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/juc/unsafe-list-3.gif" alt="" /></p>
+
+<p>按正常逻辑ArrayList应该有3个随机字符串，但多次运行结果都是不对的甚至还报异常，说明并发线程下ArrayList不安全。</p>
+
+<blockquote>
+  <p>ConcurrentModificationException 并发修改异常</p>
+</blockquote>
+
+<p>导致原因：add方法没有加锁，我们点进ArrayList的add方法看看源码，确实没有加锁</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-arraylist-add-no-lock.gif" alt="" /></p>
+
+<font color="red">不加锁是为了提高效率，但不安全。</font>
+
+<blockquote>
+  <p>解决方案1：使用Vector</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeList</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Vector</span><span class="o">&lt;&gt;();</span>
+
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+			<span class="o">},</span><span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">)).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-list-vector.gif" alt="" /></p>
+
+<p>再没有报ConcurrentModificationException了，我们看看Vector的add方法源码</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-list-vector-add.gif" alt="" /></p>
+
+<p>add方法加了  同步锁，所以并发线程下它是安全的。Vector 是从JDK1.0就有的啦</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-list-vector-jdk1.gif" alt="" /></p>
+
+<p>而ArrayList是JDK1.2才有的，它为什么没有加锁尼？</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-arraylist-jdk1.2.gif" alt="" /></p>
+
+<p>因为使用Vector 加上synchronized 同步锁 ，效率低，</p>
+
+<blockquote>
+  <p>解决方案2：使用Collections.synchronizedList</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeList</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">/// List&lt;String&gt; list = new Vector&lt;&gt;(); Jdk1.0就存在，效率低</span>
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">synchronizedList</span><span class="o">(</span><span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;());</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+			<span class="o">},</span><span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">)).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<p><img src="/assets/images/2020/juc/safe-collections-synchronizedList.gif" alt="" /></p>
+
+<p>结果正常，没有报ConcurrentModificationException。</p>
+
+<blockquote>
+  <p>解决方案3：使用java.util.concurrent.CopyOnWriteArrayList</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/juc/safe-concurrent-map-list-set.gif" alt="" /></p>
+
+<p>CopyOnWriteArrayList 是一种拷贝思想</p>
+
+<p><img src="/assets/images/2020/juc/safe-copyonwrite-arraylist.gif" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeList</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">/// List&lt;String&gt; list = new Vector&lt;&gt;(); Jdk1.0就存在，效率低</span>
+
+		<span class="c1">//List&lt;String&gt; list = Collections.synchronizedList(new ArrayList&lt;&gt;())</span>
+
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CopyOnWriteArrayList</span><span class="o">&lt;&gt;();</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+			<span class="o">},</span><span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">)).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<p><img src="/assets/images/2020/juc/safe-copyonwrite-arraylist-result.gif" alt="" /></p>
+
+<p>结果正常，没有报ConcurrentModificationException。</p>
+
+<blockquote>
+  <p>什么是CopyOnWrite: 写入是复制（COW）</p>
+
+  <p>多个调用者使用相同资源时，有一个指针的概念，如下图：</p>
+
+  <p><img src="/assets/images/2020/juc/safe-cow-1.gif" alt="" /></p>
+
+  <p><img src="/assets/images/2020/juc/safe-cow-2.gif" alt="" /></p>
+
+  <p><img src="/assets/images/2020/juc/safe-cow-3.gif" alt="" /></p>
+
+  <p>List写完后，指针会移动到最新资源，读写分离的思想。</p>
+</blockquote>
+
+<p>我们点进CopyOnWriteArrayList，看看add的源码</p>
+
+<p><img src="/assets/images/2020/juc/safe-copyonwrite-arraylist-add.gif" alt="" /></p>
+
+<p>逻辑是不是上面的指针移动一样。</p>
+
+<h3 id="set-不安全">Set 不安全</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeSet</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// HashSet 底层是什么，点击源码它是一个new HashMap()</span>
+		<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">set</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
+
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="mi">30</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">set</span><span class="o">);</span>
+			<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行：</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-set-result.gif" alt="" /></p>
+
+<p>不出意外，报ConcurrentModificationException 并发修改异常，说明Set在并发环境下是不安全的。</p>
+
+<blockquote>
+  <p>解决方案1：使用Collections.synchronizedSet</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeSet</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// HashSet 底层是什么，点击源码它是一个new HashMap()</span>
+		<span class="c1">//Set&lt;String&gt; set = new HashSet&lt;&gt;();</span>
+		<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">set</span> <span class="o">=</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">synchronizedSet</span><span class="o">(</span><span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;());</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="mi">30</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">set</span><span class="o">);</span>
+			<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="/assets/images/2020/juc/safe-collections-synchronizedSet.gif" alt="" /></p>
+
+<p>结果正常，没有报ConcurrentModificationException。</p>
+
+<blockquote>
+  <p>解决方案2：使用java.util.concurrent.CopyOnWriteArraySet</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UnsafeSet</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// HashSet 底层是什么，点击源码它是一个new HashMap()</span>
+		<span class="c1">//Set&lt;String&gt; set = new HashSet&lt;&gt;();</span>
+		<span class="c1">//Set&lt;String&gt; set = Collections.synchronizedSet(new HashSet&lt;&gt;());</span>
+		<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">set</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CopyOnWriteArraySet</span><span class="o">&lt;&gt;();</span>
+
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="mi">30</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+				<span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">set</span><span class="o">);</span>
+			<span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<p><img src="/assets/images/2020/juc/safe-copyonwrite-arrayset-result.gif" alt="" /></p>
+
+<p>结果正常，没有报ConcurrentModificationException。</p>
+
+<blockquote>
+  <p>聊聊HashSet</p>
+</blockquote>
+
+<p>本质是一个HashMap，点进源码看它的add方法，本质是put一个常量。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Dummy value to associate with an Object in the backing Map</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Object</span> <span class="no">PRESENT</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Object</span><span class="o">();</span>
+
+<span class="cm">/**
+ * Constructs a new, empty set; the backing &lt;tt&gt;HashMap&lt;/tt&gt; instance has
+ * default initial capacity (16) and load factor (0.75).
+ */</span>
+<span class="kd">public</span> <span class="nf">HashSet</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">add</span><span class="o">(</span><span class="no">E</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">e</span><span class="o">,</span> <span class="no">PRESENT</span><span class="o">)==</span><span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="map不安全">Map不安全</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+  <span class="c1">// new HashMap(),工作中不能这样用</span>
+  <span class="c1">// 因为默认容量是16，扩展容量是损耗性能的，所以应该确认初始化的容量</span>
+  <span class="c1">// HashMap的底层数据结构 链表+红黑树</span>
+
+  <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;(</span><span class="mi">30</span><span class="o">);</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="mi">30</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+    <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行</p>
+
+<p><img src="/assets/images/2020/juc/unsafe-hashmap-result.gif" alt="" /></p>
+
+<blockquote>
+  <p>解决方案：使用java.util.concurrent.ConcurrentHashMap</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span><span class="k">new</span> <span class="nc">ConcurrentHashMap</span> <span class="o">&lt;&gt;(</span><span class="mi">30</span><span class="o">);</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span><span class="mi">30</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="k">new</span> <span class="nf">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">3</span><span class="o">));</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+    <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>运行结果</p>
+
+<p><img src="/assets/images/2020/juc/safe-concurrent-map-result.gif" alt="" /></p>
+
+<p>结果正常，没有报异常</p>
+
+<h3 id="map的值覆盖问题">Map的值覆盖问题</h3>
+
+<p>多线程环境下，使用HashMap除了容易发生上面的并发异常外，可能会发生值覆盖问题。</p>
+
+<blockquote>
+  <p>JDK1.7 扩容时</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">transfer</span><span class="o">(</span><span class="nc">Entry</span><span class="o">[]</span> <span class="n">newTable</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">rehash</span><span class="o">)</span> <span class="o">{</span>  
+  <span class="kt">int</span> <span class="n">newCapacity</span> <span class="o">=</span> <span class="n">newTable</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>  
+  <span class="k">for</span> <span class="o">(</span><span class="nc">Entry</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">e</span> <span class="o">:</span> <span class="n">table</span><span class="o">)</span> <span class="o">{</span>  
+
+    <span class="k">while</span><span class="o">(</span><span class="kc">null</span> <span class="o">!=</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>  
+      <span class="nc">Entry</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">next</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>           
+      <span class="k">if</span> <span class="o">(</span><span class="n">rehash</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="n">e</span><span class="o">.</span><span class="na">hash</span> <span class="o">=</span> <span class="kc">null</span> <span class="o">==</span> <span class="n">e</span><span class="o">.</span><span class="na">key</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">hash</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">key</span><span class="o">);</span>  
+      <span class="o">}</span>  
+      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">indexFor</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">hash</span><span class="o">,</span> <span class="n">newCapacity</span><span class="o">);</span>   
+      <span class="n">e</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">newTable</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>  
+      <span class="n">newTable</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>  <span class="c1">// 线程 A 运行到这里时被挂起</span>
+      <span class="n">e</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>  
+    <span class="o">}</span> 
+  <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>在扩容时，发生数据覆盖问题主要核心就是上面的代码，我们假设一下，刚开始时，结构是这样的：</p>
+
+<p><img src="\assets\images\2020\juc\map-1.jpg" alt="" /></p>
+
+<p>现在有两个线程 A 和 B ，它们都要进行插入操作，首先 A 进行插入操作，经过 Hash 之后得到了要落到的桶的索引坐标，运行到 <code class="highlighter-rouge">newTable[i] = e;</code> 这行代码时， CPU 时间片用完了，此时线程 A 就停止运行被挂起，这个时候是这个样子的：</p>
+
+<p><img src="\assets\images\2020\juc\map-2.jpg" alt="" /></p>
+
+<p>线程 A 被挂起之后，线程 B 被调度得以运行，巧的是，线程 B 经过 Hash 之后得到的要落到的桶索引坐标和线程 A 一样，此时线程 B 也进行插入操作，线程 B 因为时间片足够用，所以就成功的将记录插入到了桶里面：</p>
+
+<p><img src="\assets\images\2020\juc\map-3.jpg" alt="" /></p>
+
+<p>线程 B 插入成功之后，根据 Java 内存模型，此时主内存中存放的值就是线程 B 运行之后的结果</p>
+
+<p>接下来线程 A 被唤醒，继续执行插入操作。对于 A 来说，前面的步骤都已经执行过了，所以就不需要再次运行，直接从 <code class="highlighter-rouge">newTable[i] = e;</code> 这行代码开始往下继续运行即可，线程 A 保存的环境是 <code class="highlighter-rouge">e = 12</code> <code class="highlighter-rouge">next = 6</code> <code class="highlighter-rouge">e.next = newTable[i]; 即 newTable[3] = null;</code>，那么接下来执行 <code class="highlighter-rouge">newTable[i] = e;</code> &amp; <code class="highlighter-rouge">e = next</code> 也就是 <code class="highlighter-rouge">newTable[3] = 12</code> <code class="highlighter-rouge">e = next = 6</code> 执行完毕之后，大概就是这样：</p>
+
+<p><img src="\assets\images\2020\juc\map-4.jpg" alt="" /></p>
+
+<p>元素 15 就这么被覆盖掉了</p>
+
+<blockquote>
+  <p>JDK1.8 put</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="no">V</span> <span class="nf">putVal</span><span class="o">(</span><span class="kt">int</span> <span class="n">hash</span><span class="o">,</span> <span class="no">K</span> <span class="n">key</span><span class="o">,</span> <span class="no">V</span> <span class="n">value</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">onlyIfAbsent</span><span class="o">,</span>
+               <span class="kt">boolean</span> <span class="n">evict</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Node</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;[]</span> <span class="n">tab</span><span class="o">;</span> <span class="nc">Node</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">;</span> <span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">;</span>
+  <span class="k">if</span> <span class="o">((</span><span class="n">tab</span> <span class="o">=</span> <span class="n">table</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">(</span><span class="n">n</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="o">(</span><span class="n">tab</span> <span class="o">=</span> <span class="n">resize</span><span class="o">()).</span><span class="na">length</span><span class="o">;</span>
+  <span class="k">if</span> <span class="o">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">tab</span><span class="o">[</span><span class="n">i</span> <span class="o">=</span> <span class="o">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="n">hash</span><span class="o">])</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>     <span class="c1">// 如果没有 hash 碰撞，则直接插入</span>
+    <span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">newNode</span><span class="o">(</span><span class="n">hash</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>数据覆盖主要发生在 put 操作中，在上面的代码中，我们能够看到，源码只是判断了 hash 是否有碰撞，如果没有就不再做别的检查进行插入操作。</p>
+
+<p>在多线程环境下，如果线程 1 检查完了 hash 没有碰撞，要进行插入时， CPU 时间片使用完毕，此时它被挂起，线程 2 开始跑，无巧不成书嘛，此时线程 2 经过 hash 之后得到的值和线程 1 的 hash 值一样，线程 2 将值插入进去，线程 1 恢复运行，因为前面检查了 hash 碰撞，此时插入时不再做任何检查，直接将值插入。那么线程 2 插入的值就被覆盖掉了</p>
+
+<p>HashMap 之所以发生数据覆盖的问题，最主要的原因在于它没有加锁，所以在多线程环境下会发生数据覆盖问题</p>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p>以后并发环境中，使用juc包中的CopyOnWriteArrayList、CopyOnWriteArraySet、ConcurrentHashMap替代ArrayList、ArraySet、HashMap。</p>
+
+<h2 id="7hashmap">7、HashMap</h2>
+
+<h3 id="put操作逻辑">put操作逻辑</h3>
+
+<p><img src="\assets\images\2021\juc\hashmap-put.jpg" alt="" /></p>
+
+<p>Hashmap具有如下特性：</p>
+
+<ul>
+  <li>多线程情况下该类不安全，可以考虑用 HashTable。</li>
+  <li>HashMap 的存取是没有顺序的，KV 均允许为 NULL</li>
+  <li>JDk8底层是数组 + 链表 + 红黑树，JDK7底层是数组 + 链表。</li>
+  <li>初始容量和装载因子是决定整个类性能的关键点，轻易不要动。</li>
+  <li>HashMap是<strong>懒汉式</strong>创建的，只有在你put数据时候才会 build。</li>
+  <li>单向链表转换为红黑树的时候会先变化为<strong>双向链表</strong>最终转换为<strong>红黑树</strong>，切记双向链表跟红黑树是<code class="highlighter-rouge">共存</code>的。</li>
+  <li>对于传入的两个<code class="highlighter-rouge">key</code>，会强制性的判别出个高低，目的是为了决定向左还是向右放置数据。</li>
+  <li>链表转红黑树后会努力将红黑树的<code class="highlighter-rouge">root</code>节点和链表的头节点 跟<code class="highlighter-rouge">table[i]</code>节点融合成一个。</li>
+  <li>在删除的时候是先判断删除节点红黑树个数是否需要转链表，不转链表就跟<code class="highlighter-rouge">RBT</code>类似，找个合适的节点来填充已删除的节点。</li>
+  <li>红黑树的<code class="highlighter-rouge">root</code>节点<code class="highlighter-rouge">不一定</code>跟<code class="highlighter-rouge">table[i]</code>也就是链表的头节点是同一个，三者同步是靠<code class="highlighter-rouge">MoveRootToFront</code>实现的。而<code class="highlighter-rouge">HashIterator.remove()</code>会在调用<code class="highlighter-rouge">removeNode</code>的时候<code class="highlighter-rouge">movable=false</code>。</li>
+</ul>
+
+<p>常见HashMap考点：</p>
+
+<blockquote>
+  <ol>
+    <li>HashMap原理，内部数据结构。</li>
+    <li>HashMap中的put、get、remove大致过程。</li>
+    <li>HashMap中 hash函数实现。</li>
+    <li>HashMap如何扩容。</li>
+    <li>HashMap几个重要参数为什么这样设定。</li>
+    <li>HashMap为什么线程不安全，如何替换。</li>
+    <li>HashMap在JDK7跟JDK8中的区别。</li>
+    <li>HashMap中链表跟红黑树切换思路。</li>
+  </ol>
+</blockquote>
+
+<h3 id="底层数据结构">底层数据结构</h3>
+
+<p>在jdk1.7和1.8版本的实现方式不一样</p>
+
+<ul>
+  <li>
+    <p>JDK 1.7 ，数组+链表</p>
+
+    <p><img src="\assets\images\2020\juc\hashmap-1.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>JDK 1.8 ，数组+链表+红黑树</p>
+
+    <p><img src="\assets\images\2020\juc\hashmap-2.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p>很明显就能看出来， 1.8 版本怎么多了一个树？还是红黑的？</p>
+
+<p>这就要来分析 1.7 版本 HashMap 的实现有什么不足了</p>
+
+<p>jdk1.7 采用数组 + 链表的方式实现，如果有一个 hash 值总是会发生碰撞，那么由此对应的链表结构也会越来越长，这个时候如果再想要进行查询操作，就会非常耗时，所以该如何优化这一点就是jdk1.8要实现的，引入红黑树的方式</p>
+
+<p>jdk1.8采用了数组 + 链表 + 红黑树的方式去实现，</p>
+
+<ul>
+  <li>
+    <p>当链表的长度大于 8 时，就会将链表转为红黑树。</p>
+
+    <p>为什么会将链表转红黑树的值设定为 8 ？</p>
+
+    <p>因为链表的时间复杂度是 <code class="highlighter-rouge">n/2</code> ，红黑树时间复杂度是 <code class="highlighter-rouge">logn</code> ，当 n 等于 8 的时候， log8 要比 8/2 小，这个时候红黑树的查找速度会更快一些</p>
+  </li>
+  <li>
+    <p>当数组长度小于 6 的时候转为链表，而不是 7 的时候就转为链表呢？频繁的从链表转到红黑树，再从红黑树转到链表，开销会很大，特别是频繁的从链表转到红黑树时，需要旋转</p>
+  </li>
+</ul>
+
+<h3 id="面试问答">面试问答</h3>
+
+<p>1、为什么将链表转为红黑树，而不是平衡二叉树（ AVL 树）呢？</p>
+
+<p>​	a) 二叉树比红黑树保持着更加严格的平衡， 二叉树中从根到最深叶的路径最多为 <code class="highlighter-rouge">1.44lg（n + 2）</code> ，红黑树中则最多为 <code class="highlighter-rouge">2lg（ n + 1）</code> ，所以二叉树查找效果会比较快，如果是查找密集型任务使用二叉树比较好。相反插入密集型任务，使用红黑树效果就比较快</p>
+
+<p>​	b) 二叉树在每个节点上都会存储平衡因子</p>
+
+<p>​	c) 二叉树的旋转比红黑树的旋转更加难以平衡和调试，如果两个都给 O（lgn） 查找， 二叉树可能需要 O（log n） 旋转，而红黑树最多需要两次旋转使其达到平衡。</p>
+
+<p>2、<code class="highlighter-rouge">HashMap</code>内部的<code class="highlighter-rouge">bucket</code>数组长度为什么一直都是2的整数次幂</p>
+
+<p>答：这样做有两个好处，第一，可以通过<code class="highlighter-rouge">(table.length - 1) &amp; key.hash()</code>这样的位运算快速寻址，第二，在<code class="highlighter-rouge">HashMap</code>扩容的时候可以保证同一个桶中的元素均匀的散列到新的桶中，具体一点就是同一个桶中的元素在扩容后一般留在原先的桶中，一般放到了新的桶中。</p>
+
+<p>3、<code class="highlighter-rouge">HashMap</code>默认的<code class="highlighter-rouge">bucket</code>数组是多大</p>
+
+<p>答：默认是16，如果指定的大小不是2的整数次幂，<code class="highlighter-rouge">HashMap</code>也会找到一个最接近的2的整数次幂来初始化桶数组。</p>
+
+<p>4、<code class="highlighter-rouge">HashMap</code>何时扩容</p>
+
+<p>答：当<code class="highlighter-rouge">HashMap</code>中的元素数量超过阈值时，阈值计算方式是<code class="highlighter-rouge">capacity * loadFactor</code>，在<code class="highlighter-rouge">HashMap</code>中<code class="highlighter-rouge">loadFactor</code>是0.75</p>
+
+<p>5、桶中的元素链表何时转换为红黑树，什么时候转回链表，为什么要这么设计？</p>
+
+<p>答：当同一个桶中的元素数量大于等于8的时候元素中的链表转换为红黑树，反之，当桶中的元素数量小于等于6的时候又会转为链表，这样做的原因是避免红黑树和链表之间频繁转换，引起性能损耗</p>
+
+<p>6、<code class="highlighter-rouge">Java 8</code>中为什么要引进红黑树，是为了解决什么场景的问题？</p>
+
+<p>答：引入红黑树是为了避免<code class="highlighter-rouge">hash</code>性能急剧下降，如同一hash对应的链表过长引起查询性能下降的问题，正常情况下，一般是不会用到红黑树的，在一些极端场景下，假如客户端实现了一个性能拙劣的<code class="highlighter-rouge">hashCode</code>方法，可以保证<code class="highlighter-rouge">HashMap</code>的读写复杂度不会低于O(lgN)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public int hashCode() {
+    return 1;
+}
+</code></pre></div></div>
+
+<p>7、<code class="highlighter-rouge">HashMap</code>如何处理<code class="highlighter-rouge">key</code>为<code class="highlighter-rouge">null</code>的键值对？</p>
+
+<p>答：放置在桶数组中下标为0的桶中</p>
+
+<h2 id="8concurrenthashmap">8、ConcurrentHashMap</h2>
+
+<p>ConcurrentHashMap是多线程模式下常用的并发容器，它的实现在JDK7跟JDK8区别挺大的。</p>
+
+<h3 id="底层数据结构-1">底层数据结构</h3>
+
+<blockquote>
+  <p>JDK7中ConcurrentHashMap</p>
+</blockquote>
+
+<p>采用分段锁（ ReentrantLock + Segment + HashEntry ）实现，也就是将一个 HashMap 分成多个段，然后每一段都分配一把锁，这样去支持多线程环境下的访问。但是这样锁的粒度太大了，因为你锁的直接就是一段嘛，并发程度是由<code class="highlighter-rouge">Segment</code>数组个数来决定的，并发度一旦初始化无法扩容，扩容的话只是<code class="highlighter-rouge">HashEntry</code>的扩容。</p>
+
+<p><img src="\assets\images\2021\juc\concurrent-hashmap.jpg" alt="" /></p>
+
+<p><code class="highlighter-rouge">Segment</code>继承自 <code class="highlighter-rouge">ReentrantLock</code>，在此扮演锁的角色。可以理解为我们的每个<code class="highlighter-rouge">Segment</code>都是实现了<code class="highlighter-rouge">Lock</code>功能的<code class="highlighter-rouge">HashMap</code>，看上图<code class="highlighter-rouge">Segment</code>数组的长度是15，所以最高并发是15个线程。</p>
+
+<p><strong>put</strong>流程如下：</p>
+
+<p><img src="\assets\images\2021\juc\concurrent-hashmap-put.jpg" alt="" /></p>
+
+<p><strong>面试问答：</strong></p>
+
+<p>1、<code class="highlighter-rouge">ConcurrentHashMap</code>底层大致实现？</p>
+
+<p>答：ConcurrentHashMap允许多个修改操作<code class="highlighter-rouge">并发进行</code>，其关键在于使用了<code class="highlighter-rouge">锁分离技术</code>。它使用了多个锁来控制对hash表的不同部分进行的修改。内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的HashTable，只要多个修改操作发生在不同的段上就可以并发进行</p>
+
+<p>2、<code class="highlighter-rouge">ConcurrentHashMap</code>在并发下的情况下如何保证取得的元素是最新的？</p>
+
+<p>用于存储键值对数据的<code class="highlighter-rouge">HashEntry</code>，在设计上它的成员变量<strong>value</strong>跟<strong>next</strong>都是<code class="highlighter-rouge">volatile</code>类型的，这样就保证别的线程对value值的修改，get方法可以马上看到，并且get的时候是<mark>不用加锁的</mark>。</p>
+
+<p>3、ConcurrentHashMap的<strong>弱一致性</strong>体现在clear和get方法，原因在于<mark>没有加锁</mark>。</p>
+
+<p>比如迭代器在遍历数据的时候是一个<strong>Segment</strong>一个<strong>Segment</strong>去遍历的，如果在遍历完一个<strong>Segment</strong>时正好有一个线程在刚遍历完的<strong>Segment</strong>上插入数据，就会体现出不一致性。<strong>clear</strong>也是一样。<strong>get</strong>方法和<strong>containsKey</strong>方法都是遍历对应索引位上所有节点，都是不加锁来判断的，如果是修改性质的因为可见性的存在可以直接获得最新值，不过如果是新添加值则<strong>无法保持一致性</strong>。</p>
+
+<p>4、<mark>size 统计个数不准确</mark></p>
+
+<p>size方法比较有趣，先无锁的统计所有的数据量看下前后两次是否数据一样，如果一样则返回数据，如果不一样则要把全部的segment进行加锁，统计，解锁。并且size方法只是返回一个统计性的数字。</p>
+
+<blockquote>
+  <p>JDK8中ConcurrentHashMap</p>
+</blockquote>
+
+<p>JDK8做了优化，使用 CAS + synchronized + Node + 红黑树 来实现，这样就将锁的粒度降低了，同时使用 synchronized 来加锁，相比于 ReentrantLock 来说，会节省比较多的内存空间</p>
+
+<p><strong>put</strong>流程如下：</p>
+
+<p><img src="\assets\images\2021\juc\concurrent-hashmap-put-jdk8.jpg" alt="" /></p>
+
+<p><strong>ConcurrentHashMap</strong> 是如何做到<code class="highlighter-rouge">高效并发安全</code>？</p>
+
+<ol>
+  <li>
+    <p>读操作</p>
+
+    <p>get方法中根本没有使用同步机制，也没有使用unsafe方法，所以<strong>读操作是支持并发</strong>操作的。</p>
+  </li>
+  <li>
+    <p>写操作</p>
+
+    <p>基本思路跟<strong>HashMap</strong>的写操作类似，只不过用到了<strong>CAS + syn</strong> 实现加锁，同时还涉及到扩容的操作。<strong>JDK8</strong>中锁已经细化到 <strong>table[i]</strong> 了，数组位置不同可并发，位置相同则去帮忙扩容。</p>
+  </li>
+  <li>
+    <p>同步处理主要是通过<strong>syn</strong>和<strong>unsafe</strong>的硬件级别原子性这两种方式完成</p>
+
+    <p>当我们对某个<strong>table[i]操作时候是用syn</strong>加锁的。</p>
+
+    <p>取数据的时候用的是<strong>unsafe</strong>硬件级别指令，直接获取指定内存的最新数据。</p>
+  </li>
+</ol>
+
+<p>HashTable的扩容流程如下：</p>
+
+<ol>
+  <li>首先new一个新的hash表(nextTable)出来，大小是原来的2倍。后面的rehash都是针对这个新的hash表操作，不涉及原hash表(table)。</li>
+  <li>然后会对原hash表(table)中的每个链表进行rehash，此时会尝试获取头节点的锁。这一步就保证了在rehash的过程中不能对这个链表执行put操作。</li>
+  <li>通过sizeCtl控制，使扩容过程中不会new出多个新hash表来。</li>
+  <li>最后，将所有键值对重新rehash到新表(nextTable)中后，用nextTable将table替换。这就避免了HashMap中get和扩容并发时，可能get到null的问题。</li>
+  <li>在整个过程中，共享变量的存储和读取全部通过volatile或CAS的方式，保证了线程安全。</li>
+</ol>
+
+<p><strong>JDK8做了优化，优点在哪里</strong></p>
+
+<ul>
+  <li>
+    <p>减少内存开销</p>
+
+    <p>假设使用可重入锁ReentrantLock ，那么每个节点都需要继承AQS，但并不是每个节点都需要同步支持，只有链表的头节点（红黑树的根节点）需要同步，这无疑消耗巨大内存。</p>
+  </li>
+  <li>
+    <p>获得JVM的支持</p>
+
+    <p>可重入锁ReentrantLock 毕竟是API级别的，后续的性能优化空间很小。synchronized则是JVM直接支持的，JVM能够在运行时作出相应的优化措施：锁粗化、锁消除、锁自旋等等。使得synchronized能够随着JDK版本的升级而不改动代码的前提下获得性能上的提升。</p>
+  </li>
+</ul>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/03/01/icoding-note-003.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

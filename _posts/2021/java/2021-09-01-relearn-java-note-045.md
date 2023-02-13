@@ -2,19 +2,11 @@
 layout: post
 title: 重学Java第45讲：LinkedList的扩容机制
 category: java
-tags: [base]
+tags: [java]
 keywords: java
 excerpt: 核心私有内部类Node，常用操作add方法添加元素、remove方法删除元素、set方法更新元素、indexOf和get方法查找元素
 lock: noneed
 ---
-
-原创 沉默王二，Java程序员进阶之路，
-
-码云地址: [https://gitee.com/itwanger/toBeBetterJavaer](https://gitee.com/itwanger/toBeBetterJavaer)
-
-GitHub 地址：[https://github.com/itwanger/toBeBetterJavaer](https://github.com/itwanger/toBeBetterJavaer])
-
-进入正题。
 
 ## 1、LinkedList链表
 

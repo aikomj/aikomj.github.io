@@ -10,7 +10,9 @@ lock: noneed
 
 ## 1. 产品需求梳理
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/imall-arch-flow.jpg)
+![](/assets/images/2020/icoding/imall/imall-arch-flow.jpg)
+
+![](../../../assets/images/2020/icoding/imall/imall-arch-flow.jpg)
 
 设计流程简单的原因有几点：
 
@@ -28,7 +30,9 @@ lock: noneed
 
 ## 2. 系统流量分析
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/imall-1.png)
+![](/assets/images/2020/icoding/imall/imall-1.png)
+
+![](../../../assets/images/2020/icoding/imall/imall-1.png)
 
 做传统项目久了，互联网的数据流转内容就不是很清晰了，流量一定先到DNS（域名解析服务）
 
@@ -62,7 +66,7 @@ lock: noneed
 
   数据库可不可以做分库分表呢？单个数据库的单张表不超过5kw就不用分表，主键一定要用有序id，千万不要用uuid（全局用snow_id），因为我们的数据库使用innodb引擎，innodb使用索引组织表的形式(表数据的存放完全依赖于主键的排序，表数据和索引存放在同一个文件，你插入一个无序的id，你所有的索引组织结构就会因为一个无序的id而更新，相当于插入新的数据触发索引重排)
 
-> **总结一下：**
+> 总结
 
 1、计划型的：动静分离CDN，扩容（k8s动态扩容），缓存（Redis集群slot:16384分散的足够开），索引
 
@@ -85,7 +89,9 @@ DDoS（流量攻击）可用通过限流来进行简单的处理，通过CDN供�
 
 ## 3. 应用架构设计
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/imall-2.png)
+![图片](/assets/images/2020/icoding/imall/imall-2.png)
+
+![](../../../assets/images/2020/icoding/imall/imall-2.png)
 
 - 对于整个系统我们直接使用分布式微服务的架构体系来进行模块拆分，领域设计
 
@@ -171,7 +177,9 @@ aliyun:
 http://localhost:8080/swagger-ui.html
 ```
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/imall-admin-swagger-ui.jpg)
+![](/assets/images/2020/icoding/imall/imall-admin-swagger-ui.jpg)
+
+![](../../../assets/images/2020/icoding/imall/imall-admin-swagger-ui.jpg)
 
 ## 5. 商品管理前端配置
 
@@ -187,7 +195,9 @@ https://github.com/macrozheng/mall-admin-web
 http://macro-oss.oss-cn-shenzhen.aliyuncs.com
 ```
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/imall-oss.jpg)
+![](/assets/images/2020/icoding/imall/imall-oss.jpg)
+
+![](../../../assets/images/2020/icoding/imall/imall-oss.jpg)
 
 替换成我们自己的oss的bucket地址
 
@@ -213,9 +223,9 @@ http://localhost:8090
 账号密码：admin/macro123
 ```
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/imall-admin-web.jpg)
+![](/assets/images/2020/icoding/imall/imall-admin-web.jpg)
 
-
+![](../../../assets/images/2020/icoding/imall/imall-admin-web.jpg)
 
 ## 6. 微服务的拆分原则
 
@@ -343,7 +353,9 @@ http://localhost:8090
 
 ## 8.项目框架搭建
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/icoding/imall/parent-pom.jpg)
+![](/assets/images/2020/icoding/imall/parent-pom.jpg)
+
+![](../../../assets/images/2020/icoding/imall/parent-pom.jpg)
 
 ### 服务注册中心
 
@@ -385,8 +397,6 @@ eureka:
 
 我这里使用nacos作为服务注册中心
 
-
-
 ### ORM框架
 
 可以使用mybatis + tk mapper 做逆向
@@ -396,8 +406,6 @@ eureka:
 项目中我选择了第二个
 
 
-
-### 首页服务index
 
 
 

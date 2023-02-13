@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 部门数据权限与请求方法访问权限
-category: springcloud
-tags: [springcloud]
-keywords: springcloud
+category: springboot
+tags: [springboot]
+keywords: springboot
 excerpt: 看renren和ruoyi开源框架是如何实现部门数据权限访问和请求方法的权限控制
 lock: noneed
 ---

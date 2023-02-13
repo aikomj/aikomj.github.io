@@ -64,55 +64,64 @@ defaults: []
 # Navigation. top menu list 导航顶部菜单
 menus:
   -
+    href: /archives.html
+    label: Archives
+    target: _self
+  -
+    href: /linux.html
+    label: Linux
+    target: _self
+  -
     href: /mysql.html
     label: Mysql
     target: _self
   -
     href: /mongodb.html
-    label: MongoDB
+    label: MongoB
     target: _self
-  - 
-    href: /linux.html
-    label: Linux
-    target: _self
-    
   -
     href: /mq.html
     label: MQ    
     target: _self
-
   -
     href: /fastdfs.html
     label: FastDFS
     target: _self
-
   -
     href: /redis.html
     label: Redis
     target: _self
-
   -
     href: /elasticsearch.html
     label: ES
     target: _self
-
-  - href: /docker.html
+  -
+    href: /docker.html
     label: Docker
     target: _self
-
   -
-    href: /arch.html
-    label: 架构
+    href: /k8s.html
+    label: K8s
+    target: _self
+  -
+    href: /architect.html
+    label: 架构师
+    target: _self
   -
     href: /gitee.html
-    label: 开源项目推荐
-
-  - href: /tool.html
+    label: 开源项目
+    target: _self
+  -
+    href: /tool.html
     label: 工具
     target: _self
   -
     href: /life.html
     label: 生活
+    target: _self
+  -
+    href: /say.html
+    label: 说说
     target: _self
   -
     href: /link.html
@@ -163,9 +172,6 @@ navs:
     - subHref: /design-mode.html
       subLabel: 设计模式
       target: _self
-    - subHref: /java-relearn.html
-      subLabel: Java重学系列
-      target: _self
     - subHref: http://www.justdojava.com
       subLabel: Java 极客技术
       target: _blank
@@ -197,8 +203,8 @@ navs:
         subLabel: 中间件
         target: _self
   -
-    href: /archives.html
-    label: Archives
+    href: /front.html
+    label: 大前端
     target: _self
 
 # labels. my blog key words

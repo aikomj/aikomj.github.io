@@ -8,8 +8,6 @@ excerpt: 安装，导航拦，图标，分类标签
 lock: noneed
 ---
 
-一个用vuespress主题搭建的博客 [http://47.113.95.179/vuepress-blog/](http://47.113.95.179/vuepress-blog/)
-
 ## 1、VuePress主题
 
 ### 安装

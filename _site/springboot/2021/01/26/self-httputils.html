@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Http客户端工具类 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="hutool已经做了http客户端工具类的封装，引入maven 依赖拿来即用，自己想封装一个，简单轻松的实现get、post、put、delete 以及上传、下载请求，也是可以的。">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2021/01/26/self-httputils.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Http客户端工具类">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Http客户端工具类</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/01/26
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1介绍">1、介绍</h2>
+
+<p>最近在工作中需要在后台调用各种上传、下载、以及第三方服务接口，经过研究决定使用 HttpClient，自己封装了一个 HttpClient 工具类，简单轻松的实现get、post、put、delete 以及上传、下载请求</p>
+
+<h2 id="2实践应用">2、实践应用</h2>
+
+<p>本文基于 HttpClient4.5.5 版本进行开发，也是现在最新的版本，之所以要提供版本说明，是因为 HttpClient 3 版本和 HttpClient 4 版本 API 差别还是很多大的，你把 HttpClient 3 版本的代码拿到 HttpClient 4 上面运行不起来，会报错的。所以在使用之前，一定要注意 HtppClient 的版本问题。</p>
+
+<p>hutool的httpUtils是基于JDK自带的HttpUrlConnection进行封装的，这是不同点</p>
+
+<p>新建一个Springboot工具类</p>
+
+<h3 id="导入httpclient依赖">导入HttpClient依赖</h3>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.httpcomponents<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>httpclient<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.5.6<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.httpcomponents<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>httpcore<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.4.10<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.httpcomponents<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>httpmime<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.5.6<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>fastjson<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.2.68<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<h3 id="编写工具类">编写工具类</h3>
+
+<p>本次采用单利模式来初始化客户端，并用线程池来管理，同时支持<code class="highlighter-rouge">http</code>和<code class="highlighter-rouge">https</code>协议，项目启动之后，<strong>无需手动关闭<code class="highlighter-rouge">httpClient</code>客户端</strong>！</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HttpUtils</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Logger</span> <span class="n">log</span> <span class="o">=</span> <span class="nc">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="nc">HttpUtils</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="kd">private</span> <span class="nf">HttpUtils</span><span class="o">()</span> <span class="o">{}</span>
+
+    <span class="c1">//多线程共享实例</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">CloseableHttpClient</span> <span class="n">httpClient</span><span class="o">;</span>
+
+    <span class="kd">static</span> <span class="o">{</span>
+        <span class="nc">SSLContext</span> <span class="n">sslContext</span> <span class="o">=</span> <span class="n">createSSLContext</span><span class="o">();</span>
+        <span class="nc">SSLConnectionSocketFactory</span> <span class="n">sslsf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SSLConnectionSocketFactory</span><span class="o">(</span><span class="n">sslContext</span><span class="o">,</span> <span class="nc">NoopHostnameVerifier</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">);</span>
+        <span class="c1">// 注册http套接字工厂和https套接字工厂</span>
+        <span class="nc">Registry</span><span class="o">&lt;</span><span class="nc">ConnectionSocketFactory</span><span class="o">&gt;</span> <span class="n">socketFactoryRegistry</span> <span class="o">=</span> <span class="nc">RegistryBuilder</span><span class="o">.&lt;</span><span class="nc">ConnectionSocketFactory</span><span class="o">&gt;</span> <span class="nf">create</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="s">"http"</span><span class="o">,</span> <span class="nc">PlainConnectionSocketFactory</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="s">"https"</span><span class="o">,</span> <span class="n">sslsf</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="c1">// 连接池管理器</span>
+        <span class="nc">PoolingHttpClientConnectionManager</span> <span class="n">connMgr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PoolingHttpClientConnectionManager</span><span class="o">(</span><span class="n">socketFactoryRegistry</span><span class="o">);</span>
+        <span class="n">connMgr</span><span class="o">.</span><span class="na">setMaxTotal</span><span class="o">(</span><span class="mi">300</span><span class="o">);</span><span class="c1">//连接池最大连接数</span>
+        <span class="n">connMgr</span><span class="o">.</span><span class="na">setDefaultMaxPerRoute</span><span class="o">(</span><span class="mi">300</span><span class="o">);</span><span class="c1">//每个路由最大连接数，设置的过小，无法支持大并发</span>
+        <span class="n">connMgr</span><span class="o">.</span><span class="na">setValidateAfterInactivity</span><span class="o">(</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span> <span class="c1">//在从连接池获取连接时，连接不活跃多长时间后需要进行一次验证</span>
+        <span class="c1">// 请求参数配置管理器</span>
+        <span class="nc">RequestConfig</span> <span class="n">requestConfig</span> <span class="o">=</span> <span class="nc">RequestConfig</span><span class="o">.</span><span class="na">custom</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">setConnectTimeout</span><span class="o">(</span><span class="mi">60000</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setSocketTimeout</span><span class="o">(</span><span class="mi">60000</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setConnectionRequestTimeout</span><span class="o">(</span><span class="mi">60000</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="c1">// 获取httpClient客户端</span>
+        <span class="n">httpClient</span> <span class="o">=</span> <span class="nc">HttpClients</span><span class="o">.</span><span class="na">custom</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">setConnectionManager</span><span class="o">(</span><span class="n">connMgr</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setDefaultRequestConfig</span><span class="o">(</span><span class="n">requestConfig</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * GET请求
+     * @param url
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getUrl</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">sendHttp</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * GET请求/带头部的信息
+     * @param url
+     * @param header
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getUrl</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">header</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">sendHttp</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="n">header</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * POST请求/无参数
+     * @param url
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">postJson</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">postJson</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * POST请求/有参数
+     * @param url
+     * @param param
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">postJson</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">String</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">postJson</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">param</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * POST请求/无参数带头部
+     * @param url
+     * @param header
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">postJson</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">header</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">postJson</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">header</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * POST请求/有参数带头部
+     * @param url
+     * @param header
+     * @param params
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">postJson</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">header</span><span class="o">,</span> <span class="nc">String</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">sendHttp</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="n">header</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 上传文件流
+     * @param url
+     * @param header
+     * @param param
+     * @param fileName
+     * @param inputStream
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">RequestResult</span> <span class="nf">postUploadFileStream</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">header</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">param</span><span class="o">,</span> <span class="nc">String</span> <span class="n">fileName</span><span class="o">,</span> <span class="nc">InputStream</span> <span class="n">inputStream</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">inputStream2byte</span><span class="o">(</span><span class="n">inputStream</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nf">postUploadFileStream</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="n">header</span><span class="o">,</span> <span class="n">param</span><span class="o">,</span> <span class="n">fileName</span><span class="o">,</span> <span class="n">stream</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 上传文件
+     * @param url 上传地址
+     * @param header 请求头部
+     * @param param 请求表单
+     * @param fileName 文件名称
+     * @param stream 文件流
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">RequestResult</span> <span class="nf">postUploadFileStream</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">header</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">param</span><span class="o">,</span> <span class="nc">String</span> <span class="n">fileName</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">stream</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">infoMessage</span> <span class="o">=</span>  <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">().</span><span class="na">append</span><span class="o">(</span><span class="s">"request postUploadFileStream，url:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">"，header:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">header</span><span class="o">.</span><span class="na">toString</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"，param:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">param</span><span class="o">)).</span><span class="na">append</span><span class="o">(</span><span class="s">"，fileName:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">fileName</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">infoMessage</span><span class="o">);</span>
+        <span class="nc">RequestResult</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RequestResult</span><span class="o">();</span>
+        <span class="k">if</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isBlank</span><span class="o">(</span><span class="n">fileName</span><span class="o">)){</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"上传文件名称为空"</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"上传文件名称为空"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span><span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">stream</span><span class="o">)){</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"上传文件流为空"</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"上传文件流为空"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">ContentType</span> <span class="n">contentType</span> <span class="o">=</span> <span class="nc">ContentType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA</span><span class="o">.</span><span class="na">withCharset</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">);</span>
+            <span class="nc">HttpPost</span> <span class="n">httpPost</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HttpPost</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">header</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">header</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">header</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="n">httpPost</span><span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">()){</span>
+                        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="nc">MultipartEntityBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="nc">MultipartEntityBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+            <span class="n">builder</span><span class="o">.</span><span class="na">setCharset</span><span class="o">(</span><span class="nc">Charset</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">));</span><span class="c1">//使用UTF-8</span>
+            <span class="n">builder</span><span class="o">.</span><span class="na">setMode</span><span class="o">(</span><span class="nc">HttpMultipartMode</span><span class="o">.</span><span class="na">BROWSER_COMPATIBLE</span><span class="o">);</span><span class="c1">//设置浏览器兼容模式</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">param</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">param</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">param</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+                        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                    <span class="o">}</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="na">addPart</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">StringBody</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">(),</span> <span class="n">contentType</span><span class="o">));</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">builder</span><span class="o">.</span><span class="na">addBinaryBody</span><span class="o">(</span><span class="s">"file"</span><span class="o">,</span>  <span class="n">stream</span><span class="o">,</span> <span class="n">contentType</span><span class="o">,</span> <span class="n">fileName</span><span class="o">);</span><span class="c1">//封装上传文件</span>
+            <span class="n">httpPost</span><span class="o">.</span><span class="na">setEntity</span><span class="o">(</span><span class="n">builder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+            <span class="c1">//请求执行，获取返回对象</span>
+            <span class="nc">CloseableHttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">httpClient</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">httpPost</span><span class="o">);</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"postUploadFileStream response status:{}"</span><span class="o">,</span> <span class="n">response</span><span class="o">.</span><span class="na">getStatusLine</span><span class="o">());</span>
+            <span class="kt">int</span> <span class="n">statusCode</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getStatusLine</span><span class="o">().</span><span class="na">getStatusCode</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">statusCode</span> <span class="o">==</span> <span class="nc">HttpStatus</span><span class="o">.</span><span class="na">SC_OK</span> <span class="o">||</span> <span class="n">statusCode</span> <span class="o">==</span> <span class="nc">HttpStatus</span><span class="o">.</span><span class="na">SC_NO_CONTENT</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">result</span><span class="o">.</span><span class="na">setSuccess</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="nc">HttpEntity</span> <span class="n">httpEntity</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">httpEntity</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nc">String</span> <span class="n">content</span> <span class="o">=</span> <span class="nc">EntityUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">httpEntity</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"postUploadFileStream response body:{}"</span><span class="o">,</span> <span class="n">content</span><span class="o">);</span>
+                <span class="n">result</span><span class="o">.</span><span class="na">setMsg</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="nc">HttpClientUtils</span><span class="o">.</span><span class="na">closeQuietly</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">infoMessage</span> <span class="o">+</span> <span class="s">" failure"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="n">result</span><span class="o">.</span><span class="na">setMsg</span><span class="o">(</span><span class="s">"请求异常"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 从下载地址获取文件流(如果链接出现双斜杠，请用OKHttp)
+     * @param url
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">ByteArrayOutputStream</span> <span class="nf">getDownloadFileStream</span><span class="o">(</span><span class="nc">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">infoMessage</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">().</span><span class="na">append</span><span class="o">(</span><span class="s">"request getDownloadFileStream，url:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">infoMessage</span><span class="o">);</span>
+        <span class="nc">ByteArrayOutputStream</span> <span class="n">byteOutStream</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">CloseableHttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">httpClient</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="nc">HttpGet</span><span class="o">(</span><span class="n">url</span><span class="o">));</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"getDownloadFileStream response status:{}"</span><span class="o">,</span> <span class="n">response</span><span class="o">.</span><span class="na">getStatusLine</span><span class="o">());</span>
+            <span class="kt">int</span> <span class="n">statusCode</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getStatusLine</span><span class="o">().</span><span class="na">getStatusCode</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">statusCode</span> <span class="o">==</span> <span class="nc">HttpStatus</span><span class="o">.</span><span class="na">SC_OK</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">//请求成功</span>
+                <span class="nc">HttpEntity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">entity</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">entity</span><span class="o">.</span><span class="na">getContent</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">//复制输入流</span>
+                    <span class="n">byteOutStream</span> <span class="o">=</span> <span class="n">cloneInputStream</span><span class="o">(</span><span class="n">entity</span><span class="o">.</span><span class="na">getContent</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="nc">HttpClientUtils</span><span class="o">.</span><span class="na">closeQuietly</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">infoMessage</span> <span class="o">+</span> <span class="s">" failure"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">byteOutStream</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="cm">/**
+     * 发送http请求(通用方法)
+     * @param httpMethod 请求方式（GET、POST、PUT、DELETE）
+     * @param url        请求路径
+     * @param header     请求头
+     * @param params     请求body（json数据）
+     * @return 响应文本
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">sendHttp</span><span class="o">(</span><span class="nc">HttpMethod</span> <span class="n">httpMethod</span><span class="o">,</span> <span class="nc">String</span> <span class="n">url</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">header</span><span class="o">,</span> <span class="nc">String</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">infoMessage</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">().</span><span class="na">append</span><span class="o">(</span><span class="s">"request sendHttp，url:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">"，method:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">httpMethod</span><span class="o">.</span><span class="na">name</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"，header:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">header</span><span class="o">)).</span><span class="na">append</span><span class="o">(</span><span class="s">"，param:"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">params</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">infoMessage</span><span class="o">);</span>
+        <span class="c1">//返回结果</span>
+        <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="kt">long</span> <span class="n">beginTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">ContentType</span> <span class="n">contentType</span> <span class="o">=</span> <span class="nc">ContentType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">.</span><span class="na">withCharset</span><span class="o">(</span><span class="s">"UTF-8"</span><span class="o">);</span>
+            <span class="nc">HttpRequestBase</span> <span class="n">request</span> <span class="o">=</span> <span class="n">buildHttpMethod</span><span class="o">(</span><span class="n">httpMethod</span><span class="o">,</span> <span class="n">url</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">header</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">header</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">header</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="c1">//打印头部信息</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">()){</span>
+                        <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                    <span class="o">}</span>
+                    <span class="n">request</span><span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">params</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">httpMethod</span><span class="o">)</span> <span class="o">||</span> <span class="nc">HttpMethod</span><span class="o">.</span><span class="na">PUT</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">httpMethod</span><span class="o">)){</span>
+                    <span class="o">((</span><span class="nc">HttpEntityEnclosingRequest</span><span class="o">)</span> <span class="n">request</span><span class="o">).</span><span class="na">setEntity</span><span class="o">(</span><span class="k">new</span> <span class="nc">StringEntity</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">contentType</span><span class="o">));</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="nc">CloseableHttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">httpClient</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+            <span class="nc">HttpEntity</span> <span class="n">httpEntity</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"sendHttp response status:{}"</span><span class="o">,</span> <span class="n">response</span><span class="o">.</span><span class="na">getStatusLine</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">httpEntity</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nc">EntityUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">httpEntity</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"sendHttp response body:{}"</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="nc">HttpClientUtils</span><span class="o">.</span><span class="na">closeQuietly</span><span class="o">(</span><span class="n">response</span><span class="o">);</span><span class="c1">//关闭返回对象</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">infoMessage</span> <span class="o">+</span> <span class="s">" failure"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"request sendHttp response time cost:"</span> <span class="o">+</span> <span class="o">(</span><span class="n">endTime</span> <span class="o">-</span> <span class="n">beginTime</span><span class="o">)</span> <span class="o">+</span> <span class="s">" ms"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 请求方法（全大些）
+     */</span>
+    <span class="kd">public</span> <span class="kd">enum</span> <span class="nc">HttpMethod</span> <span class="o">{</span>
+        <span class="no">GET</span><span class="o">,</span> <span class="no">POST</span><span class="o">,</span> <span class="no">PUT</span><span class="o">,</span> <span class="no">DELETE</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 上传返回结果封装
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">RequestResult</span><span class="o">{</span>
+        <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isSuccess</span><span class="o">;</span><span class="c1">//是否成功</span>
+        <span class="kd">private</span> <span class="nc">String</span> <span class="n">msg</span><span class="o">;</span><span class="c1">//消息</span>
+
+        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isSuccess</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">isSuccess</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="nc">RequestResult</span> <span class="nf">setSuccess</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">success</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">isSuccess</span> <span class="o">=</span> <span class="n">success</span><span class="o">;</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getMsg</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">msg</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="nc">RequestResult</span> <span class="nf">setMsg</span><span class="o">(</span><span class="nc">String</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">;</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="nf">RequestResult</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">isSuccess</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 构建请求方法
+     * @param method
+     * @param url
+     * @return
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">HttpRequestBase</span> <span class="nf">buildHttpMethod</span><span class="o">(</span><span class="nc">HttpMethod</span> <span class="n">method</span><span class="o">,</span> <span class="nc">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">HttpGet</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">HttpPost</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">PUT</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">HttpPut</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">DELETE</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">HttpDelete</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 配置证书
+     * @return
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">SSLContext</span> <span class="nf">createSSLContext</span><span class="o">(){</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">//信任所有,支持导入ssl证书</span>
+            <span class="nc">TrustStrategy</span> <span class="n">acceptingTrustStrategy</span> <span class="o">=</span> <span class="o">(</span><span class="n">cert</span><span class="o">,</span> <span class="n">authType</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nc">SSLContext</span> <span class="n">sslContext</span> <span class="o">=</span> <span class="nc">SSLContexts</span><span class="o">.</span><span class="na">custom</span><span class="o">().</span><span class="na">loadTrustMaterial</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">acceptingTrustStrategy</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">sslContext</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"初始化ssl配置失败"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"初始化ssl配置失败"</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 复制文件流
+     * @param input
+     * @return
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ByteArrayOutputStream</span> <span class="nf">cloneInputStream</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">input</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">ByteArrayOutputStream</span> <span class="n">byteOutStream</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayOutputStream</span><span class="o">();</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1024</span><span class="o">];</span>
+            <span class="kt">int</span> <span class="n">len</span><span class="o">;</span>
+            <span class="k">while</span> <span class="o">((</span><span class="n">len</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buffer</span><span class="o">))</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">byteOutStream</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">len</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">byteOutStream</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">byteOutStream</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"copy InputStream error，{}"</span><span class="o">,</span> <span class="nc">ExceptionUtils</span><span class="o">.</span><span class="na">getStackTrace</span><span class="o">(</span><span class="n">e</span><span class="o">));</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 输入流转字节流
+     * @param in
+     * @return
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">inputStream2byte</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ByteArrayOutputStream</span> <span class="n">bos</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">bos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ByteArrayOutputStream</span><span class="o">();</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1024</span><span class="o">];</span>
+            <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
+            <span class="k">while</span> <span class="o">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">bos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">b</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">bos</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">bos</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+            <span class="k">return</span> <span class="n">buffer</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"inputStream transfer byte error，{}"</span><span class="o">,</span> <span class="nc">ExceptionUtils</span><span class="o">.</span><span class="na">getStackTrace</span><span class="o">(</span><span class="n">e</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">in</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"clone inputStream error"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">bos</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bos</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"clone outputStream error"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>除了上传、下载请求之外，默认封装的请求参数格式都是<code class="highlighter-rouge">application/json</code>，如果不够，可以根据自己的业务场景进行封装处理！</p>
+
+<p>其中<code class="highlighter-rouge">sendHttp</code>是一个支持<code class="highlighter-rouge">GET</code>、<code class="highlighter-rouge">POST</code>、<code class="highlighter-rouge">PUT</code>、<code class="highlighter-rouge">DELETE</code>请求的通用方法，上面介绍的<code class="highlighter-rouge">getUrl</code>、<code class="highlighter-rouge">postJosn</code>等方法，最终都会调用到这个方法！</p>
+
+<h3 id="接口请求示例">接口请求示例</h3>
+
+<p>工具包封装完成之后，在代码中使用起来也非常简单，直接采用工具类方法就可以直接使用，例如下面以<code class="highlighter-rouge">post</code>方式请求某个接口！</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">"https://101.231.204.80:5000/gateway/api/queryTrans.do"</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">result</span><span class="o">=</span> <span class="nc">HttpUtils</span><span class="o">.</span><span class="na">postJson</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="小结">小结</h3>
+
+<p>在编写工具类的时候，需要注意的地方是，尽可能保证<code class="highlighter-rouge">httpClient</code>客户端全局唯一，也就是采用单利模式，如果我们每次请求都初始化一个客户端，结束之后又将其关闭，在高并发的接口请求场景下，性能效率急剧下降！</p>
+
+<p><code class="highlighter-rouge">HttpClients</code>客户端的初始化参数配置非常丰富，本文默认初始化的线程池为<code class="highlighter-rouge">300</code>，在实际的业务开发中，大家还可以结合自己的业务场景进行调优，具体的配置可以参考官网文档</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2021/01/26/self-httputils.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

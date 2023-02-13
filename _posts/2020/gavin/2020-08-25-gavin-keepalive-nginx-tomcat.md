@@ -3,7 +3,7 @@ layout: post
 title: 高并发分布式环境下的高可用负载均衡方案
 category: icoding-gavin
 tags: [architect]
-keywords: springcloud
+keywords: architect
 excerpt: keepalive+nginx+tomcat 实现应用的高可用，nginx的高可用
 lock: noneed
 ---

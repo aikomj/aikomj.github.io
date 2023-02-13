@@ -2,7 +2,7 @@
 layout: post
 title: SpringBoot Admin 2.1 介绍
 category: springcloud
-tags: [springcloud]
+tags: [springboot]
 keywords: springcloud
 excerpt: Spring Boot Admin用于管理和监控SpringBoot应用程序，快速开始，结合Eureka注册中心，基础spring security,集成邮箱报警功能
 lock: noneed

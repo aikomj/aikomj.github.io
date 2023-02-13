@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 1M图片压缩优化到100kb - 大伟的博客 </title>
+    <meta name="keywords" content="java">
+    <meta name="description"
+          content="JDK原生API压缩图像实战与其他开源库介绍">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2022/02/28/compress-image.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="1M图片压缩优化到100kb">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>1M图片压缩优化到100kb</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/02/28
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>转载自沉默王二</p>
+
+<h2 id="1图像压缩">1、图像压缩</h2>
+
+<p>图像压缩是数据压缩技术在数字图像上的应用，目的是减少图像数据中的冗余信息，从而用更加高效的格式存储和传输数据。图像压缩可以是有损数据压缩，也可以是无损数据压缩。</p>
+
+<p><img src="/assets/images/2022/java/compress-image-1.jpg" style="zoom:50%;" /></p>
+
+<p><img src="/assets/images/2022/java/compress-image-2.jpg" style="zoom:67%;" /></p>
+
+<p>更多关于图像压缩的资料可参考以下链接:</p>
+
+<p><a href="https://www.jiqizhixin.com/graph/technologies/08b2b25e-21a0-48e1-9de8-f91d424adfe1">机器之心：https://www.jiqizhixin.com/graph/technologies/08b2b25e-21a0-48e1-9de8-f91d424adfe1</a></p>
+
+<h2 id="2图像压缩实战">2、图像压缩实战</h2>
+
+<p>数字图像处理（Digital Image Processing）是通过计算机对图像进行去除噪声、增强、复原、分割、提取特征等处理的方法和技术。</p>
+
+<p><img src="/assets/images/2022/java/compress-image-3.jpg" alt="" /></p>
+
+<p>输入的是图像信号，然后经过 DIP 进行有效的算法处理后，输出为数字信号。</p>
+
+<p>为了压缩图像，我们需要读取图像并将其转换成 BufferedImage 对象，BufferedImage 是 Image 类的一个子类，描述了一个具有可访问的图像数据缓冲区，由 ColorModel 和 Raster 的图像数据组成。</p>
+
+<p>刚好我本地有一张之前用过的封面图，离 1M 只差 236 KB，可以拿来作为测试用。</p>
+
+<p><img src="/assets/images/2022/java/compress-image-5.jpg" alt="" /></p>
+
+<p>这其中要用到 ImageIO 类，这是一个静态类，提供了一系列方法用来读和写图像，同时还可以对图像进行简单的编码和解码。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 将图像读取到 BufferedImage 对象</span>
+<span class="nc">File</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"ceshi.jpg"</span><span class="o">);</span>
+<span class="nc">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="nc">ImageIO</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>比如说通过 <code class="highlighter-rouge">ImageIO.getImageWritersByFormatName()</code> 可以返回一个Iterator，其中包含了通过命名格式对图像进行编码的 ImageWriter</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">ImageWriter</span><span class="o">&gt;</span> <span class="n">writers</span> <span class="o">=</span>  <span class="nc">ImageIO</span><span class="o">.</span><span class="na">getImageWritersByFormatName</span><span class="o">(</span><span class="s">"jpg"</span><span class="o">);</span>
+<span class="nc">ImageWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ImageWriter</span><span class="o">)</span> <span class="n">writers</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>比如说通过 <code class="highlighter-rouge">ImageIO.createImageOutputStream()</code> 可以创建一个图像的输出流对象，有了该对象后就可以通过 <code class="highlighter-rouge">ImageWriter.setOutput()</code> 将其设置为输出流。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">File</span> <span class="n">compressedImageFile</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"bbcompress.jpg"</span><span class="o">);</span>
+<span class="nc">OutputStream</span> <span class="n">os</span> <span class="o">=</span><span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="n">compressedImageFile</span><span class="o">);</span>
+<span class="nc">ImageOutputStream</span> <span class="n">ios</span> <span class="o">=</span> <span class="nc">ImageIO</span><span class="o">.</span><span class="na">createImageOutputStream</span><span class="o">(</span><span class="n">os</span><span class="o">);</span>
+<span class="n">writer</span><span class="o">.</span><span class="na">setOutput</span><span class="o">(</span><span class="n">ios</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>我们对ImageWriter 进行一些参数配置，比如说压缩模式，压缩质量等等</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ImageWriteParam</span> <span class="n">param</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="na">getDefaultWriteParam</span><span class="o">();</span>
+
+<span class="n">param</span><span class="o">.</span><span class="na">setCompressionMode</span><span class="o">(</span><span class="nc">ImageWriteParam</span><span class="o">.</span><span class="na">MODE_EXPLICIT</span><span class="o">);</span>
+<span class="n">param</span><span class="o">.</span><span class="na">setCompressionQuality</span><span class="o">(</span><span class="mf">0.01f</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>压缩模式一共有四种，MODE_EXPLICIT 是其中一种，表示 ImageWriter 可以根据后续的 set 的附加信息进行平铺和压缩，比如说接下来的 <code class="highlighter-rouge">setCompressionQuality()</code> 方法，方法的参数是一个 0-1 之间的数，0.0 表示尽最大程度压缩，1.0 表示保证图像质量很重要。对于有损压缩方案，压缩质量应该控制文件大小和图像质量之间的权衡（例如，通过在写入 JPEG 图像时选择量化表）。对于无损方案，压缩质量可用于控制文件大小和执行压缩所需的时间之间的权衡（例如，通过优化行过滤器并在写入 PNG 图像时设置 ZLIB 压缩级别）。</p>
+
+<p>整体代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">File</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"ceshi.jpg"</span><span class="o">);</span>
+            <span class="nc">BufferedImage</span> <span class="n">image</span> <span class="o">=</span> <span class="nc">ImageIO</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">input</span><span class="o">);</span>
+
+
+            <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">ImageWriter</span><span class="o">&gt;</span> <span class="n">writers</span> <span class="o">=</span> <span class="nc">ImageIO</span><span class="o">.</span><span class="na">getImageWritersByFormatName</span><span class="o">(</span><span class="s">"jpg"</span><span class="o">);</span>
+            <span class="nc">ImageWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ImageWriter</span><span class="o">)</span> <span class="n">writers</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+
+            <span class="nc">File</span> <span class="n">compressedImageFile</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"bbcompress.jpg"</span><span class="o">);</span>
+            <span class="nc">OutputStream</span> <span class="n">os</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="n">compressedImageFile</span><span class="o">);</span>
+            <span class="nc">ImageOutputStream</span> <span class="n">ios</span> <span class="o">=</span> <span class="nc">ImageIO</span><span class="o">.</span><span class="na">createImageOutputStream</span><span class="o">(</span><span class="n">os</span><span class="o">);</span>
+            <span class="n">writer</span><span class="o">.</span><span class="na">setOutput</span><span class="o">(</span><span class="n">ios</span><span class="o">);</span>
+
+
+            <span class="nc">ImageWriteParam</span> <span class="n">param</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="na">getDefaultWriteParam</span><span class="o">();</span>
+
+            <span class="n">param</span><span class="o">.</span><span class="na">setCompressionMode</span><span class="o">(</span><span class="nc">ImageWriteParam</span><span class="o">.</span><span class="na">MODE_EXPLICIT</span><span class="o">);</span>
+            <span class="n">param</span><span class="o">.</span><span class="na">setCompressionQuality</span><span class="o">(</span><span class="mf">0.01f</span><span class="o">);</span>
+
+            <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="k">new</span> <span class="nc">IIOImage</span><span class="o">(</span><span class="n">image</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">),</span> <span class="n">param</span><span class="o">);</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">ios</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">writer</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行压缩后，可以看到图片的大小压缩到了 19 KB：</p>
+
+<p><img src="/assets/images/2022/java/compress-image-6.jpg" alt="" /></p>
+
+<p>可以看得出，质量因子为 0.01f 的时候图片已经有些失真了，可以适当提高质量因子比如说 0.5f，再来看一下</p>
+
+<p><img src="/assets/images/2022/java/compress-image-7.jpg" alt="" /></p>
+
+<p>图片质量明显提高了，但大小依然只有 64 KB，压缩效果还是值得信赖的。</p>
+
+<h2 id="3其他开源库">3、其他开源库</h2>
+
+<p>接下来，推荐一些可以轻松集成到项目中的图像处理库吧，它们全都是免费的。</p>
+
+<p>1 )Apache Commons Imaging，一个读取和写入各种图像格式的库，包括快速解析图像信息（如大小，颜色，空间，ICC配置文件等）和元数据</p>
+
+<p><img src="/assets/images/2022/java/commons-imaging.jpg" alt="" /></p>
+
+<p>2）OpenCV，由BSD许可证发布，可以免费学习和商业使用，提供了包括 C/C++、Python 和 Java 等主流编程语言在内的接口。OpenCV 专为计算效率而设计，强调实时应用，可以充分发挥多核处理器的优势。</p>
+
+<p><img src="/assets/images/2022/java/opencv-1.jpg" alt="" /></p>
+
+<p>这里就以 OpenCV 为例，来演示一下图像压缩。当然了，OpenCV 用来压缩图像属于典型的大材小用。</p>
+
+<p>第一步，添加 OpenCV 依赖到我们的项目当中，以 Maven 为例。</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+ <span class="nt">&lt;groupId&gt;</span>org.openpnp<span class="nt">&lt;/groupId&gt;</span>
+ <span class="nt">&lt;artifactId&gt;</span>opencv<span class="nt">&lt;/artifactId&gt;</span>
+ <span class="nt">&lt;version&gt;</span>4.5.1-2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>第二步，要想使用 OpenCV，需要先初始化。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">OpenCV</span><span class="o">.</span><span class="na">loadShared</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>第三步，使用 OpenCV 读取图片。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Mat</span> <span class="n">src</span> <span class="o">=</span> <span class="nc">Imgcodecs</span><span class="o">.</span><span class="na">imread</span><span class="o">(</span><span class="n">imagePath</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>第四步，使用OpenCV压缩图片</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">MatOfInt</span> <span class="n">dstImage</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MatOfInt</span><span class="o">(</span><span class="nc">Imgcodecs</span><span class="o">.</span><span class="na">IMWRITE_JPEG_QUALITY</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="nc">Imgcodecs</span><span class="o">.</span><span class="na">imwrite</span><span class="o">(</span><span class="s">"resized_image.jpg"</span><span class="o">,</span> <span class="n">sourceImage</span><span class="o">,</span> <span class="n">dstImage</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>MatOfInt 的构造参数是一个可变参数，第一个参数 IMWRITE_JPEG_QUALITY 表示对图片的质量进行改变，第二个是质量因子，1-100，值越大表示质量越高。</p>
+
+<p>借这个机会，来对比下 OpenCV 和 JDK 原生 API 在压缩图像时所使用的时间。</p>
+
+<p>结果如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">opencvCompress</span><span class="err">压缩完成，所花时间：</span><span class="mi">1070</span>
+<span class="n">jdkCompress</span><span class="err">压缩完成，所花时间：</span><span class="mi">322</span>
+</code></pre></div></div>
+
+<p>压缩后的图片大小差不多，都是 19 KB，并且质量因子都是最低值。</p>
+
+<p><img src="/assets/images/2022/java/opencv-3.jpg" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2022/02/28/compress-image.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

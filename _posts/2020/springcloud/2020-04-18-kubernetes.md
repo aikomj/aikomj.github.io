@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 聊未来几年k8s的角色担当
-category: springcloud
+category: architect
 tags: [architect]
 keywords: k8s
 excerpt: k8s容器化技术部署微服务应用
@@ -15,8 +15,16 @@ lock: noneed
 
 ![](/assets/images/2020/icoding/future/1.jpeg)
 
+![](../../../assets/images/2020/icoding/future/1.jpeg)
+
 ![](/assets/images/2020/icoding/future/2.jpeg)
+
+![](../../../assets/images/2020/icoding/future/2.jpeg)
 
 ![](/assets/images/2020/icoding/future/3.jpeg)
 
+![](../../../assets/images/2020/icoding/future/3.jpeg)
+
 ![](/assets/images/2020/icoding/future/4.jpeg)
+
+![](../../../assets/images/2020/icoding/future/4.jpeg)

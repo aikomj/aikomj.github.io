@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 优雅的开源项目文档主题vuepress-theme-hope - 大伟的博客 </title>
+    <meta name="keywords" content="tool">
+    <meta name="description"
+          content="安装，导航拦，图标，分类标签">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/tool/2022/03/31/vuepress-theme-hope.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="优雅的开源项目文档主题vuepress-theme-hope">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>优雅的开源项目文档主题vuepress-theme-hope</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/03/31
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1vuepress主题">1、VuePress主题</h2>
+
+<h3 id="安装">安装</h3>
+
+<p><code class="highlighter-rouge">vuepress-theme-hope</code>是一个具有强大功能的VuePress主题，为Markdown添加了更多增强语法，可用于搭建项目文档和博客网站。支持分类和标签功能，可以让你的文档更加结构化！内置多种插件，功能强大，值得一试！</p>
+
+<p>效果：</p>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-api.jpg" alt="" /></p>
+
+<p>nodejs环境下，安装</p>
+
+<ol>
+  <li>
+    <p>首先在安装目录下创建<code class="highlighter-rouge">docs</code>目录，然后使用如下命令初始化项目；</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm init vuepress-theme-hope@next docs
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>初始化过程中会安装所有依赖，还需要对项目进行一些设置，具体参考下图；</p>
+
+    <p><img src="/assets/images/2022/tool/vuepress-theme-install.jpg" alt="" /></p>
+  </li>
+</ol>
+
+<p>安装完成后可以选择立刻启动，也可以使用如下命令启动</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run docs:dev
+</code></pre></div></div>
+
+<p>我们可以发现该主题不仅支持多种主题色的切换，还支持深色模式和浅色模式</p>
+
+<h3 id="目录结构">目录结构</h3>
+
+<p>首先我们来了解下项目的整体目录结构，这对我们之后使用该主题会有很大帮助</p>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-1.jpg" alt="" /></p>
+
+<p>如果运行过程中出现错误，可以尝试删除<code class="highlighter-rouge">.cache</code>和<code class="highlighter-rouge">.temp</code>两个临时文件夹</p>
+
+<h3 id="导航拦">导航拦</h3>
+
+<p>例如我们想要按如下样式定制下导航栏；</p>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-2.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>可以修改<code class="highlighter-rouge">navbar.ts</code>文件，修改内容如下，修改后的导航栏可支持子级目录，既可以导航到本站，也可以导航到外部链接。</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span>default defineNavbarConfig<span class="o">([</span>
+    <span class="s2">"/"</span>,
+    <span class="s2">"/home"</span>,
+    <span class="o">{</span>
+        text: <span class="s2">"mall学习教程"</span>,
+        icon: <span class="s2">"launch"</span>,
+        prefix: <span class="s2">"/mall/"</span>,
+        children: <span class="o">[</span>
+            <span class="o">{</span>
+                text: <span class="s2">"序章"</span>,
+                icon: <span class="s2">"note"</span>,
+                <span class="nb">link</span>: <span class="s2">"foreword/mall_foreword_01"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"架构篇"</span>,
+                icon: <span class="s2">"note"</span>,
+                <span class="nb">link</span>: <span class="s2">"architect/mall_arch_01"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"业务篇"</span>,
+                icon: <span class="s2">"note"</span>,
+                <span class="nb">link</span>: <span class="s2">"database/mall_database_overview"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"技术要点篇"</span>,
+                icon: <span class="s2">"note"</span>,
+                <span class="nb">link</span>: <span class="s2">"technology/mybatis_mapper"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"部署篇"</span>,
+                icon: <span class="s2">"note"</span>,
+                <span class="nb">link</span>: <span class="s2">"deploy/mall_deploy_windows"</span>,
+            <span class="o">}</span>
+        <span class="o">]</span>,
+    <span class="o">}</span>,
+    <span class="o">{</span>
+        text: <span class="s2">"SpringCloud学习教程"</span>,
+        icon: <span class="s2">"hot"</span>,
+        <span class="nb">link</span>: <span class="s2">"/springcloud/springcloud"</span>,
+    <span class="o">}</span>,
+    <span class="o">{</span>
+        text: <span class="s2">"项目地址"</span>,
+        icon: <span class="s2">"stack"</span>,
+        children: <span class="o">[</span>
+            <span class="o">{</span>
+                text: <span class="s2">"后台项目"</span>,
+                <span class="nb">link</span>: <span class="s2">"https://github.com/macrozheng/mall"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"前端项目"</span>,
+                <span class="nb">link</span>: <span class="s2">"https://github.com/macrozheng/mall-admin-web"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"学习教程"</span>,
+                <span class="nb">link</span>: <span class="s2">"https://github.com/macrozheng/mall-learning"</span>,
+            <span class="o">}</span>,
+            <span class="o">{</span>
+                text: <span class="s2">"项目骨架"</span>,
+                <span class="nb">link</span>: <span class="s2">"https://github.com/macrozheng/mall-tiny"</span>,
+            <span class="o">}</span>
+        <span class="o">]</span>,
+    <span class="o">}</span>,
+<span class="o">])</span><span class="p">;</span>
+</code></pre></div>    </div>
+
+    <h3 id="侧边栏">侧边栏</h3>
+
+    <p><img src="/assets/images/2022/tool/vuepress-theme-3.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>实现上面的效果需要修改<code class="highlighter-rouge">sidebar.ts</code>文件，值得一提的是<code class="highlighter-rouge">vuepress-theme-hope</code>支持针对不同路径实现不同的侧边栏，这样就不用把所有文档侧边栏糅合在一起了；</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span>default defineSidebarConfig<span class="o">({</span>
+  <span class="s2">"/mall/"</span>:[
+    <span class="o">{</span>
+      text: <span class="s2">"序章"</span>,
+      icon: <span class="s2">"note"</span>,
+      collapsable: <span class="nb">true</span>,
+      prefix: <span class="s2">"foreword/"</span>,
+      children: <span class="o">[</span><span class="s2">"mall_foreword_01"</span>, <span class="s2">"mall_foreword_02"</span><span class="o">]</span>,
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      text: <span class="s2">"架构篇"</span>,
+      icon: <span class="s2">"note"</span>,
+      collapsable: <span class="nb">true</span>,
+      prefix: <span class="s2">"architect/"</span>,
+      children: <span class="o">[</span><span class="s2">"mall_arch_01"</span>, <span class="s2">"mall_arch_02"</span>,<span class="s2">"mall_arch_03"</span><span class="o">]</span>,
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      text: <span class="s2">"业务篇"</span>,
+      icon: <span class="s2">"note"</span>,
+      collapsable: <span class="nb">true</span>,
+      prefix: <span class="s2">"database/"</span>,
+      children: <span class="o">[</span><span class="s2">"mall_database_overview"</span>, <span class="s2">"mall_pms_01"</span>,<span class="s2">"mall_pms_02"</span><span class="o">]</span>,
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      text: <span class="s2">"技术要点篇"</span>,
+      icon: <span class="s2">"note"</span>,
+      collapsable: <span class="nb">true</span>,
+      prefix: <span class="s2">"technology/"</span>,
+      children: <span class="o">[</span><span class="s2">"mybatis_mapper"</span>, <span class="s2">"aop_log"</span><span class="o">]</span>,
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      text: <span class="s2">"部署篇"</span>,
+      icon: <span class="s2">"note"</span>,
+      collapsable: <span class="nb">true</span>,
+      prefix: <span class="s2">"deploy/"</span>,
+      children: <span class="o">[</span><span class="s2">"mall_deploy_windows"</span>, <span class="s2">"mall_deploy_docker"</span><span class="o">]</span>,
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"/springcloud"</span>:[<span class="s2">"springcloud"</span>, <span class="s2">"eureka"</span>, <span class="s2">"ribbon"</span><span class="o">]</span>
+<span class="o">})</span><span class="p">;</span>
+</code></pre></div>    </div>
+
+    <p>看下配置好的SpringCloud学习教程的侧边栏，和mall学习教程的是分开的，结构更加清晰的了，这是使用Docsify无法做到的</p>
+
+    <p><img src="/assets/images/2022/tool/vuepress-theme-4.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<h3 id="图标">图标</h3>
+
+<p><code class="highlighter-rouge">vuepress-theme-hope</code>主题默认支持使用iconfont上的图标，我们可以在项目文档中直接使用，以下是一些精选图标</p>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-iconi.jpg" alt="" /></p>
+
+<p>由于在<code class="highlighter-rouge">themeConfig.ts</code>中配置了图标前缀，在使用时需要去除<code class="highlighter-rouge">icon-</code>前缀。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="nx">defineThemeConfig</span><span class="p">({</span>
+  <span class="na">iconPrefix</span><span class="p">:</span> <span class="dl">"</span><span class="s2">iconfont icon-</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h3 id="信息定制">信息定制</h3>
+
+<p>在使用<code class="highlighter-rouge">vuepress-theme-hope</code>搭建自己的项目文档网站时，需要定制一些自己的信息，比如作者名称、文档链接、logo等信息，可以在<code class="highlighter-rouge">themeConfig.ts</code>中修改。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span>default defineThemeConfig<span class="o">({</span>
+  <span class="nb">hostname</span>: <span class="s2">"http://www.macrozheng.com"</span>,
+
+  author: <span class="o">{</span>
+    name: <span class="s2">"macrozheng"</span>,
+    url: <span class="s2">"http://www.macrozheng.com"</span>,
+  <span class="o">}</span>,
+
+  iconPrefix: <span class="s2">"iconfont icon-"</span>,
+
+  logo: <span class="s2">"/logo.png"</span>,
+
+  repo: <span class="s2">"https://github.com/macrozheng"</span>,
+
+  docsDir: <span class="s2">"demo/src"</span>,
+
+  // navbar
+  navbar: navbar,
+
+  // sidebar
+  sidebar: sidebar,
+
+  footer: <span class="s2">"默认页脚"</span>,
+
+  displayFooter: <span class="nb">true</span>,
+
+  blog: <span class="o">{</span>
+    description: <span class="s2">"SpringBoot实战电商项目mall（50K+Star）的作者"</span>,
+    intro: <span class="s2">"https://github.com/macrozheng"</span>,
+    medias: <span class="o">{</span>
+      Gitee: <span class="s2">"https://gitee.com/macrozheng"</span>,
+      GitHub: <span class="s2">"https://github.com/macrozheng"</span>,
+      Wechat: <span class="s2">"https://example.com"</span>,
+      Juejin: <span class="s2">"https://juejin.cn/user/958429871749192"</span>,
+      Zhihu: <span class="s2">"https://www.zhihu.com/people/macrozheng"</span>,
+    <span class="o">}</span>,
+  <span class="o">}</span>,
+<span class="o">})</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="文档首页">文档首页</h3>
+
+<p>首页信息可以在<code class="highlighter-rouge">home.md</code>中进行修改，比如下面样式的项目文档首页</p>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-6.jpg" alt="" /></p>
+
+<ul>
+  <li>修改内容如下，支持在首页上添加多个自定义模块。</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">---</span>
+home: <span class="nb">true
+</span>icon: home
+title: mall学习教程
+heroImage: /logo.png
+heroText: mall学习教程
+tagline: mall学习教程，架构、业务、技术要点全方位解析。mall项目（50k+star）是一套电商系统，使用现阶段主流技术实现。
+actions:
+  - text: 使用指南 💡
+    <span class="nb">link</span>: /mall/foreword/mall_foreword_01
+
+  - text: SpringCloud系列 🏠
+    <span class="nb">link</span>: /springcloud/springcloud
+    <span class="nb">type</span>: secondary
+
+features:
+  - title: mall学习教程
+    icon: markdown
+    details: mall学习教程，架构、业务、技术要点全方位解析。mall项目（50k+star）是一套电商系统，使用现阶段主流技术实现。
+    <span class="nb">link</span>: /mall/foreword/mall_foreword_01
+
+  - title: SpringCloud学习教程
+    icon: slides
+    details: 一套涵盖大部分核心组件使用的Spring Cloud教程，包括Spring Cloud Alibaba及分布式事务Seata，基于Spring Cloud Greenwich及SpringBoot 2.1.7。
+    <span class="nb">link</span>: /springcloud/springcloud
+
+  - title: K8S系列教程
+    icon: layout
+    details: 实实在在的K8S实战教程，专为Java方向人群打造！只讲实用的，抛弃那些用不到又难懂的玩意！同时还有配套的微服务实战项目mall-swarm，很好很强大！
+    <span class="nb">link</span>: https://juejin.cn/column/6962026171823292452
+    
+  - title: mall
+    icon: markdown
+    details: mall项目是一套电商系统，包括前台商城系统及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker容器化部署。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall
+    
+  - title: mall-admin-web
+    icon: comment
+    details: mall-admin-web是一个电商后台管理系统的前端项目，基于Vue+Element实现。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall-admin-web
+
+  - title: mall-swarm
+    icon: info
+    details: mall-swarm是一套微服务商城系统，采用了 Spring Cloud Hoxton &amp; Alibaba、Spring Boot 2.3、Docker、Kubernetes等核心技术。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall-swarm
+    
+  - title: mall-tiny
+    icon: blog
+    details: mall-tiny是一款基于SpringBoot+MyBatis-Plus的快速开发脚手架，拥有完整的权限管理功能，可对接Vue前端，开箱即用。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall-tiny
+
+    
+copyright: <span class="nb">false
+</span>footer: MIT Licensed | Copyright © 2019-present macrozheng
+<span class="nt">---</span>
+</code></pre></div></div>
+
+<h3 id="博客首页">博客首页</h3>
+
+<p><code class="highlighter-rouge">vuepress-theme-hope</code>主题不仅可以做项目文档网站，也可以做博客网站，我们先来看下它生成的博客首页样式</p>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-blog-index.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>要实现上面的样式，修改<code class="highlighter-rouge">README.md</code>文件即可，修改内容如下。</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">---</span>
+home: <span class="nb">true
+</span>layout: Blog
+icon: home
+title: 主页
+heroImage: /logo.png
+heroText: macrozheng的个人博客
+heroFullScreen: <span class="nb">true
+</span>tagline: 这家伙很懒，什么都没写...
+projects:
+  - icon: project
+    name: mall
+    desc: mall项目是一套电商系统，包括前台商城系统及后台管理系统，基于SpringBoot+MyBatis实现，采用Docker容器化部署。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall
+  
+  - icon: <span class="nb">link
+    </span>name: mall-admin-web
+    desc: mall-admin-web是一个电商后台管理系统的前端项目，基于Vue+Element实现。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall-admin-web
+  
+  - icon: book
+    name: mall-swarm
+    desc: mall-swarm是一套微服务商城系统，采用了 Spring Cloud Hoxton &amp; Alibaba、Spring Boot 2.3、Docker、Kubernetes等核心技术。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall-swarm
+  
+  - icon: article
+    name: mall-tiny
+    desc: mall-tiny是一款基于SpringBoot+MyBatis-Plus的快速开发脚手架，拥有完整的权限管理功能，可对接Vue前端，开箱即用。
+    <span class="nb">link</span>: https://github.com/macrozheng/mall-tiny
+  
+footer: 自定义你的页脚文字
+<span class="nt">---</span>
+</code></pre></div>    </div>
+
+    <h3 id="代码样式">代码样式</h3>
+
+    <p>当然如果你觉得<code class="highlighter-rouge">vuepress-theme-hope</code>默认的代码主题不够炫酷，也可以自定义一下，默认是<code class="highlighter-rouge">one-light</code>和<code class="highlighter-rouge">one-dark</code>主题，还有多达十几种深浅色主题可供选择；</p>
+  </li>
+</ul>
+
+<p><img src="/assets/images/2022/tool/vuepress-theme-choose.jpg" alt="" /></p>
+
+<ul>
+  <li>需要修改下<code class="highlighter-rouge">config.scss</code>文件，这里改为了<code class="highlighter-rouge">material</code>系列的主题；</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$codeLightTheme: material-light;
+$codeDarkTheme: material-dark;
+</code></pre></div></div>
+
+<h2 id="2分类及标签">2、分类及标签</h2>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">vuepress-theme-hope</code>内置了分类和标签功能，可以让我们的项目文档更加结构化，查看内容也更方便，直接在文章顶部添加<code class="highlighter-rouge">category</code>和<code class="highlighter-rouge">tag</code>即可实现；</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">---</span>
+title: mall整合SpringBoot+MyBatis搭建基本骨架
+<span class="nb">date</span>: 2021-08-19 16:30:11
+category:
+  - mall学习教程
+  - 架构篇
+tag:
+  - SpringBoot
+  - MyBatis
+<span class="nt">---</span>
+</code></pre></div>    </div>
+
+    <p>添加成功后我们的文章标题下方会出现分类和标签；</p>
+
+    <p><img src="/assets/images/2022/tool/vuepress-theme-category.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p>点击分类可以查看该分类下所有文章；</p>
+
+<p>点击标签可以查看所有相关文章，比起Docsify查找文章效率大大提高了！</p>
+
+<h2 id="3总结">3、总结</h2>
+
+<p><code class="highlighter-rouge">vuepress-theme-hope</code>确实是一款好用的工具，用来搭建项目文档网站和博客网站正合适！尤其是它的分类、标签功能，让我们的文档能够更加结构化，查找也更加方便！</p>
+
+<p>GitHub:<a href="https://github.com/vuepress-theme-hope/vuepress-theme-hope">https://github.com/vuepress-theme-hope/vuepress-theme-hope</a></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/tool/2022/03/31/vuepress-theme-hope.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

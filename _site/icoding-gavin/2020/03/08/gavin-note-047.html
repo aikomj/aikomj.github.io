@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第47节：kafka消息队列应用实战-3 - 大伟的博客 </title>
+    <meta name="keywords" content="kafka">
+    <meta name="description"
+          content="搭建kafka,springboot整合kafka进行消息收发，kafka消费进度分析及消费应答，程序中consumer如何重新消费，kafka监控平台Eagle的使用，大数据日志平台服务搭建设计，使用filebeat 将日志收集Kafka，通过Logstash提取kafka数据进入ElasticSearch，kafka知识点总结">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/03/08/gavin-note-047.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第47节：kafka消息队列应用实战-3">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第47节：kafka消息队列应用实战-3</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/08
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1-搭建kafka的集群">1. 搭建kafka的集群</h2>
+
+<p><strong>kafka集群搭建的前提：jdk，zookeeper</strong></p>
+
+<p>Kafka集群只需要我们和单机一样将新的kafka加入到同一个zookeeper里即可，但broker.id需要和其他机器不一样</p>
+
+<p><mark>注意：</mark></p>
+
+<p>1、config/server.properties的log.dirs的保存消息日志的目录是支持多个磁盘目录的</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/log-dirs.jpg" alt="" /></p>
+
+<p>2、使用springboot通过外网访问kafka需要开通一个监听如下，如果是集群的话需要给每台机器设置自己的外网IP</p>
+
+<p>advertised.listeners=PLAINTEXT://39.99.195.49:9092</p>
+
+<p>3、配置完一台单机的kafka，直接scp给到其他服务器节点，修改config/server.properties</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/scp-kafka.jpg" alt="" /></p>
+
+<p>现在有了3个broker节点，创建topic，有5个分区，每个leader主分区都有2个follower副本分区</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kafka-topics.sh <span class="nt">--zookeeper</span>  127.0.0.1:2181 <span class="nt">--create</span> <span class="nt">--partitions</span> 5 <span class="nt">--replication-factor</span> 3 <span class="nt">--topic</span> topicName
+
+<span class="c"># 查看topic的详情</span>
+kafka-topics.sh <span class="nt">--zookeeper</span>  127.0.0.1:2181 <span class="nt">--describe</span> <span class="nt">--topic</span> topicName
+
+Topic: topicName        PartitionCount: 5       ReplicationFactor: 3    Configs: 
+        Topic: topicName        Partition: 0    Leader: 1       Replicas: 1,2,3 Isr: 1,2,3
+        Topic: topicName        Partition: 1    Leader: 2       Replicas: 2,3,1 Isr: 2,3,1
+        Topic: topicName        Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 3,1,2
+        Topic: topicName        Partition: 3    Leader: 1       Replicas: 1,3,2 Isr: 1,3,2
+        Topic: topicName        Partition: 4    Leader: 2       Replicas: 2,1,3 Isr: 2,1,3
+</code></pre></div></div>
+
+<p>可以看到0分区的leader在broker ID 为1的broker节点上，画一下topic的分区结构图</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/topicName.jpg" alt="" /></p>
+
+<p><mark>数据是由Follower主动从Leader那里拉取过来的</mark>，当ISR中的Follower完成数据同步之后，Leader就会给Follower发送ack</p>
+
+<h2 id="2-springboot整合kafka进行消息收发">2. Springboot整合Kafka进行消息收发</h2>
+
+<p>项目工程结构：</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-project.jpg" alt="" /></p>
+
+<h3 id="producer发送端">Producer发送端</h3>
+
+<p>1、pom.xml导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.kafka<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-kafka<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、application.yaml配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">kafka</span><span class="pi">:</span>
+    <span class="na">bootstrap-servers</span><span class="pi">:</span> <span class="s">39.99.222.44:9092</span> <span class="c1"># 集群用,隔开多个kafka节点</span>
+    <span class="na">producer</span><span class="pi">:</span>
+      <span class="na">retries</span><span class="pi">:</span> <span class="m">3</span> <span class="c1"># 发送消息的重试次数</span>
+      <span class="na">batch-size</span><span class="pi">:</span> <span class="m">16384</span>  <span class="c1"># 批量</span>
+      <span class="na">acks</span><span class="pi">:</span> <span class="m">1</span> <span class="c1"># 等待partition leader落盘完成后才返回ack,发送成功 ,默认就是1</span>
+      <span class="na">buffer-memory</span><span class="pi">:</span> <span class="m">33554432</span> <span class="c1"># 设置生产者内存缓存的大小 32M</span>
+      <span class="na">key-serializer</span><span class="pi">:</span> <span class="s">org.apache.kafka.common.serialization.StringSerializer</span>
+      <span class="na">value-serializer</span><span class="pi">:</span> <span class="s">org.apache.kafka.common.serialization.StringSerializer</span>
+</code></pre></div></div>
+
+<p>key-serializer的序列化参数值，可以在官方文档<a href="http://kafka.apache.org/23/documentation.html">http://kafka.apache.org/23/documentation.html</a>查看配置值</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/key-serializer.jpg" alt="" /></p>
+
+<p>idea全局搜索</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/serialization.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/serialization-2.jpg" alt="" /></p>
+
+<p>3、编写发送代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.kafka.core.KafkaTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.kafka.support.SendResult</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.util.concurrent.ListenableFuture</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.util.concurrent.ListenableFutureCallback</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.annotation.Resource</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">KafkaProducerService</span> <span class="o">{</span>
+
+  <span class="nd">@Resource</span>
+  <span class="kd">private</span> <span class="nc">KafkaTemplate</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">kafkaTemplate</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">topic</span><span class="o">,</span><span class="nc">String</span> <span class="n">key</span><span class="o">,</span><span class="nc">Object</span> <span class="n">data</span><span class="o">){</span>
+		<span class="c1">// 轮询分区</span>
+    <span class="c1">// ListenableFuture&lt;SendResult&lt;String, Object&gt;&gt; future = kafkaTemplate.send(topic, data);</span>
+    <span class="c1">// 全部发送到topic的0分区</span>
+    <span class="nc">ListenableFuture</span><span class="o">&lt;</span><span class="nc">SendResult</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;&gt;</span> <span class="n">future</span> <span class="o">=</span> <span class="n">kafkaTemplate</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="n">key</span><span class="o">,</span><span class="n">data</span><span class="o">);</span>
+    <span class="c1">// acks回调</span>
+    <span class="n">future</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="k">new</span> <span class="nc">ListenableFutureCallback</span><span class="o">&lt;</span><span class="nc">SendResult</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onFailure</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"********消息发送失败："</span><span class="o">+</span><span class="n">throwable</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+      <span class="o">}</span>
+      <span class="nd">@Override</span>
+      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="nc">SendResult</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"=========消息发送成功："</span><span class="o">+</span><span class="n">result</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+      <span class="o">}</span>
+    <span class="o">});</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.junit.jupiter.api.Test</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.icodingedu.producter.service.KafkaProducerService</span><span class="o">;</span>
+
+<span class="nd">@SpringBootTest</span>
+<span class="kd">class</span> <span class="nc">KafkaProducterApplicationTests</span> <span class="o">{</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nc">KafkaProducerService</span> <span class="n">kafkaProducerService</span><span class="o">;</span>
+
+	<span class="nd">@Test</span>
+	<span class="kt">void</span> <span class="nf">contextLoads</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">String</span> <span class="n">topic</span> <span class="o">=</span> <span class="s">"topicfirst"</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+			<span class="n">kafkaProducerService</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span><span class="s">"key:"</span><span class="o">+</span><span class="n">i</span><span class="o">,</span><span class="s">"hello kafka "</span><span class="o">+</span><span class="n">i</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"======发送完成======"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>启动测试，远程kafka报错</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/unknownHostException.jpg" alt="" /></p>
+
+<p>修改kafka的配置文件server.properties</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld config]# vim server.properties 
+<span class="c"># Hostname and port the broker will advertise to producers and consumers. If not set, </span>
+<span class="c"># it uses the value for "listeners" if configured.  Otherwise, it will use the value</span>
+<span class="c"># returned from java.net.InetAddress.getCanonicalHostName().</span>
+advertised.listeners<span class="o">=</span>PLAINTEXT://139.199.13.139:9092
+
+<span class="c"># 重新启动kafka</span>
+kafka-server-stop.sh /opt/kafka/config/server.properties
+kafka-server-start.sh <span class="nt">-daemon</span> /opt/kafka/config/server.properties
+</code></pre></div></div>
+
+<p>消息发送成功，发现发送了10次</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/send-successs.jpg" alt="" /></p>
+
+<p>在没有设置分区和key的情况下，按照轮询方式写入数据，消费结果如下</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kafka-console-consumer.sh <span class="nt">--topic</span> topicfirst <span class="nt">--from-beginning</span> <span class="nt">--bootstrap-server</span> 127.0.0.1:9092
+<span class="c"># 读取的值</span>
+hello kafka 1
+hello kafka 6
+hello kafka 2
+hello kafka 7
+hello kafka 3
+hello kafka 8
+hello kafka 4
+hello kafka 9
+hello kafka 0
+hello kafka 5
+<span class="c"># 写入分区的顺序机制（没有指定partition分区与message的key的情况下）</span>
+Partition： 0    1    2    3    4 
+           1 6  2 7  3 8  4 9  0 5
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 指定分区和key</span>
+<span class="nc">ListenableFuture</span><span class="o">&lt;</span><span class="nc">SendResult</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;&gt;</span> <span class="n">future</span> <span class="o">=</span> <span class="n">kafkaTemplate</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="n">key</span><span class="o">,</span><span class="n">data</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-7.jpg" alt="" /></p>
+
+<h3 id="consumer消费端">Consumer消费端</h3>
+
+<p>1、pom.xml导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.kafka<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-kafka<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、application.yaml配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">kafka</span><span class="pi">:</span>
+    <span class="na">bootstrap-servers</span><span class="pi">:</span> <span class="s">39.99.195.49:9092,39.99.196.208:9092,39.99.196.190:9092</span> <span class="c1"># 集群多个kafka节点</span>
+    <span class="na">consumer</span><span class="pi">:</span>
+      <span class="na">enable-auto-commit</span><span class="pi">:</span> <span class="no">false</span> <span class="c1"># 不自动签收,要让业务走完，才手动签收</span>
+      <span class="na">auto-offset-reset</span><span class="pi">:</span> <span class="s">earliest</span>
+      <span class="na">key-deserializer</span><span class="pi">:</span> <span class="s">org.apache.kafka.common.serialization.StringDeserializer</span> <span class="c1"># 发送端使用序列化，消费端就要反序列化</span>
+      <span class="na">value-deserializer</span><span class="pi">:</span> <span class="s">org.apache.kafka.common.serialization.StringDeserializer</span>
+    <span class="na">listener</span><span class="pi">:</span>
+      <span class="na">ack-mode</span><span class="pi">:</span> <span class="s">manual</span>
+      <span class="na">concurrency</span><span class="pi">:</span> <span class="m">5</span>
+<span class="c1"># auto-offset-reset的值有两个      </span>
+<span class="c1"># earliest: kafka出现错误重启之后，会找到未消费的offset继续消费</span>
+<span class="c1"># latest: kafka出现错误中，如果还有数据往topic里写，只会从最新的offset开始消费</span>
+</code></pre></div></div>
+
+<p>3、编写接收代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.apache.kafka.clients.consumer.Consumer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.kafka.clients.consumer.ConsumerRecord</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.kafka.annotation.KafkaListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.kafka.support.Acknowledgment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">KafkaConsumerService</span> <span class="o">{</span>
+
+    <span class="nd">@KafkaListener</span><span class="o">(</span><span class="n">groupId</span> <span class="o">=</span> <span class="s">"group01"</span><span class="o">,</span><span class="n">topics</span> <span class="o">=</span> <span class="s">"topicName"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="nc">ConsumerRecord</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">record</span><span class="o">,</span> <span class="nc">Acknowledgment</span> <span class="n">acknowledgment</span><span class="o">,</span> <span class="nc">Consumer</span><span class="o">&lt;?,?&gt;</span> <span class="n">consumer</span><span class="o">){</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"*****获取的消息: "</span><span class="o">+</span><span class="n">record</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+        <span class="n">acknowledgment</span><span class="o">.</span><span class="na">acknowledge</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3-kafka消费进度分析以及消费应答">3. kafka消费进度分析以及消费应答</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 通过命令看消费进度的</span>
+./kafka-consumer-groups.sh <span class="nt">--bootstrap-server</span> 192.168.0.177:9092,192.168.0.178:9092,192.168.0.179:9092 <span class="nt">--describe</span> <span class="nt">--group</span> group01
+
+<span class="c"># CURRENT-OFFSET ：当前消费的offset进度</span>
+<span class="c"># LOG-END-OFFSET ：数据文件里一共有多少位移数据</span>
+<span class="c"># LAG ：这是就是还未消费的量</span>
+CURRENT-OFFSET + LAG <span class="o">=</span> LOG-END-OFFSET
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/consumer-offset.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/consumer-offset-2.jpg" alt="" /></p>
+
+<p>把消费端停掉，发送端发送消息，运行/kafka-consumer-groups.sh 看消费组的LAG堆积还没消费的消息，发现还有2*5=10条消息没消费</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/consumer-offset-3.jpg" alt="" /></p>
+
+<p>把签收注释掉，启动消费端，获取消息消费，查看LAG还是10条，因为消费端没有告诉kafka broker 确认签收消费</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c1">// acknowledgment.acknowledge();</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/consumer-offset-4.jpg" alt="" /></p>
+
+<p>所以业务做完后，要手工签收acknowledgment.acknowledge();</p>
+
+<h2 id="5-在程序中consumer如何重新消费">5. 在程序中consumer如何重新消费</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 重新消费在命令行的方式 加上 --from-beginning</span>
+kafka-console-consumer.sh <span class="nt">--topic</span> topicfirst <span class="nt">--from-beginning</span> <span class="nt">--bootstrap-server</span> 127.0.0.1:9092
+</code></pre></div></div>
+
+<p>重新消费需要明确两个点</p>
+
+<ul>
+  <li>每次消费完毕都会记录consumer的offset 消费位移</li>
+  <li>如果要从代码里从头消费就需要配置
+    <ul>
+      <li>auto-offset-reset: earliest</li>
+      <li>更换消费者组或者将已消费的offset删除</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>更换消费者组重新消费</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@KafkaListener</span><span class="o">(</span><span class="n">groupId</span> <span class="o">=</span> <span class="s">"group02"</span><span class="o">,</span><span class="n">topics</span> <span class="o">=</span> <span class="s">"topicfirst"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessager</span><span class="o">(</span><span class="nc">ConsumerRecord</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">record</span><span class="o">,</span> <span class="nc">Acknowledgment</span> <span class="n">acknowledgment</span><span class="o">,</span> <span class="nc">Consumer</span><span class="o">&lt;?,?&gt;</span> <span class="n">consumer</span><span class="o">){</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"*******获取消息："</span> <span class="o">+</span> <span class="n">record</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+		<span class="n">acknowledgment</span><span class="o">.</span><span class="na">acknowledge</span><span class="o">();</span> <span class="c1">// 确认签收</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+
+<p>注意：application.yaml要配置auto-offset-reset：earliest</p>
+
+<p>发现之前使用group01已确认消费的消息重新读出来了</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/consumer-group02-offset-1.jpg" alt="" /></p>
+
+<h2 id="6-kafka监控服务平台eagle的使用">6. Kafka监控服务平台Eagle的使用</h2>
+
+<p>kafka-eagle平台监控系统（Kafka 鹰眼监控）</p>
+
+<p>官网地址： <a href="http://www.kafka-eagle.org/articles/docs/changelog/changelog.html">http://www.kafka-eagle.org/articles/docs/changelog/changelog.html</a></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-eagle.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载地址 http://download.kafka-eagle.org/</span>
+wget https://github.com/smartloli/kafka-eagle-bin/archive/v1.4.8.tar.gz
+<span class="c"># 解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> kafka-eagle-bin-1.4.8.tar.gz 
+<span class="o">[</span>root@helloworld kafka-eagle-bin-1.4.8]# <span class="nb">tar</span> <span class="nt">-xzvf</span> kafka-eagle-web-1.4.8-bin.tar.gz 
+
+
+<span class="c"># Eagle是通过JMX来拉取kafka信息</span>
+<span class="c"># JMX：是Java Management Extensions（Java管理扩展）的缩写，</span>
+<span class="c"># 首先要对Kafka开启JMX</span>
+<span class="c"># 1.开启kafka的JMX</span>
+<span class="nb">cd </span>kafka/bin
+vi bin/kafka-server-start.sh
+<span class="c"># 修改heap内容开启JMX</span>
+<span class="c"># 将这一行进行修改：export KAFKA_HEAP_OPTS="-Xmx1G -Xms1G"</span>
+<span class="nb">export </span><span class="nv">KAFKA_HEAP_OPTS</span><span class="o">=</span><span class="s2">"-server -Xmx1G -Xms1G -XX:PermSize=128m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=8 -XX:ConcGCThreads=5 -XX:InitiatingHeapOccupancyPercent=70"</span>
+<span class="nb">export </span><span class="nv">JMX_PORT</span><span class="o">=</span><span class="s2">"9999"</span>
+<span class="c"># 如果是集群需要所有机器都将这个配置修改好</span>
+<span class="c"># 重启kafka让配置生效</span>
+<span class="o">[</span>root@helloworld bin]# kafka-server-stop.sh /opt/kafka/config/server.properties 
+<span class="o">[</span>root@helloworld bin]# kafka-server-start.sh <span class="nt">-daemon</span> /opt/kafka/config/server.properties 
+
+<span class="c"># 2.eagle配置到环境变量中</span>
+vi /etc/profile
+<span class="nb">export </span><span class="nv">KE_HOME</span><span class="o">=</span>/usr/local/kafka-eagle
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$KE_HOME</span>/bin:<span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$PATH</span>
+<span class="c"># 让配置生效</span>
+<span class="nb">source</span> /etc/profile
+
+<span class="c"># 3.给执行文件授权</span>
+<span class="nb">cd</span> /usr/local/kafka-eagle/bin
+<span class="nb">chmod </span>777 ke.sh
+
+<span class="c"># 4.eagle系统的配置，eagle可以监控多套kafka集群</span>
+<span class="nb">cd</span> /usr/local/kafka-eagle/conf
+vi system-config.properties
+<span class="c"># 设置对应的参数</span>
+<span class="c"># 可以配置多个集群，这里只配置一套,多个用逗号分开</span>
+kafka.eagle.zk.cluster.alias<span class="o">=</span>cluster1
+cluster1.zk.list<span class="o">=</span>127.0.0.1:2181,127.0.0.1:2181,127.0.0.1:2181
+<span class="c"># 显示的broker数量</span>
+cluster1.kafka.eagle.broker.size<span class="o">=</span>20
+<span class="c"># zookeeper客户端线程数</span>
+kafka.zk.limit.size<span class="o">=</span>25
+<span class="c"># eagle端口</span>
+kafka.eagle.webui.port<span class="o">=</span>8048
+<span class="c"># 消费的offset保存位置</span>
+cluster1.kafka.eagle.offset.storage<span class="o">=</span>kafka
+<span class="c"># 是否开启图表并保持30天内容</span>
+kafka.eagle.metrics.charts<span class="o">=</span><span class="nb">true
+</span>kafka.eagle.metrics.retain<span class="o">=</span>30
+<span class="c"># KSQL的查询显示条数和是否自动fix error</span>
+kafka.eagle.sql.topic.records.max<span class="o">=</span>5000
+kafka.eagle.sql.fix.error<span class="o">=</span><span class="nb">false</span>
+<span class="c"># 从界面删除topic的token密码,相当于暗号，跟Elasticsearch head 界面上删除索引的时候要输入“删除”两个字的道理是一样的</span>
+kafka.eagle.topic.token<span class="o">=</span>keadmin
+<span class="c"># mysql保存eagle的一些元数据驱动</span>
+kafka.eagle.driver<span class="o">=</span>com.mysql.jdbc.Driver
+kafka.eagle.url<span class="o">=</span>jdbc:mysql://127.0.0.1:3306/kafka_eagle?useUnicode<span class="o">=</span><span class="nb">true</span>&amp;characterEncoding<span class="o">=</span>UTF-8&amp;zeroDateTimeBehavior<span class="o">=</span>convertToNull
+kafka.eagle.username<span class="o">=</span>root
+kafka.eagle.password<span class="o">=</span>123456
+</code></pre></div></div>
+
+<p>修改kafka/bin/kafka-server-start.sh开启kafka 的JMX</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-jmx.jpg" alt="" /></p>
+
+<p>mysql保存eagle的一些元数据驱动的数据库kafka_eagle需要自己手动创建</p>
+
+<p>注意数据库如果不在一个设备上需要提前授权</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use mysql<span class="p">;</span>
+<span class="k">select </span>host,user from user<span class="p">;</span>
+grant all privileges on <span class="k">*</span>.<span class="k">*</span> to gavin@<span class="s1">'192.168.%'</span> identified by <span class="s1">'cpcoredb'</span><span class="p">;</span>
+flush privileges<span class="p">;</span>
+</code></pre></div></div>
+
+<p>启动/关闭/查看Kafka-eagle状态</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld bin]# ./ke.sh <span class="nt">--help</span>
+Usage: ./ke.sh <span class="o">{</span>start|stop|restart|status|stats|find|gc|jdk|version|sdate<span class="o">}</span>
+
+bin/ke.sh start
+bin/ke.sh stop
+bin/ke.sh stats  <span class="c"># 查看状态</span>
+
+<span class="c"># 访问地址外网,云服务器要开通安全组和防火墙</span>
+http://39.100.39.20:8048/ke
+</code></pre></div></div>
+
+<p>启动成功：</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-eagle-start-success.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-ealge-state.jpg" alt="" /></p>
+
+<p>访问控制台：</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-eagle-admin.jpg" alt="" /></p>
+
+<p>Dashboard</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-topic-remove.jpg" alt="" /></p>
+
+<h2 id="7-大数据日志平台服务搭建设计">7. 大数据日志平台服务搭建设计</h2>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-bigdata-log-1.png" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-bigdata-log-2.png" alt="" /></p>
+
+<p>收集日志的目的：确保系统的稳定性，查看过去的日志信息</p>
+
+<p>收集日志要注意的是</p>
+
+<ul>
+  <li>日志信息量非常大，所以一定要有一个可以堆积的地方</li>
+  <li>日志会出现暴增的情况</li>
+  <li>日志文件–&gt;kafka(分布式)–&gt;Logstash(收集过滤)–&gt;ElasticSearch(聚合计算)–&gt;Kibana(报表展示)</li>
+</ul>
+
+<h2 id="8-使用filebeat将日志收集进kafka">8. 使用filebeat将日志收集进kafka</h2>
+
+<p>logstash：使用java开发的比较消耗资源</p>
+
+<p>filebeat：使用go语言开发的的空间，比logstash更轻量级，占用资源更少，也是Elasticsearch的组件之一，一般在生产环境都是使用filebeat来进行日志收集的</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载安装，与Elasticsearch的版本保持一致</span>
+wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.5.2-linux-x86_64.tar.gz
+<span class="c"># 我云服务器上的elasticsearch的版本是7.6.1,所以我下载的filebeat也是7.6.1版本</span>
+<span class="c"># 1、解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> filebeat-7.5.2-linux-x86_64.tar.gz
+<span class="c"># 2、修改配置文件</span>
+<span class="o">[</span>esuser@helloworld filebead-7.6.1]<span class="nv">$ </span><span class="nb">pwd</span>
+/home/esuser/filebead-7.6.1
+vi /usr/local/filebeat/filebeat.yml
+</code></pre></div></div>
+
+<p>filebeat.yml的配置信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>filebeat.inputs:
+<span class="c"># 我的这个输入项是干什么的,自己命个名标记下</span>
+- input_type: log
+  paths:  <span class="c"># 你的日志从哪里取的，目录，理论上日志文件我们生产环境上运行的程序产生的，你可以把日志内容通过程序写入ES，但没有是filebeat 稳定可靠</span>
+    - /var/log/myapp/error.log
+  document_type: <span class="s2">"error-log"</span>    <span class="c"># 写入ES时的_type值,ES7.x版本 type默认为_doc </span>
+  multiline:
+    pattern: <span class="s1">'^\['</span>              <span class="c"># 指定匹配的表达式,匹配以[开头的字符串,用来匹配寻找error日志信息</span>
+    negate: <span class="nb">true</span>                <span class="c"># 是否匹配到,必须要匹配到</span>
+    match: after                <span class="c"># 没有匹配到的合并到上一行的末尾</span>
+    max_lines: 2000             <span class="c"># 未匹配到最大的行数</span>
+    <span class="nb">timeout</span>: 2s                 <span class="c"># 如果在规定时间没有新的日志事件就不等待后面的直接output</span>
+  fields: 
+    logbiz: order-error         <span class="c"># 业务命名</span>
+    logtopic: order-error-log   <span class="c"># kafka的topic，把错误信息给到该topic</span>
+    evn: dev                    <span class="c"># 定义一个环境名</span>
+  registry_file: /home/esuser/filebead-7.6.1/data/registry  <span class="c"># 记录日志读取的位置，如果容器重启，可以从记录的位置开始取日志</span>
+
+- input_type: log
+  paths:   <span class="c"># 收集另外一个日志文件</span>
+    - /var/log/myapp/info.log
+  document_type: <span class="s2">"info-log"</span>
+  multiline:
+    pattern: <span class="s1">'^\['</span>
+    negate: <span class="nb">true
+    </span>match: after
+    max_lines: 2000
+    <span class="nb">timeout</span>: 2s
+  fields: 
+    logbiz: order-info
+    logtopic: order-info-log
+    evn: dev
+  registry_file: /home/esuser/filebead-7.6.1/data/registry  
+
+output.kafka: 
+   enabled: <span class="nb">true
+   </span>hosts: <span class="o">[</span><span class="s2">"192.168.0.177:9092"</span>,<span class="s2">"192.168.0.178:9092"</span>,<span class="s2">"192.168.0.179:9092"</span><span class="o">]</span>  <span class="c"># 这里kafka是一个集群</span>
+   topic: <span class="s1">'%{[fields.logtopic]}'</span>
+   partition.hash: 
+     reachable_only: <span class="nb">true
+   </span>compression: <span class="nb">gzip</span>   <span class="c"># 压缩</span>
+   max_message_bytes: 1000000   <span class="c"># 最大日志1M</span>
+   required_acks: 1
+logging.to_files: <span class="nb">true</span>
+</code></pre></div></div>
+
+<p>3、启动filebeat</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 启动前做一下验证,看一下配置文件是否正确,就像nginx -t 一样</span>
+<span class="o">[</span>esuser@helloworld filebead-7.6.1]<span class="nv">$ </span>./filebeat <span class="nb">test </span>config
+Config OK
+<span class="c"># 注意：在启动之前一定要将filebeat导入的topic创建好</span>
+<span class="c"># 后台启动filebeat</span>
+./filebeat &amp;
+</code></pre></div></div>
+
+<blockquote>
+  <p>准备工作</p>
+</blockquote>
+
+<p>创建/var/log/myapp/error.log，放入日志内容</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /var/log/myapp/error.log
+<span class="o">[</span>error 信息，系统异常，error-1]
+<span class="o">[</span>error 信息，系统异常，error-2]
+<span class="o">[</span>error 信息，系统异常，error-3]
+<span class="o">[</span>error 信息，系统异常，error-4]
+<span class="o">[</span>error 信息，系统异常，error-5]
+<span class="o">[</span>error 信息，系统异常，error-6]
+</code></pre></div></div>
+
+<p>在Kafka eagle创建topic：order-error-log</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/topic-order-error-log.jpg" alt="" /></p>
+
+<p>创建/var/log/myapp/info.log，放入日志内容</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vi /var/log/myapp/info.log
+<span class="o">[</span>info 信息，系统提示，info-1]
+<span class="o">[</span>info 信息，系统提示，info-2]
+<span class="o">[</span>info 信息，系统提示，info-3]
+<span class="o">[</span>info 信息，系统提示，info-4]
+<span class="o">[</span>info 信息，系统提示，info-5]
+<span class="o">[</span>info 信息，系统提示，info-6]
+</code></pre></div></div>
+
+<p>在Kafka eagle创建topic：order-info-log</p>
+
+<blockquote>
+  <p>验证日志文件内容是否已收集进kafka</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/filebeat-start.jpg" alt="" /></p>
+
+<p>使用命令查看topic 消息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kafka-console-consumer.sh <span class="nt">--topic</span> order-error-log <span class="nt">--from-beginning</span> <span class="nt">--bootstrap-server</span> 127.0.0.1:9092
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/topic-order-error-log-2.jpg" alt="" /></p>
+
+<p>Springboot Consumer消费端监听</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConsumerService</span> <span class="o">{</span>
+
+	<span class="nd">@KafkaListener</span><span class="o">(</span><span class="n">groupId</span> <span class="o">=</span> <span class="s">"group01"</span><span class="o">,</span><span class="n">topics</span> <span class="o">=</span> <span class="s">"order-error-log"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessager</span><span class="o">(</span><span class="nc">ConsumerRecord</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">record</span><span class="o">,</span> <span class="nc">Acknowledgment</span> <span class="n">acknowledgment</span><span class="o">,</span> <span class="nc">Consumer</span><span class="o">&lt;?,?&gt;</span> <span class="n">consumer</span><span class="o">){</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"*******获取消息："</span> <span class="o">+</span> <span class="n">record</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+		<span class="n">acknowledgment</span><span class="o">.</span><span class="na">acknowledge</span><span class="o">();</span> <span class="c1">// 确认签收</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/topic-order-error-log-3.jpg" alt="" /></p>
+
+<h2 id="9-通过logstash提取kafka数据进入es">9. 通过logstash提取kafka数据进入ES</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 0.解压安装</span>
+<span class="c"># 根据ElasticSearch的版本下载，确保已安装Java，配置环境变量</span>
+wget https://artifacts.elastic.co/downloads/logstash/logstash-7.5.2.tar.gz
+<span class="c"># 解压</span>
+<span class="nb">tar</span> <span class="nt">-zxvf</span> logstash-7.5.2.tar.gz
+<span class="c"># 1.在根目录创建sync的,之前我已经使用过logstash同步mysql的数据到ES中</span>
+<span class="o">[</span>esuser@helloworld <span class="nb">sync</span><span class="o">]</span><span class="nv">$ </span><span class="nb">ls
+</span>aiko-dict-task.sql  logstash-db-dict-sync.conf  logstash-ik.json  mysql-connector-java-5.1.47.jar  track_time
+<span class="o">[</span>esuser@helloworld <span class="nb">sync</span><span class="o">]</span><span class="nv">$ </span>vi logstash-log-sync.conf
+<span class="c"># 2.在sync文件里创建logstash-log-sync.conf,配置内容如下</span>
+input <span class="o">{</span>
+    kafka <span class="o">{</span>
+        bootstrap_servers <span class="o">=&gt;</span> <span class="s2">"192.168.0.177:9092,192.168.0.178:9092,192.168.0.179:9092"</span>  <span class="c"># kafka集群的写法</span>
+        topics_pattern  <span class="o">=&gt;</span> <span class="s2">"order-.*"</span>  <span class="c"># 匹配topic</span>
+        consumer_threads <span class="o">=&gt;</span> 5   <span class="c"># 读取的线程数</span>
+        decorate_events <span class="o">=&gt;</span> <span class="nb">true 
+        </span>codec <span class="o">=&gt;</span> <span class="s2">"json"</span>
+        auto_offset_reset <span class="o">=&gt;</span> <span class="s2">"latest"</span>  <span class="c"># 取最新的数据</span>
+        group_id <span class="o">=&gt;</span> <span class="s2">"logstash1"</span> 
+    <span class="o">}</span>
+<span class="o">}</span>
+output <span class="o">{</span>
+    elasticsearch <span class="o">{</span>
+        hosts <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">"192.168.0.175:9200"</span><span class="o">]</span>  <span class="c"># es地址 不能使用127.0.0.1，使用内网ip或外网ip</span>
+        index <span class="o">=&gt;</span> <span class="s2">"kafka-%{+YYYY.MM.dd}"</span>
+    <span class="o">}</span>
+    stdout<span class="o">{</span>
+        codec <span class="o">=&gt;</span> rubydebug     <span class="c">##输出到屏幕上</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="c"># 在bin目录下启动执行</span>
+./logstash <span class="nt">-f</span> /usr/local/logstash/sync/logstash-log-sync.conf
+<span class="c"># nohup后台启动</span>
+<span class="nb">nohup</span> ./logstash <span class="nt">-f</span> /usr/local/logstash/logstash-7.5.2/sync/logstash-log-sync.conf <span class="o">&gt;</span> myout.file 2&gt;&amp;1 &amp;
+</code></pre></div></div>
+
+<blockquote>
+  <p>准备工作</p>
+</blockquote>
+
+<p>启动elasticsearch,elasticsearch-head 访问</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/elasticsearch-cluster.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看java运行的进程</span>
+<span class="o">[</span>root@helloworld bin]# jps
+11507 Elasticsearch
+15445 Jps
+14408 QuorumPeerMain
+14489 QuorumPeerMain
+14442 QuorumPeerMain
+9130 Kafka
+12171 Elasticsearch
+16877 KafkaEagle
+12077 Elasticsearch
+<span class="c"># kill掉其中一个es</span>
+<span class="o">[</span>root@helloworld bin]# 
+</code></pre></div></div>
+
+<p>logstash 启动成功</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/logstash-start-successs.jpg" alt="" /></p>
+
+<p>看es现在是还没有创建kafka的索引，我们来修改日志文件/var/log/myapp/error.log</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 增加 7到11的error数据</span>
+<span class="o">[</span>root@helloworld ~]# vi /var/log/myapp/error.log
+<span class="o">[</span>error 信息，系统异常，error-7]
+<span class="o">[</span>error 信息，系统异常，error-8]
+<span class="o">[</span>error 信息，系统异常，error-9]
+<span class="o">[</span>error 信息，系统异常，error-10]
+<span class="o">[</span>error 信息，系统异常，error-11]
+</code></pre></div></div>
+
+<p>保存后，马上触发了logstash的读取kafka的日志内容，在这之前，filebeat是先把日志内容放进了kafka的</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/logstash-read-order-error-log.jpg" alt="" /></p>
+
+<p>这时我们来看es-head控制台，发现创建了索引kafka-2020.07.23</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-2020-07-23.jpg" alt="" /></p>
+
+<p>11条错误信息都读进来了</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-2020-07-23-2.jpg" alt="" /></p>
+
+<blockquote>
+  <p>问题</p>
+</blockquote>
+
+<p>现在我加一条错误信息数据，就导致整个文件重新读进了kafka，从而导致数据重复</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 增加一条的error数据</span>
+<span class="o">[</span>root@helloworld ~]# vi /var/log/myapp/error.log
+<span class="o">[</span>error 信息，系统异常，error-12]
+</code></pre></div></div>
+
+<p>发现filebeat 层没有做过滤，数据重复写进了kafka，导致重复写进了ES</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-eagle-order-error-log.jpg" alt="" /></p>
+
+<p>看ES的数据重复了</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-2020-07-23-3.jpg" alt="" /></p>
+
+<p><strong>由于filebeat只能采集数据无法进行筛选，所以过滤层要做logstash做</strong></p>
+
+<p><mark>注意</mark></p>
+
+<p>filebeat重复发送数据内容，是因为我们没有做换行，使用shell命令写入一行</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld myapp]# <span class="nb">echo</span> <span class="s1">'[info 信息，系统提示，info-14]'</span> <span class="o">&gt;&gt;</span> info.log 
+</code></pre></div></div>
+
+<p>这样它就没有把之前的内容重新发送过来了，只发送了我新添加的一行数据</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/topic-order-error-log-4.jpg" alt="" /></p>
+
+<h2 id="10kafka知识点总结">10.kafka知识点总结</h2>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka.png" alt="" /></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/03/08/gavin-note-047.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Pagehelper的分页原理，你懂了吗
+title: Pagehelper的分页原理
 category: springboot
 tags: [springboot]
 keywords: springboot

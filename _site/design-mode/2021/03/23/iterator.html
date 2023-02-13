@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 23种设计模式之迭代器模式-Iterator - 大伟的博客 </title>
+    <meta name="keywords" content="design-mode">
+    <meta name="description"
+          content="迭代器模式是一种行为设计模式，让你能在不暴露集合底层表现形式的情况下遍历集合中所有的元素。">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/design-mode/2021/03/23/iterator.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="23种设计模式之迭代器模式-Iterator">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>23种设计模式之迭代器模式-Iterator</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/03/23
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p><mark>迭代器模式Iterator</mark></p>
+
+<p><img src="/assets/images/2021/javabase/iterator-mini-2x.png" alt="" /></p>
+
+<h2 id="1意图">1、意图</h2>
+
+<p>以下内容来源于网站 Refactoring Guru：<a href="https://refactoringguru.cn/design-patterns/iterator">https://refactoringguru.cn/design-patterns/iterator</a></p>
+
+<p>行为模式：这类模式负责对象间的高效沟通和职责委派。</p>
+
+<p><strong>迭代器模式</strong>是一种行为设计模式， 让你能在不暴露集合底层表现形式 （列表、 栈和树等） 的情况下遍历集合中所有的元素。</p>
+
+<p><img src="/assets/images/2021/javabase/iterator-zh.png" alt="" /></p>
+
+<h3 id="集合">集合</h3>
+
+<p>集合是编程中最常使用的数据类型之一。 尽管如此， 集合只是一组对象的容器而已。</p>
+
+<p><img src="/assets/images/2021/javabase/iterator-problem1-2x.png" alt="" /></p>
+
+<p>大部分集合使用简单列表存储元素。 但有些集合还会使用栈、 树、 图和其他复杂的数据结构。</p>
+
+<p>使用多种集合的客户端代码可能并不关心存储数据的方式</p>
+
+<h3 id="解决方案">解决方案</h3>
+
+<p>迭代器模式的主要思想是将集合的遍历行为抽取为单独的<em>迭代器</em>对象。</p>
+
+<p><img src="/assets/images/2021/javabase/iterator-solution1.png" alt="" /></p>
+
+<p>所有迭代器必须实现相同的接口。 这样一来， 只要有合适的迭代器， 客户端代码就能兼容任何类型的集合或遍历算法。 如果你需要采用特殊方式来遍历集合， 只需创建一个新的迭代器类即可， 无需对集合或客户端进行修改。</p>
+
+<h3 id="真实世界类比">真实世界类比</h3>
+
+<p><img src="/assets/images/2021/javabase/iterator-comic-1-zh-2x.png" alt="" /></p>
+
+<p>你计划在罗马游览数天， 参观所有主要的旅游景点。</p>
+
+<ul>
+  <li>但在到达目的地后， 你可能会浪费很多时间绕圈子， 甚至找不到罗马斗兽场在哪里。</li>
+  <li>
+    <p>或者你可以购买一款智能手机上的虚拟导游程序。 这款程序非常智能而且价格不贵， 你想在景点待多久都可以。</p>
+  </li>
+  <li>用部分旅行预算雇佣一位对城市了如指掌的当地向导。 向导能根据你的喜好来安排行程， 为你介绍每个景点并讲述许多激动人心的故事。 这样的旅行可能会更有趣， 但所需费用也会更高。</li>
+</ul>
+
+<p>所有这些选择(自由漫步、 智能手机导航或真人向导)都是这个由众多罗马景点组成的集合的迭代器。</p>
+
+<h3 id="迭代器模式结构">迭代器模式结构</h3>
+
+<p><img src="/assets/images/2021/javabase/iterator-structure-2x.png" style="zoom:67%;" /></p>
+
+<ol>
+  <li>
+    <p><strong>迭代器</strong> （Iterator） 接口声明了遍历集合所需的操作： 获取下一个元素、 获取当前位置和重新开始迭代等。</p>
+  </li>
+  <li>
+    <p><strong>具体迭代器</strong> （Concrete Iterators） 实现遍历集合的一种特定算法。 迭代器对象必须跟踪自身遍历的进度。 这使得多个迭代器可以相互独立地遍历同一集合。</p>
+  </li>
+  <li>
+    <p><strong>集合</strong> （Collection） 接口声明一个或多个方法来获取与集合兼容的迭代器。 请注意， 返回方法的类型必须被声明为迭代器接口， 因此具体集合可以返回各种不同种类的迭代器。</p>
+  </li>
+  <li>
+    <p><strong>具体集合</strong> （Concrete Collections） 会在客户端请求迭代器时返回一个特定的具体迭代器类实体。 你可能会琢磨， 剩下的集合代码在什么地方呢？ 不用担心， 它也会在同一个类中。 只是这些细节对于实际模式来说并不重要， 所以我们将其省略了而已。</p>
+  </li>
+  <li>
+    <p><strong>客户端</strong> （Client） 通过集合和迭代器的接口与两者进行交互。 这样一来客户端无需与具体类进行耦合， 允许同一客户端代码使用各种不同的集合和迭代器。</p>
+
+    <p>客户端通常不会自行创建迭代器， 而是会从集合中获取。 但在特定情况下， 客户端可以直接创建一个迭代器 （例如当客户端需要自定义特殊迭代器时）。</p>
+  </li>
+</ol>
+
+<h3 id="伪代码">伪代码</h3>
+
+<p>在本例中， <strong>迭代器</strong>模式用于遍历一个封装了访问微信好友关系功能的特殊集合。 该集合提供使用不同方式遍历档案资料的多个迭代器。</p>
+
+<p><img src="/assets/images/2021/javabase/iterator-example-zh.png" alt="" /></p>
+
+<p>“好友 （friends）” 迭代器可用于遍历指定档案的好友。  “同事 （colleagues）” 迭代器也提供同样的功能， 但仅包括与目标用户在同一家公司工作的好友。 这两个迭代器都实现了同一个通用接口， 客户端能在不了解认证和发送 REST 请求等实现细节的情况下获取档案。</p>
+
+<p>客户端仅通过接口与集合和迭代器交互， 也就不会同具体类耦合。 如果你决定将应用连接到全新的社交网络， 只需提供新的集合和迭代器类即可， 无需修改现有代码。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 集合接口必须声明一个用于生成迭代器的工厂方法。如果程序中有不同类型的迭</span>
+<span class="c1">// 代器，你也可以声明多个方法。</span>
+<span class="kd">interface</span> <span class="nc">SocialNetwork</span> <span class="n">is</span>
+    <span class="n">method</span> <span class="nf">createFriendsIterator</span><span class="o">(</span><span class="n">profileId</span><span class="o">):</span><span class="nc">ProfileIterator</span>
+    <span class="n">method</span> <span class="nf">createCoworkersIterator</span><span class="o">(</span><span class="n">profileId</span><span class="o">):</span><span class="nc">ProfileIterator</span>
+
+<span class="c1">// 每个具体集合都与其返回的一组具体迭代器相耦合。但客户并不是这样的，因为</span>
+<span class="c1">// 这些方法的签名将会返回迭代器接口。</span>
+<span class="kd">class</span> <span class="nc">WeChat</span> <span class="kd">implements</span> <span class="nc">SocialNetwork</span> <span class="n">is</span>
+    <span class="c1">// ...大量的集合代码应该放在这里...</span>
+
+    <span class="c1">// 迭代器创建代码。</span>
+    <span class="n">method</span> <span class="nf">createFriendsIterator</span><span class="o">(</span><span class="n">profileId</span><span class="o">)</span> <span class="n">is</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">WeChatIterator</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">profileId</span><span class="o">,</span> <span class="s">"friends"</span><span class="o">)</span>
+    <span class="n">method</span> <span class="nf">createCoworkersIterator</span><span class="o">(</span><span class="n">profileId</span><span class="o">)</span> <span class="n">is</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">WeChatIterator</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">profileId</span><span class="o">,</span> <span class="s">"coworkers"</span><span class="o">)</span>
+  
+<span class="c1">// 所有迭代器的通用接口。</span>
+<span class="kd">interface</span> <span class="nc">ProfileIterator</span> <span class="n">is</span>
+    <span class="n">method</span> <span class="nf">getNext</span><span class="o">():</span><span class="nc">Profile</span>
+    <span class="n">method</span> <span class="nf">hasMore</span><span class="o">():</span><span class="n">bool</span>
+  
+<span class="c1">// 具体迭代器类。</span>
+<span class="kd">class</span> <span class="nc">WeChatIterator</span> <span class="kd">implements</span> <span class="nc">ProfileIterator</span> <span class="n">is</span>
+    <span class="c1">// 迭代器需要一个指向其遍历集合的引用。</span>
+    <span class="kd">private</span> <span class="n">field</span> <span class="nl">weChat:</span> <span class="nc">WeChat</span>
+    <span class="kd">private</span> <span class="n">field</span> <span class="n">profileId</span><span class="o">,</span> <span class="nl">type:</span> <span class="n">string</span>
+
+    <span class="c1">// 迭代器对象会独立于其他迭代器来对集合进行遍历。因此它必须保存迭代器</span>
+    <span class="c1">// 的状态。</span>
+    <span class="kd">private</span> <span class="n">field</span> <span class="n">currentPosition</span>
+    <span class="kd">private</span> <span class="n">field</span> <span class="nl">cache:</span> <span class="n">array</span> <span class="n">of</span> <span class="nc">Profile</span>
+
+    <span class="n">constructor</span> <span class="nf">WeChatIterator</span><span class="o">(</span><span class="n">weChat</span><span class="o">,</span> <span class="n">profileId</span><span class="o">,</span> <span class="n">type</span><span class="o">)</span> <span class="n">is</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">weChat</span> <span class="o">=</span> <span class="n">weChat</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">profileId</span> <span class="o">=</span> <span class="n">profileId</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="n">type</span>
+
+    <span class="kd">private</span> <span class="n">method</span> <span class="nf">lazyInit</span><span class="o">()</span> <span class="n">is</span>
+        <span class="nf">if</span> <span class="o">(</span><span class="n">cache</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">weChat</span><span class="o">.</span><span class="na">socialGraphRequest</span><span class="o">(</span><span class="n">profileId</span><span class="o">,</span> <span class="n">type</span><span class="o">)</span>
+
+    <span class="c1">// 每个具体迭代器类都会自行实现通用迭代器接口。</span>
+    <span class="n">method</span> <span class="nf">getNext</span><span class="o">()</span> <span class="n">is</span>
+        <span class="nf">if</span> <span class="o">(</span><span class="n">hasMore</span><span class="o">())</span>
+            <span class="n">currentPosition</span><span class="o">++</span>
+            <span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">currentPosition</span><span class="o">]</span>
+
+    <span class="n">method</span> <span class="nf">hasMore</span><span class="o">()</span> <span class="n">is</span>
+        <span class="nf">lazyInit</span><span class="o">()</span>
+        <span class="k">return</span> <span class="n">currentPosition</span> <span class="o">&lt;</span> <span class="n">cache</span><span class="o">.</span><span class="na">length</span>
+          
+<span class="c1">// 这里还有一个有用的绝招：你可将迭代器传递给客户端类，无需让其拥有访问整</span>
+<span class="c1">// 个集合的权限。这样一来，你就无需将集合暴露给客户端了。</span>
+<span class="c1">//</span>
+<span class="c1">// 还有另一个好处：你可在运行时将不同的迭代器传递给客户端，从而改变客户端</span>
+<span class="c1">// 与集合互动的方式。这一方法可行的原因是客户端代码并没有和具体迭代器类相</span>
+<span class="c1">// 耦合。</span>
+<span class="kd">class</span> <span class="nc">SocialSpammer</span> <span class="n">is</span>
+    <span class="n">method</span> <span class="nf">send</span><span class="o">(</span><span class="nl">iterator:</span> <span class="nc">ProfileIterator</span><span class="o">,</span> <span class="nl">message:</span> <span class="n">string</span><span class="o">)</span> <span class="n">is</span>
+        <span class="nf">while</span> <span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasMore</span><span class="o">())</span>
+            <span class="n">profile</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">getNext</span><span class="o">()</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">sendEmail</span><span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getEmail</span><span class="o">(),</span> <span class="n">message</span><span class="o">)</span>
+
+
+<span class="c1">// 应用程序（Application）类可对集合和迭代器进行配置，然后将其传递给客户</span>
+<span class="c1">// 端代码。</span>
+<span class="kd">class</span> <span class="nc">Application</span> <span class="n">is</span>
+    <span class="n">field</span> <span class="nl">network:</span> <span class="nc">SocialNetwork</span>
+    <span class="n">field</span> <span class="nl">spammer:</span> <span class="nc">SocialSpammer</span>
+
+    <span class="n">method</span> <span class="nf">config</span><span class="o">()</span> <span class="n">is</span>
+        <span class="k">if</span> <span class="n">working</span> <span class="n">with</span> <span class="nc">WeChat</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">network</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WeChat</span><span class="o">()</span>
+        <span class="k">if</span> <span class="n">working</span> <span class="n">with</span> <span class="nc">LinkedIn</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">network</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedIn</span><span class="o">()</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">spammer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SocialSpammer</span><span class="o">()</span>
+
+    <span class="n">method</span> <span class="nf">sendSpamToFriends</span><span class="o">(</span><span class="n">profile</span><span class="o">)</span> <span class="n">is</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="na">createFriendsIterator</span><span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getId</span><span class="o">())</span>
+        <span class="n">spammer</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">iterator</span><span class="o">,</span> <span class="s">"非常重要的消息"</span><span class="o">)</span>
+
+    <span class="n">method</span> <span class="nf">sendSpamToCoworkers</span><span class="o">(</span><span class="n">profile</span><span class="o">)</span> <span class="n">is</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="na">createCoworkersIterator</span><span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getId</span><span class="o">())</span>
+        <span class="n">spammer</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">iterator</span><span class="o">,</span> <span class="s">"非常重要的消息"</span><span class="o">)</span>        
+</code></pre></div></div>
+
+<h3 id="适合的应用场景">适合的应用场景</h3>
+
+<ol>
+  <li>
+    <p><strong>当集合背后为复杂的数据结构， 且你希望对客户端隐藏其复杂性时</strong> （出于使用便利性或安全性的考虑）， 可以使用迭代器模式。</p>
+
+    <p>迭代器封装了与复杂数据结构进行交互的细节， 为客户端提供多个访问集合元素的简单方法。 这种方式不仅对客户端来说非常方便， 而且能避免客户端在直接与集合交互时执行错误或有害的操作， 从而起到保护集合的作用。</p>
+  </li>
+  <li>
+    <p>使用该模式可以减少程序中重复的遍历代码。</p>
+
+    <p>重要迭代算法的代码往往体积非常庞大。 当这些代码被放置在程序业务逻辑中时， 它会让原始代码的职责模糊不清， 降低其可维护性。 因此， 将遍历代码移到特定的迭代器中可使程序代码更加精炼和简洁。</p>
+  </li>
+  <li>
+    <p><strong>如果你希望代码能够遍历不同的甚至是无法预知的数据结构， 可以使用迭代器模式</strong></p>
+
+    <p>该模式为集合和迭代器提供了一些通用接口。 如果你在代码中使用了这些接口， 那么将其他实现了这些接口的集合和迭代器传递给它时， 它仍将可以正常运行</p>
+  </li>
+</ol>
+
+<h3 id="实现方式">实现方式</h3>
+
+<p>1、声明迭代器接口。 该接口必须提供至少一个方法来获取集合中的下个元素。 但为了使用方便， 你还可以添加一些其他方法， 例如获取前一个元素、 记录当前位置和判断迭代是否已结束。</p>
+
+<p>2、声明集合接口并描述一个获取迭代器的方法。 其返回值必须是迭代器接口。 如果你计划拥有多组不同的迭代器， 则可以声明多个类似的方法。</p>
+
+<p>3、为希望使用迭代器进行遍历的集合实现具体迭代器类。 迭代器对象必须与单个集合实体链接。 链接关系通常通过迭代器的构造函数建立</p>
+
+<p>4、在你的集合类中实现集合接口。 其主要思想是针对特定集合为客户端代码提供创建迭代器的快捷方式。 集合对象必须将自身传递给迭代器的构造函数来创建两者之间的链接。</p>
+
+<p>5、检查客户端代码， 使用迭代器替代所有集合遍历代码。 每当客户端需要遍历集合元素时都会获取一个新的迭代器</p>
+
+<h3 id="优缺点">优缺点</h3>
+
+<p><mark>优点</mark></p>
+
+<ul>
+  <li><em>单一职责原则</em>。 通过将体积庞大的遍历算法代码抽取为独立的类， 你可对客户端代码和集合进行整理。</li>
+  <li><em>开闭原则</em>。 你可实现新型的集合和迭代器并将其传递给现有代码， 无需修改现有代码。</li>
+  <li>你可以并行遍历同一集合， 因为每个迭代器对象都包含其自身的遍历状态。</li>
+</ul>
+
+<p><mark>缺点</mark></p>
+
+<ul>
+  <li>如果你的程序只与简单的集合进行交互， 应用该模式可能会矫枉过正。</li>
+  <li>对于某些特殊集合， 使用迭代器可能比直接遍历的效率低</li>
+</ul>
+
+<h3 id="与其他模式的关系">与其他模式的关系</h3>
+
+<ul>
+  <li>你可以使用<a href="https://refactoringguru.cn/design-patterns/iterator">迭代器模式</a>来遍历<a href="https://refactoringguru.cn/design-patterns/composite">组合模式</a>树。</li>
+  <li>你可以同时使用<a href="https://refactoringguru.cn/design-patterns/factory-method">工厂方法模式</a>和<a href="https://refactoringguru.cn/design-patterns/iterator">迭代器</a>来让子类集合返回不同类型的迭代器， 并使得迭代器与集合相匹配。</li>
+  <li>你可以同时使用<a href="https://refactoringguru.cn/design-patterns/memento">备忘录模式</a>和<a href="https://refactoringguru.cn/design-patterns/iterator">迭代器</a>来获取当前迭代器的状态， 并且在需要的时候进行回滚。</li>
+  <li>可以同时使用<a href="https://refactoringguru.cn/design-patterns/visitor">访问者模式</a>和<a href="https://refactoringguru.cn/design-patterns/iterator">迭代器</a>来遍历复杂数据结构， 并对其中的元素执行所需操作， 即使这些元素所属的类完全不同。</li>
+</ul>
+
+<h3 id="代码示例">代码示例</h3>
+
+<p>在java中的使用</p>
+
+<p>复杂度：2</p>
+
+<p>流行度：3</p>
+
+<p><strong>使用示例：</strong> 该模式在 Java 代码中很常见。 许多框架和程序库都会使用它来提供遍历其集合的标准方式。</p>
+
+<p>下面是该模式在核心 Java 程序库中的一些示例</p>
+
+<ul>
+  <li><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html"><code class="highlighter-rouge">java.util.Iterator</code></a>的所有实现 （还有 <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Scanner.html"> <code class="highlighter-rouge">java.util.Scanner</code></a>）。</li>
+</ul>
+
+<p><strong>识别方法：</strong> 迭代器可以通过导航方法 （例如 <code class="highlighter-rouge">next</code>和 <code class="highlighter-rouge">previous</code>等） 来轻松识别。 使用迭代器的客户端代码可能没有其所遍历的集合的直接访问权限</p>
+
+<blockquote>
+  <p>迭代访问社交网络档案</p>
+</blockquote>
+
+<p><strong>iterators</strong></p>
+
+<p>1、iterators/ProfileIterator.java:  定义档案接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ProfileIterator</span> <span class="o">{</span>
+    <span class="kt">boolean</span> <span class="nf">hasNext</span><span class="o">();</span>
+
+    <span class="nc">Profile</span> <span class="nf">getNext</span><span class="o">();</span>
+
+    <span class="kt">void</span> <span class="nf">reset</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、<strong>iterators/FacebookIterator.java:</strong>  在 Facebook 档案上实现迭代</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FacebookIterator</span> <span class="kd">implements</span> <span class="nc">ProfileIterator</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">Facebook</span> <span class="n">facebook</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">type</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">currentPosition</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">emails</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">profiles</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="nf">FacebookIterator</span><span class="o">(</span><span class="nc">Facebook</span> <span class="n">facebook</span><span class="o">,</span> <span class="nc">String</span> <span class="n">type</span><span class="o">,</span> <span class="nc">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">facebook</span> <span class="o">=</span> <span class="n">facebook</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="n">type</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">lazyLoad</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">emails</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">profiles</span> <span class="o">=</span> <span class="n">facebook</span><span class="o">.</span><span class="na">requestProfileFriendsFromFacebook</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">email</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">profile</span> <span class="o">:</span> <span class="n">profiles</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">emails</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">profile</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">profiles</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasNext</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">lazyLoad</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">currentPosition</span> <span class="o">&lt;</span> <span class="n">emails</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Profile</span> <span class="nf">getNext</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">friendEmail</span> <span class="o">=</span> <span class="n">emails</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentPosition</span><span class="o">);</span>
+        <span class="nc">Profile</span> <span class="n">friendProfile</span> <span class="o">=</span> <span class="n">profiles</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentPosition</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">friendProfile</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">friendProfile</span> <span class="o">=</span> <span class="n">facebook</span><span class="o">.</span><span class="na">requestProfileFromFacebook</span><span class="o">(</span><span class="n">friendEmail</span><span class="o">);</span>
+            <span class="n">profiles</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">currentPosition</span><span class="o">,</span> <span class="n">friendProfile</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">currentPosition</span><span class="o">++;</span>
+        <span class="k">return</span> <span class="n">friendProfile</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">currentPosition</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、 <strong>iterators/LinkedInIterator.java:</strong>  在领英档案上实现迭代</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LinkedInIterator</span> <span class="kd">implements</span> <span class="nc">ProfileIterator</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">LinkedIn</span> <span class="n">linkedIn</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">type</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">currentPosition</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">emails</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">contacts</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="nf">LinkedInIterator</span><span class="o">(</span><span class="nc">LinkedIn</span> <span class="n">linkedIn</span><span class="o">,</span> <span class="nc">String</span> <span class="n">type</span><span class="o">,</span> <span class="nc">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">linkedIn</span> <span class="o">=</span> <span class="n">linkedIn</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="n">type</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">lazyLoad</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">emails</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">profiles</span> <span class="o">=</span> <span class="n">linkedIn</span><span class="o">.</span><span class="na">requestRelatedContactsFromLinkedInAPI</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">email</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">type</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">profile</span> <span class="o">:</span> <span class="n">profiles</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">emails</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">profile</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">contacts</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasNext</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">lazyLoad</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">currentPosition</span> <span class="o">&lt;</span> <span class="n">emails</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Profile</span> <span class="nf">getNext</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">friendEmail</span> <span class="o">=</span> <span class="n">emails</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentPosition</span><span class="o">);</span>
+        <span class="nc">Profile</span> <span class="n">friendContact</span> <span class="o">=</span> <span class="n">contacts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentPosition</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">friendContact</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">friendContact</span> <span class="o">=</span> <span class="n">linkedIn</span><span class="o">.</span><span class="na">requestContactInfoFromLinkedInAPI</span><span class="o">(</span><span class="n">friendEmail</span><span class="o">);</span>
+            <span class="n">contacts</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">currentPosition</span><span class="o">,</span> <span class="n">friendContact</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">currentPosition</span><span class="o">++;</span>
+        <span class="k">return</span> <span class="n">friendContact</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reset</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">currentPosition</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>社交网络接口</strong></p>
+
+<p>1、<strong>social_networks/SocialNetwork.java:</strong>  定义通用的社交网络接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SocialNetwork</span> <span class="o">{</span>
+    <span class="nc">ProfileIterator</span> <span class="nf">createFriendsIterator</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">);</span>
+
+    <span class="nc">ProfileIterator</span> <span class="nf">createCoworkersIterator</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、<strong>social_networks/Facebook.java:</strong>  Facebook</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Facebook</span> <span class="kd">implements</span> <span class="nc">SocialNetwork</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">profiles</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Facebook</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">cache</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">cache</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">profiles</span> <span class="o">=</span> <span class="n">cache</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">profiles</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">Profile</span> <span class="nf">requestProfileFromFacebook</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Here would be a POST request to one of the Facebook API endpoints.</span>
+        <span class="c1">// Instead, we emulates long network connection, which you would expect</span>
+        <span class="c1">// in the real life...</span>
+        <span class="n">simulateNetworkLatency</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Facebook: Loading profile '"</span> <span class="o">+</span> <span class="n">profileEmail</span> <span class="o">+</span> <span class="s">"' over the network..."</span><span class="o">);</span>
+
+        <span class="c1">// ...and return test data.</span>
+        <span class="k">return</span> <span class="nf">findProfile</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">requestProfileFriendsFromFacebook</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">,</span> <span class="nc">String</span> <span class="n">contactType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Here would be a POST request to one of the Facebook API endpoints.</span>
+        <span class="c1">// Instead, we emulates long network connection, which you would expect</span>
+        <span class="c1">// in the real life...</span>
+        <span class="n">simulateNetworkLatency</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Facebook: Loading '"</span> <span class="o">+</span> <span class="n">contactType</span> <span class="o">+</span> <span class="s">"' list of '"</span> <span class="o">+</span> <span class="n">profileEmail</span> <span class="o">+</span> <span class="s">"' over the network..."</span><span class="o">);</span>
+
+        <span class="c1">// ...and return test data.</span>
+        <span class="nc">Profile</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">findProfile</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">profile</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">profile</span><span class="o">.</span><span class="na">getContacts</span><span class="o">(</span><span class="n">contactType</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="nc">Profile</span> <span class="nf">findProfile</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">Profile</span> <span class="n">profile</span> <span class="o">:</span> <span class="n">profiles</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getEmail</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">profile</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">simulateNetworkLatency</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2500</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ProfileIterator</span> <span class="nf">createFriendsIterator</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">FacebookIterator</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">"friends"</span><span class="o">,</span> <span class="n">profileEmail</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ProfileIterator</span> <span class="nf">createCoworkersIterator</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">FacebookIterator</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">"coworkers"</span><span class="o">,</span> <span class="n">profileEmail</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、<strong>social_networks/LinkedIn.java:</strong>  领英</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LinkedIn</span> <span class="kd">implements</span> <span class="nc">SocialNetwork</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">contacts</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">LinkedIn</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">cache</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">cache</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">contacts</span> <span class="o">=</span> <span class="n">cache</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">contacts</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">Profile</span> <span class="nf">requestContactInfoFromLinkedInAPI</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Here would be a POST request to one of the LinkedIn API endpoints.</span>
+        <span class="c1">// Instead, we emulates long network connection, which you would expect</span>
+        <span class="c1">// in the real life...</span>
+        <span class="n">simulateNetworkLatency</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LinkedIn: Loading profile '"</span> <span class="o">+</span> <span class="n">profileEmail</span> <span class="o">+</span> <span class="s">"' over the network..."</span><span class="o">);</span>
+
+        <span class="c1">// ...and return test data.</span>
+        <span class="k">return</span> <span class="nf">findContact</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">requestRelatedContactsFromLinkedInAPI</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">,</span> <span class="nc">String</span> <span class="n">contactType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Here would be a POST request to one of the LinkedIn API endpoints.</span>
+        <span class="c1">// Instead, we emulates long network connection, which you would expect</span>
+        <span class="c1">// in the real life.</span>
+        <span class="n">simulateNetworkLatency</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"LinkedIn: Loading '"</span> <span class="o">+</span> <span class="n">contactType</span> <span class="o">+</span> <span class="s">"' list of '"</span> <span class="o">+</span> <span class="n">profileEmail</span> <span class="o">+</span> <span class="s">"' over the network..."</span><span class="o">);</span>
+
+        <span class="c1">// ...and return test data.</span>
+        <span class="nc">Profile</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">findContact</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">profile</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">profile</span><span class="o">.</span><span class="na">getContacts</span><span class="o">(</span><span class="n">contactType</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="nc">Profile</span> <span class="nf">findContact</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">Profile</span> <span class="n">profile</span> <span class="o">:</span> <span class="n">contacts</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getEmail</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">profile</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">simulateNetworkLatency</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2500</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ProfileIterator</span> <span class="nf">createFriendsIterator</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LinkedInIterator</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">"friends"</span><span class="o">,</span> <span class="n">profileEmail</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ProfileIterator</span> <span class="nf">createCoworkersIterator</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">LinkedInIterator</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">"coworkers"</span><span class="o">,</span> <span class="n">profileEmail</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>profile/Profile.java:  社交档案</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Profile</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;&gt;</span> <span class="n">contacts</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="nf">Profile</span><span class="o">(</span><span class="nc">String</span> <span class="n">email</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">String</span><span class="o">...</span> <span class="n">contacts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+
+        <span class="c1">// Parse contact list from a set of "friend:email@gmail.com" pairs.</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">contact</span> <span class="o">:</span> <span class="n">contacts</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">String</span><span class="o">[]</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">contact</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">":"</span><span class="o">);</span>
+            <span class="nc">String</span> <span class="n">contactType</span> <span class="o">=</span> <span class="s">"friend"</span><span class="o">,</span> <span class="n">contactEmail</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">parts</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">contactEmail</span> <span class="o">=</span> <span class="n">parts</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="o">{</span>
+                <span class="n">contactType</span> <span class="o">=</span> <span class="n">parts</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+                <span class="n">contactEmail</span> <span class="o">=</span> <span class="n">parts</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">contacts</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">contactType</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">contacts</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">contactType</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;());</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">contacts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">contactType</span><span class="o">).</span><span class="na">add</span><span class="o">(</span><span class="n">contactEmail</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getEmail</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getContacts</span><span class="o">(</span><span class="nc">String</span> <span class="n">contactType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">contacts</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">contactType</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">contacts</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">contactType</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;());</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">contacts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">contactType</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>spammer/SocialSpammer.java:  消息发送应用</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SocialSpammer</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">SocialNetwork</span> <span class="n">network</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nc">ProfileIterator</span> <span class="n">iterator</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">SocialSpammer</span><span class="o">(</span><span class="nc">SocialNetwork</span> <span class="n">network</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">network</span> <span class="o">=</span> <span class="n">network</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendSpamToFriends</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\nIterating over friends...\n"</span><span class="o">);</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="na">createFriendsIterator</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">);</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Profile</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+            <span class="n">sendMessage</span><span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getEmail</span><span class="o">(),</span> <span class="n">message</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendSpamToCoworkers</span><span class="o">(</span><span class="nc">String</span> <span class="n">profileEmail</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\nIterating over coworkers...\n"</span><span class="o">);</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="na">createCoworkersIterator</span><span class="o">(</span><span class="n">profileEmail</span><span class="o">);</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Profile</span> <span class="n">profile</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+            <span class="n">sendMessage</span><span class="o">(</span><span class="n">profile</span><span class="o">.</span><span class="na">getEmail</span><span class="o">(),</span> <span class="n">message</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMessage</span><span class="o">(</span><span class="nc">String</span> <span class="n">email</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Sent message to: '"</span> <span class="o">+</span> <span class="n">email</span> <span class="o">+</span> <span class="s">"'. Message body: '"</span> <span class="o">+</span> <span class="n">message</span> <span class="o">+</span> <span class="s">"'"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Demo.java:  客户端代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Demo</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Scanner</span> <span class="n">scanner</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Please specify social network to target spam tool (default:Facebook):"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"1. Facebook"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"2. LinkedIn"</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">choice</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="na">nextLine</span><span class="o">();</span>
+
+        <span class="nc">SocialNetwork</span> <span class="n">network</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">choice</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"2"</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedIn</span><span class="o">(</span><span class="n">createTestProfiles</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Facebook</span><span class="o">(</span><span class="n">createTestProfiles</span><span class="o">());</span>
+        <span class="o">}</span>
+
+        <span class="nc">SocialSpammer</span> <span class="n">spammer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SocialSpammer</span><span class="o">(</span><span class="n">network</span><span class="o">);</span>
+        <span class="n">spammer</span><span class="o">.</span><span class="na">sendSpamToFriends</span><span class="o">(</span><span class="s">"anna.smith@bing.com"</span><span class="o">,</span>
+                <span class="s">"Hey! This is Anna's friend Josh. Can you do me a favor and like this post [link]?"</span><span class="o">);</span>
+        <span class="n">spammer</span><span class="o">.</span><span class="na">sendSpamToCoworkers</span><span class="o">(</span><span class="s">"anna.smith@bing.com"</span><span class="o">,</span>
+                <span class="s">"Hey! This is Anna's boss Jason. Anna told me you would be interested in [link]."</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="nf">createTestProfiles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Profile</span><span class="o">&gt;();</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Profile</span><span class="o">(</span><span class="s">"anna.smith@bing.com"</span><span class="o">,</span> <span class="s">"Anna Smith"</span><span class="o">,</span> <span class="s">"friends:mad_max@ya.com"</span><span class="o">,</span> <span class="s">"friends:catwoman@yahoo.com"</span><span class="o">,</span> <span class="s">"coworkers:sam@amazon.com"</span><span class="o">));</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Profile</span><span class="o">(</span><span class="s">"mad_max@ya.com"</span><span class="o">,</span> <span class="s">"Maximilian"</span><span class="o">,</span> <span class="s">"friends:anna.smith@bing.com"</span><span class="o">,</span> <span class="s">"coworkers:sam@amazon.com"</span><span class="o">));</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Profile</span><span class="o">(</span><span class="s">"bill@microsoft.eu"</span><span class="o">,</span> <span class="s">"Billie"</span><span class="o">,</span> <span class="s">"coworkers:avanger@ukr.net"</span><span class="o">));</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Profile</span><span class="o">(</span><span class="s">"avanger@ukr.net"</span><span class="o">,</span> <span class="s">"John Day"</span><span class="o">,</span> <span class="s">"coworkers:bill@microsoft.eu"</span><span class="o">));</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Profile</span><span class="o">(</span><span class="s">"sam@amazon.com"</span><span class="o">,</span> <span class="s">"Sam Kitting"</span><span class="o">,</span> <span class="s">"coworkers:anna.smith@bing.com"</span><span class="o">,</span> <span class="s">"coworkers:mad_max@ya.com"</span><span class="o">,</span> <span class="s">"friends:catwoman@yahoo.com"</span><span class="o">));</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Profile</span><span class="o">(</span><span class="s">"catwoman@yahoo.com"</span><span class="o">,</span> <span class="s">"Liza"</span><span class="o">,</span> <span class="s">"friends:anna.smith@bing.com"</span><span class="o">,</span> <span class="s">"friends:sam@amazon.com"</span><span class="o">));</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Please specify social network to target spam tool <span class="o">(</span>default:Facebook<span class="o">)</span>:
+1. Facebook
+2. LinkedIn
+<span class="o">&gt;</span> 1
+
+Iterating over friends...
+
+Facebook: Loading <span class="s1">'friends'</span> list of <span class="s1">'anna.smith@bing.com'</span> over the network...
+Facebook: Loading profile <span class="s1">'mad_max@ya.com'</span> over the network...
+Sent message to: <span class="s1">'mad_max@ya.com'</span><span class="nb">.</span> Message body: <span class="s1">'Hey! This is Anna'</span>s friend Josh. Can you <span class="k">do </span>me a favor and like this post <span class="o">[</span><span class="nb">link</span><span class="o">]</span>?<span class="s1">'
+Facebook: Loading profile '</span>catwoman@yahoo.com<span class="s1">' over the network...
+Sent message to: '</span>catwoman@yahoo.com<span class="s1">'. Message body: '</span>Hey! This is Anna<span class="s1">'s friend Josh. Can you do me a favor and like this post [link]?'</span>
+
+Iterating over coworkers...
+
+Facebook: Loading <span class="s1">'coworkers'</span> list of <span class="s1">'anna.smith@bing.com'</span> over the network...
+Facebook: Loading profile <span class="s1">'sam@amazon.com'</span> over the network...
+Sent message to: <span class="s1">'sam@amazon.com'</span><span class="nb">.</span> Message body: <span class="s1">'Hey! This is Anna'</span>s boss Jason. Anna told me you would be interested <span class="k">in</span> <span class="o">[</span><span class="nb">link</span><span class="o">]</span>.<span class="s1">'
+</span></code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/design-mode/2021/03/23/iterator.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

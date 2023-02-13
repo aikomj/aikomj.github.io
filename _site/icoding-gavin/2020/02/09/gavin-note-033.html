@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第33节：分布式缓存Redis应用实战-3 - 大伟的博客 </title>
+    <meta name="keywords" content="redis">
+    <meta name="description"
+          content="Redis的主从架构，缓存过期淘汰机制，哨兵模式">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/02/09/gavin-note-033.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第33节：分布式缓存Redis应用实战-3">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第33节：分布式缓存Redis应用实战-3</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/02/09
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1redis主从架构">1、Redis主从架构</h2>
+
+<h3 id="原理分析">原理分析</h3>
+
+<p><img src="/assets/images/2021/redis/master-slave.png" alt="" /></p>
+
+<p><strong>主从出现的原因</strong></p>
+
+<ul>
+  <li>高并发
+    <ul>
+      <li>官方数据表示Redis的读数据11w/s左右，写速度是8w/s左右</li>
+      <li>Redis尽量少写多读，符合缓存的适用要求</li>
+      <li>可以通过主从架构来进行读写分离</li>
+    </ul>
+  </li>
+  <li>HA（高可用）
+    <ul>
+      <li>如果有一个以上的从库就会对节点进行备份</li>
+    </ul>
+  </li>
+</ul>
+
+<p>同步的过程中一定要开启持久化，原因如下</p>
+
+<ul>
+  <li>如果master出现宕机内存丢失，从库也会删除</li>
+  <li>master进行功能性重启，内存数据丢失，也会同步给slave</li>
+</ul>
+
+<p>主从复制原理</p>
+
+<ul>
+  <li>
+    <p>当slave第一次连接时，会触发全量同步，如果已经连接过了，只会同步新增数据</p>
+  </li>
+  <li>
+    <p>全量备份分为落盘和不落盘两种形式，默认是落盘（保存文件）</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 不落盘复制配置 yes不落盘，no落盘</span>
+repl-diskless-sync no
+<span class="c"># 等待其他slave连接的一个时间周期，单位是秒</span>
+repl-diskless-sync-delay 5
+</code></pre></div>    </div>
+  </li>
+  <li>支持断点续传</li>
+  <li>如果从库过多会导致占用带宽较大，所以从不易过多</li>
+</ul>
+
+<p>主从的结构除了一对多，还可以是树形的，树形结构用的比较少</p>
+
+<p><img src="/assets/images/2021/redis/master-slave-2.png" alt="" /></p>
+
+<h3 id="主从设置">主从设置</h3>
+
+<p>考虑主从节点会互相切换的情况，主从节点的配置基本上是一样的</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 可以通过命令看一下主从信息，v5.x版本前从是用slave表示，之后换成replication</span>
+<span class="c"># 1、master和slave节点都可以查看</span>
+info replication
+
+<span class="c"># 2、修改slave的redis.conf</span>
+replicaof 192.168.1.100 6379 <span class="c">#master的ip，master的端口</span>
+
+<span class="c"># 3、在master和slave配置上添加，避免主节点宕机后重启成为从节点，配置文件没有设置密码的话就无法连接到新的主节点了</span>
+masterauth icoding <span class="c">#主机的访问密码</span>
+
+<span class="c"># 4、默认开启yes,在slave上配置</span>
+<span class="c"># yes 主从复制中，从服务器可以响应客户端请求</span>
+<span class="c"># no 主从复制中，从服务器将阻塞所有请求，有客户端请求时返回“SYNC with master in progress”；</span>
+replica-serve-stale-data <span class="nb">yes</span>
+
+<span class="c"># 5、默认开启并配置为yes,在slave上配置</span>
+<span class="c"># slave节点只允许read 默认就是 yes，这个配置只对slave节点才生效，对master节点没作用</span>
+replica-read-only <span class="nb">yes</span> 
+
+<span class="c"># 6、默认没有开启,在slave的配置上打开</span>
+<span class="c"># slave根据指定的时间间隔向master发送ping请求，默认10秒，相当于心跳检测</span>
+repl-ping-replica-period 10
+
+<span class="c"># 7、默认没有开启,在slave的配置上打开</span>
+<span class="c"># 复制连接超时时间。</span>
+<span class="c"># master和slave都有超时时间的设置。</span>
+<span class="c"># master检测到slave上次发送的时间超过repl-timeout，即认为slave离线，清除该slave信息。</span>
+<span class="c"># slave检测到上次和master交互的时间超过repl-timeout，则认为master离线。</span>
+<span class="c"># 需要注意的是repl-timeout需要设置为比repl-ping-slave-period更大的值，不然会经常检测到超时。</span>
+repl-timeout 60
+
+<span class="c"># 8、是否禁止复制tcp链接的tcp nodelay参数，默认开启并配置为no,在master上配置</span>
+<span class="c"># 默认是no，即使用tcp nodelay,允许小包的发送。对于延时敏感型，同时数据传输量比较小的应用，开启TCP_NODELAY选项无疑是一个正确的选择</span>
+<span class="c"># 如果master设置了yes来禁止tcp nodelay设置，在把数据复制给slave的时候，会减少包的数量和更小的网络带宽。</span>
+<span class="c"># 但是这也可能带来数据的延迟。</span>
+<span class="c"># 默认我们推荐更小的延迟，但是在数据量传输很大的场景下，建议选择yes。</span>
+repl-disable-tcp-nodelay no
+
+<span class="c"># 9、默认没有开启,在master上配置</span>
+<span class="c"># 复制缓冲区大小，这是一个环形复制缓冲区，用来保存最新复制的命令。</span>
+<span class="c"># 这样在slave离线的时候，不需要完全复制master的数据，如果可以执行部分同步，只需要把缓冲区的部分数据复制给slave，就能恢复正常复制状态。</span>
+<span class="c"># 缓冲区的大小越大，slave离线的时间可以更长，复制缓冲区只有在有slave连接的时候才分配内存。</span>
+<span class="c"># 没有slave的一段时间，内存会被释放出来，默认1m。</span>
+repl-backlog-size 5mb
+
+<span class="c"># 10、默认没有开启,在master上配置</span>
+<span class="c"># master没有slave一段时间会释放复制缓冲区的内存，repl-backlog-ttl用来设置该时间长度。</span>
+<span class="c"># 单位为秒。</span>
+repl-backlog-ttl 3600
+
+<span class="c"># 11、默认开启，在slave上配置</span>
+<span class="c"># 当master不可用，Sentinel会根据slave的优先级选举一个master。</span>
+<span class="c"># 最低的优先级的slave，当选master。</span>
+<span class="c"># 而配置成0，永远不会被选举。</span>
+<span class="c"># 注意：要实现Sentinel自动选举，至少需要2台slave。</span>
+replica-priority 100
+
+<span class="c"># 12、默认没有开启，在master上配置</span>
+<span class="c"># redis提供了可以让master停止写入的方式，如果配置了min-slaves-to-write，健康的slave的个数小于N，mater就禁止写入。</span>
+<span class="c"># master最少得有多少个健康的slave存活才能执行写命令。</span>
+<span class="c"># 这个配置虽然不能保证N个slave都一定能接收到master的写操作，但是能避免没有足够健康的slave的时候，master不能写入来避免数据丢失。</span>
+<span class="c"># 设置为0是关闭该功能，默认也是0。</span>
+min-replicas-to-write 2
+
+<span class="c"># 13、默认没有开启，在master上配置</span>
+<span class="c"># 延迟小于min-replicas-max-lag秒的slave才认为是健康的slave。</span>
+min-replicas-max-lag 10
+</code></pre></div></div>
+
+<h2 id="2redis缓存过期机制">2、Redis缓存过期机制</h2>
+
+<p>key一般会有两种操作：不设置过期时间，设置过期时间（无论是否设置，只要你的业务内容足够复杂内容足够多，Redis主机的内存是永远的不够的，假定目前你的企业Redis的配置还停留在主从阶段）</p>
+
+<ul>
+  <li>
+    <p>影响存储大小的是不是你的主机内存？</p>
+
+    <p>不是，是主从节点中内存最小的服务器那个决定的。</p>
+  </li>
+  <li>
+    <p>如果内存不够了，放满了，Redis怎么处理？</p>
+
+    <p>按过期机制删除key</p>
+  </li>
+</ul>
+
+<p><strong>Redis内存的删除机制</strong></p>
+
+<ul>
+  <li>主动删除（定期删除）
+    <ul>
+      <li>只要设置了expire，redis会默认1秒抽查10次，来巡检这些过期的key，把它删除掉来释放内存</li>
+      <li>在redis.conf文件里有个叫：hz的配置（hz 10）过大CPU负担比较重,这个参数用来配置redis 每隔1秒抽查的次数。</li>
+    </ul>
+  </li>
+  <li>被动删除：
+    <ul>
+      <li>redis内部在访问每个key的时候，会调用一个内部方法：expireIfNeeded()，如果过期就会返回nil，拿空间换时间</li>
+    </ul>
+  </li>
+  <li>如果你的key大部分没有设置过期时间，内存满了怎么办？</li>
+</ul>
+
+<p>Redis提供一套内存淘汰机制：MEMORY MANAGEMENT</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># master 8G slave 6G</span>
+<span class="c"># 服务不是只运行redis这个服务，还有linux本身的内核swap，这个是可以给操作系统留一些余量</span>
+<span class="c"># maxmemory &lt;bytes&gt; 设定redis可用内存大小 </span>
+<span class="c"># 内存淘汰规则</span>
+<span class="c"># maxmemory-policy noeviction 但Redis默认就是这个配置</span>
+<span class="c"># volatile-lru -&gt; 在那些设置了expire的缓存中，清除最少使用的旧缓存，可以保存新缓存</span>
+<span class="c"># allkeys-lru -&gt; 清除最少用的旧缓存：推荐使用</span>
+<span class="c"># volatile-lfu -&gt; Evict using approximated LFU among the keys with an expire set.</span>
+<span class="c"># allkeys-lfu -&gt; Evict any key using approximated LFU.</span>
+<span class="c"># volatile-random -&gt; Remove a random key among the ones with an expire set.过期缓存中随机删除</span>
+<span class="c"># allkeys-random -&gt; 在所有缓存中随机删除：不推荐的</span>
+<span class="c"># volatile-ttl -&gt; Remove the key with the nearest expire time (minor TTL)</span>
+<span class="c"># noeviction -&gt; 缓存永不过期,当内存使用到最大了，使用set，lpush等写命令就会报错，使用get命令可以。</span>
+</code></pre></div></div>
+
+<h2 id="3哨兵模式">3、哨兵模式</h2>
+
+<p>问题：Master挂了，如何保证可用性，实现继续写</p>
+
+<p>现象：slave的数据还有，需要手动把slave升级成master，需要去修改程序的配置了，很不方便，啥时候的挂的？</p>
+
+<p>解决：Redis本身就提供了一个机制-Sentinel哨兵</p>
+
+<p><strong>什么是哨兵</strong></p>
+
+<p>Redis的sentinel机制是用于管理多个redis服务器的，sentinel会执行以下四个任务</p>
+
+<ul>
+  <li>服务监控：负载监控redis master和slave进程是否正常工作</li>
+  <li>消息通知：master如果挂了，哨兵可以根据你配置的脚本来调用发送通知</li>
+  <li>故障转移：master node挂了，sentinel会从slave里选举一个node成为master，会让剩下的slave follow到新master上并从新master复制数据</li>
+  <li>配置中心：如果故障发生转移了，sentinel可以通知客户端，新的master地址的端口是什么</li>
+</ul>
+
+<h3 id="配置哨兵">配置哨兵</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># redis的安装根目录下，有个sentinel.conf</span>
+<span class="c"># 部署三个哨兵节点(sentinel要从redis的slave里选举一个node成为master，所以至少3个哨兵节点)，同时监控一组redis服务（只有一个节点其实也可以，但有风险）</span>
+<span class="nb">cp </span>sentinel.conf /usr/local/redis-6379
+vi sentinel.conf
+<span class="c"># bind 127.0.0.1 192.168.1.1</span>
+<span class="c"># 测试的时候放开访问保护,</span>
+protected-mode no
+port 26379 <span class="c">#默认是26379</span>
+daemonize <span class="nb">yes
+</span>pidfile /var/run/redis-sentinel-26379.pid <span class="c">#pid 集群要区分开</span>
+logfile /usr/local/redis-6379/sentinel/redis-sentinel.log <span class="c">#日志，非常重要</span>
+<span class="nb">dir</span> /usr/local/redis-6379/sentinel <span class="c">#工作空间</span>
+sentinel deny-scripts-reconfig <span class="nb">yes
+</span>sentinel config-epoch jude-master 11
+
+<span class="c"># sentinel监控的核心配置</span>
+<span class="c"># 1、最后一个2，quorum,&gt;=2个哨兵主观认为master下线了，master才会被客观下线，才会选一个slave成为master</span>
+sentinel monitor icoding-master 127.0.0.1 6379 2
+<span class="c"># 2、master访问密码</span>
+sentinel auth-pass icoding-master icoding
+<span class="c"># 3、sentinel主观认为master挂几秒以上才会触发选举切换主节点</span>
+sentinel down-after-milliseconds icoding-master 3000
+<span class="c"># 4、所有slave同步新master的并行同步数量，如果是1就一个一个同步，在同步过程中slave节点是阻塞的不可用的，同步完了才会放开</span>
+sentinel parallel-syncs icoding-master 1
+<span class="c"># 5、同一个master节点failover之间的时间间隔,默认3分钟，举个例子，master节点A宕机了，重启后成为slave节点，它要重新成为master节点需要等3分钟</span>
+sentinel failover-timeout icoding-master 180000
+</code></pre></div></div>
+
+<p>配置完毕进行启动</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 启动redis</span>
+<span class="o">[</span>root@aliserver <span class="nb">local</span><span class="o">]</span><span class="c"># redis-server redis-6379/redis.conf</span>
+<span class="c"># 跟redis-server一样，安装好redis后在/usr/local/bin就有redis-sentinel的启动项</span>
+<span class="o">[</span>root@aliserver <span class="nb">local</span><span class="o">]</span><span class="c"># redis-sentinel sentinel.conf</span>
+<span class="c"># 如果要搭建集群，只需要将刚刚配置的sentinel.conf复制到其他节点即可</span>
+</code></pre></div></div>
+
+<p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2022/redis/redis-sentinel.png" alt="" /></p>
+
+<p>哨兵集群部署的约定</p>
+
+<ul>
+  <li>哨兵集群至少3个节点</li>
+  <li>最好三个节点在不同的物理机器上</li>
+  <li><strong>一组哨兵最好只监控一组主从</strong></li>
+</ul>
+
+<p><strong>查看哨兵消息</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>redis-cli <span class="nt">-p</span> 26379 <span class="c">#通过哨兵的端口进入</span>
+sentinel master icoding-master
+sentinel slaves icoding-master
+sentinel sentinels icoding-master <span class="c">#查看哨兵信息</span>
+</code></pre></div></div>
+
+<h3 id="故障转移的原理">故障转移的原理</h3>
+
+<ul>
+  <li>S_DOWN (Subjectively Down) 主观宕机
+    <ul>
+      <li>一个哨兵根据配置的主观宕机秒数，认为一个master宕机了，就是主观宕机</li>
+      <li>sentinel down-after-milliseconds icoding-master 3000 就是这个配置</li>
+      <li>哨兵ping主机，然后返回超过上面设置的时间就认为主观宕机了</li>
+    </ul>
+  </li>
+  <li>O_DOWN(Objectively Down) 客观宕机
+    <ul>
+      <li>如果quorum数量的哨兵觉得一个master宕机了，就是客观宕机</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>哨兵集群是如何自动发现</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>通过pub/sub（发布/订阅）机制来实现的，每个哨兵都会pub一个__sentinel__:hello并通过sub<span class="o">(</span>订阅<span class="o">)</span>来获取和感知有多少个同组redis监控的哨兵
+并且信息里会携带host ip runid,并让其他哨兵感知到 
+</code></pre></div></div>
+
+<p>查看哨兵的日志</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tail</span> <span class="nt">-n1000</span> redis-sentinel.log 
+</code></pre></div></div>
+
+<p><img src="/assets/images/2021/redis/sentinel-log.png" alt="" /></p>
+
+<p>redis-cli 进入到客户端，执行monitor</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>127.0.0.1:6379&gt;monitor
+</code></pre></div></div>
+
+<p><img src="/assets/images/2021/redis/sentinal-monitor.png" alt="" /></p>
+
+<blockquote>
+  <p>slave-&gt;master的选举算法</p>
+</blockquote>
+
+<p><strong>slave选举master会考虑的信息</strong></p>
+
+<ul>
+  <li>和master断开的时长</li>
+  <li>slave的优先级：replica-priority 100（值越低优先级越高）</li>
+  <li>复制的offset位移程度</li>
+  <li>run_id</li>
+</ul>
+
+<p>如果slave和master连接断开超过：down-after-milliseconds icoding-master这个配置的10倍以上绝对不考虑</p>
+
+<p><strong>选举顺序</strong></p>
+
+<p>1、按照slave优先级进行排序，replica priority越低，优先级越高</p>
+
+<p>2、如果replica priority级别相同，看offset越靠后（复制的内容多少），优先级越高</p>
+
+<p>3、如果上面两个条件都一样，这个时候看run_id ,run_id字符排序越靠前越优先</p>
+
+<p>先选一个执行主从切换的sentinel，这个sentinel再根据主从选举算法进行选举</p>
+
+<blockquote>
+  <p>quorum和majority</p>
+</blockquote>
+
+<p>每次哨兵要做主从切换，首先需要quorum数据的哨兵认为O_DOWN，然后选举一个哨兵来做主从切换，这个哨兵要得到majority数量哨兵的授权，才能正式切换</p>
+
+<p>如果quorum&lt;majority，如果5个哨兵，majority就是3个，quorum就是2个</p>
+
+<p>如果quorum&gt;=majority，必须quorum数量的哨兵都授权</p>
+
+<blockquote>
+  <p>configuration epoch</p>
+</blockquote>
+
+<p>监控的版本号，这个时候所有的哨兵都会记录一套当前的主从关系，这个关系的变更，切换版本号</p>
+
+<p>一个执行哨兵完成了主从切换后，就会通过pub/sub机制来传播给其他哨兵</p>
+
+<h3 id="故障转移的实现">故障转移的实现</h3>
+
+<p>关闭6379的master服务</p>
+
+<p>查看哨兵的日志</p>
+
+<p><img src="/assets/images/2021/redis/sentinal-change-master.png" alt="" /></p>
+
+<p>修改config命令，改成imconfig</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 可以通过这个命令来修改成无redis修改后的config命令</span>
+<span class="c"># SENTINEL rename-command mymaster CONFIG IMCONFIG</span>
+</code></pre></div></div>
+
+<p>实现切换的机制</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 通过config命令修改redis.conf的主从关系
+   修改自己的sentinel.conf的主机监控命令
+2. 在sentinel.conf配置的最下端写入当前主从的版本，供所有哨兵进行使用
+sentinel leader-epoch icoding-master 1
+sentinel known-replica icoding-master 127.0.0.1 7002
+sentinel known-replica icoding-master 127.0.0.1 6379
+sentinel known-sentinel icoding-master 127.0.0.1 26379 ce3608694909e996b280e8672750b2bd5522945f
+sentinel known-sentinel icoding-master 127.0.0.1 26382 a2f203e003ce891a08580104dc2b49a4f6ae187e
+sentinel current-epoch 1
+</code></pre></div></div>
+
+<h3 id="故障通知机制">故障通知机制</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># sentinel notification-script &lt;master-name&gt; &lt;script-path&gt;</span>
+<span class="c"># 当我们master出现sdown（主观失效）和odown（客观失效）都会触发</span>
+<span class="c"># 会传递两个参数，具体参数值看原sentinel.conf 的注释</span>
+sentinel notification-script icoding-master /usr/local/redis/nofity.sh
+
+<span class="c"># sentinel client-reconfig-script mymaster /var/redis/reconfig.sh</span>
+<span class="c"># 会带有一些参数：主从切换新旧地址的参数</span>
+<span class="c"># &lt;master-name&gt; &lt;role&gt; &lt;state&gt; &lt;from-ip&gt; &lt;from-port&gt; &lt;to-ip&gt; &lt;to-port&gt;</span>
+sentinel client-reconfig-script icoding-master /usr/local/redis/configer.sh
+</code></pre></div></div>
+
+<h3 id="故障转移过程中的问题">故障转移过程中的问题</h3>
+
+<ul>
+  <li>
+    <p>异步复制的时候，master的数据还没有复制给slave，这个时候哨兵切换slave成为master后就会丢失这些数据（新master会把他的数据同步到其他slave：清空其他slave进行同步）</p>
+  </li>
+  <li>
+    <p>脑裂：哨兵的网络和master断开了，但我们master还在运行，这个时候客户端写入旧master的时候就会丢失</p>
+
+    <p>old-master&lt;–&gt;client 是连接的，这个时候old-master就没有slave，可以通过以下两个配置来缓解</p>
+
+    <ul>
+      <li>min-replicas-to-write 2</li>
+      <li>min-replicas-max-lag 10</li>
+    </ul>
+
+    <p>new-master—slave1/slave2</p>
+  </li>
+</ul>
+
+<h3 id="注意点">注意点</h3>
+
+<p>springboot配置redis连接的是哨兵地址，不是redis的主从地址</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spring:
+  redis:
+    host: 127.0.0.1
+    password: icoding
+    sentinel:
+      master: icoding-master
+      nodes: 39.99.199.5:26379,39.99.199.5:26381,39.99.199.5:26382
+</code></pre></div></div>
+
+<p>主从模式+哨兵模式，每次重启前一定要检查：</p>
+
+<ol>
+  <li>
+    <p>每个redis节点的redis.conf的replicaof参数是否正确</p>
+  </li>
+  <li>
+    <p>每个哨兵节点的sentinel.conf的monitor监控的redis主节点是否配置正确，并清除文件最后生成的版本信息，</p>
+
+    <p>云服务器要注意使用公网ip,端口策略是否已配置好。</p>
+  </li>
+</ol>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/02/09/gavin-note-033.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

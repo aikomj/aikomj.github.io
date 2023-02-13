@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Caffeine 本地缓存之王 - 大伟的博客 </title>
+    <meta name="keywords" content="caffine">
+    <meta name="description"
+          content="使用Tiny-LFU缓存算法,缓存填充策略，spring注解使用caffine">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/redis/2022/04/07/more-about-caffine.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Caffeine 本地缓存之王">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Caffeine 本地缓存之王</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/04/07
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>Caffeine Cache是基于Guava Cache进行算法优化发展而来</p>
+
+<h2 id="1常见淘汰算法及局限性">1、常见淘汰算法及局限性</h2>
+
+<ul>
+  <li>FIFO：先进先出，在这种淘汰算法中，先进入缓存的会先被淘汰，会导致命中率很低</li>
+  <li>LRU：最近最少使用算法，每次访问数据都会将其放在我们的队首，如果需要淘汰数据，就只需要淘汰队尾即可。仍然有个问题，如果有个数据在 1 分钟访问了 1000次，再后 1 分钟没有访问这个数据，但是有其他的数据访问，就导致了我们这个热点数据被淘汰。</li>
+  <li>LFU: 最近最少频率使用，利用额外的空间记录每个数据的使用频率，然后选出频率最低进行淘汰。这样就避免了 LRU 不能处理时间段的问题。</li>
+</ul>
+
+<p><strong>LFU的局限性</strong></p>
+
+<p>在 LFU 中只要数据访问模式的概率分布随时间保持不变时，其命中率就能变得非常高。比如有部新剧出来了，我们使用 LFU 给他缓存下来，这部新剧在这几天大概访问了几亿次，这个访问频率也在我们的 LFU 中记录了几亿次。但是新剧总会过气的，比如一个月之后这个新剧的前几集其实已经过气了，但是他的访问量的确是太高了，其他的电视剧根本无法淘汰这个新剧，所以在这种模式下是有局限性。</p>
+
+<h2 id="2tiny-lfu算法">2、Tiny-LFU算法</h2>
+
+<h3 id="介绍">介绍</h3>
+
+<ul>
+  <li>当数据的访问模式不随时间变化的时候，LFU的策略能够带来最佳的缓存命中率。然而LFU个缺点：它需要给每个记录项维护频率信息，每次访问都需要更新，这是个巨大的开销；</li>
+  <li>如果数据访问模式随时间有变化，LFU的频率信息无法随之变化，因此早先频繁访问的记录可能会占据缓存，而后期访问较多的记录则无法被命中。</li>
+</ul>
+
+<p>因此，大多数的缓存设计都是基于LRU或者其变种来进行的。相比之下，LRU并不需要维护昂贵的缓存记录元信息，同时也能够反应随时间变化的数据访问模式。然而，在许多负载之下，LRU依然需要更多的空间才能做到跟LFU一致的缓存命中率。因此，有Google工程师 重新设计了新的缓存 <mark>Tiny-LFU</mark>。</p>
+
+<p>Tiny-LFU维护了近期访问记录的频率信息，作为一个过滤器，当新记录进来时，只有满足Tiny-LFU要求的记录才可以被插入缓存。它的优点：</p>
+
+<ul>
+  <li>
+    <p>避免维护频率信息的高开销</p>
+
+    <p>TinyLFU中使用Count-Min Sketch记录我们的访问频率，它是布隆过滤器的一种变种。</p>
+
+    <p><img src="\assets\images\2022\redis\countmin-sketch.png" alt="" /></p>
+  </li>
+  <li>
+    <p>反应出随时间有变化的访问模式</p>
+  </li>
+</ul>
+
+<p>github 地址： https://github.com/ben-manes/caffeine</p>
+
+<p>maven依赖：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.github.ben-manes.caffeine<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>caffeine<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.6.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<h3 id="缓存填充策略">缓存填充策略</h3>
+
+<blockquote>
+  <p>手动加载</p>
+</blockquote>
+
+<p>在每次get key的时候指定一个同步的函数，如果key不存在就调用这个函数生成一个值。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+     * 手动加载
+     * @param key
+     * @return
+     */</span>
+<span class="kd">public</span> <span class="nc">Object</span> <span class="nf">manulOperator</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Cache</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="nc">Caffeine</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">expireAfterWrite</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">expireAfterAccess</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">maximumSize</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="c1">//如果一个key不存在，那么会进入指定的函数生成value</span>
+    <span class="nc">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="n">setValue</span><span class="o">(</span><span class="n">key</span><span class="o">).</span><span class="na">apply</span><span class="o">(</span><span class="n">key</span><span class="o">));</span>
+    <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"hello"</span><span class="o">,</span><span class="n">value</span><span class="o">);</span>
+
+    <span class="c1">//判断是否存在如果不存返回null</span>
+    <span class="nc">Object</span> <span class="n">ifPresent</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="na">getIfPresent</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+    <span class="c1">//移除一个key</span>
+    <span class="n">cache</span><span class="o">.</span><span class="na">invalidate</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="nc">Function</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="nf">setValue</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">){</span>
+    <span class="k">return</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="n">key</span> <span class="o">+</span> <span class="s">"value"</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>同步加载</p>
+</blockquote>
+
+<p>构造Cache时候，build方法传入一个CacheLoader实现类。实现load方法，通过key加载value。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+     * 同步加载
+     * @param key
+     * @return
+     */</span>
+<span class="kd">public</span> <span class="nc">Object</span> <span class="nf">syncOperator</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">){</span>
+    <span class="nc">LoadingCache</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="nc">Caffeine</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">maximumSize</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">expireAfterWrite</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MINUTES</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">build</span><span class="o">(</span><span class="n">k</span> <span class="o">-&gt;</span> <span class="n">setValue</span><span class="o">(</span><span class="n">key</span><span class="o">).</span><span class="na">apply</span><span class="o">(</span><span class="n">key</span><span class="o">));</span>
+    <span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="nc">Function</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="nf">setValue</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">){</span>
+    <span class="k">return</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="n">key</span> <span class="o">+</span> <span class="s">"value"</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>异步加载</p>
+</blockquote>
+
+<p>AsyncLoadingCache是继承自LoadingCache类的，异步加载使用Executor去调用方法并返回一个CompletableFuture。异步加载缓存使用了响应式编程模型。</p>
+
+<p>如果要以同步方式调用时，应提供CacheLoader。要以异步表示时，应该提供一个AsyncCacheLoader，并返回一个CompletableFuture。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cm">/**
+     * 异步加载
+     *
+     * @param key
+     * @return
+     */</span>
+<span class="kd">public</span> <span class="nc">Object</span> <span class="nf">asyncOperator</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">){</span>
+    <span class="nc">AsyncLoadingCache</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="nc">Caffeine</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">maximumSize</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">expireAfterWrite</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MINUTES</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">buildAsync</span><span class="o">(</span><span class="n">k</span> <span class="o">-&gt;</span> <span class="n">setAsyncValue</span><span class="o">(</span><span class="n">key</span><span class="o">).</span><span class="na">get</span><span class="o">());</span>
+
+    <span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="nc">CompletableFuture</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="nf">setAsyncValue</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">){</span>
+    <span class="k">return</span> <span class="nc">CompletableFuture</span><span class="o">.</span><span class="na">supplyAsync</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="o">+</span> <span class="s">"value"</span><span class="o">;</span>
+    <span class="o">});</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3springboot-默认使用caffinecache">3、SpringBoot 默认使用CaffineCache</h2>
+
+<p>pom导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-cache<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.github.ben-manes.caffeine<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>caffeine<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.6.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>启动类开启注解</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableCaching</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SingleDatabaseApplication</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">SingleDatabaseApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>apllication.yaml配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">cache</span><span class="pi">:</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">caffeine</span>
+    <span class="na">cache-names</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">userCache</span>
+    <span class="na">caffeine</span><span class="pi">:</span>
+      <span class="na">spec</span><span class="pi">:</span> <span class="s">maximumSize=1024,refreshAfterWrite=60s</span>
+</code></pre></div></div>
+
+<p>如果使用refreshAfterWrite配置,必须指定一个CacheLoader.不用该配置则无需这个bean,如上所述,该CacheLoader将关联被该缓存管理器管理的所有缓存，所以必须定义为CacheLoader&lt;Object, Object&gt;，自动配置将忽略所有泛型类型。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.github.benmanes.caffeine.cache.CacheLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author: rickiyang
+ * @date: 2019/6/15
+ * @description:
+ */</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CacheConfig</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 相当于在构建LoadingCache对象的时候 build()方法中指定过期之后的加载策略方法
+     * 必须要指定这个Bean，refreshAfterWrite=60s属性才生效
+     * @return
+     */</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">CacheLoader</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="nf">cacheLoader</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">CacheLoader</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">cacheLoader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CacheLoader</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">load</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">// 重写这个方法将oldValue值返回回去，进而刷新缓存</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">reload</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">oldValue</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">oldValue</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">};</span>
+        <span class="k">return</span> <span class="n">cacheLoader</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>常用配置说明</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">initialCapacity</span><span class="o">=[</span>integer]: 初始的缓存空间大小
+
+<span class="nv">maximumSize</span><span class="o">=[</span>long]: 缓存的最大条数
+
+<span class="nv">maximumWeight</span><span class="o">=[</span>long]: 缓存的最大权重
+
+<span class="nv">expireAfterAccess</span><span class="o">=[</span>duration]: 最后一次写入或访问后经过固定时间过期
+
+<span class="nv">expireAfterWrite</span><span class="o">=[</span>duration]: 最后一次写入后经过固定时间过期
+
+<span class="nv">refreshAfterWrite</span><span class="o">=[</span>duration]: 创建缓存或者最近一次更新缓存后经过固定的时间间隔，刷新缓存
+
+weakKeys: 打开key的弱引用
+
+weakValues：打开value的弱引用
+
+softValues：打开value的软引用
+
+recordStats：开发统计功能
+
+注意：
+
+expireAfterWrite和expireAfterAccess同时存在时，以expireAfterWrite为准。
+
+maximumSize和maximumWeight不可以同时使用
+
+weakValues和softValues不可以同时使用
+</code></pre></div></div>
+
+<h2 id="4spring注解使用cache">4、Spring注解使用cache</h2>
+
+<p>我们可以使用spring提供的 <code class="highlighter-rouge">@Cacheable</code>、<code class="highlighter-rouge">@CachePut</code>、<code class="highlighter-rouge">@CacheEvict</code>等注解来方便的使用caffeine缓存。</p>
+
+<p>如果使用了多个cahce，比如redis、caffeine等，必须指定某一个CacheManage为@primary，在@Cacheable注解中没指定 cacheManager 则使用标记为primary的那个。</p>
+
+<p>cache方面的注解主要有以下5个：</p>
+
+<ul>
+  <li>@Cacheable 触发缓存入口（这里一般放在创建和获取的方法上，<code class="highlighter-rouge">@Cacheable</code>注解会先查询是否已经有缓存，有会使用缓存，没有则会执行方法并缓存）</li>
+  <li>@CacheEvict 触发缓存的eviction（用于删除的方法上）</li>
+  <li>@CachePut 更新缓存且不影响方法执行（用于修改的方法上，该注解下的方法始终会被执行）</li>
+  <li>@Caching 将多个缓存组合在一个方法上（该注解可以允许一个方法同时设置多个注解）</li>
+  <li>@CacheConfig 在类级别设置一些缓存相关的共同配置（与其它缓存配合使用）</li>
+</ul>
+
+<p>说一下<code class="highlighter-rouge">@Cacheable</code> 和 <code class="highlighter-rouge">@CachePut</code>的区别：</p>
+
+<ul>
+  <li>@Cacheable：它的注解的方法是否被执行取决于Cacheable中的条件，方法很多时候都可能不被执行。</li>
+  <li>@CachePut：这个注解不会影响方法的执行，也就是说无论它配置的条件是什么，方法都会被执行，更多的时候是被用到修改上。</li>
+</ul>
+
+<p>简要说一下Cacheable类中各个方法的使用：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">Cacheable</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 要使用的cache的名字
+     */</span>
+    <span class="nd">@AliasFor</span><span class="o">(</span><span class="s">"cacheNames"</span><span class="o">)</span>
+    <span class="nc">String</span><span class="o">[]</span> <span class="nf">value</span><span class="o">()</span> <span class="k">default</span> <span class="o">{};</span>
+
+    <span class="cm">/**
+     * 同value()，决定要使用那个/些缓存
+     */</span>
+    <span class="nd">@AliasFor</span><span class="o">(</span><span class="s">"value"</span><span class="o">)</span>
+    <span class="nc">String</span><span class="o">[]</span> <span class="nf">cacheNames</span><span class="o">()</span> <span class="k">default</span> <span class="o">{};</span>
+
+    <span class="cm">/**
+     * 使用SpEL表达式来设定缓存的key，如果不设置默认方法上所有参数都会作为key的一部分
+     */</span>
+    <span class="nc">String</span> <span class="nf">key</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 用来生成key，与key()不可以共用
+     */</span>
+    <span class="nc">String</span> <span class="nf">keyGenerator</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 设定要使用的cacheManager，必须先设置好cacheManager的bean，这是使用该bean的名字
+     */</span>
+    <span class="nc">String</span> <span class="nf">cacheManager</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 使用cacheResolver来设定使用的缓存，用法同cacheManager，但是与cacheManager不可以同时使用
+     */</span>
+    <span class="nc">String</span> <span class="nf">cacheResolver</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 使用SpEL表达式设定出发缓存的条件，在方法执行前生效
+     */</span>
+    <span class="nc">String</span> <span class="nf">condition</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 使用SpEL设置出发缓存的条件，这里是方法执行完生效，所以条件中可以有方法执行后的value
+     */</span>
+    <span class="nc">String</span> <span class="nf">unless</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 用于同步的，在缓存失效（过期不存在等各种原因）的时候，如果多个线程同时访问被标注的方法
+     * 则只允许一个线程通过去执行方法
+     */</span>
+    <span class="kt">boolean</span> <span class="nf">sync</span><span class="o">()</span> <span class="k">default</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>基于注解的使用方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">rickiyang</span><span class="o">.</span><span class="na">learn</span><span class="o">.</span><span class="na">cache</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.rickiyang.learn.entity.User</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cache.annotation.CacheEvict</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cache.annotation.CachePut</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cache.annotation.Cacheable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author: rickiyang
+ * @date: 2019/6/15
+ * @description: 本地cache
+ */</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserCacheService</span> <span class="o">{</span>
+
+
+    <span class="cm">/**
+     * 查找
+     * 先查缓存，如果查不到，会查数据库并存入缓存
+     * @param id
+     */</span>
+    <span class="nd">@Cacheable</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"userCache"</span><span class="o">,</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"#id"</span><span class="o">,</span> <span class="n">sync</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">(</span><span class="kt">long</span> <span class="n">id</span><span class="o">){</span>
+        <span class="c1">//查找数据库</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 更新/保存
+     * @param user
+     */</span>
+    <span class="nd">@CachePut</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"userCache"</span><span class="o">,</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"#user.id"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveUser</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">){</span>
+        <span class="c1">//todo 保存数据库</span>
+    <span class="o">}</span>
+
+
+    <span class="cm">/**
+     * 删除
+     * @param user
+     */</span>
+    <span class="nd">@CacheEvict</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"userCache"</span><span class="o">,</span><span class="n">key</span> <span class="o">=</span> <span class="s">"#user.id"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">delUser</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">){</span>
+        <span class="c1">//todo 保存数据库</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/redis/2022/04/07/more-about-caffine.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

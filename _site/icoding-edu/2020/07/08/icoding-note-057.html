@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第57节：Alibaba-Seata分布式事务框架实战 - 大伟的博客 </title>
+    <meta name="keywords" content="springcloud,seata">
+    <meta name="description"
+          content="seata AT模式解析，一阶段提交，二阶段提交，安装seata server,创建seata的配置数据库，创建业务数据库，使用nacos，eureka做注册中心，注解@Transactional，@GlobalTransactional测试分布式事务">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/07/08/icoding-note-057.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第57节：Alibaba-Seata分布式事务框架实战">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第57节：Alibaba-Seata分布式事务框架实战</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/07/08
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1-分布式事务seata-at模式解析">1. 分布式事务Seata-AT模式解析</h2>
+
+<h3 id="at模式分析">AT模式分析</h3>
+
+<p>AT 模式下，每个数据库被当做是一个  Resource，Seata 里称为 DataSource Resource。业务通过 JDBC 标准接口访问数据库资源时，Seata 框架会对所有请求进行拦截，做一些操作。每个本地事务提交时，Seata RM（Resource Manager，资源管理器） 都会向 TC（Transaction Coordinator，事务协调器） 注册一个分支事务。当请求链路调用完成后，发起方通知 TC 提交或回滚分布式事务，进入二阶段调用流程。此时，TC 会根据之前注册的分支事务回调到对应参与者去执行对应资源的第二阶段。TC 是怎么找到分支事务与资源的对应关系呢？每个资源都有一个全局唯一的资源 ID，并且在初始化时用该 ID 向 TC 注册资源。在运行时，每个分支事务的注册都会带上其资源 ID。这样 TC 就能在二阶段调用时正确找到对应的资源。</p>
+
+<p><mark>Seata 中有三大模块：TM、RM 和 TC。 </mark></p>
+
+<ul>
+  <li>TM 和 RM 是作为 Seata 的客户端与业务系统集成在一起，@GlobalTransactional注解标记的方法就是一个TM,全局事务</li>
+  <li>TC 作为 Seata 的服务端独立部署 seata server。</li>
+</ul>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata.png" alt="" /></p>
+
+<p>在 Seata 中，分布式事务的执行流程如下：</p>
+
+<ul>
+  <li>TM 开启分布式事务（TM 向 TC 注册全局事务记录），生成全局事务xid，为每个RM生成一个分支事务bid，全局事务写入global_table表；</li>
+  <li>按业务场景，编排数据库、服务等事务内资源（RM 向 TC 汇报资源准备状态 ）；</li>
+  <li>TM 结束分布式事务，事务一阶段结束（TM 通知 TC 提交/回滚分布式事务）；</li>
+  <li>TC 汇总各个分支事务信息，决定分布式事务是提交还是回滚；</li>
+  <li>TC 通知所有 RM 提交/回滚 资源，事务二阶段结束。</li>
+</ul>
+
+<blockquote>
+  <p>注意：Seata和2PC不同的是Seata的RM是在业务系统端，而2PC的RM则是在数据库服务器端（RM就是数据库），所以2PC在多个RM的情况下对数据库资源链接的占用和锁定是比较耗时的</p>
+</blockquote>
+
+<p>Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC 模式、Saga 模式和 XA 模式，我们主要学习Seata的AT模式</p>
+
+<p>AT 模式是一种无侵入的分布式事务解决方案。在 AT 模式下，用户只需关注自己的“业务 SQL”，用户的 “业务 SQL” 作为一阶段，Seata 框架会自动生成事务的二阶段提交和回滚操作</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-2.png" alt="" /></p>
+
+<h3 id="at模式一阶段操作">AT模式一阶段操作</h3>
+
+<p>在一阶段，Seata 会拦截“业务 SQL”，首先解析 SQL 语义，找到“业务 SQL”要更新的业务数据，在业务数据被更新前，将其保存成“before image”，然后执行“业务 SQL”更新业务数据，在业务数据更新之后，再将其保存成“after image”，最后生成行锁 （不能被第三方再修改）。以上操作全部在一个数据库事务内完成，这样保证了一阶段操作的原子性。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-3.png" alt="" /></p>
+
+<p>实现上，Seata对数据源做了封装代理，然后对于数据源的操作处理，就由Seata内部逻辑完成了</p>
+
+<h3 id="at模式二阶段操作">AT模式二阶段操作</h3>
+
+<p>AT是分为两个阶段的，第一阶段，就是各个阶段本地提交操作；第二阶段会根据第一阶段的情况决定是进行全局提交还是全局回滚操作。</p>
+
+<p>全局提交回滚操作由TM发起，具体为，如果Branch执行没有出现异常，那么就表明各个Branch均执行成功，即进行全局提交，如果某个Branch执行时出现异常，那么就需要进行全局回滚。</p>
+
+<blockquote>
+  <p>二阶段提交</p>
+</blockquote>
+
+<p>二阶段如果是提交的话，因为“业务 SQL”在一阶段已经提交至数据库， 所以 Seata 框架只需将一阶段保存的快照数据和行锁删掉，完成数据清理即可。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-4.png" alt="" /></p>
+
+<p>如果所有Branch RM都执行成功了，那么就进行全局Commit。因为此时我们不用回滚，而每个Branch本地数据库操作已经完成了，那么我们其实主要做的事情就是把本地的Undolog删了即可</p>
+
+<blockquote>
+  <p>二阶段回滚</p>
+</blockquote>
+
+<p>二阶段如果是回滚的话，Seata 就需要回滚一阶段已经执行的“业务 SQL”，还原业务数据。回滚方式便是用“before image”还原业务数据；但在还原前要首先要校验脏写，对比“数据库当前业务数据”和 “after image”，如果两份数据完全一致就说明没有脏写，可以还原业务数据，如果不一致就说明有脏写，出现脏写就需要转人工处理。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-5.png" alt="" /></p>
+
+<h3 id="总结">总结</h3>
+
+<p>AT 模式的一阶段、二阶段提交和回滚均由 Seata 框架自动生成，用户只需编写“业务 SQL”，便能轻松接入分布式事务，AT 模式是一种对业务无任何侵入的分布式事务解决方案。</p>
+
+<p>seata其实就是说，把分布式事务当作一批branch本地事务来执行，<mark>branch各自执行，各自提交</mark>，假如所有branch都成功，那么commit的时候，维护一个状态即可，因为大家已经提交了；假如某一个branch执行失败，那么进行回滚，回滚的方式是根据之前的undolog生成一个反向的回滚sql，各个branch分别执行自己的回滚sql来达到回滚的效果</p>
+
+<p>与XA的两阶段提交比较，优势：</p>
+
+<ul>
+  <li>1.不需要数据库支持XA协议，因为这个proxy是在应用层面。限制更少。</li>
+  <li>2.减少了事务持锁时间，seata的AT模式，branch分支事务在一阶段提交完就把锁释放，从而提高了事务的并发度，而XA的锁持有时间是贯穿整个全局事务的，分支事务越多，对数据库的锁持有时间就越长</li>
+</ul>
+
+<p>问题点：由于追求尽量少的持锁时间，二阶段回滚的场景时，branch分支事务提交(一阶段)到回滚sql执行(二阶段)之间是有时间差的，这个时间区间内的数据状态可以认为是一种脏数据（因为分支事务在这个时间差内是没有持有锁，第三方可以修改数据），所以回滚的时候会对比“数据库当前业务数据”和 “after image”是否一致。</p>
+
+<h2 id="2-seata-server服务的搭建">2. Seata-Server服务的搭建</h2>
+
+<h3 id="安装seata-server">安装Seata Server</h3>
+
+<p>GitHub: <a href="https://github.com/seata/seata">https://github.com/seata/seata</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 搭建TC(Server)的服务端</span>
+wget https://github.com/seata/seata/releases/download/v1.0.0/seata-server-1.0.0.tar.gz
+wget https://github.com/seata/seata/releases/download/v1.1.0/seata-server-1.1.0.tar.gz
+wget https://github.com/seata/seata/releases/download/v1.2.0/seata-server-1.2.0.tar.gz
+<span class="c"># 下载后解压</span>
+<span class="nb">tar</span> <span class="nt">-xvf</span> seata-server-1.0.0.tar.gz 
+</code></pre></div></div>
+
+<p>第1步 修改conf/registry.conf</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1.修改registry.conf文件</span>
+xjwdeMacBook:seata xjw<span class="nv">$ </span><span class="nb">cd </span>seata/conf
+xjwdeMacBook:conf xjw<span class="nv">$ </span>vim registry.conf 
+<span class="c">#registry对应注册中心，使用nacos</span>
+registry <span class="o">{</span>
+  <span class="c"># file 、nacos 、eureka、redis、zk、consul、etcd3、sofa</span>
+  <span class="nb">type</span> <span class="o">=</span> <span class="s2">"nacos"</span> <span class="c"># 使用nacos注册中心</span>
+
+  nacos <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"139.199.13.139:8848"</span>  <span class="c"># 指定nacos注册中心连接地址</span>
+    namespace <span class="o">=</span> <span class="s2">""</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+  <span class="o">}</span>
+  eureka <span class="o">{</span>
+    serviceUrl <span class="o">=</span> <span class="s2">"http://localhost:8761/eureka"</span>
+    application <span class="o">=</span> <span class="s2">"default"</span>
+    weight <span class="o">=</span> <span class="s2">"1"</span>
+  <span class="o">}</span>
+  redis <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"localhost:6379"</span>
+    db <span class="o">=</span> <span class="s2">"0"</span>
+  <span class="o">}</span>
+  zk <span class="o">{</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:2181"</span>
+    session.timeout <span class="o">=</span> 6000
+    connect.timeout <span class="o">=</span> 2000
+  <span class="o">}</span>
+  consul <span class="o">{</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:8500"</span>
+  <span class="o">}</span>
+  etcd3 <span class="o">{</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    serverAddr <span class="o">=</span> <span class="s2">"http://localhost:2379"</span>
+  <span class="o">}</span>
+  sofa <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:9603"</span>
+    application <span class="o">=</span> <span class="s2">"default"</span>
+    region <span class="o">=</span> <span class="s2">"DEFAULT_ZONE"</span>
+    datacenter <span class="o">=</span> <span class="s2">"DefaultDataCenter"</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    group <span class="o">=</span> <span class="s2">"SEATA_GROUP"</span>
+    addressWaitTime <span class="o">=</span> <span class="s2">"3000"</span>
+  <span class="o">}</span>
+  file <span class="o">{</span>
+    name <span class="o">=</span> <span class="s2">"file.conf"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c"># config 对应配置中心，使用file.conf配置</span>
+config <span class="o">{</span>
+  <span class="c"># file、nacos 、apollo、zk、consul、etcd3</span>
+  <span class="nb">type</span> <span class="o">=</span> <span class="s2">"file"</span>
+
+  nacos <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"localhost"</span>
+    namespace <span class="o">=</span> <span class="s2">""</span>
+  <span class="o">}</span>
+  consul <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:8500"</span>
+  <span class="o">}</span>
+  apollo <span class="o">{</span>
+    app.id <span class="o">=</span> <span class="s2">"seata-server"</span>
+    apollo.meta <span class="o">=</span> <span class="s2">"http://192.168.1.204:8801"</span>
+  <span class="o">}</span>
+  zk <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:2181"</span>
+    session.timeout <span class="o">=</span> 6000
+    connect.timeout <span class="o">=</span> 2000
+  <span class="o">}</span>
+  etcd3 <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"http://localhost:2379"</span>
+  <span class="o">}</span>
+  file <span class="o">{</span>
+    name <span class="o">=</span> <span class="s2">"file.conf"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第2步修改file.conf,使用file.conf来进行配置，注意这里又个坑，file.conf一定要参考file.conf.example来配置</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c"># 这个是在注册中心的seata server的服务信息，相当于seata的服务端注册到注册中心</span>
+service <span class="o">{</span>
+  <span class="c">#transaction service group mapping</span>
+  <span class="c">#icodingedu_tx_group：这个稍后要在项目的application.yaml里进行配置</span>
+  vgroup_mapping.imall_tx_group <span class="o">=</span> <span class="s2">"default"</span>
+  <span class="c">#only support when registry.type=file, please don't set multiple addresses</span>
+  default.grouplist <span class="o">=</span> <span class="s2">"127.0.0.1:8091"</span>
+  <span class="c">#degrade, current not support</span>
+  enableDegrade <span class="o">=</span> <span class="nb">false</span>
+  <span class="c">#disable seata</span>
+  disableGlobalTransaction <span class="o">=</span> <span class="nb">false</span>
+<span class="o">}</span>
+
+<span class="c">## transaction log store, only used in seata-server</span>
+<span class="c"># 存储到数据库</span>
+store <span class="o">{</span>
+  <span class="c">## store mode: file、db</span>
+  mode <span class="o">=</span> <span class="s2">"db"</span>
+
+  <span class="c">## file store property</span>
+  file <span class="o">{</span>
+    <span class="c">## store location dir</span>
+    <span class="nb">dir</span> <span class="o">=</span> <span class="s2">"sessionStore"</span>
+  <span class="o">}</span>
+
+  <span class="c">## 指定数据库的连接</span>
+  db <span class="o">{</span>
+    <span class="c">## the implement of javax.sql.DataSource, such as DruidDataSource(druid)/BasicDataSource(dbcp) etc.</span>
+    datasource <span class="o">=</span> <span class="s2">"dbcp"</span>
+    <span class="c">## mysql/oracle/h2/oceanbase etc.</span>
+    db-type <span class="o">=</span> <span class="s2">"mysql"</span>
+    driver-class-name <span class="o">=</span> <span class="s2">"com.mysql.jdbc.Driver"</span>
+    url <span class="o">=</span> <span class="s2">"jdbc:mysql://127.0.0.1:3306/seata"</span>
+    user <span class="o">=</span> <span class="s2">"root"</span>
+    password <span class="o">=</span> <span class="s2">"gavin"</span>
+    min-conn <span class="o">=</span> 1
+    max-conn <span class="o">=</span> 10
+    global.table <span class="o">=</span> <span class="s2">"global_table"</span>
+    branch.table <span class="o">=</span> <span class="s2">"branch_table"</span>
+    lock-table <span class="o">=</span> <span class="s2">"lock_table"</span>
+    query-limit <span class="o">=</span> 100
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="创建seata的配置数据库">创建Seata的配置数据库</h3>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- seata的配置数据库在seata server v0.9.0这个版本的发布包里有</span>
+<span class="c1">-- 先创建一个seata库</span>
+<span class="c1">-- the table to store GlobalSession data</span>
+<span class="k">drop</span> <span class="k">table</span> <span class="n">if</span> <span class="k">exists</span> <span class="nv">`global_table`</span><span class="p">;</span>
+<span class="k">create</span> <span class="k">table</span> <span class="nv">`global_table`</span> <span class="p">(</span>
+  <span class="nv">`xid`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>  <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">`transaction_id`</span> <span class="nb">bigint</span><span class="p">,</span>
+  <span class="nv">`status`</span> <span class="nb">tinyint</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">`application_id`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+  <span class="nv">`transaction_service_group`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+  <span class="nv">`transaction_name`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+  <span class="nv">`timeout`</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="nv">`begin_time`</span> <span class="nb">bigint</span><span class="p">,</span>
+  <span class="nv">`application_data`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">2000</span><span class="p">),</span>
+  <span class="nv">`gmt_create`</span> <span class="nb">datetime</span><span class="p">,</span>
+  <span class="nv">`gmt_modified`</span> <span class="nb">datetime</span><span class="p">,</span>
+  <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="nv">`xid`</span><span class="p">),</span>
+  <span class="k">key</span> <span class="nv">`idx_gmt_modified_status`</span> <span class="p">(</span><span class="nv">`gmt_modified`</span><span class="p">,</span> <span class="nv">`status`</span><span class="p">),</span>
+  <span class="k">key</span> <span class="nv">`idx_transaction_id`</span> <span class="p">(</span><span class="nv">`transaction_id`</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- the table to store BranchSession data</span>
+<span class="k">drop</span> <span class="k">table</span> <span class="n">if</span> <span class="k">exists</span> <span class="nv">`branch_table`</span><span class="p">;</span>
+<span class="k">create</span> <span class="k">table</span> <span class="nv">`branch_table`</span> <span class="p">(</span>
+  <span class="nv">`branch_id`</span> <span class="nb">bigint</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">`xid`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">`transaction_id`</span> <span class="nb">bigint</span> <span class="p">,</span>
+  <span class="nv">`resource_group_id`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+  <span class="nv">`resource_id`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span> <span class="p">,</span>
+  <span class="nv">`lock_key`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="p">,</span>
+  <span class="nv">`branch_type`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="p">,</span>
+  <span class="nv">`status`</span> <span class="nb">tinyint</span><span class="p">,</span>
+  <span class="nv">`client_id`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span>
+  <span class="nv">`application_data`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">2000</span><span class="p">),</span>
+  <span class="nv">`gmt_create`</span> <span class="nb">datetime</span><span class="p">,</span>
+  <span class="nv">`gmt_modified`</span> <span class="nb">datetime</span><span class="p">,</span>
+  <span class="k">primary</span> <span class="k">key</span> <span class="p">(</span><span class="nv">`branch_id`</span><span class="p">),</span>
+  <span class="k">key</span> <span class="nv">`idx_xid`</span> <span class="p">(</span><span class="nv">`xid`</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- the table to store lock data</span>
+<span class="k">drop</span> <span class="k">table</span> <span class="n">if</span> <span class="k">exists</span> <span class="nv">`lock_table`</span><span class="p">;</span>
+<span class="k">create</span> <span class="k">table</span> <span class="nv">`lock_table`</span> <span class="p">(</span>
+  <span class="nv">`row_key`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+  <span class="nv">`xid`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">96</span><span class="p">),</span>
+  <span class="nv">`transaction_id`</span> <span class="n">long</span> <span class="p">,</span>
+  <span class="nv">`branch_id`</span> <span class="n">long</span><span class="p">,</span>
+  <span class="nv">`resource_id`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span> <span class="p">,</span>
+  <span class="nv">`table_name`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="p">,</span>
+  <span class="nv">`pk`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span> <span class="p">,</span>
+  <span class="nv">`gmt_create`</span> <span class="nb">datetime</span> <span class="p">,</span>
+  <span class="nv">`gmt_modified`</span> <span class="nb">datetime</span><span class="p">,</span>
+  <span class="k">primary</span> <span class="k">key</span><span class="p">(</span><span class="nv">`row_key`</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-config-db.jpg" alt="" /></p>
+
+<h3 id="创建业务数据库">创建业务数据库</h3>
+
+<p>为两个module创建数据库，业务数据库都必须包含表undo_log，因为如果seata要回滚事务，每个业务数据库的undo_log表都存储着本地事务回滚的日志信息，这就是seata分布式事务回滚的机制原理。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/imall-customer-order.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>imall_order  订单模块</p>
+
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">create</span> <span class="k">table</span> <span class="n">im_order</span><span class="p">(</span>
+	<span class="n">id</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'主键'</span><span class="p">,</span>
+  <span class="n">user_id</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'用户id'</span><span class="p">,</span>
+  <span class="n">product_id</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'产品id'</span><span class="p">,</span>
+  <span class="n">count_num</span> <span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'购买数量'</span><span class="p">,</span>
+  <span class="n">money</span> <span class="nb">decimal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'花费金额'</span><span class="p">,</span>
+  <span class="k">primary</span> <span class="k">key</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span><span class="n">ENGINE</span><span class="o">=</span><span class="n">innodb</span> <span class="k">default</span> <span class="n">charset</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+  
+<span class="c1">-- 表undo_log在seata server v0.9.0这个版本的发布包里有</span>
+<span class="c1">-- 在对应的每个业务数据库还需要创建一个undo_log表</span>
+<span class="c1">-- the table to store seata xid data</span>
+<span class="c1">-- 0.7.0+ add context</span>
+<span class="c1">-- you must to init this sql for you business databese. the seata server not need it.</span>
+<span class="c1">-- 此脚本必须初始化在你当前的业务数据库中，用于AT 模式XID记录。与server端无关（注：业务数据库）</span>
+<span class="c1">-- 注意此处0.3.0+ 增加唯一索引 ux_undo_log</span>
+<span class="k">drop</span> <span class="k">table</span> <span class="n">if</span> <span class="k">exists</span> <span class="nv">`undo_log`</span> <span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`undo_log`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`branch_id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`xid`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`context`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`rollback_info`</span> <span class="nb">longblob</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`log_status`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`log_created`</span> <span class="nb">datetime</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`log_modified`</span> <span class="nb">datetime</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`ext`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">UNIQUE</span> <span class="k">KEY</span> <span class="nv">`ux_undo_log`</span> <span class="p">(</span><span class="nv">`xid`</span><span class="p">,</span><span class="nv">`branch_id`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">1</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>imall_customer 用户中心服务模块</p>
+
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">create</span> <span class="k">table</span> <span class="n">im_account</span><span class="p">(</span>
+	<span class="n">id</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'主键'</span><span class="p">,</span>
+  <span class="n">user_id</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'用户id'</span><span class="p">,</span>
+  <span class="n">total</span> <span class="nb">decimal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'总金额'</span><span class="p">,</span>
+  <span class="n">used</span> <span class="nb">decimal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'已使用'</span><span class="p">,</span>
+  <span class="n">residue</span> <span class="nb">decimal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">comment</span> <span class="s1">'余额'</span><span class="p">,</span>
+  <span class="k">primary</span> <span class="k">key</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span><span class="n">ENGINE</span><span class="o">=</span><span class="n">innodb</span> <span class="k">default</span> <span class="n">charset</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+  
+<span class="c1">-- 表undo_log在seata server v0.9.0这个版本的发布包里有</span>
+<span class="c1">-- 在对应的每个业务数据库还需要创建一个undo_log表</span>
+<span class="c1">-- the table to store seata xid data</span>
+<span class="c1">-- 0.7.0+ add context</span>
+<span class="c1">-- you must to init this sql for you business databese. the seata server not need it.</span>
+<span class="c1">-- 此脚本必须初始化在你当前的业务数据库中，用于AT 模式XID记录。与server端无关（注：业务数据库）</span>
+<span class="c1">-- 注意此处0.3.0+ 增加唯一索引 ux_undo_log</span>
+<span class="c1">-- rollback_info 回滚信息，类型longlob</span>
+<span class="k">drop</span> <span class="k">table</span> <span class="n">if</span> <span class="k">exists</span> <span class="nv">`undo_log`</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`undo_log`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`branch_id`</span> <span class="nb">bigint</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`xid`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`context`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`rollback_info`</span> <span class="nb">longblob</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`log_status`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`log_created`</span> <span class="nb">datetime</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`log_modified`</span> <span class="nb">datetime</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`ext`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`id`</span><span class="p">),</span>
+  <span class="k">UNIQUE</span> <span class="k">KEY</span> <span class="nv">`ux_undo_log`</span> <span class="p">(</span><span class="nv">`xid`</span><span class="p">,</span><span class="nv">`branch_id`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">1</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="3-创建业务服务模块">3. 创建业务服务模块</h2>
+
+<p><strong>本文使用的版本</strong></p>
+
+<p>Seata Server 版本v1.1.0</p>
+
+<p>spring-cloud-alibaba-dependencies 版本2.2.1</p>
+
+<p>seata-all 版本1.1.0</p>
+
+<blockquote>
+  <p>父项目</p>
+</blockquote>
+
+<p>1、pom.xml导入依赖(seata-all 1.0.0)</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.alibaba.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-alibaba-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.1.0.RELEASE<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+2.2.1.RELEASE 引入的seata-all依赖的版本是1.1.0
+</code></pre></div></div>
+
+<p>pom.xml导入依赖(seata-all 1.1.0)</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.alibaba.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-alibaba-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.2.1.RELEASE<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>moduel项目imall-customer</p>
+</blockquote>
+
+<p>1、pom.xml导入依赖(seata-all 1.0.0版本)</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-openfeign<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.alibaba.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-alibaba-nacos-discovery<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.mybatis.spring.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>mybatis-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>mysql<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>mysql-connector-java<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.alibaba.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-alibaba-seata<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;exclusions&gt;</span>
+      <span class="nt">&lt;exclusion&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>io.seata<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>seata-all<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;/exclusion&gt;</span>
+    <span class="nt">&lt;/exclusions&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>io.seata<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>seata-all<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div></div>
+
+<p>pom.xml导入依赖(seata-all 1.1.0版本)</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--Feign服务调用--&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-openfeign<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="c">&lt;!--Seata分布式事务框架--&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.alibaba.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-alibaba-seata<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、application.properties 配置加上seata的注册</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">spring.application.name</span><span class="p">=</span><span class="s">imall-customer</span>
+<span class="py">server.port</span><span class="p">=</span><span class="s">20091</span>
+<span class="py">spring.cloud.nacos.discovery.server-addr</span><span class="p">=</span><span class="s">127.0.0.1:8848</span>
+
+<span class="py">spring.datasource.driver-class-name</span><span class="p">=</span><span class="s">com.mysql.jdbc.Driver</span>
+<span class="py">spring.datasource.url</span><span class="p">=</span><span class="s">jdbc:mysql://39.99.210.149:3306/imall_order</span>
+<span class="py">spring.datasource.username</span><span class="p">=</span><span class="s">gavin</span>
+<span class="py">spring.datasource.password</span><span class="p">=</span><span class="s">123456</span>
+
+<span class="c"># 注意这里与seata server 的conf/file.conf文件里配置的vgroup_mapping.imall_tx_group = "default" 保持一致
+</span><span class="py">spring.cloud.alibaba.seata.tx-service-group</span><span class="p">=</span><span class="s">imall_tx_group</span>
+
+<span class="c"># 使用mybatis
+</span><span class="py">mybatis.mapper-locations</span><span class="p">=</span><span class="s">classpath:mapper/*.xml</span>
+<span class="py">mybatis.type-aliases-package</span><span class="p">=</span><span class="s">com.icoding.supermall.pojo</span>
+
+<span class="c"># 使用mybatis-plus 
+</span><span class="py">mybatis-plus.mapper-locations</span><span class="p">=</span><span class="s">classpath:mapper/*.xml</span>
+<span class="py">mybatis-plus.type-aliases-package</span><span class="p">=</span><span class="s">com.icoding.supermall.pojo</span>
+</code></pre></div></div>
+
+<p>3、使用seata的DataSourceProxy做数据源代理，数据源必须自己关联配置到druid里</p>
+
+<p>参考博客：<a href="https://www.cnblogs.com/victorbu/p/12738556.html">https://www.cnblogs.com/victorbu/p/12738556.html</a></p>
+
+<ul>
+  <li>
+    <p>使用Mybatis做ORM框架</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icoding</span><span class="o">.</span><span class="na">supermall</span><span class="o">.</span><span class="na">config</span><span class="o">;</span>
+  
+<span class="kn">import</span> <span class="nn">com.alibaba.druid.pool.DruidDataSource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.seata.rm.datasource.DataSourceProxy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.ibatis.session.SqlSessionFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mybatis.spring.SqlSessionFactoryBean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mybatis.spring.transaction.SpringManagedTransactionFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Primary</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.support.PathMatchingResourcePatternResolver</span><span class="o">;</span>
+  
+<span class="kn">import</span> <span class="nn">javax.sql.DataSource</span><span class="o">;</span>
+  
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceProxyConfiguration</span> <span class="o">{</span>
+  
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${mybatis.mapper-locations}"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">mapperLocations</span><span class="o">;</span>
+  
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${mybatis.type-aliases-package}"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">typeAliasesPackage</span><span class="o">;</span>
+  
+    <span class="nd">@Bean</span>
+    <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.datasource"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">druidDataSource</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DruidDataSource</span><span class="o">();</span>
+    <span class="o">}</span>
+    
+    <span class="c1">//注意：如果spring-cloud-alibaba-dependencies的版本是2.1.0，则需要配置数据源代理，从2.2.0版本开始，数据源代理自动实现了，不需要再手动配置一个代理类。</span>
+    <span class="c1">// 2.1.0</span>
+    <span class="nd">@Bean</span>
+    <span class="nd">@Primary</span>
+    <span class="kd">public</span> <span class="nc">DataSourceProxy</span> <span class="nf">dataSourceProxy</span><span class="o">(</span><span class="nc">DataSource</span> <span class="n">druidDataSource</span><span class="o">){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DataSourceProxy</span><span class="o">(</span><span class="n">druidDataSource</span><span class="o">);</span>
+    <span class="o">}</span>
+  
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">SqlSessionFactory</span> <span class="nf">sqlSessionFactory</span><span class="o">(</span><span class="nc">DataSourceProxy</span> <span class="n">dataSourceProxy</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+        <span class="nc">SqlSessionFactoryBean</span> <span class="n">sqlSessionFactoryBean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SqlSessionFactoryBean</span><span class="o">();</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setDataSource</span><span class="o">(</span><span class="n">dataSourceProxy</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setMapperLocations</span><span class="o">(</span><span class="k">new</span> <span class="nc">PathMatchingResourcePatternResolver</span><span class="o">().</span><span class="na">getResources</span><span class="o">(</span><span class="n">mapperLocations</span><span class="o">));</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setTypeAliasesPackage</span><span class="o">(</span><span class="n">typeAliasesPackage</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setTransactionFactory</span><span class="o">(</span><span class="k">new</span> <span class="nc">SpringManagedTransactionFactory</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">getObject</span><span class="o">();</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// 2.2.0 以上</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">SqlSessionFactory</span> <span class="nf">sqlSessionFactory</span><span class="o">(</span><span class="nc">DataSource</span> <span class="n">druidDataSource</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+        <span class="nc">SqlSessionFactoryBean</span> <span class="n">sqlSessionFactoryBean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SqlSessionFactoryBean</span><span class="o">();</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setDataSource</span><span class="o">(</span><span class="n">druidDataSource</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setMapperLocations</span><span class="o">(</span><span class="k">new</span> <span class="nc">PathMatchingResourcePatternResolver</span><span class="o">().</span><span class="na">getResources</span><span class="o">(</span><span class="n">mapperLocations</span><span class="o">));</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setTypeAliasesPackage</span><span class="o">(</span><span class="n">typeAliasesPackage</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setTransactionFactory</span><span class="o">(</span><span class="k">new</span> <span class="nc">SpringManagedTransactionFactory</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">getObject</span><span class="o">();</span>
+    <span class="o">}</span>
+      
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>使用Mybatis-plus做ORM框架，仅配置 DataSource 即可</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceProxyConfiguration</span> <span class="o">{</span>
+  
+    <span class="nd">@Bean</span>
+    <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.datasource"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">druidDataSource</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DruidDataSource</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>4、将registry.conf和file.conf两个配置好的配置文件导入到resources目录下，<mark>注意，这步很重要</mark></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-customer.jpg" alt="" /></p>
+
+<p>5、web层接口的定义AccountController.java</p>
+
+<p>定义一个修改用户钱包金额的接口，后面imall-order模块下订单通过feign调用该接口，产生分布式事务</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/customer/account"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountController</span> <span class="o">{</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">AccountService</span> <span class="n">accountService</span><span class="o">;</span>
+  
+  <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"update"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="no">R</span> <span class="nf">update</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">userId</span><span class="o">,</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"used"</span><span class="o">)</span> <span class="kt">double</span> <span class="n">used</span><span class="o">){</span>
+		<span class="nc">Account</span> <span class="n">account</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Account</span><span class="o">();</span>
+		<span class="n">account</span><span class="o">.</span><span class="na">setUserId</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
+		<span class="n">account</span><span class="o">.</span><span class="na">setUsed</span><span class="o">(</span><span class="k">new</span> <span class="nc">BigDecimal</span><span class="o">(</span><span class="n">used</span><span class="o">));</span>
+		<span class="n">accountService</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">account</span><span class="o">);</span>
+		<span class="k">return</span>  <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>moduel项目imall-order</p>
+</blockquote>
+
+<p>1、配置与imall-customer相同</p>
+
+<p>2、FeignClient接口CustomerClient.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@FeignClient</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">"imall-customer"</span><span class="o">,</span><span class="n">fallback</span> <span class="o">=</span> <span class="nc">CustomerClientHystrixFallback</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CustomerClient</span> <span class="o">{</span>
+	<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/customer/account/update"</span><span class="o">)</span>
+	<span class="no">R</span> <span class="nf">updateAccount</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">)</span> <span class="kt">long</span> <span class="n">userId</span><span class="o">,</span> <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"used"</span><span class="o">)</span> <span class="kt">double</span> <span class="n">used</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、业务层接口实现类OrderServiceImpl.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Slf4j</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">extends</span> <span class="nc">ServiceImpl</span><span class="o">&lt;</span><span class="nc">OrderMapper</span><span class="o">,</span> <span class="nc">Order</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">CustomerClient</span> <span class="n">customerClient</span><span class="o">;</span>
+
+  <span class="nd">@Transactional</span>  <span class="c1">// Spring的事务注解，开启一个事务，只能管理本地事务</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+		
+		<span class="c1">// int i = 1/0;</span>
+
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+		<span class="n">customerClient</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getUserId</span><span class="o">(),</span><span class="n">order</span><span class="o">.</span><span class="na">getMoney</span><span class="o">().</span><span class="na">doubleValue</span><span class="o">());</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4、web层接口的定义OrderController.java</p>
+
+<p>定义一个下订单的接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/order"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderController</span> <span class="o">{</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">OrderService</span> <span class="n">orderService</span><span class="o">;</span>
+
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/placeOrder"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="no">R</span> <span class="nf">placeOrder</span><span class="o">(){</span>
+		<span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Order</span><span class="o">();</span>
+		<span class="n">order</span><span class="o">.</span><span class="na">setUserId</span><span class="o">(</span><span class="mi">10</span><span class="n">l</span><span class="o">).</span><span class="na">setProductId</span><span class="o">(</span><span class="mi">9</span><span class="n">l</span><span class="o">).</span><span class="na">setCountNum</span><span class="o">(</span><span class="mi">4</span><span class="o">).</span><span class="na">setMoney</span><span class="o">(</span><span class="k">new</span> <span class="nc">BigDecimal</span><span class="o">(</span><span class="mi">200</span><span class="o">));</span>
+		<span class="n">orderService</span><span class="o">.</span><span class="na">placeOrder</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+		<span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>5、启动类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span><span class="o">(</span><span class="n">exclude</span> <span class="o">=</span> <span class="nc">DataSourceAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@EnableDiscoveryClient</span>
+<span class="nd">@EnableFeignClients</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">OrderApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>application.yaml 增加feign调用服务连接超时时间</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">ribbon</span><span class="pi">:</span>
+  <span class="na">eureka</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">eager-load</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">clients</span><span class="pi">:</span> <span class="s">imall-customer</span>
+<span class="na">imall-customer</span><span class="pi">:</span>
+  <span class="na">ribbon</span><span class="pi">:</span>
+    <span class="na">ConnectTimeout</span><span class="pi">:</span> <span class="m">3000</span> <span class="c1">#远程调用的连接超时时间</span>
+    <span class="na">ReadTimeout</span><span class="pi">:</span> <span class="m">5000</span> <span class="c1">#远程访问的超时时间    </span>
+</code></pre></div></div>
+
+<h2 id="4-测试">4. 测试</h2>
+
+<p>1、启动nacos，seata server</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xjwdeMacBook:bin xjw<span class="nv">$ </span><span class="nb">pwd</span>
+/Users/xjw/Downloads/seata/seata/bin
+xjwdeMacBook:bin xjw<span class="nv">$ </span>./seata-server.sh
+<span class="c"># 后台启动</span>
+<span class="nb">nohup </span>seata-server.sh <span class="o">&gt;</span> seata.log 2&gt;&amp;1 &amp;
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-started.jpg" alt="" /></p>
+
+<p>seata server启动成功，并向nacos注册(这是个bug,它注册服务名就是serverAddr)</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-register-on-nacos.jpg" alt="" /></p>
+
+<p>2、启动工程imall-customer、imall-order</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-register-on-nacos-2.jpg" alt="" /></p>
+
+<p>3、建一个用户的钱包金额有1000块钱</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-acount.jpg" alt="" /></p>
+
+<p>测试是否正常调用feign</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-1.jpg" alt="" /></p>
+
+<p>业务层接口实现类OrderServiceImpl.java的逻辑是先插入订单，再修改金额</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-1.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-acount-2.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>测试1: 在中间增加异常</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+  		
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>  <span class="c1">// 异常报错</span>
+  
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+		<span class="n">customerClient</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getUserId</span><span class="o">(),</span><span class="n">order</span><span class="o">.</span><span class="na">getMoney</span><span class="o">().</span><span class="na">doubleValue</span><span class="o">());</span>
+	<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>结果：测试发现订单插入成功了，因为没有@Transactional 开启一个事务，所以业务层自动提交了，金额没修改到因为代码还没有走到那一步。</p>
+  </li>
+  <li>
+    <p>测试2: 添加注解@Transactional</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nd">@Transactional</span>  <span class="c1">// Spring的事务注解，开启一个事务，但只管理本地事务，跨数据库是无法传递事务的</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+  		
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>  <span class="c1">// 异常报错</span>
+  
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+		<span class="n">customerClient</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getUserId</span><span class="o">(),</span><span class="n">order</span><span class="o">.</span><span class="na">getMoney</span><span class="o">().</span><span class="na">doubleValue</span><span class="o">());</span>
+	<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>结果：测试发现订单插入失败回滚，@Transactional控制着本地事务，只要发生错误就会回滚，金额没修改到因为代码还没有走到那一步</p>
+  </li>
+  <li>
+    <p>测试3：插入订单和修改金额调换位置</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Transactional</span>  <span class="c1">// Spring的事务注解，开启一个事务，只能管理本地事务</span>
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+  <span class="n">customerClient</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getUserId</span><span class="o">(),</span><span class="n">order</span><span class="o">.</span><span class="na">getMoney</span><span class="o">().</span><span class="na">doubleValue</span><span class="o">());</span>
+    
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>  <span class="c1">// 异常报错</span>
+  
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-2.jpg" alt="" /></p>
+
+    <p><img src="/assets/images/2020/icoding/mysql/seata-imall-acount-2.jpg" alt="" /></p>
+
+    <p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-3.jpg" alt="" /></p>
+
+    <p>结果：与上面结果不同，发生异常后，修改金额还是成功了并没有回滚，因为imall-order和imall-customer连接的数据源不是同一个数据库，@Transactional只能在同一个数据库传递事务 ，也就是说只能管理本地事务。<mark>注解@Transactional 不能解决分布式事务</mark></p>
+
+    <p>如何解决：按正常逻辑，插入订单和修改金额应该是一个原子性的操作，要么同时成功，要么同时失败。使用Seata框架分布式事务解决方案</p>
+  </li>
+  <li>
+    <p>测试4：使用seata的全局事务注解</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 开启全局事务，rollbackFor可以指定具体的回滚异常类，我这里回滚所有的异常</span>
+<span class="nd">@GlobalTransactional</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"imall.placeOrder"</span><span class="o">,</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="nc">Exception</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+  <span class="n">customerClient</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getUserId</span><span class="o">(),</span><span class="n">order</span><span class="o">.</span><span class="na">getMoney</span><span class="o">().</span><span class="na">doubleValue</span><span class="o">());</span>
+  
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>
+  
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>验证是否两个数据库都能回滚，重启项目imall-order，再次访问</p>
+
+    <p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-2.jpg" alt="" /></p>
+
+    <p><img src="/assets/images/2020/icoding/mysql/seata-imall-acount-3.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-3.jpg" alt="" /></p>
+
+<p>搞定了，发生异常后，金额没有修改，订单没有新增，正常。</p>
+
+<p>查看seata server 的日志，发现回滚的日志记录</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-rollback.jpg" alt="" /></p>
+
+<p>在第一个分支事务update accout执行完后自己提交，通知TC自己提交了，中间我加了个断点</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-1.jpg" alt="" /></p>
+
+<p>这时我们查看业务DB的account表，发现数据的确修改提交了</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-2.jpg" alt="" /></p>
+
+<p>查看undo_log表</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-3.jpg" alt="" /></p>
+
+<p>把account表的数据修改了：</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-4.jpg" alt="" /></p>
+
+<p>然后报异常回滚，看seata是否回回滚旧数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-2.jpg" alt="" /></p>
+
+<p>查看account表和undo_log表的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-4.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-server-do-global-5.jpg" alt="" /></p>
+
+<p>说明seata回滚分支事务的时候对比“数据库当前业务数据”和 “after image”发现不一致的情况下，就不做回滚sql的操作了，只把快速数据删除就完事了。</p>
+
+<blockquote>
+  <p>总结</p>
+</blockquote>
+
+<p>service调用的时候添加注解@GlobalTransactional就启用seata，在controller或者service层的方法添加注解@GlobalTransactional开启全局事务</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GlobalTransactional</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">"imall.placeOrder"</span><span class="o">,</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="nc">Exception</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">int</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">OrderInfo</span> <span class="n">orderInfo</span><span class="o">){</span>
+
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">accountFlag</span> <span class="o">=</span> <span class="n">accountService</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">orderInfo</span><span class="o">.</span><span class="na">getUser_id</span><span class="o">(),</span><span class="n">orderInfo</span><span class="o">.</span><span class="na">getMoney</span><span class="o">());</span>
+
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>
+
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">flag</span> <span class="o">=</span> <span class="n">orderMapper</span><span class="o">.</span><span class="na">insertOrder</span><span class="o">(</span><span class="n">orderInfo</span><span class="o">);</span>
+
+  <span class="k">return</span> <span class="n">flag</span><span class="o">*</span><span class="n">accountFlag</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>需要重点注意的地方：</strong>要将registry.conf和file.conf两个配置好的配置文件导入到resources目录下</p>
+
+<p>加@GlobalTransactional注解就解决分布式事务，用到了aop增强和springboot的自动装配，</p>
+
+<p><strong>全局事务的开启流程：</strong></p>
+
+<ul>
+  <li>
+    <p>springboot启动时去META-INF/spring.factories下的GlobalTransactionAutoConfiguration执行自动配置类</p>
+  </li>
+  <li>
+    <p>通过@Bean 注入GlobalTransactionScanner（全局事务扫描器）</p>
+
+    <p>GlobalTransactionScanner实现了InitializingBean（接口），调用afterPropertiesSet()方法初始化 RM 和 TM，GlobalTransactionScanner继承了AbstractAutoProxyCreator（AOP和事务的顶级父类）， 通过postProcessAfterInitialization()后置处理器进行加强把标注了@GlobalTransactional注解所在的类生成代理对象，并且注入注解拦截器GlobalTransactionalInterceoer</p>
+  </li>
+  <li>
+    <p>此时请求来了，拦截器拦截下来，再通过反射获取Method，然后解析Method加没加@GlobalTransactional注解，加没加@GlobalLock注解，根据不同注解调用不同的方法</p>
+  </li>
+  <li>
+    <p>如果加了@GlobalTransactional注解，就执行 handleGlobalTransaction() 方法</p>
+
+    <p>此方法中，调用了execute方法，这个方法主要做了：</p>
+
+    <p>1) 获取或者创建一个全局事务</p>
+
+    <p>2) 获取全局事务注解信息</p>
+
+    <p>3) 调用beginTransaction() 方法，开启全局事务，这个方法主要做了：</p>
+
+    <p>a. 通过transactionManager.()方法去通过TM对象与seata-server通信，然后去数据库中的globalTable表中插入一条记录，然后返回一个全局事务id（xid）</p>
+
+    <p>b. 通过GlobalStatus.Begin，标识全局事务开启状态</p>
+
+    <p>c. 通过RootContext.bind(xid) 绑定全局事务id</p>
+  </li>
+  <li>
+    <p>TM 和 RM 是作为 seata 的客户端与业务系统集成在一起，TM通过netty和seata-server交互</p>
+  </li>
+  <li>
+    <p>在seata-server中 调用DefaultCoordinator类中的doGlobalBegin()，最终调用DefualtCore类中的begin()方法</p>
+
+    <p>这个方法主要做了</p>
+
+    <p>a. 创建GlobalSession （全局session）</p>
+
+    <p>b. 为GlobalSession添加监听器，通过SPI机制去读取META-INF/service目录下 的DataBaseSessionManager</p>
+
+    <p>c. 调用GlobalSession的begin()方法，在此方法中执行监听器的 lifecycleListener.onBegin(this) 方法，监听 onBegin方法开启事务</p>
+  </li>
+  <li>
+    <p>onBegin方法 中 拿到 DatabaseTransactionStoreManager 对象调用writeSession 方法</p>
+  </li>
+  <li>
+    <p>writeSession 方法中拿到 LogStoreDataBaseDAO对象 调用 insertGlobalTransacttion()方法 ，最终通过JDBC原生的语句将全局事务的ID存入<strong>global_table</strong>表中</p>
+  </li>
+</ul>
+
+<p><strong>分支事务的提交流程：</strong></p>
+
+<ul>
+  <li>
+    <p>代理数据源拦截sql</p>
+
+    <p>seata-server中有一个statementProxy类，有个executeUpdate/executeQuery方法，该方法中通过ExecuteTemplate.execute方法去拦截sql</p>
+  </li>
+  <li>
+    <p>生成对应的sql执行器识别器</p>
+  </li>
+  <li>
+    <p>根据识别器识别类型，生成对应的sql执行器</p>
+  </li>
+  <li>
+    <p>然后跳到executeAutoCommitTrue方法，在此方法中关闭自动提交，然后跳到executeAutoCommitFalse方法执行下面操作</p>
+
+    <p>a. 获取本地行锁， 查询生成前置快照(beforeImage)</p>
+
+    <p>b. 执行业务sql</p>
+
+    <p>c. 查询生成后置快照 afterImage</p>
+  </li>
+  <li>
+    <p>根据beforeImage和afterImage 生成Undolog（日志回滚对象），将undolog对象插入undolog表</p>
+  </li>
+  <li>
+    <p>调用register()方法 注册分支事务, 去拿全局锁</p>
+
+    <p>在此方法中会判断是否注册分支事务成功：</p>
+
+    <p>a. 如果不成功（全局锁冲突），回滚本地事务，释放本地锁，默认重试十次，每次sleep 30 ms</p>
+
+    <p>全局锁表示的是我们操作的数据库表+操作的数据主键（product：1）的记录会保存到seata-server的数据库的lock_table表中。 如果表中有这条数据说明其他事务在操作这条数据，你就不能操作，抛出异常回滚等待重试</p>
+
+    <p>b. 如果成功，提交本地事务，在此处会判断是否提交本地事务成功</p>
+
+    <p>​	b1:如果不成功，向seata-server异常一阶段提交上报，释放本地锁</p>
+
+    <p>​	b2:如果成功，向seata-server正常一阶段提交上报，释放本地锁</p>
+  </li>
+</ul>
+
+<h2 id="5-使用eureka做注册中心">5. 使用eureka做注册中心</h2>
+
+<p>下面使用Eureka做注册中心</p>
+
+<blockquote>
+  <p>新建一个module springboot项目imall-eureka</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/mysql/imall-eureka-server.jpg" alt="" /></p>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、application.yaml配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">server</span><span class="pi">:</span>
+  <span class="na">port</span><span class="pi">:</span> <span class="m">8761</span>
+
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">imall-eureka</span>
+  <span class="na">profiles</span><span class="pi">:</span>
+    <span class="na">active</span><span class="pi">:</span> <span class="s">dev</span>
+
+<span class="na">eureka</span><span class="pi">:</span>
+  <span class="na">instance</span><span class="pi">:</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">localhost</span>
+  <span class="na">client</span><span class="pi">:</span>
+    <span class="na">registerWithEureka</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">fetchRegistry</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">serviceUrl</span><span class="pi">:</span>
+      <span class="na">defaultZone</span><span class="pi">:</span> <span class="s">http://${eureka.instance.hostname}:${server.port}/eureka/</span>
+  <span class="c1"># server:</span>
+    <span class="c1"># 自我保护机制, 默认开启</span>
+    <span class="na">enable-self-preservation</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="c1"># 清理失效的时间 5s,默认60秒</span>
+    <span class="c1"># eviction-interval-timer-in-ms: 5000</span>
+</code></pre></div></div>
+
+<p>3、主启动类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaServer</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EurekaServerApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">EurekaServerApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>imall-customer、imall-order的注册中心修改为eureka</p>
+</blockquote>
+
+<p>1、pom.xml注释nacos discovery的依赖，导入eureka client的依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、applicaton.yaml注释nacos discovery的注册中心配置，添加eureka server注册中心的配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">eureka</span><span class="pi">:</span>
+  <span class="na">client</span><span class="pi">:</span>
+    <span class="na">serviceUrl</span><span class="pi">:</span>
+      <span class="na">defaultZone</span><span class="pi">:</span> <span class="s">http://localhost:8761/eureka/</span>
+  <span class="c1"># instance:</span>
+    <span class="c1"># 每5秒发送心跳，默认30秒</span>
+    <span class="c1">#lease-renewal-interval-in-seconds: 5</span>
+    <span class="c1"># 如果30s 之后，服务端没有收到心跳，就代表微服务挂了！默认90秒</span>
+    <span class="c1">#lease-expiration-duration-in-seconds: 30</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>seata server 的conf文件修改</p>
+</blockquote>
+
+<p>registry.conf配置，有两步：1.将type改为 eureka; 2. 修改eureka配置里的application,自定义一个名称imall-seata-tc</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 将eureka的application进行设置</span>
+registry <span class="o">{</span>
+  <span class="c"># file 、nacos 、eureka、redis、zk、consul、etcd3、sofa</span>
+  <span class="nb">type</span> <span class="o">=</span> <span class="s2">"eureka"</span>
+
+  nacos <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:8848"</span>
+    namespace <span class="o">=</span> <span class="s2">""</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+  <span class="o">}</span>
+  eureka <span class="o">{</span>
+    serviceUrl <span class="o">=</span> <span class="s2">"http://127.0.0.8761/eureka"</span>
+    application <span class="o">=</span> <span class="s2">"imall-seata-tc"</span>
+    weight <span class="o">=</span> <span class="s2">"1"</span>
+  <span class="o">}</span>
+  redis <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"localhost:6379"</span>
+    db <span class="o">=</span> <span class="s2">"0"</span>
+  <span class="o">}</span>
+  zk <span class="o">{</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:2181"</span>
+    session.timeout <span class="o">=</span> 6000
+    connect.timeout <span class="o">=</span> 2000
+  <span class="o">}</span>
+  consul <span class="o">{</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:8500"</span>
+  <span class="o">}</span>
+  etcd3 <span class="o">{</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    serverAddr <span class="o">=</span> <span class="s2">"http://localhost:2379"</span>
+  <span class="o">}</span>
+  sofa <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:9603"</span>
+    application <span class="o">=</span> <span class="s2">"default"</span>
+    region <span class="o">=</span> <span class="s2">"DEFAULT_ZONE"</span>
+    datacenter <span class="o">=</span> <span class="s2">"DefaultDataCenter"</span>
+    cluster <span class="o">=</span> <span class="s2">"default"</span>
+    group <span class="o">=</span> <span class="s2">"SEATA_GROUP"</span>
+    addressWaitTime <span class="o">=</span> <span class="s2">"3000"</span>
+  <span class="o">}</span>
+  file <span class="o">{</span>
+    name <span class="o">=</span> <span class="s2">"file.conf"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+config <span class="o">{</span>
+  <span class="c"># file、nacos 、apollo、zk、consul、etcd3</span>
+  <span class="nb">type</span> <span class="o">=</span> <span class="s2">"file"</span>
+
+  nacos <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"localhost"</span>
+    namespace <span class="o">=</span> <span class="s2">""</span>
+  <span class="o">}</span>
+  consul <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:8500"</span>
+  <span class="o">}</span>
+  apollo <span class="o">{</span>
+    app.id <span class="o">=</span> <span class="s2">"seata-server"</span>
+    apollo.meta <span class="o">=</span> <span class="s2">"http://192.168.1.204:8801"</span>
+  <span class="o">}</span>
+  zk <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"127.0.0.1:2181"</span>
+    session.timeout <span class="o">=</span> 6000
+    connect.timeout <span class="o">=</span> 2000
+  <span class="o">}</span>
+  etcd3 <span class="o">{</span>
+    serverAddr <span class="o">=</span> <span class="s2">"http://localhost:2379"</span>
+  <span class="o">}</span>
+  file <span class="o">{</span>
+    name <span class="o">=</span> <span class="s2">"file.conf"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>file.conf，两步：</p>
+
+<ol>
+  <li>
+    <p>vgroup_mapping的值要与registry文件的eureka.application保持一致</p>
+  </li>
+  <li>
+    <p>default.grouplist 改为imall-seata-tc.grouplist</p>
+  </li>
+</ol>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 需要将vgroup_mapping的等号后的内容对应到registry文件的application上</span>
+service <span class="o">{</span>
+  <span class="c">#transaction service group mapping</span>
+  <span class="c">#icodingedu_tx_group：这个稍后要在项目的yaml里进行配置</span>
+  vgroup_mapping.imall_tx_group <span class="o">=</span> <span class="s2">"imall-seata-tc"</span>
+  <span class="c">#only support when registry.type=file, please don't set multiple addresses</span>
+  imall-seata-tc.grouplist <span class="o">=</span> <span class="s2">"127.0.0.1:8091"</span>
+  <span class="c">#degrade, current not support</span>
+  enableDegrade <span class="o">=</span> <span class="nb">false</span>
+  <span class="c">#disable seata</span>
+  disableGlobalTransaction <span class="o">=</span> <span class="nb">false</span>
+<span class="o">}</span>
+
+<span class="c">## transaction log store, only used in seata-server</span>
+store <span class="o">{</span>
+  <span class="c">## store mode: file、db</span>
+  mode <span class="o">=</span> <span class="s2">"db"</span>
+
+  <span class="c">## file store property</span>
+  file <span class="o">{</span>
+    <span class="c">## store location dir</span>
+    <span class="nb">dir</span> <span class="o">=</span> <span class="s2">"sessionStore"</span>
+  <span class="o">}</span>
+
+  <span class="c">## database store property</span>
+  db <span class="o">{</span>
+    <span class="c">## the implement of javax.sql.DataSource, such as DruidDataSource(druid)/BasicDataSource(dbcp) etc.</span>
+    datasource <span class="o">=</span> <span class="s2">"dbcp"</span>
+    <span class="c">## mysql/oracle/h2/oceanbase etc.</span>
+    db-type <span class="o">=</span> <span class="s2">"mysql"</span>
+    driver-class-name <span class="o">=</span> <span class="s2">"com.mysql.jdbc.Driver"</span>
+    url <span class="o">=</span> <span class="s2">"jdbc:mysql://127.0.0.1:3306/seata"</span>
+    user <span class="o">=</span> <span class="s2">"root"</span>
+    password <span class="o">=</span> <span class="s2">"gavin"</span>
+    min-conn <span class="o">=</span> 1
+    max-conn <span class="o">=</span> 10
+    global.table <span class="o">=</span> <span class="s2">"global_table"</span>
+    branch.table <span class="o">=</span> <span class="s2">"branch_table"</span>
+    lock-table <span class="o">=</span> <span class="s2">"lock_table"</span>
+    query-limit <span class="o">=</span> 100
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>修改完后将registry.conf和file.conf重新导入到imall-customer和imall-order的resources目录下</p>
+
+<blockquote>
+  <p>测试</p>
+</blockquote>
+
+<p>依次启动注册中心imall-eureka、seata-server、imall-customer、imall-order</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-eureka.jpg" alt="" /></p>
+
+<p>直接测试我们的分布式事务</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GlobalTransactional</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"imall.placeOrder"</span><span class="o">,</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="nc">Exception</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">placeOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update account......"</span><span class="o">);</span>
+  <span class="n">customerClient</span><span class="o">.</span><span class="na">updateAccount</span><span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getUserId</span><span class="o">(),</span><span class="n">order</span><span class="o">.</span><span class="na">getMoney</span><span class="o">().</span><span class="na">doubleValue</span><span class="o">());</span>
+
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>
+
+  <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"insert order......"</span><span class="o">);</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-eureka-2.jpg" alt="" /></p>
+
+<p>查看数据库看看金额没有修改，订单没有新增，说明分布式事务生效了</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-acount-3.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-order-3.jpg" alt="" /></p>
+
+<p>查看seata server的记录了回滚日志</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/seata-imall-eureka-rollback.jpg" alt="" /></p>
+
+<h2 id="6-事务补偿机制tcc">6. 事务补偿机制TCC</h2>
+
+<p>TCC：Try、Confirm、Cancel三种操作</p>
+
+<ul>
+  <li>针对每个操作，都要有一个与其对应的补偿（撤销）操作</li>
+  <li>在执行过程中，如果其中一个环节失败，那么这个环节以前的操作都要调用其回滚操作来恢复</li>
+</ul>
+
+<blockquote>
+  <p>A（DB）-&gt;B（Redis）-&gt;E（DB）-&gt;C（文件）-&gt;D（DB）</p>
+</blockquote>
+
+<p>TCC</p>
+
+<ul>
+  <li>优点：逻辑清晰，流程简单</li>
+  <li>缺点：数据一致性和性能效率比XA还要差，出错的点比较多</li>
+</ul>
+
+<p>TCC属于应用层的一种补偿方式，需要大量的代码开发，通过中间环节(DB,Redis,Monogo)保存数据的中间状态，对于开发人员的业务和技术要求比较高</p>
+
+<p>建议：TCC只做设计，具体的操作使用人工补偿</p>
+
+<p>参考：</p>
+
+<p>https://blog.csdn.net/a1036645146/article/details/107656671</p>
+
+<p><a href="https://blog.csdn.net/qq_36743888/article/details/112297704">https://blog.csdn.net/qq_36743888/article/details/112297704</a></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/07/08/icoding-note-057.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -3,7 +3,7 @@ layout: post
 title: spring cloud aibaba教程：如何使用nacos服务注册和发现
 category: springcloud
 tags: [springcloud]
-keywords: springcloud
+keywords: nacos
 excerpt: 配合图形界面管理服务，一目了然
 lock: noneed
 ---
@@ -191,5 +191,4 @@ public class ConsumerController {
 **源码下载**
 
 https://github.com/forezp/SpringCloudLearning/tree/master/springcloud-alibaba/nacos-discovery
-
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: java8的新特性介绍,你都懂了吗
+title: java8的新特性介绍
 category: java
 tags: [java]
 keywords: java

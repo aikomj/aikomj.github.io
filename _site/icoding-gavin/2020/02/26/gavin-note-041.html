@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第41节：消息队列应用实战-2 - 大伟的博客 </title>
+    <meta name="keywords" content="rabbitmq">
+    <meta name="description"
+          content="rabbitmq集群架构原理，rocketmq集群架构原理分析,kafka高性能原因分析，rabbitmq核心概念、服务搭建、集成到springboot中">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/02/26/gavin-note-041.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第41节：消息队列应用实战-2">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第41节：消息队列应用实战-2</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/02/26
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1rabbitmq集群架构原理解析">1、RabbitMQ集群架构原理解析</h2>
+
+<h3 id="主备模式">主备模式</h3>
+
+<p>master-slave结构，可以理解为热备份，<strong>master负责读写，master宕机后就会切换到slave</strong>，对业务不会造成太大的影响，master和slave之间是通过复制（ActiveMQ是通过zookeeper），<font color="red">业务不会主动访问备份节点</font>，除非宕机切换</p>
+
+<p>RabbitMQ的主备复制是通过自己内部的机制来进行，消息是一并消费的。HAproxy相当于Nginx，备份节点只做备份</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/master-slave.png" alt="" /></p>
+
+<h3 id="远程模式">远程模式</h3>
+
+<p>将数据传输到外部节点，当数据处理不过来时可以用这个分流一部分数据，结构简单但配置复杂，使用的不多</p>
+
+<p>主要应用的场景是：对不同数据中心进行复制时使用，可以跨地域的让两个MQ集群互联</p>
+
+<h3 id="镜像模式">镜像模式</h3>
+
+<p>业界对RabbtiMQ使用比较多的架构模式，就是镜像模式</p>
+
+<p>高可用的数据复制过程</p>
+
+<p>VIP: 虚拟ip</p>
+
+<p>HAProxy：就是一个专门的提供负载均衡的中间件</p>
+
+<p>keepalived：就是支持VRRP的一个心跳检测工具(VRRP:virtual router redundancy photocol 虚拟路由器冗余协议)</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/mirror-arch.png" alt="" /></p>
+
+<p>缺点</p>
+
+<ul>
+  <li>
+    <p>镜像队列集群的<strong>缺陷是无法进行横向扩容</strong>，因为每个节点都是一个完整的互相复制的节点，<mark>保持数据的强一致性，</mark></p>
+  </li>
+  <li>并且镜像节点过多会使MQ负担增加，一个数据写入后复制到多个节点会使吞吐量下降。消息队列，天生的读写分离。</li>
+  <li>消息的发送后会马上同步到其他镜像节点，消费也并一起消费的。</li>
+</ul>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/rabbitmq-mirror-mode.png" alt="" /></p>
+
+<h3 id="多活模式">多活模式</h3>
+
+<p>个人理解：是远程模式和镜像模式的结合，解决跨地域的MQ集群数据一致性问题，通过DNS的解析服务，（就近寻址）使APP访问同一个地域的MQ集群，加快访问速度。同时单个MQ集群使用LBS中间件提高并发访问性能。</p>
+
+<p>DNS：就是一个IP域名的解析服务</p>
+
+<p>LBS：负载均衡服务（Nginx、HAProxy、Lvs、SLB）</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/more-alive.png" alt="" /></p>
+
+<p>Federation[ˌfedəˈreɪʃn]：在消息队列之间提供信息传输的高性能插件，使用AMQP协议，可以支持连接双方的不同版本MQ访问</p>
+
+<h2 id="2rocketmq集群架构原理解析">2、RocketMQ集群架构原理解析</h2>
+
+<ul>
+  <li>支持集群、负载均衡，水平扩展</li>
+  <li>亿级别的消息堆积能力</li>
+  <li>采用的是zeroCopy零拷贝、顺序写盘</li>
+  <li>用NameServer代替了zookeeper</li>
+  <li>集群的架构模型
+    <ul>
+      <li>单点模式</li>
+      <li>主从模式</li>
+      <li>双主模式</li>
+      <li>多主多从模式</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="3kafka高性能原因分析">3、Kafka高性能原因分析</h2>
+
+<p><strong>Kafka的介绍</strong></p>
+
+<p>直接内存消费，不落盘（空中接力）</p>
+
+<ul>
+  <li>kafka是linkedIn开源的分布式消息系统，归给Apache的顶级项目</li>
+  <li>kafka主要特点是基于Pull的模式来处理消息的消费的，追求高吞吐量，一开始的目的就是来做日志传输的收集的</li>
+  <li>kafka不支持事务，对消息的丢失，错误没有太严格的要求</li>
+  <li>高并发业务场景很少有用到事务的</li>
+</ul>
+
+<p><strong>kafka的特点</strong></p>
+
+<ul>
+  <li>跨平台</li>
+  <li>分布式</li>
+  <li>实时性</li>
+  <li>伸缩性</li>
+</ul>
+
+<p><strong>kafka高性能的原因</strong></p>
+
+<ul>
+  <li>顺序写：顺序写磁盘，可以提高磁盘的利用率。</li>
+  <li>Page Cache：页缓存（操作系统相关术语），来提升吞吐量</li>
+  <li>zeroCopy</li>
+  <li>后台的异步操作，主动Flush</li>
+  <li>预读的策略，IO的调度</li>
+</ul>
+
+<p><strong>Page Cache（页面缓存）</strong></p>
+
+<ul>
+  <li>Page Cache是OS实现的一种主要的磁盘缓存机制，以此来减少对磁盘I/O的操作</li>
+  <li>将磁盘文件缓存到内存中（MySQL-&gt;Redis 类似将mysql的数据放到redis中，提高访问速度）</li>
+  <li>如果要从磁盘中读取1.txt，OS不是直接到磁盘而是到PageCache，如果PageCache里有就拿走了，如果没有就向磁盘发出请求，通过I/O获取数据，获取数据后先放入PageCache然后再给需要的请求</li>
+  <li>写入数据的时候先判单PageCache里有没有，没有先写入PageCache，然后OS将PageCache的数据刷到磁盘中（MySQL-Redis，先写MySQL后写Redis）</li>
+</ul>
+
+<p>传统的读取文件数据流程</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/page-cache.png" alt="" /></p>
+
+<p>解析一下步骤：</p>
+
+<p>1.OS将数据从磁盘文件复制到内核空间的PageCache</p>
+
+<p>2.应用程序将数据从PageCache复制到用户缓冲区</p>
+
+<p>3.应用程序将数据复制到内核空间缓冲区</p>
+
+<p>4.OS将数据从内核空间缓冲区复制到socket缓冲区</p>
+
+<p>5.OS从socket缓冲区复制数据到网卡接口，数据网络发送给客户端</p>
+
+<p><strong>ZeroCopy（零拷贝）</strong></p>
+
+<p>通常情况下，Kafka的消息会有多个订阅者，生产者发布的消息会被不同的消费者多次消费，为了优化这个流程，Kafka使用了“零拷贝技术”，如下图所示：</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/zerocopy.png" alt="" /></p>
+
+<p>零拷贝就是将数据从磁盘文件读取到内核空间的PageCache的一次，然后直接复制给网卡接口网络发送给客户端；当消费同样数据消息时就可以自己从PageCache读取，省去中间在磁盘内存中来回拷贝复制的过程，降低了上下文来回切换的过程，大大提高了应用程序的性能</p>
+
+<p><strong>Kafka的集群模式</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/kafka-cluster.png" alt="" /></p>
+
+<ul>
+  <li>通过zookeeper来实现集群的配置</li>
+  <li>大部分都是内存级别的副本复制，磁盘是异步做的一个备份</li>
+</ul>
+
+<h2 id="4rabbitmq内部核心概念掌握">4、RabbitMQ内部核心概念掌握</h2>
+
+<ul>
+  <li>RabbitMQ是采用Erlang开发的：<mark>Erlang有着和原生Socket一样的延迟，性能非常高</mark></li>
+  <li>提供可靠的消息传统模式：confirm(确认)、return（返回）</li>
+  <li>与SpringAMQP完美结合</li>
+  <li>集群模式比较丰富（主备模式、远程模式、镜像模式、多活模式），</li>
+  <li>保证数据不丢失的情况下做高可靠（数据是否完整）和高可用</li>
+</ul>
+
+<p><strong>AMQP（Advanced Message Queue Protocol）高级消息队列协议各核心部件之间的关系</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/meta.png" alt="" /></p>
+
+<ul>
+  <li>消息的生产者把消息投递到server上，经过virtual host（相当于路由空间，就是一个文件夹）到Exchage（路由）就可以了，不需要关心把消息投到那个队列的。</li>
+  <li>消费者只需要和Message Queue进行监听和绑定即可，这就实现了消费者和生产者的解耦</li>
+  <li>生产者和消费者是通过路由（routingkey）来关联的</li>
+  <li>通过routingkey来关联Exchage和Message Queue,routingkey相当于桥梁</li>
+  <li>消息的生产者将消息发送给Exchage上的某个Routingkey，消费者在队列中订阅某个Routingkey的消息，这个时候Exchage就将两个Routingkey一样的生产和消费连接在了一起</li>
+</ul>
+
+<p><strong>AMQP名词解释</strong></p>
+
+<ul>
+  <li>Server：又称Broker，就是我们的rabbitmq服务</li>
+  <li>Connection：就是连接</li>
+  <li>Channel：网络通信，每个Channel代表一个会话（session）</li>
+  <li>Message：消息体</li>
+  <li>Virtual host：虚拟地址，可以理解为一个工作空间，或者一个文件夹，进行逻辑隔离
+    <ul>
+      <li><mark>一个Virtural host下可以有多个Exchange和queue</mark></li>
+      <li>同一个Virtual host下不能有相同名称的Exchage和queue存在</li>
+    </ul>
+  </li>
+  <li>Exchange：交换机，接收消息进行队列数据的绑定，一个路由的概念</li>
+  <li>Binding：Exchange和Queue之间的虚拟连接，Binding中包含Routingkey（相当于网线）</li>
+  <li>Routingkey：路由规则，消息的暗号</li>
+  <li>Queue：存放消息的具体地方</li>
+</ul>
+
+<p><strong>RabbitMQ消息的流转</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/message-flow.png" alt="" /></p>
+
+<h2 id="5rabbitmq服务搭建">5、RabbitMQ服务搭建</h2>
+
+<h3 id="安装rabbitmq">安装rabbitmq</h3>
+
+<p>操作系统使用centOS 7.x</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1.安装需要的辅助工具</span>
+yum <span class="nt">-y</span> <span class="nb">install </span>build-essential openssl openssl-devel unixODBC unixODBC-devel make gcc gcc-c++ kernel-devel m4 ncurses-devel tk tc xz
+
+<span class="c"># 2.下载安装包</span>
+wget www.rabbitmq.com/releases/erlang/erlang-18.3-1.el7.centos.x86_64.rpm
+wget http://repo.iotti.biz/CentOS/7/x86_64/socat-1.7.3.2-5.el7.lux.x86_64.rpm
+wget www.rabbitmq.com/releases/rabbitmq-server/v3.6.5/rabbitmq-server-3.6.5-1.noarch.rpm
+
+<span class="c"># 3.按照顺序安装rpm包,使用rpm一键安装将环境变量也一并处理好</span>
+rpm <span class="nt">-ivh</span> erlang-18.3-1.el7.centos.x86_64.rpm 
+rpm <span class="nt">-ivh</span> socat-1.7.3.2-5.el7.lux.x86_64.rpm
+rpm <span class="nt">-ivh</span> rabbitmq-server-3.6.5-1.noarch.rpm
+
+<span class="c"># 4.修改用户登录与心跳检测的频率,这里也可以修改默认用户guest的密码</span>
+vi /usr/lib/rabbitmq/lib/rabbitmq_server-3.6.5/ebin/rabbit.app
+<span class="c"># 将{loopback_users, [&lt;&lt;"guest"&gt;&gt;] }, </span>
+<span class="c"># 修改为{loopback_users, [guest]},</span>
+<span class="c"># 心跳,将heartbeat修改为10秒</span>
+ <span class="o">{</span>heartbeat, 10<span class="o">}</span>,
+
+<span class="c"># 5.启动Rabbitmq 默认端口5672,使用rpm安装，已带有上下文。</span>
+/etc/init.d/rabbitmq-server start | stop | status | restart
+<span class="c"># 后台启动</span>
+rabbitmq-server start &amp;
+<span class="nb">nohup </span>rabbitmq-server start <span class="o">&gt;</span> rabbitmq-log.file 2&gt;&amp;1 &amp;
+
+<span class="c"># 6.安装一个端口访问工具</span>
+yum <span class="nt">-y</span> <span class="nb">install </span>lsof
+<span class="c"># 查看rabbitmq服务是否已启动</span>
+lsof <span class="nt">-i</span>:5672
+
+<span class="c"># 7.启动控制台 默认端口15672</span>
+<span class="nb">cd</span> /usr/lib/rabbitmq/bin
+rabbitmq-plugins list <span class="c"># 查看rabbitmq都有哪些插件</span>
+rabbitmq-plugins <span class="nb">enable </span>rabbitmq_management <span class="c"># 启动管理控制台插件 </span>
+<span class="c"># 管理控制台的端口是15672，查看是否已启动</span>
+lsof <span class="nt">-i</span>:15672 <span class="c"># 管理控制台的端口是15672</span>
+
+<span class="c"># 8.登录访问控制台，默认用户密码guest/guest，登录控制台后修改</span>
+http://192.168.1.100:15672
+</code></pre></div></div>
+
+<h3 id="卸载rabbitmq">卸载rabbitmq</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、查看rpm安装包</span>
+<span class="o">[</span>root@helloworld ~]# rpm <span class="nt">-qa</span>|grep rabbitmq
+rabbitmq-server-3.6.5-1.noarch
+
+<span class="c"># 2、卸载</span>
+rpm <span class="nt">-e</span> <span class="nt">--nodeps</span> rabbitmq-server-3.6.5-1.noarch
+</code></pre></div></div>
+
+<h3 id="访问控制台">访问控制台</h3>
+
+<p>云服务器要开启安全组和防火墙端口5672,15672</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq-admin.jpg" alt="" /></p>
+
+<p>disc就是指磁盘存储消息，如果想要内存方式存储，在启动rabbitmq的时候加上–ram即可</p>
+
+<p>集群配置的时候可以导入导出rabbitmq的 配置</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/definitions.jpg" alt="" /></p>
+
+<blockquote>
+  <p>Admin</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/admin.jpg" alt="" /></p>
+
+<p>可以在这个界面修改密码，添加用户</p>
+
+<p>点击guest用户，它默认是administrators的权限，发现它可以访问所有的virtual host，也可以配置用户访问Virtual Hosts的权限</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/admin-2.jpg" alt="" /></p>
+
+<p>查看添加Virtual Hosts</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/admin-3.jpg" alt="" /></p>
+
+<h3 id="rabbitmq常用命令">RabbitMQ常用命令</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># --help查看帮助命令</span>
+rabbitmqctl <span class="nt">--help</span>
+<span class="c"># 关闭应用</span>
+rabbitmqctl stop_app
+<span class="c"># 启动应用</span>
+rabbitmqctl start_app
+<span class="c"># 节点状态</span>
+rabbitmqctl status
+<span class="c"># 添加用户密码</span>
+rabbitmqctl add_user username password
+<span class="c"># 修改用户密码</span>
+rabbitmqctl change_password username newpassword
+<span class="c"># 列出所有用户</span>
+rabbitmqctl list_users
+<span class="c"># 删除用户</span>
+rabbitmqctl delete_user username
+<span class="c"># 列出用户权限</span>
+rabbitmqctl list_user_permissions username
+<span class="c"># 清除用户权限</span>
+rabbitmqctl clear_permissions <span class="nt">-p</span> vhostpath username
+<span class="c"># 设置用户权限</span>
+<span class="c"># 三个*对应：configure write read</span>
+rabbitmqctl set_permissions <span class="nt">-p</span> vhostpath username <span class="s2">".*"</span> <span class="s2">".*"</span> <span class="s2">".*"</span>
+rabbitmqctl set_permissions <span class="nt">-p</span> / gavin <span class="s2">".*"</span> <span class="s2">".*"</span> <span class="s2">".*"</span>
+<span class="c"># 列出所有虚拟主机</span>
+rabbitmqctl list_vhosts
+<span class="c"># 创建虚拟主机</span>
+rabbitmqctl add_vhost vhostpath
+<span class="c"># 列出虚拟主机的权限</span>
+rabbitmqctl list_permissions <span class="nt">-p</span> vhostpath
+<span class="c"># 删除虚拟主机</span>
+rabbitmqctl delete_vhost vhostpath
+<span class="c"># 查看所有队列</span>
+rabbitmqctl list_queues
+<span class="c"># 清除队列里的消息</span>
+rabbitmqctl <span class="nt">-p</span> vhostpath purge_queue queueName
+<span class="c"># 清除所有数据</span>
+rabbitmqctl reset <span class="c"># 这个动作最好在MQ服务停掉后操作</span>
+</code></pre></div></div>
+
+<h2 id="6springboot整合rabbitmq">6、Springboot整合RabbitMQ</h2>
+
+<h3 id="创建工程">创建工程</h3>
+
+<ul>
+  <li>
+    <p>rabbitmq-common项目：提供消息对象</p>
+
+    <p>实体类Orderinfo.java，必须序列化，因为要跨项目传输</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+  
+<span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderInfo</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+  	<span class="c1">//消息对象需要序列化</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">4084996990296644842L</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">orderName</span><span class="o">;</span>
+    <span class="c1">//消息id是用来生成一个消息的唯一id，通过消息id能找到这个消息的业务信息</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">messageId</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>rabbitmq-provider项目：消息发送方</li>
+  <li>rabbitmq-receiver项目：消息接收方</li>
+</ul>
+
+<p>项目的结构：</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-project.jpg" alt="" /></p>
+
+<h3 id="发送方的设置">发送方的设置</h3>
+
+<p>1、pom.xml导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code> spirngboot 版本使用2.2.5
+<span class="nt">&lt;parent&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.2.5.RELEASE<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;relativePath&gt;&lt;/relativePath&gt;</span><span class="c">&lt;!-- lookup parent from repository --&gt;</span>
+<span class="nt">&lt;/parent&gt;</span>
+
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.jude<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>rabbitmq-common<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-amqp<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、application.yml配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">rabbitmq</span><span class="pi">:</span>
+    <span class="na">host</span><span class="pi">:</span> <span class="s">39.99.219.219</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">5672</span>  <span class="c1"># 默认5672</span>
+    <span class="na">username</span><span class="pi">:</span> <span class="s">guest</span>  <span class="c1"># 访问的用户密码</span>
+    <span class="na">password</span><span class="pi">:</span> <span class="s">guest</span>
+    <span class="na">virtual-host</span><span class="pi">:</span> <span class="s">/</span>  <span class="c1"># exchange 和 queue所在的虚拟空间目录</span>
+    <span class="na">connection-timeout</span><span class="pi">:</span> <span class="m">15000</span>  <span class="c1"># 连接超时时间15秒</span>
+</code></pre></div></div>
+
+<p>3、编写发送类OrderSender.java</p>
+
+<blockquote>
+  <p>spring是如何简化开发的，主要通过以下4点：</p>
+
+  <ol>
+    <li>Spring Bean,生命周期由spring 容器管理的ava对象</li>
+    <li>IOC，控制反转的思想，所有的对象都去spring容器getbean</li>
+    <li>AOP，切面编程降低侵入</li>
+    <li>xxxTemplate模版技术，如RestTemplate,RedisTemplate</li>
+  </ol>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.icoding.basic.po.OrderInfo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.connection.CorrelationData</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.core.RabbitTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="c1">// @Service</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderSender</span> <span class="o">{</span>
+    <span class="c1">// spring的4大特点之一，使用xxxTemplate模版类，让调用变得简单，</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">RabbitTemplate</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendOrder</span><span class="o">(</span><span class="nc">OrderInfo</span> <span class="n">orderInfo</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+        <span class="cm">/** 可以放在application.xml配置，通过@Value加载
+         * exchange: 交换机名字,就是个你自己定义的字符串，这里是order-exchange
+         * routingkey: 队列关联的key,是个你自己定义的字符串，这里是order.updates
+         * object: 要传输的消息对象
+         * correlationData: 消息的唯一id
+         */</span>
+        <span class="nc">CorrelationData</span> <span class="n">correlationData</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CorrelationData</span><span class="o">();</span>
+        <span class="n">correlationData</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">orderInfo</span><span class="o">.</span><span class="na">getMessage_id</span><span class="o">());</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">convertAndSend</span><span class="o">(</span><span class="s">"order-exchange"</span><span class="o">,</span><span class="s">"order.update"</span><span class="o">,</span><span class="n">orderInfo</span><span class="o">,</span><span class="n">correlationData</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4、编写测试类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Autowired</span>
+<span class="nc">OrderSender</span> <span class="n">orderSender</span><span class="o">;</span>
+
+<span class="nd">@Test</span>
+<span class="kt">void</span> <span class="nf">contextLoads</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">OrderInfo</span> <span class="n">orderInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OrderInfo</span><span class="o">();</span>
+  <span class="n">orderInfo</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="s">"10004"</span><span class="o">);</span>
+  <span class="n">orderInfo</span><span class="o">.</span><span class="na">setOrderName</span><span class="o">(</span><span class="s">"消息队列RabbitMQ从入门到精通"</span><span class="o">);</span>
+  <span class="n">orderInfo</span><span class="o">.</span><span class="na">setMessageId</span><span class="o">(</span><span class="s">"MS9999904"</span><span class="o">);</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"***********开始发送************"</span><span class="o">);</span>
+    <span class="n">orderSender</span><span class="o">.</span><span class="na">sendOrder</span><span class="o">(</span><span class="n">orderInfo</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"-----------发送完成------------"</span><span class="o">);</span>
+  <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">ex</span><span class="o">){</span>
+    <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>跑一跑测试 能跑通，发送成功</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-1.jpg" alt="" /></p>
+
+<p>但是登录Rabbitmq控制台，并没有发现有消息</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-2.jpg" alt="" /></p>
+
+<p><strong>为什么？因为你还没有创建exchange和queue，可以在控制台创建exchange和queue</strong></p>
+
+<blockquote>
+  <p>Rabbitmq 控制台创建exchange和queue</p>
+</blockquote>
+
+<p>登录Rabbitmq 控制台</p>
+
+<p><strong>1.创建exchange</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/add-a-new-exchange.png" alt="" /></p>
+
+<ul>
+  <li>Type是exchage的routingkey的绑定类型：fanout、 headers、direct、topic(常用)</li>
+  <li>Durability：消息是否持久化，Durable持久化</li>
+  <li>Auto delete：如果设置为yes则当exchange最后一个绑定的队列被删除后，就会自动删除</li>
+  <li>Internal：如果设置为yes，是RabbitMQ的内部使用，不提供给外部，自己编写erlang语言做扩展时使用</li>
+  <li>Arguments：扩展AMQP协议的自定义参数</li>
+</ul>
+
+<p><strong>2.创建queue</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/add-a-new-queue.png" alt="" /></p>
+
+<p><strong>3.在exchange里创建Binding并输入routingkey</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-3.jpg" alt="" /></p>
+
+<p>这里的routingkey就是我们的一个接收规则，exchange 只是一个路由的概念，queue就是存放消息的容器，通过routingkey 绑定转发，那样provider就可以把消息发送给具体的队列，一个exchange同一个routingkey可以绑定多个queue</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/exchange-bind-queue.png" alt="" /></p>
+
+<p>在queue里也可以创建binding绑定exchange</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-4.jpg" alt="" /></p>
+
+<blockquote>
+  <p>重新发送消息</p>
+</blockquote>
+
+<p>发送成功，登录控制台，查看queues</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-5.jpg" alt="" /></p>
+
+<p>点进去看具体消息</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/send-order-6.jpg" alt="" /></p>
+
+<p><strong>注意</strong></p>
+
+<h3 id="接收方的设置">接收方的设置</h3>
+
+<p>exchange和queue是由消息消费端建立的。</p>
+
+<p>1、pom.xml导入依赖，与发送方一样</p>
+
+<p>2、application.yaml 配置文件，接收方同时也可以是发送方，一切皆配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">rabbitmq</span><span class="pi">:</span>
+    <span class="na">host</span><span class="pi">:</span> <span class="s">39.99.219.219</span>
+    <span class="na">username</span><span class="pi">:</span> <span class="s">guest</span>
+    <span class="na">password</span><span class="pi">:</span> <span class="s">guest</span>
+    <span class="na">virtual-host</span><span class="pi">:</span> <span class="s">/</span>  <span class="c1"># exchange 和 queue所在的虚拟空间目录，发送方和接收方一致</span>
+    <span class="na">connection-timeout</span><span class="pi">:</span> <span class="m">15000</span>
+    <span class="na">listener</span><span class="pi">:</span> <span class="c1"># 消费端配置，监听queue</span>
+      <span class="na">simple</span><span class="pi">:</span>
+        <span class="na">concurrency</span><span class="pi">:</span> <span class="m">5</span> <span class="c1"># 初始化并发数</span>
+        <span class="na">max-concurrency</span><span class="pi">:</span> <span class="m">10</span> <span class="c1"># 最大并发数</span>
+        <span class="na">auto-startup</span><span class="pi">:</span> <span class="no">true</span> <span class="c1"># 自动开启监听,默认开启</span>
+        <span class="na">prefetch</span><span class="pi">:</span> <span class="m">1</span> <span class="c1"># 每个并发连接同一时间最多处理几个消息，限流设置（消费端）</span>
+        <span class="na">acknowledge-mode</span><span class="pi">:</span> <span class="s">manual</span> <span class="c1"># 签收模式,设置为手动</span>
+</code></pre></div></div>
+
+<p>看看其它配置的属性</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/rabbitmq-listener.jpg" alt="" /></p>
+
+<p>3、编写接收的实现类</p>
+
+<p>上面我们是登录控制台手动创建exchange和queue，创建binding，指定routingkey 绑定交换机和队列的，也可以通过消息接收端在代码里创建（没有就创建，有就使用）。我们删除刚刚手动创建的exchange和queue，下面通过代码创建</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/receiver-order-2.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/receiver-order-1.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.icoding.basic.po.OrderInfo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rabbitmq.client.Channel</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.annotation.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.messaging.handler.annotation.Headers</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.messaging.handler.annotation.Payload</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderReceiver</span> <span class="o">{</span>
+		<span class="c1">// 这个很好理解，就是创建queue和exchange,然后通过key绑定，配置是跟控制台是一样的</span>
+    <span class="nd">@RabbitListener</span><span class="o">(</span><span class="n">bindings</span> <span class="o">=</span> <span class="nd">@QueueBinding</span><span class="o">(</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nd">@Queue</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"order-queue"</span><span class="o">,</span><span class="n">durable</span> <span class="o">=</span> <span class="s">"true"</span><span class="o">,</span><span class="n">autoDelete</span> <span class="o">=</span> <span class="s">"false"</span><span class="o">),</span>
+            <span class="n">exchange</span> <span class="o">=</span> <span class="nd">@Exchange</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"order-exchange"</span><span class="o">,</span><span class="n">durable</span> <span class="o">=</span> <span class="s">"true"</span><span class="o">,</span><span class="n">type</span> <span class="o">=</span> <span class="s">"topic"</span><span class="o">),</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s">"order.update"</span>
+        <span class="o">)</span>
+    <span class="o">)</span>
+    <span class="c1">// @Payload 看上面的截图知道是具体的消息体</span>
+    <span class="nd">@RabbitHandler</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onOrderMessage</span><span class="o">(</span><span class="nd">@Payload</span> <span class="nc">OrderInfo</span> <span class="n">orderInfo</span><span class="o">,</span> <span class="nd">@Headers</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">headers</span><span class="o">,</span> <span class="nc">Channel</span> <span class="n">channel</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"************消息接收开始***********"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Order Name: "</span><span class="o">+</span><span class="n">orderInfo</span><span class="o">.</span><span class="na">getOrder_name</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/receiver-order-3.jpg" alt="" /></p>
+
+<p>启动项目，登录Rabbitmq控制台，发现exchange和queue都自动创建了</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/receiver-order-4.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/receiver-order-5.jpg" alt="" /></p>
+
+<p>启动消费发送方，接收方就会监听到，输出消息</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/receiver-order-6.jpg" alt="" /></p>
+
+<p>登录控制台，发现order-queue有一个未确认的消息，为什么是Unacked,因为上面application.yml设置的是manual手动签收，</p>
+
+<p>我们的接收方法里还没有手动签收，没确认签收的消息，Rabbitmq会重复发送给接收端，只要接收端重启会再次接收该消息，看下篇笔记如何确认签收。</p>
+
+<p><img src="/assets/images/2020/icoding/mq/rabbitmq/rabbitmq-message-unacked.png" alt="" /></p>
+
+<p><mark>不确认会造成消息的堆积</mark></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/02/26/gavin-note-041.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

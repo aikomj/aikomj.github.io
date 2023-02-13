@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Go全栈第7节：Go指针与结构体 - 大伟的博客 </title>
+    <meta name="keywords" content="go">
+    <meta name="description"
+          content="定义指针，通过指针获取与修改它指向的变量的值，指针变量的嵌套使用，指向一个指针变量的指针，数组指针，指针数组的使用，函数返回结果是指针，指针作为函数的入参，突破值传递的拷贝限制，结构体的定义与使用，结构体是值类型的推导，new关键字创建结构体对象，返回结构体指针来操作对象,结构体嵌套，结构体的import访问权限跟首字母大写有关">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/go/2023/01/07/go-note-007.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Go全栈第7节：Go指针与结构体">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Go全栈第7节：Go指针与结构体</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2023/01/07
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1初识指针">1、初识指针</h2>
+
+<p><mark>指针是一个特殊的变量，它的值是一个内存地址</mark>，存储另外一个变量的内存地址</p>
+
+<ul>
+  <li>&amp; 取地址符</li>
+  <li>*指针，取出对应内存地址的空间存储的值</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+
+	<span class="n">a</span> <span class="o">:=</span> <span class="m">10</span>
+	<span class="c">// &amp; 是取地址符，变量a的内存地址赋值给b</span>
+	<span class="k">var</span> <span class="n">b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"变量a的值："</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"变量a的内存地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"变量b的值："</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+	<span class="c">// *指针，取出对应内存地址的空间存储的值</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"变量b指向的内存地址中存储的值："</span><span class="p">,</span> <span class="o">*</span><span class="n">b</span><span class="p">)</span>
+
+	<span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="m">20</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"变量a的值："</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>指向结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>变量a的值： 10
+变量a的内存地址： 0xc000024080
+变量b的值： 0xc000024080
+变量b指向的内存地址中存储的值： 10
+变量a的值： 20
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/go/zhizhen.png" alt="" /></p>
+
+<h2 id="2指针的使用">2、指针的使用</h2>
+
+<p>使用流程：</p>
+
+<ul>
+  <li>定义指针变量</li>
+  <li>为指针变量赋值</li>
+  <li>访问指针变量指向地址的值，通过*指针变量获取内容</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">a</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">10</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a变量的值："</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a变量的内存地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">)</span>
+
+	<span class="c">// 声明一个指针变量</span>
+	<span class="k">var</span> <span class="n">p</span> <span class="o">*</span><span class="kt">int</span>
+	<span class="c">// 给指针变量赋值内存地址</span>
+	<span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span>
+
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"指针变量p存储的内存地址："</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"指针变量p的内存地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*p变量的值："</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+
+	<span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="m">20</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a变量的值："</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*p变量的值："</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+
+	<span class="c">// 指向指针的指针，嵌套使用</span>
+	<span class="c">// 声明指针变量ptr，来指向指针变量p</span>
+	<span class="k">var</span> <span class="n">ptr</span> <span class="o">**</span><span class="kt">int</span>
+	<span class="n">ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">p</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"ptr存储的指针地址："</span><span class="p">,</span> <span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"ptr指针变量自己的内存地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*ptr 变量的值，即a的内存地址："</span><span class="p">,</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"**ptr 变量的地址存储的值，即a的值"</span><span class="p">,</span> <span class="o">**</span><span class="n">ptr</span><span class="p">)</span>
+
+	<span class="c">// 改变变量a的值</span>
+	<span class="o">**</span><span class="n">ptr</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a变量的值："</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*p变量的值"</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>指向结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a变量的值： 10
+a变量的内存地址： 0xc000024080
+指针变量p存储的内存地址： 0xc000024080
+指针变量p的内存地址： 0xc000012030
+<span class="k">*</span>p变量的值： 10
+a变量的值： 20
+<span class="k">*</span>p变量的值： 20
+ptr存储的指针地址： 0xc000012030
+ptr指针变量自己的内存地址： 0xc000012038
+<span class="k">*</span>ptr 变量的值，即a的内存地址： 0xc000024080
+<span class="k">**</span>ptr 变量的地址存储的值，即a的值 20
+a变量的值： 100
+<span class="k">*</span>p变量的值 100
+</code></pre></div></div>
+
+<p><strong>go语言使用指针就很方便的操作其他变量，尽管那个变量不可以直接访问，但是可以通过指针指向那个变量的值来进行修改</strong></p>
+
+<h2 id="3指针与数组">3、指针与数组</h2>
+
+<p>区分：</p>
+
+<ul>
+  <li>
+    <p>数组指针：指向一个数组的指针</p>
+
+    <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 定义一个数组</span>
+	<span class="k">var</span> <span class="n">arr1</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"arr1的地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr1</span><span class="p">)</span>
+	<span class="c">// 声明一个指针，指向数组arr1</span>
+	<span class="k">var</span> <span class="n">p1</span> <span class="o">*</span><span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="kt">int</span>
+	<span class="c">// 给指针赋值</span>
+	<span class="n">p1</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">arr1</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"p1-&gt;地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">p1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"p1自己的地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"p1-&gt;地址-&gt;值："</span><span class="p">,</span> <span class="o">*</span><span class="n">p1</span><span class="p">)</span>
+  
+	<span class="c">// 通过指针修改数组的元素的值</span>
+	<span class="p">(</span><span class="o">*</span><span class="n">p1</span><span class="p">)[</span><span class="m">0</span><span class="p">]</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">*</span><span class="n">p1</span><span class="p">)</span>
+  
+	<span class="c">// 简化写法，指针指向谁就代表谁，这里指针p1就代表arr1</span>
+	<span class="n">p1</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="o">=</span> <span class="m">200</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">*</span><span class="n">p1</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+
+    <p>执行结果：</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>arr1的地址：0xc00001e060
+p1-&gt;地址：0xc00001e060
+p1自己的地址： 0xc000012030
+p1-&gt;地址-&gt;值： <span class="o">[</span>1 2 3 4]
+<span class="o">[</span>100 2 3 4]
+<span class="o">[</span>100 2 3 4]
+<span class="o">[</span>200 2 3 4]
+<span class="o">[</span>200 2 3 4]
+</code></pre></div>    </div>
+
+    <p>指针指向谁就代表谁，这里指针p1就代表arr1</p>
+  </li>
+  <li>
+    <p>指针数组：首先是一个数组，存储的数据类型是指针</p>
+
+    <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 指针数组</span>
+	<span class="n">a</span> <span class="o">:=</span> <span class="m">1</span>
+	<span class="n">b</span> <span class="o">:=</span> <span class="m">2</span>
+	<span class="n">c</span> <span class="o">:=</span> <span class="m">3</span>
+	<span class="n">d</span> <span class="o">:=</span> <span class="m">4</span>
+	<span class="c">// 定义一个指针数组</span>
+	<span class="n">arr2</span> <span class="o">:=</span> <span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="o">*</span><span class="kt">int</span><span class="p">{</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">d</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr2</span><span class="p">)</span>
+	<span class="c">// 通过指针修改数组元素指向的变量</span>
+	<span class="o">*</span><span class="n">arr2</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="o">=</span> <span class="m">500</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+  
+	<span class="c">// 修改变量a,通过指针来获取值</span>
+	<span class="n">a</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">*</span><span class="n">arr2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+<span class="p">}</span>
+  
+</code></pre></div>    </div>
+
+    <p>执行结果：</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>0xc000024090 0xc000024098 0xc0000240a0 0xc0000240a8]
+500
+100
+</code></pre></div>    </div>
+
+    <p>指针结合切片、Map的使用与上面的类似</p>
+  </li>
+</ul>
+
+<h2 id="4指针与函数">4、指针与函数</h2>
+
+<h3 id="返回值是一个指针">返回值是一个指针</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">ptr</span> <span class="o">:=</span> <span class="n">f1</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"ptr-&gt;地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"ptr的数据类型：%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"ptr的地址"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"ptr-&gt;地址-&gt;值"</span><span class="p">,</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">ptr</span><span class="p">[</span><span class="m">0</span><span class="p">])</span> <span class="c">// 指针ptr代表的数组arr1</span>
+<span class="p">}</span>
+
+<span class="c">// 声明一个函数，返回结果是一个数组指针</span>
+<span class="k">func</span> <span class="n">f1</span><span class="p">()</span> <span class="o">*</span><span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="kt">int</span> <span class="p">{</span>
+	<span class="n">arr1</span> <span class="o">:=</span> <span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">}</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="n">arr1</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>我们就可以通过指针操作函数里面的局部变量，</p>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ptr-&gt;地址：0xc0000b6000
+ptr的数据类型：<span class="k">*</span><span class="o">[</span>4]int
+ptr的地址 0xc0000a6018
+ptr-&gt;地址-&gt;值 <span class="o">[</span>1 2 3 4]
+1
+</code></pre></div></div>
+
+<h3 id="指针作为参数">指针作为参数</h3>
+
+<p>以前值传递的int等，通过传递指针，就变成了跟引用传递一样的效果，因为指针存储的是地址，函数就可以直接修改传入参数了，因为形参与实参指向的同一块内存地址。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">a</span> <span class="o">:=</span> <span class="m">10</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a="</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+	<span class="n">f2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a="</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c">// 指针作为入参</span>
+<span class="k">func</span> <span class="n">f2</span><span class="p">(</span><span class="n">ptr</span> <span class="o">*</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"ptr:"</span><span class="p">,</span> <span class="n">ptr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*ptr:"</span><span class="p">,</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span>
+	<span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="m">100</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">a</span><span class="o">=</span> 10
+ptr: 0xc0000ac008
+<span class="k">*</span>ptr: 10
+<span class="nv">a</span><span class="o">=</span> 100
+</code></pre></div></div>
+
+<p><mark>通过指针可以操作值传递的变量</mark>,突破了值传递的限制</p>
+
+<p>指针是非常灵活的，它可以是：</p>
+
+<ul>
+  <li>返回值（出参数）</li>
+  <li>入参数</li>
+  <li>数组的元素、切片的元素，Map的元素</li>
+</ul>
+
+<p>使用的时候，只需要注意一个点：<mark>指针指向了谁</mark></p>
+
+<h2 id="5结构体的定义与使用">5、结构体的定义与使用</h2>
+
+<p>我觉得结构体的概念来源于C中的结构体，就相当于Java里封装一个实体类(PO,DTO,VO)，一个对象</p>
+
+<p>go语言中：</p>
+
+<p>结构体是由一系列具有相同类型或不同类型的变量数据构成的数据集合</p>
+
+<p>结构体表示一项纪录，比如保存人的信息，有以下属性：</p>
+
+<ul>
+  <li>name 名字</li>
+  <li>age 年龄</li>
+  <li>sex 性别</li>
+</ul>
+
+<blockquote>
+  <p>定义结构体</p>
+</blockquote>
+
+<p>结构体定义需要使用type和struct语句</p>
+
+<ul>
+  <li>type 设定结构体的名称</li>
+  <li>struct  语句定义一个新的数据类型</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 定义一个结构体 User</span>
+<span class="c">// User 结构体名称，开头大小写字母跟权限有关，小写user表示是私有的，只能在当前go文件内部访问</span>
+<span class="c">// 大写User表示公有的，当前go文件外部也可以访问</span>
+<span class="k">type</span> <span class="n">User</span> <span class="k">struct</span><span class="p">{</span>
+  <span class="n">name</span> <span class="kt">string</span>
+  <span class="n">age</span> <span class="kt">int</span>
+  <span class="n">sex</span> <span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>例子：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 定义一个结构体</span>
+<span class="c">// User 访问权限相关，小写user 私有，大写User 公有</span>
+<span class="k">type</span> <span class="n">User</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">name</span> <span class="kt">string</span>
+	<span class="n">age</span>  <span class="kt">int</span>
+	<span class="n">sex</span>  <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 1、创建User对象，成员变量会有默认值</span>
+	<span class="k">var</span> <span class="n">user1</span> <span class="n">User</span>
+	<span class="c">// 打印，发现对象user1的成员变量是有默认值的，int默认0,string默认空字符串</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span> <span class="c">// { 0 }</span>
+	<span class="c">// 赋值</span>
+	<span class="n">user1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
+	<span class="n">user1</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">18</span>
+	<span class="n">user1</span><span class="o">.</span><span class="n">sex</span> <span class="o">=</span> <span class="s">"男"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+	<span class="c">// 2、简单写法</span>
+	<span class="n">user2</span> <span class="o">:=</span> <span class="n">User</span><span class="p">{}</span>
+	<span class="c">// 赋值</span>
+	<span class="n">user2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"feige"</span>
+	<span class="n">user2</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">30</span>
+	<span class="n">user2</span><span class="o">.</span><span class="n">sex</span> <span class="o">=</span> <span class="s">"男"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user2</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+	<span class="c">// 3、定义并赋值</span>
+	<span class="n">user3</span> <span class="o">:=</span> <span class="n">User</span><span class="p">{</span>
+		<span class="n">name</span><span class="o">:</span> <span class="s">"xuexiangban"</span><span class="p">,</span>
+		<span class="n">age</span><span class="o">:</span>  <span class="m">2</span><span class="p">,</span>
+		<span class="n">sex</span><span class="o">:</span>  <span class="s">"男"</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user3</span><span class="p">)</span>
+
+	<span class="c">// 4、按照结构体的成员变量赋值，可以忽略字段名称</span>
+	<span class="n">user4</span> <span class="o">:=</span> <span class="n">User</span><span class="p">{</span><span class="s">"xiaoming"</span><span class="p">,</span> <span class="m">20</span><span class="p">,</span> <span class="s">"女"</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user4</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span> 0 <span class="o">}</span>
+<span class="o">{</span>kuangshen 18 男<span class="o">}</span>
+kuangshen
+feige
+<span class="o">{</span>xuexiangban 2 男<span class="o">}</span>
+<span class="o">{</span>xiaoming 20 女<span class="o">}</span>
+</code></pre></div></div>
+
+<p>结构体的使用都是通过.来获取</p>
+
+<h2 id="6结构体的指针应用">6、结构体的指针应用</h2>
+
+<p>go语言中，<mark>结构体是值类型传递的</mark>，java中类的使用都是引用类型传递的</p>
+
+<p><mark>使用内置函数new()创建，new的所有Type都是返回指针</mark></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">user1</span><span class="o">:=</span><span class="nb">new</span><span class="p">(</span><span class="n">User</span><span class="p">)</span> <span class="c">// 没想到go语言也使用new关键字</span>
+</code></pre></div></div>
+
+<p>推导结构体是值类型的例子：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">User</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">name</span> <span class="kt">string</span>
+	<span class="n">age</span>  <span class="kt">int</span>
+	<span class="n">sex</span>  <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"推导结构体是值类型的"</span><span class="p">)</span>
+	<span class="n">user1</span> <span class="o">:=</span> <span class="n">User</span><span class="p">{</span><span class="s">"kuangshen"</span><span class="p">,</span> <span class="m">18</span><span class="p">,</span> <span class="s">"男"</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span>
+	<span class="c">// 赋值给user2,修改user2的值，如果user1的值没有变化，说明结构体是值类型的</span>
+	<span class="n">user2</span> <span class="o">:=</span> <span class="n">user1</span>
+	<span class="n">user2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"feige"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user2</span><span class="p">)</span>
+
+	<span class="c">// 通过指针修改结构体</span>
+	<span class="k">var</span> <span class="n">user3</span> <span class="o">*</span><span class="n">User</span> <span class="c">// 声明User类型的指针</span>
+	<span class="n">user3</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">user1</span> <span class="c">// 结构体变量user1的内存地址赋值给指针user3</span>
+	<span class="c">// (*user3).name = "zhangsan"</span>
+	<span class="n">user3</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"zhangsan"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span> <span class="c">// user1的name变为zhangsan</span>
+
+	<span class="c">//  new 创建结构体，返回结构体指针</span>
+	<span class="n">user4</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+	<span class="c">// 打印user4的数据类型，它是结构体User指针</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">user4</span><span class="p">)</span> <span class="c">// User类型指针</span>
+	<span class="n">user4</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"qinjiang"</span>
+	<span class="n">user4</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">18</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user4</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>推导结构体是值类型的
+<span class="o">{</span>kuangshen 18 男<span class="o">}</span>
+<span class="o">{</span>kuangshen 18 男<span class="o">}</span>
+<span class="o">{</span>feige 18 男<span class="o">}</span>
+<span class="o">{</span>zhangsan 18 男<span class="o">}</span>
+<span class="k">*</span>main.User
+&amp;<span class="o">{</span>qinjiang 18 <span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="7匿名结构体">7、匿名结构体</h2>
+
+<p>匿名变量，匿名函数，匿名结构体</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 定义结构体</span>
+<span class="k">type</span> <span class="n">Student</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">name</span> <span class="kt">string</span>
+	<span class="n">age</span>  <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">Teacher</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="c">// 匿名字段</span>
+	<span class="kt">string</span>
+	<span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">s1</span> <span class="o">:=</span> <span class="n">Student</span><span class="p">{</span><span class="s">"kuangshen"</span><span class="p">,</span> <span class="m">18</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s1</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+	<span class="c">// 定义一个匿名结构体对象，并赋值</span>
+	<span class="n">s2</span> <span class="o">:=</span> <span class="k">struct</span> <span class="p">{</span>
+		<span class="n">name</span> <span class="kt">string</span>
+		<span class="n">age</span>  <span class="kt">int</span>
+	<span class="p">}{</span><span class="s">"zhangsan"</span><span class="p">,</span> <span class="m">30</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s2</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+	<span class="c">// 创建匿名字段的结构体对象</span>
+	<span class="n">t1</span> <span class="o">:=</span> <span class="n">Teacher</span><span class="p">{</span><span class="s">"qinjiang"</span><span class="p">,</span> <span class="m">27</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t1</span><span class="o">.</span><span class="kt">string</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kuangshen
+zhangsan
+<span class="o">{</span>qinjiang 27<span class="o">}</span>
+qinjiang
+</code></pre></div></div>
+
+<h2 id="8结构体嵌套">8、结构体嵌套</h2>
+
+<p>一个结构体的字段是另外一个结构体，这就叫做结构体嵌套</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Address</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">city</span><span class="p">,</span> <span class="n">state</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">name</span> <span class="kt">string</span>
+	<span class="n">age</span>  <span class="kt">int</span>
+	<span class="c">// 结构体嵌套</span>
+	<span class="n">addr</span> <span class="n">Address</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">person1</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{}</span>
+	<span class="n">person1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
+	<span class="n">person1</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">18</span>
+	<span class="n">person1</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">Address</span><span class="p">{</span><span class="s">"广州"</span><span class="p">,</span> <span class="s">"中国"</span><span class="p">}</span>
+
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">person1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">person1</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>kuangshen 18 <span class="o">{</span>广州 中国<span class="o">}}</span>
+<span class="o">{</span>广州 中国<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="9结构体导出">9、结构体导出</h2>
+
+<ul>
+  <li>如果结构体名称首字母小写，这结构体不会被导出</li>
+  <li>如果结构体名称首字母大写，则结构体可被导出，但只会到处大写首字母的成员字段，那些小写首字母的成员字段不会被导出</li>
+  <li>如果存在嵌套结构体，即使嵌套的结构体字段首字母小写，外部也能访问到其中首字母大写的成员字段</li>
+</ul>
+
+<p>正常开发，会把结构体放到一个独立的package中</p>
+
+<p><img src="/assets/images/2022/go/user-struct.png" alt="" /></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">pojo</span>
+
+<span class="c">// 大写首字母就是外部可以访问的 public</span>
+<span class="k">type</span> <span class="n">User</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">Name</span>  <span class="kt">string</span>
+	<span class="n">age</span>   <span class="kt">int</span> <span class="c">// 小写首字母字段外部不可以访问</span>
+	<span class="n">Money</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="c">// 小写首字母，外部不可以访问的，private</span>
+<span class="k">type</span> <span class="n">cat</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">age</span> <span class="kt">int</span> <span class="c">// 小写首字母字段外部不可以访问</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>引入pojo包使用里面的结构体</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"./pojo"</span>
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">user1</span> <span class="o">:=</span> <span class="n">pojo</span><span class="o">.</span><span class="n">User</span><span class="p">{}</span>
+	<span class="n">user1</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
+	<span class="n">user1</span><span class="o">.</span><span class="n">Money</span> <span class="o">=</span> <span class="s">"99999"</span>
+	
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>kuangshen 0 99999<span class="o">}</span>  // age是小写首字母字段，外部不可以访问，无法赋值，int 默认0
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/go/user-struct-2.png" alt="" /></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/go/2023/01/07/go-note-007.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -3,7 +3,7 @@ layout: post
 title: spring cloud aibaba教程：如何使用nacos作为配置中心
 category: springcloud
 tags: [springcloud]
-keywords: springcloud
+keywords: nacos
 excerpt: 不用重启服务实现热加载，随时修改配置，没问题。
 lock: noneed
 ---

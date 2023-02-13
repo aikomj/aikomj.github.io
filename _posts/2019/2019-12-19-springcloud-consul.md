@@ -3,8 +3,8 @@ layout: post
 title: spring cloud consul的使用
 category: springcloud
 tags: [springcloud]
-keywords: springcloud
-excerpt: 支持分布式管理服务与配置，提供了完整的服务网格解决方案
+keywords: consul
+excerpt: 支持分布式管理服务与配置，提供了完整的服务网格解决方案,服务注册发现，服务配置中心
 lock: noneed
 ---
 ## 1、什么是Consul
@@ -197,10 +197,15 @@ public class ConsumerController {
 ```
 启动provider,consumer,在浏览器上访问http://localhost:8765/hi，浏览器响应如下：
 > hi forezp,i am from port:8763
+
 这说明consul-consumer已经成功调用了consul-provider的服务。这说明consul-provider的服务已经注册到了consul的注册中心上面去了。consul-consumer能够获取注册中心的注册列表来获来消费服务。
+
 ![](/assets/images/2019/springcloud/consul-services.png)
 
+![](../../assets/images/2019/springcloud/consul-services.png)
+
 ## 4、服务配置中心
+
 Spring Cloud 提供了Spring Cloud Consul Config依赖去和Consul相集成，用来做配置中心。 现在以案例的形式来讲解如何使用Consul作为配置中心，本案例在上一个案例的consul-provider基础上进行改造。首先在工程的pom文件加上consul-config的起步依赖，代码如下：
 ```
 <dependency>

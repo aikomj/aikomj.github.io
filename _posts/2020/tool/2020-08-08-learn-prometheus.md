@@ -2,8 +2,8 @@
 layout: post
 title: 体验开源的系统监控报警框架工具Prometheus普罗米修斯
 category: tool
-tags: springcloud
-keywords: springcloud
+tags: [prometheus]
+keywords: prometheus
 excerpt: Prometheus 是一套开源的系统监控报警框架，广泛用于Kubernetes 集群的监控系统中
 lock: noneed
 ---

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 使用javassist修改class文件 - 大伟的博客 </title>
+    <meta name="keywords" content="java">
+    <meta name="description"
+          content="简单的动态编程，反编译class文件查看代码，javassist修改">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2021/01/22/javassist-update-class-file.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="使用javassist修改class文件">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>使用javassist修改class文件</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/01/22
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="前言">前言</h2>
+
+<p>使用javassist做动态代理，请移步<a href="/java-design/2020/05/03/3-java-proxy-mode.html">23种设计模式之代理模式-Proxy</a>。javassist是一个编辑创建java字节码的类库，由一位日本人创建的。前段时间有个项目是基于JDK6开发的，不是maven项目，要手动导入依赖的jar包，这个jar包的class文件都是jdk6的，如果换成一个jdk8的class文件，那么项目就会因为class文件的jdk版本不兼容启动失败。所以使用javassist修改jdk6的class文件。</p>
+
+<p><img src="\assets\images\2021\javabase\jdk6-class-file.png" alt="" /></p>
+
+<h2 id="1javassist">1、Javassist</h2>
+
+<h3 id="功能">功能</h3>
+
+<p>主要的类：</p>
+
+<ul>
+  <li>ClassPool // 操作前都要创建一个 class池</li>
+  <li>CtClass // 具体的操作class的对象</li>
+  <li>CtMethod // class文件中的 某个方法对象</li>
+  <li>CtField // class文件中的 某个方法字段</li>
+</ul>
+
+<p>主要的方法</p>
+
+<ul>
+  <li>CtClass.addMethod</li>
+  <li>CtClass.removeMethod</li>
+  <li>CtClass.removeField</li>
+  <li>CtClass.writeFile // 写入文件,</li>
+  <li>CtClass.addField</li>
+  <li>CtMethod.insertBefore</li>
+  <li>CtMethod.insertAfter</li>
+  <li>CtMethod.insertAt</li>
+  <li>CtMethod.setBody</li>
+</ul>
+
+<h3 id="增加成员变量">增加成员变量</h3>
+
+<p>pom.xml要先导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.javassist<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>javassist<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>3.27.0-GA<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>对上面的SpecialPricePolicyVO.class文件，增加成员变量isOperationFeeCalculated 和get/set方法，代码如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+    <span class="nc">String</span> <span class="n">pathName</span> <span class="o">=</span> <span class="s">"D:\\jacob\\ccs\\ccs_policy_hessian"</span><span class="o">;</span>
+    <span class="c1">// 类的包路径</span>
+    <span class="nc">String</span> <span class="n">className</span> <span class="o">=</span> <span class="s">"com.midea.ccs.base.rpcvo.SpecialPricePolicyVO"</span><span class="o">;</span>
+    <span class="nc">ClassPool</span> <span class="n">cPool</span> <span class="o">=</span> <span class="nc">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
+    <span class="n">cPool</span><span class="o">.</span><span class="na">insertClassPath</span><span class="o">(</span><span class="n">pathName</span><span class="o">);</span>
+    <span class="nc">CtClass</span> <span class="n">cClass</span> <span class="o">=</span> <span class="n">cPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+
+    <span class="c1">// 增加成员变量</span>
+    <span class="n">cClass</span><span class="o">.</span><span class="na">addField</span><span class="o">(</span><span class="nc">CtField</span><span class="o">.</span><span class="na">make</span><span class="o">(</span><span class="s">"private String isOperationFeeCalculated;"</span><span class="o">,</span><span class="n">cClass</span><span class="o">));</span>
+    <span class="c1">// 增加get方法</span>
+    <span class="nc">CtMethod</span> <span class="n">getOperation</span> <span class="o">=</span> <span class="nc">CtMethod</span><span class="o">.</span><span class="na">make</span><span class="o">(</span><span class="s">"public String getIsOperationFeeCalculated(){"</span> <span class="o">+</span>
+                                          <span class="s">"return isOperationFeeCalculated;}"</span><span class="o">,</span><span class="n">cClass</span><span class="o">);</span>
+    <span class="n">cClass</span><span class="o">.</span><span class="na">addMethod</span><span class="o">(</span><span class="n">getOperation</span><span class="o">);</span>
+    <span class="c1">// 增加set方法</span>
+    <span class="nc">CtMethod</span> <span class="n">setOperation</span> <span class="o">=</span> <span class="nc">CtMethod</span><span class="o">.</span><span class="na">make</span><span class="o">(</span><span class="s">"public void setIsOperationFeeCalculated(String isOperationFeeCalculated){}"</span><span class="o">,</span> <span class="n">cClass</span><span class="o">);</span>
+    <span class="n">setOperation</span><span class="o">.</span><span class="na">setBody</span><span class="o">(</span><span class="s">"this.isOperationFeeCalculated = isOperationFeeCalculated;"</span><span class="o">);</span>
+    <span class="n">cClass</span><span class="o">.</span><span class="na">addMethod</span><span class="o">(</span><span class="n">setOperation</span><span class="o">);</span>
+
+    <span class="n">cClass</span><span class="o">.</span><span class="na">writeFile</span><span class="o">(</span><span class="n">pathName</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行main方法，成功后使用idea打开SpecialPricePolicyVO.class文件，发现增加了字段isOperationFeeCalculated</p>
+
+<h3 id="修改方法">修改方法</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">javassist.CannotCompileException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javassist.ClassPool</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javassist.CtClass</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javassist.CtField</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javassist.CtMethod</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javassist.CtNewMethod</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javassist.NotFoundException</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UpdateMethod</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="n">pathName</span> <span class="o">=</span> <span class="s">"D:\\Java\\xxxxx\\test\\bin"</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="n">className</span> <span class="o">=</span> <span class="s">"com.lucumt.Test1"</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">updateMethod</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">updateMethod</span><span class="o">(){</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">ClassPool</span> <span class="n">cPool</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPool</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+            <span class="c1">//设置class文件的位置</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">insertClassPath</span><span class="o">(</span><span class="n">pathName</span><span class="o">);</span>
+            <span class="c1">// 导入需要引入的 包</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"com.gdzy.JZFW.service"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"java.text"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"com.gdzy.JZFW.pojo"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"com.gdzy.JZFW.util"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"java.net"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"java.util"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"javax.servlet"</span><span class="o">);</span>
+            <span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"com.sun.syndication"</span><span class="o">);</span>
+
+            <span class="c1">//获取该class对象</span>
+            <span class="nc">CtClass</span> <span class="n">cClass</span> <span class="o">=</span> <span class="n">cPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+            <span class="c1">//获取到对应的方法</span>
+            <span class="nc">CtMethod</span> <span class="n">cMethod</span> <span class="o">=</span> <span class="n">cClass</span><span class="o">.</span><span class="na">getDeclaredMethod</span><span class="o">(</span><span class="s">"addNumber"</span><span class="o">);</span>
+
+            <span class="c1">// 整个方法的内容修改</span>
+            <span class="n">cMethod</span><span class="o">.</span><span class="na">setBody</span><span class="o">(</span><span class="s">"{"</span><span class="kt">long</span> <span class="n">z1</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span><span class="err">\</span><span class="n">n</span><span class="s">"+
+                    "</span> <span class="kt">boolean</span> <span class="n">sendOld</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span><span class="err">\</span><span class="n">n</span><span class="s">"+
+                    "</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Map</span><span class="cm">/*&lt;String, Object&gt;*/</span> <span class="n">mapparam</span> <span class="o">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">HashMap</span><span class="o">();</span><span class="err">\</span><span class="n">n</span><span class="s">" +
+                    "</span>  <span class="n">mapparam</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="err">\</span><span class="s">"typenameEqual\", \"old_sendEQIM_used\");\n"</span> <span class="o">+</span>
+                    <span class="s">"        java.util.List/*&lt;com.gdzy.JZFW.pojo.Useruse&gt;*/ listOldused = this.useruseService.selectList(mapparam);\n"</span><span class="o">+</span>
+                    <span class="s">"        if (listOldused.size() &gt; 0 &amp;&amp; ((com.gdzy.JZFW.pojo.Useruse)listOldused.get(0)).getParametervalues().equals(\"1\")) {\n"</span> <span class="o">+</span>
+                    <span class="s">"            sendOld = true;\n"</span> <span class="o">+</span>
+                    <span class="s">"        }\n"</span><span class="o">+</span>
+                    <span class="s">"        boolean sendNew = false;\n"</span> <span class="o">+</span>
+                    <span class="s">"        mapparam.clear();\n"</span> <span class="o">+</span>
+                    <span class="s">"        mapparam.put(\"typenameEqual\", \"new_sendEQIM_used\");\n"</span> <span class="o">+</span>
+                    <span class="s">"        java.util.List/*&lt;com.gdzy.JZFW.pojo.Useruse&gt;*/ listNewused = this.useruseService.selectList(mapparam);\n"</span> <span class="o">+</span>
+                    <span class="s">"        if (listNewused.size() &gt; 0 &amp;&amp; ((com.gdzy.JZFW.pojo.Useruse)listNewused.get(0)).getParametervalues().equals(\"1\")) {\n"</span> <span class="o">+</span>
+                    <span class="s">"            sendNew = true;\n"</span> <span class="o">+</span>
+                    <span class="s">"        }\n"</span><span class="o">+}</span><span class="err">"</span><span class="o">);</span>
+
+            <span class="c1">// 写入class文件</span>
+            <span class="n">cClass</span><span class="o">.</span><span class="na">writeFile</span><span class="o">(</span><span class="n">pathName</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">NotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">CannotCompileException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>修改方法中的具体行</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="nc">ClassPool</span> <span class="n">classPool</span> <span class="o">=</span> <span class="nc">ClassPool</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>
+  <span class="c1">// 必须将class文件放在这个工程编译后的class文件中，路径也对应起来</span>
+  <span class="nc">CtClass</span> <span class="n">ctClass</span> <span class="o">=</span> <span class="n">classPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"com.ambitionstone.esa2000.pki.AZTPkiServlet"</span><span class="o">);</span>
+
+  <span class="c1">//设置方法需要的参数，一定要能匹配起来，而且必须引入这些参数类的包</span>
+  <span class="nc">CtClass</span><span class="o">[]</span> <span class="n">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CtClass</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span> <span class="o">;</span>                
+  <span class="n">param</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">classPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"javax.servlet.http.HttpServletRequest"</span><span class="o">)</span> <span class="o">;</span>
+  <span class="n">param</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">classPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"javax.servlet.http.HttpServletResponse"</span><span class="o">)</span> <span class="o">;</span>
+  <span class="n">param</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">classPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"int"</span><span class="o">)</span> <span class="o">;</span>
+  <span class="n">param</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=</span> <span class="n">classPool</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"java.lang.String"</span><span class="o">)</span> <span class="o">;</span>
+
+  <span class="c1">// 找到需要修改的行所在的方法</span>
+  <span class="nc">CtMethod</span>  <span class="n">method</span> <span class="o">=</span> <span class="n">ctClass</span><span class="o">.</span><span class="na">getDeclaredMethod</span><span class="o">(</span><span class="s">"doOnlineValidate"</span><span class="o">,</span> <span class="n">param</span><span class="o">);</span>
+  <span class="c1">// 在这个方法的182行添加关闭文件流的方法</span>
+  <span class="n">method</span><span class="o">.</span><span class="na">insertAt</span><span class="o">(</span><span class="mi">182</span><span class="o">,</span> <span class="s">"fin.close();"</span><span class="o">);</span>
+
+  <span class="c1">// 将文件写到指定的目录，</span>
+  <span class="n">ctClass</span><span class="o">.</span><span class="na">writeFile</span><span class="o">(</span><span class="s">"D:\\test"</span><span class="o">)</span> <span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>注意：</p>
+
+<ul>
+  <li>
+    <p>在使用&lt;&gt;这样的泛型定义 标识时 要使用 /* */ 将其包括起来</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="err">要写成</span> <span class="nc">List</span><span class="cm">/*&lt;String&gt;*/</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>引入包</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ClassPool</span> <span class="n">cPool</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPool</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="c1">//设置class文件的位置</span>
+<span class="n">cPool</span><span class="o">.</span><span class="na">insertClassPath</span><span class="o">(</span><span class="n">pathName</span><span class="o">);</span>
+<span class="c1">//如果该文件引入了其它类，需要利用类似如下方式声明</span>
+<span class="n">cPool</span><span class="o">.</span><span class="na">importPackage</span><span class="o">(</span><span class="s">"java.util.List"</span><span class="o">);</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2021/01/22/javassist-update-class-file.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

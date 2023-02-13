@@ -121,6 +121,8 @@ public void handlerAsync() {
 
 来看一下结果，如下图：
 
+![](../../../assets/images/2023/springboot/taskdecorator.jpg)
+
 ![](/assets/images/2023/springboot/taskdecorator.jpg)
 
 这里使用的是`CompletableFuture`执行异步任务，使用`@Async`这个注解同样是可行的。

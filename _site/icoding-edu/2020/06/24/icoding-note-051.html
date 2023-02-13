@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第51节：数据切分设计方案Mycat-1 - 大伟的博客 </title>
+    <meta name="keywords" content="mysql">
+    <meta name="description"
+          content="数据切分的实现方式-垂直切分，水平拆分，Mycat数据库中间件的安装使用，内部逻辑原理，核心配置文件，配置读写分离writeHost,readHost，双主写操作">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/06/24/icoding-note-051.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第51节：数据切分设计方案Mycat-1">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第51节：数据切分设计方案Mycat-1</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/06/24
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1-数据的切分实现方式">1. 数据的切分实现方式</h2>
+
+<p>简单来讲，就是讲存放在一台数据库上的数据分布到多台数据库上，形成了一个分布式数据库，大致我们数据的拆分方式分为两种</p>
+
+<h3 id="11-垂直切分">1.1. 垂直切分</h3>
+
+<p>常用于我们的微服务设计中，不同的业务领域存放不同的表，比如用户模块存放我们用户相关表，外部调用通过服务访问用户模块，用户模块再去访问对应的数据库</p>
+
+<p>跨库来实现我们数据的join连接，就会导致查询性能极大的下降</p>
+
+<p>垂直切分的优缺点</p>
+
+<p><strong>优点</strong></p>
+
+<ul>
+  <li>拆分后业务更清晰，规则明确</li>
+  <li>系统之间耦合降低，便于扩展</li>
+  <li>数据维护简单</li>
+</ul>
+
+<p><strong>缺点</strong></p>
+
+<ul>
+  <li>
+    <p>部分业务表无法join，只能通过接口调用，提升了系统的复杂度</p>
+  </li>
+  <li>
+    <p>跨库事务处理是个问题（2PC，程序端解决2PC，阿里的seata 解决分布式事务）</p>
+  </li>
+  <li>
+    <p>垂直切分以后，某些业务数据依旧庞大，依然会存在单体性能瓶颈</p>
+  </li>
+</ul>
+
+<h3 id="12-水平拆分">1.2. 水平拆分</h3>
+
+<p>明确的id查询是通过表的存入规则来进行匹配，如果是范围查询，将数据在两个表都进行查询然后进行业务合并，如在A表，B表查询完后结果进行一个排序，再返回相应数据量的结果，ElasticSearch的分片查询底层也是如此的原理。</p>
+
+<p>优点</p>
+
+<ul>
+  <li>解决了单库大数据，高并发的问题，实现数据的分布式</li>
+  <li>拆分规则只要封装好，开发人员不用考虑拆分细节</li>
+  <li>提升了系统的稳定性和负载能力</li>
+</ul>
+
+<p>缺点</p>
+
+<ul>
+  <li>
+    <p>拆分规则不太好抽象</p>
+  </li>
+  <li>
+    <p>分布式事务一致性不好解决</p>
+  </li>
+  <li>
+    <p>二次扩展的时候、数据迁移、维护难度都比较大</p>
+  </li>
+</ul>
+
+<h3 id="13-整体方案总结">1.3. 整体方案总结</h3>
+
+<p>垂直和水平都要面临的问题（<strong>一定是先垂直后水平</strong>）</p>
+
+<ul>
+  <li>分布式事务问题</li>
+  <li>跨库join问题</li>
+  <li>多数据源的问题</li>
+  <li>拆分合并的问题</li>
+</ul>
+
+<p>针对多数据源的管理问题，主要有两种思路</p>
+
+<p>1、<font color="red">客户端模式：</font>只要需要配置好底层的数据源，然后在程序上直接访问即可</p>
+
+<p>2、<font color="red">中间代理模式：</font>由中间代理管理所有数据源，开发人员完全不用关心底层数据源是什么，在哪里，开发人员不用关系拆分规则</p>
+
+<p>基于这两种模式对应的成熟的第三方中间件</p>
+
+<ul>
+  <li>
+    <font color="red">中间代理模式：MyCat </font>
+    <p>（相当于一个分布式数据库，而我们的MySQL只是他的一个存储仓库）</p>
+  </li>
+  <li>客户端模式：sharding-jdbc（统一的数据源，由他管理不同的数据链接）</li>
+</ul>
+
+<h2 id="2-mycat的内部逻辑">2. MyCat的内部逻辑</h2>
+
+<font color="red">1、逻辑库（Schema）</font>
+
+<p>将分开的物理库合并的一个逻辑数据库</p>
+
+<font color="red">2、逻辑表（table）</font>
+
+<p>逻辑表就是物理表的总和，Mycat中看到的表就是逻辑表</p>
+
+<p>只要进行了水平切分就是一个分片表，没有切分的就是非分片表</p>
+
+<p>通过<mark>冗余方式</mark>复制到所有分片表所在库的表就叫<mark>全局表</mark></p>
+
+<font color="red">3、分片节点（dataNode）</font>
+
+<p>数据表被分片到不同的分片数据库上，每个分片表所在的库就叫<mark>数据节点</mark></p>
+
+<font color="red">4、分片主机（dataHost）</font>
+
+<p>所有分片数据实际存放的物理数据库</p>
+
+<font color="red">5、分片规则（rule）</font>
+
+<p>MyCat有很多分片规则，基本够用，自己本身是用Java开发的</p>
+
+<font color="red">6、全局序列号</font>
+
+<ul>
+  <li>UUID 不建议，因为它不能进行索引组织，uuid无序</li>
+  <li>Snow ID 雪花算法</li>
+</ul>
+
+<h2 id="3-mycat安装使用">3. MyCat安装使用</h2>
+
+<h3 id="mycat简介">mycat简介</h3>
+
+<p>官方地址：<a href="http://www.mycat.org.cn/">http://www.mycat.org.cn/</a></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat.jpg" alt="" /></p>
+
+<p>mycat学习文档：<a href="www.mycat.org.cn/document/mycat-definitive-guide.pdf">www.mycat.org.cn/document/mycat-definitive-guide.pdf</a></p>
+
+<p><strong>什么是mycat</strong></p>
+
+<ul>
+  <li>
+    <p>一个彻底开源的，面向企业应用开发的大数据库集群</p>
+  </li>
+  <li>
+    <p>支持事务、ACID、可以替代MySQL的加强版数据库</p>
+  </li>
+  <li>
+    <p><mark>一个可以视为MySQL集群的企业级数据库，</mark>用来替代昂贵的Oracle集群</p>
+  </li>
+  <li>
+    <p>一个融合内存缓存技术、NoSQL技术、HDFS大数据的新型SQL Server</p>
+  </li>
+  <li>
+    <p>结合传统数据库和新型分布式数据仓库的新一代企业级数据库产品</p>
+  </li>
+  <li>
+    <p>一个新颖的数据库中间件产品</p>
+  </li>
+</ul>
+
+<p><strong>目标</strong></p>
+
+<p>低成本的将现有的单机数据库和应用平滑迁移到“云”端，解决数据存储和业务规模迅速增长情况下的数据瓶颈问题。</p>
+
+<p><strong>最新版本1.6架构</strong></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-16-arch.png" alt="" /></p>
+
+<p><mark>这是MyCat的物理结构，MyCat本身是不存储数据的</mark></p>
+
+<p>每个mysql就是一个分片数据库，合起来才是一个完整的数据，像redis的集群，elasticsearch的分片一样道理，合起来才是所有的数据。</p>
+
+<p>mysql的分库与mysql的分区表在思想上也有一些相同之处，分区表就是把数据切开到不同的文件（一个mysql数据库），分库就是mysql集群，将数据切开放到不同的mysql数据库上。</p>
+
+<p>也可以在每个mysql分库上做主从</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-mysql-master-slave .jpg" alt="" /></p>
+
+<p><strong>2.0规划</strong></p>
+
+<ul>
+  <li>
+    <p>完全实现分布式事务，完全的支持分布式。</p>
+  </li>
+  <li>
+    <p>通过Mycat web（eye）完成可视化配置，及智能监控，自动运维。</p>
+  </li>
+  <li>
+    <p>通过mysql 本地节点，完整的解决数据扩容难度，实现自动扩容机制，解决扩容难点。</p>
+  </li>
+  <li>
+    <p>支持基于zookeeper的主从切换及Mycat集群化管理。</p>
+  </li>
+  <li>
+    <p>通过Mycat Balance 替代第三方的Haproxy，LVS等第三方高可用，完整的兼容Mycat集群节点的动态上下线。</p>
+  </li>
+  <li>
+    <p>接入Spark等第三方工具，解决数据分析及大数据聚合的业务场景。</p>
+  </li>
+  <li>
+    <p>通过Mycat智能优化，分析分片热点，提供合理的分片建议，索引建议，及数据切分实时业务建议。</p>
+  </li>
+</ul>
+
+<h3 id="docker安装mysql">docker安装mysql</h3>
+
+<p>由于我只有一台云服务器，所以使用docker安装多个mysql实例做测试，生成环境下必须一台服务器一个mysql</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 自定义一个mysql集群网络</span>
+<span class="o">[</span>root@alibaba ~]# docker network create <span class="nt">--subnet</span> 172.18.0.0/16 <span class="nt">--gateway</span> 172.18.0.1 mysql-net
+
+<span class="c"># mysql的配置文件挂载: /opt/mysql213/conf</span>
+<span class="c"># mysql的数据存储目录挂载: /opt/mysql213/data</span>
+<span class="c"># mysql的日志文件目录挂载: /opt/mysql213/logs</span>
+<span class="o">[</span>root@alibaba mysql-slave]# docker run <span class="nt">-d</span> <span class="nt">-p</span> 3306:3306 
+<span class="nt">-v</span> /opt/mysql213/conf:/etc/mysql/mysql.conf.d 
+<span class="nt">-v</span> /opt/mysql213/data:/var/lib/mysql 
+<span class="nt">-v</span> /opt/mysql213/logs:/var/log/mysql
+<span class="nt">--net</span> mysql-net <span class="nt">--ip</span> 172.18.0.213
+<span class="nt">-e</span> <span class="nv">MYSQL_ROOT_PASSWORD</span><span class="o">=</span>mysql123456 <span class="nt">--name</span> mysql213 mysql:5.7.30
+
+<span class="c"># 再安装另一个mysql实例</span>
+<span class="o">[</span>root@alibaba mysql-slave]# docker run <span class="nt">-d</span> <span class="nt">-p</span> 3307:3306 
+<span class="nt">-v</span> /opt/mysql214/conf:/etc/mysql/mysql.conf.d 
+<span class="nt">-v</span> /opt/mysql214/data:/var/lib/mysql 
+<span class="nt">-v</span> /opt/mysql214/logs:/var/log/mysql
+<span class="nt">--net</span> mysql-net <span class="nt">--ip</span> 172.18.0.214
+<span class="nt">-e</span> <span class="nv">MYSQL_ROOT_PASSWORD</span><span class="o">=</span>mysql123456 <span class="nt">--name</span> mysql214 mysql:5.7.30
+
+</code></pre></div></div>
+
+<h3 id="mycat安装">mycat安装</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 需要提前安装两个数据库：这两个数据库是独立，不能是主从关系</span>
+<span class="c"># 0.下载mycat</span>
+wget http://dl.mycat.org.cn/1.6.7.3/20190927161129/Mycat-server-1.6.7.3-release-20190927161129-linux.tar.gz
+<span class="c"># 1、解压</span>
+<span class="nb">tar</span> <span class="nt">-xvf</span> Mycat-server-1.6.7.3-release-20190927161129-linux.tar.gz
+<span class="c"># 2、Mycat依赖java,服务器要先安装好java环境</span>
+</code></pre></div></div>
+
+<p>使用mycat 搭建一个简单的mysql集群做数据切分，架构图如下：</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mysql-cluster.jpg" alt="" /></p>
+
+<p>进入<mark>server.xml</mark>我们去到底部先看用户权限</p>
+
+<p>1、配置server.xml</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /opt/mycat/conf
+vi server.xml
+</code></pre></div></div>
+
+<p>先配置mycat的连接逻辑库的用户</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;user</span> <span class="na">name=</span><span class="s">"root"</span> <span class="na">defaultAccount=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span><span class="nt">&gt;</span>123456<span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"schemas"</span><span class="nt">&gt;</span>user_module,cart_module,product_module<span class="nt">&lt;/property&gt;</span> 连接的逻辑库，可以多个
+<span class="nt">&lt;/user&gt;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-server-xml.jpg" alt="" /></p>
+
+<p>2、配置逻辑库：<mark>schema.xml</mark></p>
+
+<p>先配置两个物理主机 <mark>dataHost</mark>，就是配置两个mysql数据库的物理机信息</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dataHost</span> <span class="na">name=</span><span class="s">"DB213"</span> <span class="na">maxCon=</span><span class="s">"1000"</span> <span class="na">minCon=</span><span class="s">"10"</span> <span class="na">balance=</span><span class="s">"0"</span> <span class="na">writeType=</span><span class="s">"0"</span> <span class="na">dbType=</span><span class="s">"mysql"</span> <span class="na">dbDriver=</span><span class="s">"native"</span> <span class="na">switchType=</span><span class="s">"1"</span>  <span class="na">slaveThreshold=</span><span class="s">"100"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;heartbeat&gt;</span>select user()<span class="nt">&lt;/heartbeat&gt;</span>
+  <span class="nt">&lt;writeHost</span> <span class="na">host=</span><span class="s">"M1"</span> <span class="na">url=</span><span class="s">"192.168.0.213:3306"</span> <span class="na">user=</span><span class="s">"gavin"</span>
+             <span class="na">password=</span><span class="s">"123456"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/writeHost&gt;</span>
+<span class="nt">&lt;/dataHost&gt;</span>
+<span class="nt">&lt;dataHost</span> <span class="na">name=</span><span class="s">"DB214"</span> <span class="na">maxCon=</span><span class="s">"1000"</span> <span class="na">minCon=</span><span class="s">"10"</span> <span class="na">balance=</span><span class="s">"0"</span> <span class="na">writeType=</span><span class="s">"0"</span> <span class="na">dbType=</span><span class="s">"mysql"</span> <span class="na">dbDriver=</span><span class="s">"native"</span> <span class="na">switchType=</span><span class="s">"1"</span>  <span class="na">slaveThreshold=</span><span class="s">"100"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;heartbeat&gt;</span>select user()<span class="nt">&lt;/heartbeat&gt;</span>
+  <span class="nt">&lt;writeHost</span> <span class="na">host=</span><span class="s">"M1"</span> <span class="na">url=</span><span class="s">"192.168.0.214:3306"</span> <span class="na">user=</span><span class="s">"gavin"</span>
+             <span class="na">password=</span><span class="s">"123456"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/writeHost&gt;</span>
+<span class="nt">&lt;/dataHost&gt;</span>
+</code></pre></div></div>
+
+<p>一个dataHost下可以有多个writeHost和readHost，但是mycat只会选择一个writeHost写入数据，所以两个writeHost之间要做双主互备，保证一个writeHost 宕机了，另外一个writeHost数据是完整的。</p>
+
+<p>配置<mark>dataNode</mark>的数据节点，这里的database是我们的物理存放数据的数据库名</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dataNode</span> <span class="na">name=</span><span class="s">"dn213"</span> <span class="na">dataHost=</span><span class="s">"DB213"</span> <span class="na">database=</span><span class="s">"user_213"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;dataNode</span> <span class="na">name=</span><span class="s">"dn214"</span> <span class="na">dataHost=</span><span class="s">"DB214"</span> <span class="na">database=</span><span class="s">"user_214"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p>配置<mark>schema节点</mark>，schema节点的name是server.xml里配置逻辑库名，要对应</p>
+
+<p>table节点里配置的name是物理数据库存放的实际表名，rule就是分片规则</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;schema</span> <span class="na">name=</span><span class="s">"user_module"</span> <span class="na">checkSQLschema=</span><span class="s">"true"</span> <span class="na">sqlMaxLimit=</span><span class="s">"100"</span><span class="nt">&gt;</span>
+  <span class="c">&lt;!-- auto sharding by id (long) --&gt;</span>
+  <span class="nt">&lt;table</span> <span class="na">name=</span><span class="s">"user_info"</span> <span class="na">dataNode=</span><span class="s">"dn213,dn214"</span> <span class="na">rule=</span><span class="s">"auto-sharding-long"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/schema&gt;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-schema-xml.jpg" alt="" /></p>
+
+<p>3、现在去两个物理数据库创建两个库user_213，user_214和两个表user_info，id不能自增，使用雪花算法自定义</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`user_info`</span> <span class="p">(</span>
+  <span class="nv">`id`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`username`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`password`</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/user-213-214.jpg" alt="" /></p>
+
+<p>4、启动MyCat</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># mycat根目录下启动</span>
+<span class="o">[</span>root@helloworld bin]# <span class="nb">pwd</span>
+/opt/mycat/bin
+<span class="o">[</span>root@helloworld bin]# ./mycat <span class="nt">--help</span>
+Usage: ./mycat <span class="o">{</span> console | start | stop | restart | status | dump <span class="o">}</span>
+<span class="c"># 控制台输出</span>
+<span class="o">[</span>root@helloworld bin]# ./mycat console
+
+<span class="c"># 报错</span>
+jvm 1    | Caused by: io.mycat.config.util.ConfigException: Illegal table conf : table <span class="o">[</span> USER_INFO <span class="o">]</span> rule <span class="k">function</span> <span class="o">[</span> rang-long <span class="o">]</span> partition size : 3 <span class="o">&gt;</span> table datanode size : 2, please make sure table datanode size <span class="o">=</span> <span class="k">function </span>partition size
+</code></pre></div></div>
+
+<p>查看schema.xml,分片规则是”auto-sharding-long”</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/schema-rule.jpg" alt="" /></p>
+
+<p>在<mark>conf/rule.xml</mark>根据分片规则去找具体的分片策略</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld conf]# vim rule.xml 
+<span class="c"># 找到这个规则 auto-sharding-long</span>
+<span class="c"># columns 物理表的列名，根据这个id列进行数据切分，分到不同的dataNode</span>
+<span class="c"># algorithm 分片策略 rang-long，范围long值</span>
+&lt;tableRule <span class="nv">name</span><span class="o">=</span><span class="s2">"auto-sharding-long"</span><span class="o">&gt;</span>
+	&lt;rule&gt;
+	&lt;columns&gt;id&lt;/columns&gt;
+	&lt;algorithm&gt;rang-long&lt;/algorithm&gt;
+	&lt;/rule&gt;
+&lt;/tableRule&gt;
+
+<span class="c"># 在conf/rule.xml 搜索 rang-long，它是一个function,有一个属性文件autopartition-long.txt,里面就是一下策略的配置</span>
+&lt;<span class="k">function </span><span class="nv">name</span><span class="o">=</span><span class="s2">"rang-long"</span>
+	<span class="nv">class</span><span class="o">=</span><span class="s2">"io.mycat.route.function.AutoPartitionByLong"</span><span class="o">&gt;</span>
+	&lt;property <span class="nv">name</span><span class="o">=</span><span class="s2">"mapFile"</span><span class="o">&gt;</span>autopartition-long.txt&lt;/property&gt;
+&lt;/function&gt;
+
+<span class="c"># 修改策略配置</span>
+<span class="o">[</span>root@helloworld conf]# vi autopartition-long.txt
+<span class="c"># range start-end ,data node index</span>
+<span class="c"># K=1000,M=10000.</span>
+0-500M<span class="o">=</span>0
+500M-1000M<span class="o">=</span>1
+<span class="c">#1000M-1500M=2</span>
+<span class="c"># K=1000 (千),M=10000 （万）</span>
+<span class="c"># 需要根据dataNode设置节点数，0，1，2说明有三个节点，但实际上我们只陪配置dn213,dn214两个节点，所以只配0，1两个节点</span>
+<span class="c"># 按顺序，0就是dn213,1就是dn214</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/auto-sharding-long.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/function-range-long.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/autopartition-long.jpg" alt="" /></p>
+
+<p>再次启动</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 控制台输出</span>
+<span class="o">[</span>root@helloworld bin]# ./mycat console
+</code></pre></div></div>
+
+<p>再次报错</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/server-xml-testdb.jpg" alt="" /></p>
+
+<p>修改 server.xml，注释TESTDB</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/server-xml-testdb2.jpg" alt="" /></p>
+
+<p>启动成功</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-start-successfully.jpg" alt="" /></p>
+
+<p>5、连接mycat，查看server.xml发现它的服务端口是8066，管理端口是9066</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/server-port.jpg" alt="" /></p>
+
+<p>使用Navicat 创建mysql连接Mycat，用户就是上面server.xml的配置的</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-connect.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-connect2.jpg" alt="" /></p>
+
+<font color="red">发现逻辑库user_module和逻辑表user_info</font>
+
+<h3 id="mycat测试">mycat测试</h3>
+
+<p>修改一下autopartition-long.txt，</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># id 0-500的数据分到分片0上，501-100的数据分到分片1上</span>
+<span class="o">[</span>root@helloworld mycat]# vi conf/autopartition-long.txt 
+0-500<span class="o">=</span>0
+500-1000<span class="o">=</span>1
+<span class="c"># 重启mycat</span>
+<span class="o">[</span>root@helloworld mycat]# ./bin/mycat console
+</code></pre></div></div>
+
+<p>在Mycat的连接中，逻辑表user_info 插入数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-userinfo.jpg" alt="" /></p>
+
+<p>发现id为1和500两条记录切分到物理库user_213上</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/user_213.jpg" alt="" /></p>
+
+<p>发现id为501的记录切分到物理库user_214上</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/user_214.jpg" alt="" /></p>
+
+<p>超过id为1000的数据是无法写入的，因为找不到有效的分片节点dataNode，需要配置DEFAULT</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/find-novalid-datanode.jpg" alt="" /></p>
+
+<h2 id="4-mycat分库分表配置">4. MyCat分库分表配置</h2>
+
+<h3 id="41-serverxml">4.1. server.xml</h3>
+
+<p>作用：配置MyCat用户名，密码，权限，Schema关系</p>
+
+<p>如果一个用户下有多个Schema就以csv格式（逗号分隔）来写入</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;user</span> <span class="na">name=</span><span class="s">"root"</span> <span class="na">defaultAccount=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span><span class="nt">&gt;</span>123456<span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"schemas"</span><span class="nt">&gt;</span>user_module,cart_module,product_module<span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/user&gt;</span>
+</code></pre></div></div>
+
+<p>多个schema就需要在schema.xml里配置多个组schema</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/schemas.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 命令行连接-p 是密码，-P是端口，就像平常mysql数据库一样使用</span>
+<span class="o">[</span>root@alibaba ~]# mysql <span class="nt">-ujude</span> <span class="nt">-p</span> <span class="nt">-h139</span>.199.13.139 <span class="nt">-P8066</span>
+mysql&gt; show databases<span class="p">;</span>
++-------------+
+| DATABASE    |
++-------------+
+| user_module |
++-------------+
+1 row <span class="k">in </span><span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+mysql&gt; use user_module<span class="p">;</span>
+mysql&gt; <span class="k">select</span> <span class="k">*</span> from user_info
+    -&gt; <span class="p">;</span>
++-----+----------+----------+
+| <span class="nb">id</span>  | username | password |
++-----+----------+----------+
+|   1 | arry     | 123456   |
+| 500 | gavin    | 123456   |
+| 501 | coding   | 123456   |
++-----+----------+----------+
+</code></pre></div></div>
+
+<p>对于我们的开发人员， mycat的底层分片规则根本不用关心， 完全可以当作一个数据库来使用，只是它实现了分布式。</p>
+
+<h3 id="42-schemaxml">4.2. schema.xml</h3>
+
+<ul>
+  <li>配置dataHost，包括写host和读host</li>
+  <li>配置dataNode，指定具体的数据库，如user_213,user_214</li>
+  <li>配置schema，表名，数据节点，分片规则</li>
+</ul>
+
+<blockquote>
+  <p>dataHost节点</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dataHost <span class="nv">name</span><span class="o">=</span><span class="s2">"DB214"</span> <span class="nv">maxCon</span><span class="o">=</span><span class="s2">"1000"</span> <span class="nv">minCon</span><span class="o">=</span><span class="s2">"10"</span> <span class="nv">balance</span><span class="o">=</span><span class="s2">"0"</span> <span class="nv">writeType</span><span class="o">=</span><span class="s2">"0"</span> <span class="nv">dbType</span><span class="o">=</span><span class="s2">"mysql"</span> <span class="nv">dbDriver</span><span class="o">=</span><span class="s2">"native"</span> <span class="nv">switchType</span><span class="o">=</span><span class="s2">"1"</span>  <span class="nv">slaveThreshold</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+<span class="c"># name：主机名，自己命名即可</span>
+<span class="c"># maxCon：最大连接</span>
+<span class="c"># minCon：最小链接</span>
+<span class="c"># dbDriver: native，不用自己配置数据库驱动类 </span>
+
+<span class="c"># balance：负载均衡策略，值有4个</span>
+<span class="c"># 1、balance="0"，不开启读写分离，所有的操作都在writeHost上操作</span>
+<span class="c"># 2、balance="1"，全部的readHost与stand by writeHost(第2个，第3个writehost)参与select数据的负载均衡</span>
+<span class="c"># 3、balance="2" 所有的读操作随机分发到全部writeHost和全部readHost</span>
+<span class="c"># 4、balance="3" 所有的读操作随机分发到readHost，全部writeHost不参与读操作</span>
+双主也需要我们自己进行replica，mycat平时只写入一个主机
+
+<span class="c"># writeType 写数据类型</span>
+<span class="c"># 1、writeType="0"，所有写操作都会发送到配置的第一个writeHost，如果第一个挂了就会自动切到第二个writeHost配置上</span>
+<span class="c"># 2、writeType="1"，所有的写操作会随机到writeHost上，1.5版本后不推荐</span>
+
+<span class="c"># switchType 切换类型配套我我们的writeType来进行操作的</span>
+<span class="c"># -1 表示写操作不自动进行切换</span>
+<span class="c"># 1 默认值，自动切换，从第一个到第二个writeHost</span>
+<span class="c"># 2 基于MySQL的主从同步的状态决定是否切换，如果从库是延时复制的话那mycat就暂时切换，此writehost1挂了，就不能写入数据</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>dataNode节点</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dataNode <span class="nv">name</span><span class="o">=</span><span class="s2">"dn213"</span> <span class="nv">dataHost</span><span class="o">=</span><span class="s2">"DB213"</span> <span class="nv">database</span><span class="o">=</span><span class="s2">"user_213"</span> /&gt;
+<span class="c"># name:节点名</span>
+<span class="c"># dataHost：对应dataHost的名字</span>
+<span class="c"># database：是物理数据库的名称</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>schema节点</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;schema <span class="nv">name</span><span class="o">=</span><span class="s2">"user_module"</span> <span class="nv">checkSQLschema</span><span class="o">=</span><span class="s2">"true"</span> <span class="nv">sqlMaxLimit</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+		&lt;table <span class="nv">name</span><span class="o">=</span><span class="s2">"user_info"</span> <span class="nv">dataNode</span><span class="o">=</span><span class="s2">"dn213,dn214"</span> <span class="nv">rule</span><span class="o">=</span><span class="s2">"auto-sharding-long"</span> /&gt;
+&lt;/schema&gt;
+<span class="c"># name:在server配置里定义的逻辑库名</span>
+<span class="c"># checkSQLschema：如果是true会自动去掉数据库前缀</span>
+<span class="c"># sqlMaxLimit：为了减轻数据库压力，做的输出限制，默认限制100行</span>
+<span class="c"># sqlMaxLimit仅对分片表有效</span>
+<span class="c"># table name：物理表名</span>
+<span class="c"># rule就是分片规则</span>
+</code></pre></div></div>
+
+<h3 id="43-reloadconfig">4.3. reloadConfig</h3>
+
+<p>看下启动命令</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: ./mycat <span class="o">{</span> console | start | stop | restart | status | dump <span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>reload @@config; 修改完配置后不需要重启mycat</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更改一些基本配置可以使用脚本操作</span>
+<span class="c"># 比如更改了limit就可以使用</span>
+reload @@config<span class="p">;</span>
+<span class="c"># 比如更新了数据源就需要通过config_all来进行操作了，但这里是更新所有配置，比较慢，需要多一点时间生效</span>
+reload @@config_all<span class="p">;</span>
+</code></pre></div></div>
+
+<p>连接mycat的管理端
+<img src="/assets/images/2020/icoding/mysql/mycat-manage.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-manage2.jpg" alt="" /></p>
+
+<p>更新基本的配置</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/reload-config.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 同样也可以通过命令行连接mycat管理端</span>
+<span class="o">[</span>root@alibaba ~]# mysql <span class="nt">-ujude</span> <span class="nt">-p</span> <span class="nt">-h139</span>.199.13.139 <span class="nt">-P9066</span>
+</code></pre></div></div>
+
+<h3 id="44-模拟一个读写分离的操作">4.4. 模拟一个读写分离的操作</h3>
+
+<p>使用docker再安装一个mysql</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba mysql-slave]# docker run <span class="nt">-d</span> <span class="nt">-p</span> 3308:3306 
+<span class="nt">-v</span> /opt/mysql211/conf:/etc/mysql/conf.d 
+<span class="nt">-v</span> /opt/mysql211/data:/var/lib/mysql 
+<span class="nt">-v</span> /opt/mysql211/logs:/var/log/mysql
+<span class="nt">--net</span> mysql-net <span class="nt">--ip</span> 172.18.0.211
+<span class="nt">-e</span> <span class="nv">MYSQL_ROOT_PASSWORD</span><span class="o">=</span>mysql123456 <span class="nt">--name</span> mysql211 mysql:5.7.30
+</code></pre></div></div>
+
+<p>1、创建物理库user_213，注意这里的数据库名一定要是user_213，因为数据分片节点dn213指定的物理库名就是user_213，db211作为读的分片主机一定要一个user_213的物理库，否则dn213无法完成读写分离了。</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/db211-user_213.jpg" alt="" /></p>
+
+<p>2、修改mycat的schema.xml，db211配置为readHost，注意要在writehost里面，</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 注意要修改balance</span>
+<span class="c"># 1、balance="0"，不开启读写分离，所有的操作都在writeHost上操作</span>
+<span class="c"># 2、balance="1"，全部的readHost与stand by writeHost(第2个，第3个writehost)参与select数据的负载均衡</span>
+<span class="c"># 3、balance="2" 所有的读操作随机分发到全部writeHost和全部readHost</span>
+&lt;dataHost <span class="nv">name</span><span class="o">=</span><span class="s2">"DB213"</span> <span class="nv">maxCon</span><span class="o">=</span><span class="s2">"1000"</span> <span class="nv">minCon</span><span class="o">=</span><span class="s2">"10"</span> <span class="nv">balance</span><span class="o">=</span><span class="s2">"2"</span> <span class="nv">writeType</span><span class="o">=</span><span class="s2">"0"</span> <span class="nv">dbType</span><span class="o">=</span><span class="s2">"mysql"</span> <span class="nv">dbDriver</span><span class="o">=</span><span class="s2">"native"</span> <span class="nv">switchType</span><span class="o">=</span><span class="s2">"1"</span>  <span class="nv">slaveThreshold</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;heartbeat&gt;select user<span class="o">()</span>&lt;/heartbeat&gt;
+	&lt;<span class="o">!</span><span class="nt">--</span> can have multi write hosts <span class="nt">--</span><span class="o">&gt;</span>
+	&lt;writeHost <span class="nv">host</span><span class="o">=</span><span class="s2">"M1"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"192.168.0.213:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"gavin"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"123456"</span><span class="o">&gt;</span>
+		&lt;readHost <span class="nv">host</span><span class="o">=</span><span class="s2">"S1"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"192.168.0.211:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"gavin"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"123456"</span>/&gt;
+	&lt;/writeHost&gt;	
+&lt;/dataHost&gt;
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/schema-xml-writehost-readhost.jpg" alt="" /></p>
+
+<p>3、重新加载config配置或者重启mycat</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; reload @@config_all
+</code></pre></div></div>
+
+<p>现在db211是db213的从库，但是还没有主从复制，配置db211为readHost，且balance=1，说明Mycat会从db211读取数据，写数据则写到db213上</p>
+
+<p>db213上user_213的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/db213-user213-userinfo.jpg" alt="" /></p>
+
+<p>db211上user_213的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/db211-user213-userinfo.jpg" alt="" /></p>
+
+<p>从mycat上的逻辑表user_info读取的数据</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-userinfo-readhost.jpg" alt="" /></p>
+
+<p>说明设置balance=1,全部的readHost与stand by writeHost(第2个，第3个writehost)参与select数据的负载均衡</p>
+
+<p>如果设置balance=2,你会发现数据会随机从db211和db213的物理库user_213上读取的。</p>
+
+<p>到这里，读写分离完成，db213应该和db211做主从复制，readHost和writeHost数据就保持一致了</p>
+
+<h3 id="45-做一个双主的写操作配置">4.5. 做一个双主的写操作配置</h3>
+
+<p>修改schema.xml，db211的物理库也配置为一个writeHost，writeType=”0”表示mycat的所有写操作都会选择在第一个writeHost上进行，模拟db213挂了，mycat会切换到db211上进行写操作</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 修改schema.xml</span>
+<span class="c"># balance 为1 会从readHost和satand by writeHost读取数据</span>
+&lt;dataHost <span class="nv">name</span><span class="o">=</span><span class="s2">"DB213"</span> <span class="nv">maxCon</span><span class="o">=</span><span class="s2">"1000"</span> <span class="nv">minCon</span><span class="o">=</span><span class="s2">"10"</span> <span class="nv">balance</span><span class="o">=</span><span class="s2">"1"</span>
+	<span class="nv">writeType</span><span class="o">=</span><span class="s2">"0"</span> <span class="nv">dbType</span><span class="o">=</span><span class="s2">"mysql"</span> <span class="nv">dbDriver</span><span class="o">=</span><span class="s2">"native"</span> <span class="nv">switchType</span><span class="o">=</span><span class="s2">"1"</span>  <span class="nv">slaveThreshold</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;heartbeat&gt;select user<span class="o">()</span>&lt;/heartbeat&gt;
+	&lt;<span class="o">!</span><span class="nt">--</span> can have multi write hosts <span class="nt">--</span><span class="o">&gt;</span>
+	&lt;writeHost <span class="nv">host</span><span class="o">=</span><span class="s2">"M1"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"192.168.0.213:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"gavin"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"123456"</span><span class="o">&gt;</span>
+	&lt;/writeHost&gt;
+	&lt;writeHost <span class="nv">host</span><span class="o">=</span><span class="s2">"M2"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"192.168.0.211:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"gavin"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"123456"</span>/&gt; 
+&lt;/dataHost&gt;
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/mysql/schema-two-writehost.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 重新加载所有配置，不用重启mycat</span>
+mysql&gt; reload @@config_all
+</code></pre></div></div>
+
+<p>把db213挂了，尝试在mycat进行写操作</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-usermodule-insert.jpg" alt="" /></p>
+
+<p>第一个writeHost挂了，mycat自动切换将数据被写入了第2个writeHost db211上</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/mycat-usermodule-insert2.jpg" alt="" /></p>
+
+<blockquote>
+  <p>总结</p>
+</blockquote>
+
+<p>你无论多少个writeHost都只是分片的一部分，mycat才是整体，下面多少writeHost都只是其中一个存储分片，一个数据一次只会写入一条，和writeHost多少没有关系，多个wirteHost,readHost都为了高可用，读写分离+热切换。</p>
+
+<h2 id="5-作业">5. 作业</h2>
+
+<blockquote>
+  <p>作业1：自己配置两个双主的writeHost，每个writeHost上挂载一个readHost</p>
+</blockquote>
+
+<p>数据库切分架构图：</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/schema-four-writehost.jpg" alt="" /></p>
+
+<p>需要8个mysql实例数据库，我这里mysql实例都是使用docker安装的。</p>
+
+<p>实验1: schema.xml的dataHost DB213配置如下</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;dataHost <span class="nv">name</span><span class="o">=</span><span class="s2">"DB213"</span> <span class="nv">maxCon</span><span class="o">=</span><span class="s2">"1000"</span> <span class="nv">minCon</span><span class="o">=</span><span class="s2">"10"</span> <span class="nv">balance</span><span class="o">=</span><span class="s2">"1"</span> <span class="nv">writeType</span><span class="o">=</span><span class="s2">"0"</span> <span class="nv">dbType</span><span class="o">=</span><span class="s2">"mysql"</span> <span class="nv">dbDriver</span><span class="o">=</span><span class="s2">"native"</span> <span class="nv">switchType</span><span class="o">=</span><span class="s2">"1"</span>  <span class="nv">slaveThreshold</span><span class="o">=</span><span class="s2">"100"</span><span class="o">&gt;</span>
+	&lt;heartbeat&gt;select user<span class="o">()</span>&lt;/heartbeat&gt;
+		&lt;<span class="o">!</span><span class="nt">--</span> can have multi write hosts <span class="nt">--</span><span class="o">&gt;</span>
+	&lt;writeHost <span class="nv">host</span><span class="o">=</span><span class="s2">"hostM1"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"172.18.0.213:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"root"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"mysql123456"</span><span class="o">&gt;</span>
+		&lt;readHost <span class="nv">host</span><span class="o">=</span><span class="s2">"S1"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"172.18.0.211:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"root"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"mysql123456"</span>/&gt;
+	&lt;/writeHost&gt;
+	&lt;writeHost <span class="nv">host</span><span class="o">=</span><span class="s2">"hostM2"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"172.18.0.217:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"root"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"mysql123456"</span><span class="o">&gt;</span>
+		&lt;readHost <span class="nv">host</span><span class="o">=</span><span class="s2">"S2"</span> <span class="nv">url</span><span class="o">=</span><span class="s2">"172.18.0.215:3306"</span> <span class="nv">user</span><span class="o">=</span><span class="s2">"root"</span> <span class="nv">password</span><span class="o">=</span><span class="s2">"mysql123456"</span>/&gt;
+	&lt;/writeHost&gt;
+&lt;/dataHost&gt;
+</code></pre></div></div>
+
+<p>测试发现，db217成为了第一个writeHost，db213 是standby writeHost，banlacne=”1”,mycat会随机从db211，db215和db213上读取数据。</p>
+
+<p>db213和db211已配置主从复制：</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/master-slave-213-211.jpg" alt="" /></p>
+
+<p>db217和db215已配置主从复制:</p>
+
+<p><img src="/assets/images/2020/icoding/mysql/master-slave-217-215.jpg" alt="" /></p>
+
+<p>再测试发现，当db217挂了，mycat就会自动切换db213为第一个writeHost, 写操作会选择db213写入数据，然后db213通知db211复制自己的数据; mycat只会从db211读取数据，不再从db215读取。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/06/24/icoding-note-051.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

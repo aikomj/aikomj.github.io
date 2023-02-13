@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> sql优化的15个小技巧 - 大伟的博客 </title>
+    <meta name="keywords" content="mysql">
+    <meta name="description"
+          content="避免使用select*,union all代替union,小表驱动大表in/exists,批量操作，多用limit,in值太多，增量查询，高效分页，用连接查询替代子查询，join时要注意大小表，控制表索引的数量，选择合理的字段类型，缩小数据范围提升groupby的效率，explain分析执行计划避免索引失效,show profile分析sql语句耗时，sql语句执行慢的3个原因">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/mysql/2021/11/11/sql-optimization.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="sql优化的15个小技巧">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>sql优化的15个小技巧</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/11/11
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>这篇文章从15个方面，分享了sql优化的一些小技巧，希望对你有所帮助，前面写过相似的内容：<a href="/mysql/2020/08/05/resolve-page-query-slow.html">sql变慢，有什么优化方案</a></p>
+
+<p><img src="/assets/images/2021/mysql/optimize-sql.jpg" style="zoom:80%;" /></p>
+
+<h2 id="1避免使用select-">1、避免使用select *</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>在实际业务场景中，可能我们真正需要使用的只有其中一两列。查了很多数据，但是不用，白白浪费了数据库资源，比如：内存或者cpu。此外，多查出来的数据，通过网络IO传输的过程中，也会增加数据传输的时间。</p>
+
+<p>还有一个最重要的问题是：<code class="highlighter-rouge">select *</code>不会走<code class="highlighter-rouge">覆盖索引</code>，会出现大量的<code class="highlighter-rouge">回表</code>操作，而从导致查询sql的性能很低。</p>
+
+<p>sql语句查询时，只查需要用到的列，多余的列根本无需查出来。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">name</span><span class="p">,</span><span class="n">age</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果可以通过主键索引的话， where 后面的条件，优先选择主键索引。为什么呢？跟 MySQL 的存储规则有关</p>
+
+<p>MySQL 常用的存储引擎有 MyISAM 和 InnoDB ， InnoDB 会创建主键索引，而主键索引属于聚簇索引，即存储数据时，索引是基于 B+ 树构成的，具体的行数据则存储在叶子节点。</p>
+
+<ul>
+  <li>如果是通过主键索引查询的，会直接搜索 B+ 树，从而查询到数据。</li>
+  <li>如果不是通过主键索引查询的，需要先搜索索引树，得到在 B+ 树上的值，再到 B+ 树上搜索符合条件的数据，这个过程就是<strong>“回表”</strong></li>
+</ul>
+
+<p>很显然，回表会产生时间损耗。</p>
+
+<h2 id="2union-all-代替union">2、union all 代替union</h2>
+
+<p>使用<code class="highlighter-rouge">union</code>关键字后，可以获取排重后的数据。</p>
+
+<p>使用<code class="highlighter-rouge">union all</code>关键字，可以获取所有数据，包含重复的数据。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+<span class="k">union</span> 
+<span class="p">(</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>排重的过程需要遍历、排序和比较，它更耗时，更消耗cpu资源</p>
+
+<p>尽量使用 union all 替代</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> 
+<span class="k">union</span> <span class="k">all</span>
+<span class="p">(</span><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">2</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="3小表驱动大表">3、小表驱动大表</h2>
+
+<p>用小表的数据集驱动大表的数据集，假如有order和user两张表，其中order表有10000条数据，而user表有100条数据。这时如果想查一下所有有效的用户下过的订单列表。</p>
+
+<p>可以使用<code class="highlighter-rouge">in</code>关键字实现：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">order</span>
+<span class="k">where</span> <span class="n">user_id</span> <span class="k">in</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>使用<code class="highlighter-rouge">exists</code>关键字实现：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">order</span>
+<span class="k">where</span> <span class="k">exists</span> <span class="p">(</span><span class="k">select</span> <span class="mi">1</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="k">order</span><span class="p">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="k">user</span><span class="p">.</span><span class="n">id</span> <span class="k">and</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>如果sql语句中包含了in关键字，则它会优先执行in里面的<code class="highlighter-rouge">子查询语句</code>，然后再执行in外面的语句。如果in里面的数据量很少，作为条件查询速度更快。</li>
+  <li>如果sql语句中包含了exists关键字，它优先执行exists左边的语句（即主查询语句）。然后把它作为条件，去跟右边的语句匹配。如果匹配上，则可以查询出数据。如果匹配不上，数据就被过滤掉了。</li>
+</ul>
+
+<p>这个需求中，order表有10000条数据，而user表有100条数据。order表是大表，user表是小表。如果order表在左边，则用in关键字性能更好。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">in</code> 适用于左边大表，右边小表。</li>
+  <li><code class="highlighter-rouge">exists</code> 适用于左边小表，右边大表</li>
+</ul>
+
+<h2 id="4批量操作">4、批量操作</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">orderMapper</span><span class="o">.</span><span class="na">insertBatch</span><span class="o">(</span><span class="n">list</span><span class="o">):</span>
+</code></pre></div></div>
+
+<p>提供一个批量插入数据的方法。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">insert</span> <span class="k">into</span> <span class="k">order</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">code</span><span class="p">,</span><span class="n">user_id</span><span class="p">)</span> 
+<span class="k">values</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span><span class="s1">'001'</span><span class="p">,</span><span class="mi">100</span><span class="p">),(</span><span class="mi">124</span><span class="p">,</span><span class="s1">'002'</span><span class="p">,</span><span class="mi">100</span><span class="p">),(</span><span class="mi">125</span><span class="p">,</span><span class="s1">'003'</span><span class="p">,</span><span class="mi">101</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>这样只需要远程请求一次数据库，sql性能会得到提升，数据量越多，提升越大。建议每批数据尽量控制在500以内。如果数据多于500，则分多批次处理</p>
+
+<h2 id="5多用limit">5、多用limit</h2>
+
+<p>有时候，我们需要查询某些数据中的第一条，比如：查询某个用户下的第一个订单，想看看他第一次的首单时间。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">select</span> <span class="n">id</span><span class="o">,</span> <span class="n">create_date</span> 
+ <span class="n">from</span> <span class="n">order</span> 
+<span class="n">where</span> <span class="n">user_id</span><span class="o">=</span><span class="mi">123</span> 
+<span class="n">order</span> <span class="n">by</span> <span class="n">create_date</span> <span class="n">asc</span> 
+<span class="n">limit</span> <span class="mi">1</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>使用<code class="highlighter-rouge">limit 1</code>，只返回该用户下单时间最小的那一条数据即可。</p>
+
+<blockquote>
+  <p>此外，在删除或者修改数据时，为了防止误操作，导致删除或修改了不相干的数据，也可以在sql语句最后加上limit。</p>
+</blockquote>
+
+<p>如：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">update</span> <span class="k">order</span> <span class="k">set</span> <span class="n">status</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">edit_time</span><span class="o">=</span><span class="n">now</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> 
+<span class="k">where</span> <span class="n">id</span><span class="o">&gt;=</span><span class="mi">100</span> <span class="k">and</span> <span class="n">id</span><span class="o">&lt;</span><span class="mi">200</span> <span class="k">limit</span> <span class="mi">100</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这样即使误操作，比如把id搞错了，也不会对太多的数据造成影响。</p>
+
+<h2 id="6in中值太多">6、in中值太多</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">id</span><span class="p">,</span><span class="n">name</span> <span class="k">from</span> <span class="n">category</span>
+<span class="k">where</span> <span class="n">id</span> <span class="k">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">...</span><span class="mi">100000000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>如果我们不做任何限制，该查询语句一次性可能会查询出非常多的数据，很容易导致接口超时。</p>
+
+<p>这时该怎么办呢？</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">id</span><span class="p">,</span><span class="n">name</span> <span class="k">from</span> <span class="n">category</span>
+<span class="k">where</span> <span class="n">id</span> <span class="k">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">...</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">limit</span> <span class="mi">500</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>可以在sql中对数据用limit做限制。</p>
+
+<p>不过我们更多的是要在业务代码中加限制</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Category</span><span class="o">&gt;</span> <span class="nf">getCategory</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">ids</span><span class="o">)</span> <span class="o">{</span>
+   <span class="k">if</span><span class="o">(</span><span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">ids</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+   <span class="o">}</span>
+   <span class="k">if</span><span class="o">(</span><span class="n">ids</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">BusinessException</span><span class="o">(</span><span class="s">"一次最多允许查询500条记录"</span><span class="o">)</span>
+   <span class="o">}</span>
+   <span class="k">return</span> <span class="n">mapper</span><span class="o">.</span><span class="na">getCategoryList</span><span class="o">(</span><span class="n">ids</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>还有一个方案就是：如果ids超过500条记录，可以分批用多线程去查询数据。每批只查500条记录，最后把查询到的数据汇总到一起返回。</p>
+
+<p>不过这只是一个临时方案，不适合于ids实在太多的场景。因为ids太多，即使能快速查出数据，但如果返回的数据量太大了，网络传输也是非常消耗性能的，接口性能始终好不到哪里去。</p>
+
+<h2 id="7增量查询">7、增量查询</h2>
+
+<p>有时候，我们需要通过远程接口查询数据，然后同步到另外一个数据库</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果直接获取所有的数据，然后同步过去。这样虽说非常方便，但是带来了一个非常大的问题，就是如果数据很多的话，查询性能会非常差。</p>
+
+<p>正例</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">user</span> 
+<span class="k">where</span> <span class="n">id</span><span class="o">&gt;#</span><span class="err">{</span><span class="n">lastId</span><span class="err">}</span> <span class="k">and</span> <span class="n">create_time</span> <span class="o">&gt;=</span> <span class="o">#</span><span class="err">{</span><span class="n">lastCreateTime</span><span class="err">}</span> 
+<span class="k">limit</span> <span class="mi">100</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>按id和时间升序，每次只同步一批数据，这一批数据只有100条记录。每次同步完成之后，保存这100条数据中最大的id和时间，给同步下一批数据的时候用。</p>
+
+<p>通过这种增量查询的方式，能够提升单次查询的效率。</p>
+
+<h2 id="8高效的分页">8、高效的分页</h2>
+
+<p>有时候，列表页在查询数据时，为了避免一次性返回过多的数据影响接口性能，我们一般会对查询接口做分页处理。</p>
+
+<p>在mysql中分页一般用的<code class="highlighter-rouge">limit</code>关键字：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">select</span> <span class="n">id</span><span class="o">,</span><span class="n">name</span><span class="o">,</span><span class="n">age</span> 
+<span class="n">from</span> <span class="n">user</span> <span class="n">limit</span> <span class="mi">10</span><span class="o">,</span><span class="mi">20</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>如果表中数据量少，用limit关键字做分页，没啥问题。但如果表中数据量很多，用它就会出现性能问题。</p>
+
+<p>深度分页</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">id</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">age</span> 
+<span class="k">from</span> <span class="k">user</span> <span class="k">limit</span> <span class="mi">1000000</span><span class="p">,</span><span class="mi">20</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>mysql会查到1000020条数据，然后丢弃前面的1000000条，只查后面的20条数据，这个是非常浪费资源的。</p>
+
+<p>那么，这种海量数据该怎么分页呢？优化sql</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">id</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">age</span> 
+<span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span> <span class="o">&gt;</span> <span class="mi">1000000</span> <span class="k">limit</span> <span class="mi">20</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>先找到上次分页最大的id，然后利用id上的索引查询。<strong>不过该方案，要求id是连续的，并且有序的。</strong></p>
+
+<p>使用<code class="highlighter-rouge">between</code>优化分页。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">id</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">age</span> 
+<span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">id</span> <span class="k">between</span> <span class="mi">1000000</span> <span class="k">and</span> <span class="mi">1000020</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>需要注意的是between要在唯一索引上分页，不然会出现每页大小不一致的问题。</p>
+
+<h2 id="9用连接查询代替子查询">9、用连接查询代替子查询</h2>
+
+<p>mysql中如果需要从两张以上的表中查询出数据的话，一般有两种实现方式：<code class="highlighter-rouge">子查询</code> 和 <code class="highlighter-rouge">连接查询</code>。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="k">order</span>
+<span class="k">where</span> <span class="n">user_id</span> <span class="k">in</span> <span class="p">(</span><span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="k">user</span> <span class="k">where</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>子查询语句可以通过<code class="highlighter-rouge">in</code>关键字实现，一个查询语句的条件落在另一个select语句的查询结果中。程序先运行在嵌套在最内层的语句，再运行外层的语句。</p>
+
+<p>子查询语句的优点是简单，结构化，如果涉及的表数量不多的话。</p>
+
+<p>但缺点是mysql执行子查询时，需要创建临时表，查询完毕后，需要再删除这些临时表，有一些额外的性能消耗。</p>
+
+<p>这时可以改成连接查询。具体例子如下：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">o</span><span class="p">.</span><span class="o">*</span> <span class="k">from</span> <span class="k">order</span> <span class="n">o</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="k">user</span> <span class="n">u</span> <span class="k">on</span> <span class="n">o</span><span class="p">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">id</span>
+<span class="k">where</span> <span class="n">u</span><span class="p">.</span><span class="n">status</span><span class="o">=</span><span class="mi">1</span>
+</code></pre></div></div>
+
+<h2 id="10join的表不宜过多">10、join的表不宜过多</h2>
+
+<p>根据阿里巴巴开发者手册的规定，join表的数量不应该超过<code class="highlighter-rouge">3</code>个。所以常建议单表查询</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="n">b</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="n">d</span><span class="p">.</span><span class="n">name</span>
+<span class="k">from</span> <span class="n">a</span> 
+<span class="k">inner</span> <span class="k">join</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">a_id</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="k">c</span> <span class="k">on</span> <span class="k">c</span><span class="p">.</span><span class="n">b_id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">id</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="n">d</span> <span class="k">on</span> <span class="n">d</span><span class="p">.</span><span class="n">c_id</span> <span class="o">=</span> <span class="k">c</span><span class="p">.</span><span class="n">id</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="n">e</span> <span class="k">on</span> <span class="n">e</span><span class="p">.</span><span class="n">d_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">.</span><span class="n">id</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="n">f</span> <span class="k">on</span> <span class="n">f</span><span class="p">.</span><span class="n">e_id</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">id</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="k">g</span> <span class="k">on</span> <span class="k">g</span><span class="p">.</span><span class="n">f_id</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="n">id</span>
+</code></pre></div></div>
+
+<p>如果join太多，mysql在选择索引的时候会非常复杂，很容易选错索引。</p>
+
+<p>并且如果没有命中中，nested loop join 就是分别从两个表读一行数据进行两两对比，复杂度是 n^2。</p>
+
+<p>正例</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="n">b</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="n">a</span><span class="p">.</span><span class="n">d_name</span> 
+<span class="k">from</span> <span class="n">a</span> 
+<span class="k">inner</span> <span class="k">join</span> <span class="n">b</span> <span class="k">on</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">a_id</span>
+<span class="k">inner</span> <span class="k">join</span> <span class="k">c</span> <span class="k">on</span> <span class="k">c</span><span class="p">.</span><span class="n">b_id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">id</span>
+</code></pre></div></div>
+
+<p>如果实现业务场景中需要查询出另外几张表中的数据，可以在a、b、c表中<code class="highlighter-rouge">冗余专门的字段</code>，比如：在表a中冗余d_name字段，保存需要查询出的数据。</p>
+
+<p>不过我之前也见过有些ERP系统，并发量不大，但业务比较复杂，需要join十几张表才能查询出数据。</p>
+
+<p>所以join表的数量要根据系统的实际情况决定，不能一概而论，尽量越少越好。</p>
+
+<h2 id="11join时要注意">11、join时要注意</h2>
+
+<p>我们在涉及到多张表联合查询的时候，一般会使用<code class="highlighter-rouge">join</code>关键字。</p>
+
+<p>而join使用最多的是left join和inner join。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">left join</code>：求两个表的交集外加左表剩下的数据。</li>
+  <li><code class="highlighter-rouge">inner join</code>：求两个表交集的数据。</li>
+</ul>
+
+<p>使用inner join的示例如下：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">o</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="n">o</span><span class="p">.</span><span class="n">code</span><span class="p">,</span><span class="n">u</span><span class="p">.</span><span class="n">name</span> 
+<span class="k">from</span> <span class="k">order</span> <span class="n">o</span> 
+<span class="k">inner</span> <span class="k">join</span> <span class="k">user</span> <span class="n">u</span> <span class="k">on</span> <span class="n">o</span><span class="p">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">id</span>
+<span class="k">where</span> <span class="n">u</span><span class="p">.</span><span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>如果两张表使用inner join关联，mysql会自动选择两张表中的小表，去驱动大表，所以性能上不会有太大的问题。</p>
+
+<p>使用left join的示例如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>select o.id,o.code,u.name 
+from order o 
+left join user u on o.user_id = u.id
+where u.status=1;
+</code></pre></div></div>
+
+<p>如果两张表使用left join关联，mysql会默认用left join关键字左边的表，去驱动它右边的表。如果左边的表数据很多时，就会出现性能问题。</p>
+
+<p>要特别注意的是在用left join关联查询时，左边要用小表，右边可以用大表。如果能用inner join的地方，尽量少用left join。</p>
+
+<h2 id="12控制索引的数量">12、控制索引的数量</h2>
+
+<p>索引能够显著的提升查询sql的性能，但索引数量并非越多越好。</p>
+
+<p>因为表中新增数据时，需要同时为它创建索引，而索引是需要额外的存储空间的，而且还会有一定的性能消耗。</p>
+
+<p>阿里巴巴的开发者手册中规定，单表的索引数量应该尽量控制在<code class="highlighter-rouge">5</code>个以内，并且单个索引中的字段数不超过<code class="highlighter-rouge">5</code>个。</p>
+
+<p>mysql使用的B+树的结构来保存索引的，在insert、update和delete操作时，需要更新B+树索引。如果索引过多，会消耗很多额外的性能。</p>
+
+<p>那么，问题来了，如果表中的索引太多，超过了5个该怎么办？</p>
+
+<p>这个问题要辩证的看，如果你的系统并发量不高，表中的数据量也不多，其实超过5个也可以，只要不要超过太多就行。</p>
+
+<p>但对于一些高并发的系统，请务必遵守单表索引数量不要超过5的限制。</p>
+
+<p>那么，高并发系统如何优化索引数量？</p>
+
+<ul>
+  <li>
+    <p>能够建联合索引，就别建单个索引，可以删除无用的单个索引。</p>
+  </li>
+  <li>
+    <p>将部分查询功能迁移到其他类型的数据库中，比如：Elastic Seach、HBase等，在业务表中只需要建几个关键索引即可。</p>
+  </li>
+</ul>
+
+<h2 id="13选择合理的字段类型">13、选择合理的字段类型</h2>
+
+<p><code class="highlighter-rouge">char</code>表示固定字符串类型，该类型的字段存储空间是固定的，会浪费存储空间，如果是长度固定的字段，比如用户手机号，一般都是11位的，可以定义成char类型，长度是11字节</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">alter</span> <span class="k">table</span> <span class="k">order</span> 
+<span class="k">add</span> <span class="k">column</span> <span class="n">code</span> <span class="nb">char</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">varchar</code>表示变长字符串类型，该类型的字段存储空间会根据实际数据的长度调整，不会浪费存储空间。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">alter</span> <span class="k">table</span> <span class="k">order</span> 
+<span class="k">add</span> <span class="k">column</span> <span class="n">code</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>我们在选择字段类型时，应该遵循这样的原则：</p>
+
+<ol>
+  <li>能用数字类型，就不用字符串，因为字符的处理往往比数字要慢。</li>
+  <li>尽可能使用小的类型，比如：用bit存布尔值，用tinyint存枚举值等。</li>
+  <li>长度固定的字符串字段，用char类型。</li>
+  <li>长度可变的字符串字段，用varchar类型。</li>
+  <li>金额字段用decimal，避免精度丢失问题。</li>
+</ol>
+
+<h2 id="14提升group-by的效率">14、提升group by的效率</h2>
+
+<p>我们有很多业务场景需要使用<code class="highlighter-rouge">group by</code>关键字，它主要的功能是去重和分组。</p>
+
+<p>通常它会跟<code class="highlighter-rouge">having</code>一起配合使用，表示分组后再根据一定的条件过滤数据。</p>
+
+<p>反例</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">user_id</span><span class="p">,</span><span class="n">user_name</span> <span class="k">from</span> <span class="k">order</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">user_id</span>
+<span class="k">having</span> <span class="n">user_id</span> <span class="o">&lt;=</span> <span class="mi">200</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>这种写法性能不好，它先把所有的订单根据用户id分组之后，再去过滤用户id大于等于200的用户。</p>
+
+<p>分组是一个相对耗时的操作，为什么我们不先缩小数据的范围之后，再分组呢？</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">user_id</span><span class="p">,</span><span class="n">user_name</span> <span class="k">from</span> <span class="k">order</span>
+<span class="k">where</span> <span class="n">user_id</span> <span class="o">&lt;=</span> <span class="mi">200</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">user_id</span>
+</code></pre></div></div>
+
+<p>使用where条件在分组前，就把多余的数据过滤掉了，这样分组时效率就会更高一些。</p>
+
+<blockquote>
+  <p>其实这是一种思路，不仅限于group by的优化。我们的sql语句在做一些耗时的操作之前，应尽可能缩小数据范围，这样能提升sql整体的性能。</p>
+</blockquote>
+
+<h2 id="15索引优化">15、索引优化</h2>
+
+<h3 id="explain分析执行计划">explain分析执行计划</h3>
+
+<p>sql优化当中，有一个非常重要的内容就是：<code class="highlighter-rouge">索引优化</code>。</p>
+
+<p>很多时候sql语句，走了索引，和没有走索引，执行效率差别很大。所以索引优化被作为sql优化的首选。</p>
+
+<p>索引优化的第一步是：检查sql语句有没有走索引。</p>
+
+<p>那么，如何查看sql走了索引没？</p>
+
+<p>可以使用<code class="highlighter-rouge">explain</code>命令，查看mysql的执行计划。</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">explain</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="nv">`order`</span> <span class="k">where</span> <span class="n">code</span><span class="o">=</span><span class="s1">'002'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2021/mysql/explain-1.jpg" alt="" /></p>
+
+<p>通过这几列可以判断索引使用情况，执行计划包含列的含义如下图所示：</p>
+
+<p><img src="/assets/images/2021/mysql/explain-2.jpg" style="zoom:80%;" /></p>
+
+<p>1、id :每个执行计划都会有一个 id ，如果是一个联合查询的话，这里就会显示好多个 id</p>
+
+<p>2、select_type :表示的是 select 查询类型，常见的就是 SIMPLE (普通查询，也就是没有联合查询/子查询), PRIMARY (主查询), UNION ( UNION 中后面的查询), SUBQUERY (子查询)</p>
+
+<p>3、table :执行查询计划的表，在这里我查的就是 table ，所以显示的是 table， 那如果我给 table 起了别名 a ，在这里显示的就是 a</p>
+
+<p>4、type :查询所执行的方式，这是咱们在分析 SQL 优化的时候一个非常重要的指标，这个值从好到坏依次是: system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL</p>
+
+<ul>
+  <li>
+    <p>system/const :说明表中只有一行数据匹配，这个时候根据索引查询一次就能找到对应的数据</p>
+  </li>
+  <li>
+    <p>eq_ref :使用唯一索引扫描，这个经常在多表连接里面，使用主键和唯一索引作为关联条件时可以看到</p>
+  </li>
+  <li>
+    <p>ref :非唯一索引扫描，也可以在唯一索引最左原则匹配扫描看到</p>
+  </li>
+  <li>
+    <p>range :索引范围扫描，比如查询条件使用到了 &lt; ， &gt; ， between 等条件</p>
+  </li>
+  <li>
+    <p>index :索引全表扫描，这个时候会遍历整个索引树</p>
+  </li>
+  <li>
+    <p>ALL :表示全表扫描，也就是需要遍历整张表才能找到对应的行</p>
+  </li>
+</ul>
+
+<p>5、possible_keys :表示可能使用到的索引</p>
+
+<p>6、key :实际使用到的索引</p>
+
+<p>7、key_len :使用的索引长度</p>
+
+<p>8、ref :关联 id 等信息</p>
+
+<p>9、rows :找到符合条件时，所扫描的行数，在这里虽然有 10 万条数据，但是因为索引的缘故，所以扫描了 99 行的数据</p>
+
+<p>10、Extra :额外的信息，常见的有以下几种</p>
+
+<ul>
+  <li>Using where :不用读取表里面的所有信息，只需要通过索引就可以拿到需要的数据，这个过程发生在对表的全部请求列都是同一个索引部分时</li>
+  <li>Using temporary :表示 mysql 需要使用临时表来存储结果集，常见于 group by / order by</li>
+  <li>Using filesort :当查询的语句中包含 order by 操作的时候，而且 order by 后面的内容不是索引，这样就没有办法利用索引完成排序，就会使用”文件排序”,就像例子中给出的，建立的索引是 id ， 但是我的查询语句 order by 后面是 a ，没有办法使用索引</li>
+  <li>Using join buffer :使用了连接缓存</li>
+  <li>Using index :使用了覆盖索引</li>
+</ul>
+
+<blockquote>
+  <p>索引失效</p>
+</blockquote>
+
+<p>sql语句没有走索引，排除没有建索引之外，最大的可能性是索引失效了，常见原因：</p>
+
+<p><img src="/assets/images/2021/mysql/explain-3.jpg" alt="" /></p>
+
+<p>如果不是上面的这些原因，则需要再进一步排查一下其他原因。</p>
+
+<p>此外，你有没有遇到过这样一种情况：明明是同一条sql，只有入参不同而已。有的时候走的索引a，有的时候却走的索引b？</p>
+
+<p>没错，有时候mysql会选错索引。</p>
+
+<p>必要时可以使用<code class="highlighter-rouge">force index</code>来强制查询sql走某个索引。</p>
+
+<h3 id="show-profile分析耗时">show profile分析耗时</h3>
+
+<p>可以通过 <code class="highlighter-rouge">SHOW PROFILES;</code> 语句来查询最近发送给服务器的 SQL 语句，默认情况下是记录最近已经执行的 15 条记录，如下图：</p>
+
+<p><img src="\assets\images\2021\mysql\show-profile.jpg" alt="" /></p>
+
+<p>我想看具体的一条语句，看到 Query_ID 了吗？运行下 <code class="highlighter-rouge">SHOW PROFILE FOR QUERY 82;</code> 这条命令结果:</p>
+
+<p><img src="\assets\images\2021\mysql\show-profile-2.jpg" alt="" /></p>
+
+<p>可以看到， Sending data 耗时是最长的，这是因为此时 mysql 线程开始读取数据并且把这些数据返回到客户端，在这个过程中会有大量磁盘 I/O 操作。通过这样的分析，我们就能知道， SQL 语句在查询过程中，到底是 磁盘 I/O 影响了查询速度，还是 System lock 影响了查询速度</p>
+
+<h2 id="16sql语句执行慢的3个原因">16、sql语句执行慢的3个原因</h2>
+
+<h3 id="缺少索引或索引失效">缺少索引或索引失效</h3>
+
+<p>在千万级别的数据中查找你想要的内容，如果没有索引，那简直是在肉搏</p>
+
+<ul>
+  <li>
+    <p>mysql索引遵循“最左匹配”原则，查询的时候，like通配符在最前面，让索引失效，</p>
+  </li>
+  <li>组合条件不按照组合索引的顺序，让索引失效。</li>
+  <li>or前后条件，有一个条件列没索引都会让索引失效，使用union all 替代 or</li>
+</ul>
+
+<p>查看执行计划，看查询有没有用到索引</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">table</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">&lt;</span> <span class="mi">100</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">a</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><a href="/icoding-edu/2020/06/20/icoding-note-049.html">飞天班第49节：数据库高级应用-2</a></p>
+
+<h3 id="锁等待">锁等待</h3>
+
+<p>常用的存储引擎主要有 InnoDB 和 MyISAM 这两种了，前者支持行锁和表锁，后者就只支持表锁</p>
+
+<ul>
+  <li>
+    <p>如果对一张表进行大量的更新操作， mysql 就觉得你这样用会让事务的执行效率降低，到最后还是会导致性能下降，这样的话，会将<mark>行锁升级成表锁</mark>。案例：<a href="/mysql/2020/05/01/insert-into-select.html">insert into select语句把生产服务器炸了</a></p>
+  </li>
+  <li>
+    <p>行锁可是基于索引加的锁，在执行更新操作时，条件索引都失效了，那么这个锁也会执行从行锁升级为表锁</p>
+  </li>
+</ul>
+
+<h3 id="不恰当的sql语句">不恰当的SQL语句</h3>
+
+<p>这个也比较常见了，啥是不恰当的 SQL 语句呢？就比如，明明你需要查找的内容是 name ， age ，但是呢，为了省事，直接 <code class="highlighter-rouge">select *</code>，<mark>或者在 order by 时，后面的条件不是索引字段，这就是不恰当的 SQL 语句</mark></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/mysql/2021/11/11/sql-optimization.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

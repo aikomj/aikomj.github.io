@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第20节：企业项目研发（四）OSS云存储 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot，springcloud,oss">
+    <meta name="description"
+          content="阿里云OSS云存储，创建OSS微服务模块上传文件，头像">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/04/11/icoding-note-020.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第20节：企业项目研发（四）OSS云存储">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第20节：企业项目研发（四）OSS云存储</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/04/11
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1对象存储oss">1、对象存储OSS</h2>
+
+<p>数据，文件的存储的几种方案：</p>
+
+<ul>
+  <li>数据库（MySql）+ 文件（本地，IO流）</li>
+  <li>数据库（MySql）+ 缓存（Redis）+文件（服务器集群上，如fastDFS集群，HDSF（大数据））</li>
+  <li>数据库（MySql）+ 缓存（Redis）+文件（OSS上）</li>
+</ul>
+
+<p>OSS 就是为了解决海量数据存储和弹性扩容，可以采用七牛云、阿里云 、腾讯云</p>
+
+<h2 id="2阿里云oss">2、阿里云OSS</h2>
+
+<h3 id="开通服务">开通服务</h3>
+
+<p>登录阿里云官网<a href="https://homenew.console.aliyun.com/">https://homenew.console.aliyun.com/</a></p>
+
+<p>搜索OSS,开通服务</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss.gif" alt="" /></p>
+
+<blockquote>
+  <p>创建一个Buyket库，创建一个目录avatar,上传头像</p>
+</blockquote>
+
+<p>开通后，点击对象存储的控制台，点击bucket列表</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-bucket.gif" alt="" /></p>
+
+<p>点击创建bucket</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-bucket-create.gif" alt="" /></p>
+
+<p>读写权限选择<font color="red">公共读</font></p>
+
+<p>了解bucket的计费规则，按量计费。</p>
+
+<p>点击对应的bucket</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-bucket-manage.gif" alt="" /></p>
+
+<p>点击文件管理，创建目录avatar,</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-bucket-fold-create.gif" alt="" /></p>
+
+<p>上传文件测试</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-bucket-upload-file.gif" alt="" /></p>
+
+<blockquote>
+  <p>使用子用户权限操作（安全）</p>
+</blockquote>
+
+<p>点击头像，选择AccessKey管理</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-sub-access-key.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-use-sub-access.gif" alt="" /></p>
+
+<font color="red">点击开始使用子用户</font>
+<p>,接下来就是</p>
+
+<p>1、创建用户组</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-create-sub-group.gif" alt="" /></p>
+
+<p>2、创建用户</p>
+
+<p>点击“用户”，点击“创建用户”</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-create-sub-user.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-create-sub-user2.gif" alt="" /></p>
+
+<p>记得勾选编程访问，点击确定。</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-create-sub-user3.gif" alt="" /></p>
+
+<p>登录名称，AccessKeyID,AccessKeySecret，java程序访问的时候连接要用到。</p>
+
+<p>3、添加用户到用户组</p>
+
+<p>点击“用户组”</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-bind-user-group.gif" alt="" /></p>
+
+<p>点击“添加组成员”，选择刚刚创建的用户，完成绑定。</p>
+
+<p>4、给用户组分配权限</p>
+
+<p>在用户组，点击“添加权限”</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-group-previge.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-group-previge2.gif" alt="" /></p>
+
+<p>选择“AliyunOSSFullAccess” 管理对象存储服务OSS权限</p>
+
+<p>5、保存账号信息</p>
+
+<p>将用户名、AccessKeyID、AccessKeySecret保存下来。</p>
+
+<h3 id="测试基本api">测试基本API</h3>
+
+<p>两步：</p>
+
+<p>1、找到官方文档</p>
+
+<p>2、练习基本API</p>
+
+<p>Java sdk 快速入门</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-api-test.gif" alt="" /></p>
+
+<p>下载maven示例工程了解。</p>
+
+<blockquote>
+  <p>创建测试工程</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Endpoint以杭州为例，其它Region请按实际情况填写。</span>
+<span class="nc">String</span> <span class="n">endpoint</span> <span class="o">=</span> <span class="s">"oss-cn-beijing.aliyuncs.com"</span><span class="o">;</span>
+<span class="c1">// 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。</span>
+<span class="c1">// 强烈建议您创建并使用RAM账号进行API访问或日常运维，</span>
+<span class="c1">// 请登录 https://ram.console.aliyun.com 创建RAM账号。</span>
+<span class="nc">String</span> <span class="n">accessKeyId</span> <span class="o">=</span> <span class="s">"&lt;yourAccessKeyId&gt;"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">accessKeySecret</span> <span class="o">=</span> <span class="s">"&lt;yourAccessKeySecret&gt;"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">bucketName</span> <span class="o">=</span> <span class="s">"&lt;yourBucketName&gt;"</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>访问域名</p>
+
+<p>EndPoint 地域节点，Bucket域名在Bucket列表下点击你要用的bucket，在基本信息可以找到</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-endpoint.gif" alt="" /></p>
+
+<p>OSS sdk的五种上传文件方式</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-oss-api-uploadfile-method.gif" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">(){</span>
+  <span class="c1">// 1.创建oss 实例,面向对象</span>
+  <span class="no">OSS</span> <span class="n">ossClient</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OSSClientBuilder</span><span class="o">().</span><span class="na">build</span><span class="o">(</span><span class="n">endpoint</span><span class="o">,</span> <span class="n">accessKeyId</span><span class="o">,</span> <span class="n">accessKeySecret</span><span class="o">);</span>
+  <span class="c1">// 2.创建bucket，但是读权限是私有的，需要修改为公共读</span>
+  <span class="n">ossClient</span><span class="o">.</span><span class="na">createBucket</span><span class="o">(</span><span class="n">bucketName</span><span class="o">);</span>
+  <span class="c1">// 判断bucket是否存在</span>
+  <span class="kt">boolean</span> <span class="n">exist</span> <span class="o">=</span> <span class="n">ossClient</span><span class="o">.</span><span class="na">doesBucketExist</span><span class="o">(</span><span class="n">bucketName</span><span class="o">);</span>
+  <span class="c1">// 修改为公共读</span>
+  <span class="n">ossClient</span><span class="o">.</span><span class="na">setBucketAcl</span><span class="o">(</span><span class="n">bucketName</span><span class="o">,</span><span class="nc">CannedAccessControlList</span><span class="o">.</span><span class="na">PublicRead</span><span class="o">);</span>
+   <span class="c1">// 3.上传文件流 到oss后需要一个文件名(保证唯一 /2020/4/1/xxxxxxxx.jpg)！</span>
+  <span class="nc">String</span> <span class="n">objectName</span> <span class="o">=</span> <span class="s">"avatar/default.jpg"</span><span class="o">;</span> <span class="c1">// avatar为bucket下的目录名</span>
+  <span class="n">ossClient</span><span class="o">.</span><span class="na">putObject</span><span class="o">(</span><span class="n">bucketName</span><span class="o">,</span> <span class="n">objectName</span><span class="o">,</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"C:\\Users\\Administrator\\Desktop\\dafault.jpg"</span><span class="o">));</span>
+
+  <span class="c1">// 4.下载文件</span>
+  <span class="nc">String</span> <span class="n">objectName</span> <span class="o">=</span> <span class="s">"avatar/default.jpg"</span><span class="o">;</span>
+  <span class="n">ossClient</span><span class="o">.</span><span class="na">getObject</span><span class="o">(</span><span class="k">new</span> <span class="nc">GetObjectRequest</span><span class="o">(</span><span class="n">bucketName</span><span class="o">,</span><span class="n">objectName</span><span class="o">),</span><span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"a.jpg"</span><span class="o">));</span>
+  <span class="c1">// 5.查看文件列表</span>
+  <span class="nc">ObjectListing</span> <span class="n">objectListing</span> <span class="o">=</span> <span class="n">ossClient</span><span class="o">.</span><span class="na">listObjects</span><span class="o">(</span><span class="n">bucketName</span><span class="o">);</span>
+  <span class="k">for</span> <span class="o">(</span><span class="nc">OSSObjectSummary</span> <span class="n">objectSummary</span> <span class="o">:</span> <span class="n">objectListing</span><span class="o">.</span><span class="na">getObjectSummaries</span><span class="o">())</span> 	<span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">" - "</span> <span class="o">+</span> <span class="n">objectSummary</span><span class="o">.</span><span class="na">getKey</span><span class="o">()</span> <span class="o">+</span> <span class="s">"  "</span> <span class="o">+</span>
+                       <span class="s">"(size = "</span> <span class="o">+</span> <span class="n">objectSummary</span><span class="o">.</span><span class="na">getSize</span><span class="o">()</span> <span class="o">+</span> <span class="s">")"</span><span class="o">);</span>
+  <span class="o">}</span>
+	<span class="c1">// 6.删除文件</span>
+  <span class="nc">String</span> <span class="n">objectName</span> <span class="o">=</span> <span class="s">"avatar/default.jpg"</span><span class="o">;</span>
+  <span class="n">ossClient</span><span class="o">.</span><span class="na">deleteObject</span><span class="o">(</span><span class="n">bucketName</span><span class="o">,</span><span class="n">objectName</span><span class="o">);</span>
+  
+  <span class="c1">// 关闭对象</span>
+  <span class="n">ossClient</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3创建oss微服务">3、创建OSS微服务</h2>
+
+<p><img src="/assets/images/2020/icoding/project-build/jude-edu-oss.gif" alt="" /></p>
+
+<p>Nginx 增加配置指向oss服务</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="p">~</span> <span class="sr">/oss/</span><span class="p">{</span>
+  <span class="kn">proxy_pass</span> <span class="s">http://localhost:8130</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Swagger 测试文件上传。</p>
+
+<h2 id="4头像上传">4、头像上传</h2>
+
+<p>使用vue-image-crop-upload组件上传头像</p>
+
+<p>github地址<a href="https://github.com/dai-siki/vue-image-crop-upload">https://github.com/dai-siki/vue-image-crop-upload</a></p>
+
+<p>demo地址<a href="https://dai-siki.github.io/vue-image-crop-upload/example-2/demo.html">https://dai-siki.github.io/vue-image-crop-upload/example-2/demo.html</a></p>
+
+<p><img src="/assets/images/2020/icoding/project-build/upload-image.gif" alt="" /></p>
+
+<p>效果</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/upload-image2.gif" alt="" /></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/04/11/icoding-note-020.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

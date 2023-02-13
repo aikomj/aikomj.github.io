@@ -1,9 +1,9 @@
 ---
 layout: post
 title: RocketMq消息队列应用实战-1
-category: MessageQueue
-tags: [MessageQueue]
-keywords: MessageQueue
+category: mq
+tags: [mq]
+keywords: rocketmq
 excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者
 lock: noneed
 ---
@@ -13,6 +13,8 @@ lock: noneed
 架构图如下：
 
 ![](\assets\images\2021\mq\rocketmq-arch.jpg)
+
+![](../../..\assets\images\2021\mq\rocketmq-arch.jpg)
 
 可以看到消费者都是拉的方式从Broker获取消息来消费的。
 

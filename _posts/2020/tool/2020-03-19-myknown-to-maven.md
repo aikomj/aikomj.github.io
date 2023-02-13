@@ -1,6 +1,6 @@
 ---
 layout: post
-title: maven的总结
+title: maven的知识点总结
 category: tool
 tags: [maven]
 keywords: maven

@@ -2,16 +2,26 @@
 layout: post
 title: 开源项目推荐
 titlebar: Gitee
-subtitle: <span class="mega-octicon octicon-organization"></span>&nbsp;&nbsp; 通过他人的作品，扩展自己的编程思维，增长见识。
+subtitle: <span class="mega-octicon octicon-organization"></span>&nbsp;&nbsp; 熟悉更多的开源项目，增强做项目写代码的能力，争取早日接私活外包，运营公众号，开启副业模式赚钱
 menu: Gitee
 permalink: /gitee
 ---
 
-> RuoYi
+> Renren 人人开源
+
+renren-security是一个轻量级的，前后端分离的Java快速开发平台，能快速开发项目并交付
+
+码云：[https://gitee.com/renrenio/renren-security](https://gitee.com/renrenio/renren-security)
+
+[https://gitee.com/renrenio/renren-fast](https://gitee.com/renrenio/renren-fast)
+
+> RuoYi 若依
 
 基于SpringBoot的权限管理系统 易读易懂、界面简洁美观。 核心技术采用Spring、MyBatis、Shiro没有任何其它重度依赖。直接运行即可用，分单体应用RuoYi，前后端分离RuoYi-Vue，微服务RuoYi-Cloud三个版本。
 
 码云：[https://gitee.com/y_project](https://gitee.com/y_project)
+
+推荐：[https://gitee.com/JavaLionLi/RuoYi-Cloud-Plus/tree/master](https://gitee.com/JavaLionLi/RuoYi-Cloud-Plus/tree/master)
 
 > Mall
 

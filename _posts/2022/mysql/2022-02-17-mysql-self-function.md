@@ -107,6 +107,3 @@ type = range 索引范围扫描，key = PRIMARY使用了主键索引，rows=13 �
 order by find_in_set(ivf.id,'xxxx')为什么能按指定id排序，因为会返回指定id在集合中的位置，也就是从1,2,3...
 
 
-
-
-

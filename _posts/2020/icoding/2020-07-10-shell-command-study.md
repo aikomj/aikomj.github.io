@@ -82,7 +82,9 @@ myUrl="https://www.runoob.com"
 
 执行脚本，修改只读变量报错
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/shell/readonly-var.jpg)
+![](/assets/images/2020/shell/readonly-var.jpg)
+
+![](../../../assets/images/2020/shell/readonly-var.jpg)
 
 ### 删除变量
 
@@ -106,7 +108,9 @@ echo -e $str2
 
 执行脚本
 
-![](/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/shell/shell-string-var.jpg)
+![](/assets/images/2020/shell/shell-string-var.jpg)
+
+![](../../../assets/images/2020/shell/shell-string-var.jpg)
 
 **拼接字符串**
 

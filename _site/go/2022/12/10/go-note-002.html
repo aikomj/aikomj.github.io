@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Go全栈第2节：Go基础语法 - 大伟的博客 </title>
+    <meta name="keywords" content="go">
+    <meta name="description"
+          content="注释给自己看也给别人看，变量的定义var关键字，短变量赋值，变量本质是一块内存空间,打印变量的内存地址，变量交换，匿名变量，局部变量与全局变量，const常量,特殊常量iota，数字类型,uint8的别名byte，int32的别名rune，字符和字符串,字符串的连接与转义字符，数据类型转换，运算符，获取键盘输入">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/go/2022/12/10/go-note-002.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Go全栈第2节：Go基础语法">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Go全栈第2节：Go基础语法</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/12/10
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1注释">1、注释</h2>
+
+<p>一个项目，在写的时候，你能看懂，半年，一年，时间久了，你就可能忘了。</p>
+
+<p>注释，给自己看，也给别人看，良好习惯</p>
+
+<ul>
+  <li>
+    <p>单行注释</p>
+
+    <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 我是单行注释</span>
+<span class="c">// 注释主要针对</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>多行注释</p>
+
+    <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/*
+我是多行注释
+我是多行注释
+*/</span>
+<span class="k">package</span> <span class="n">main</span>
+<span class="k">import</span> <span class="s">"fmt"</span>
+<span class="c">/*
+main函数，go语言的启动入口
+*/</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="c">// 打印一句话，并换行</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="2变量">2、变量</h2>
+
+<p>电脑实际识别的是机器码：011101</p>
+
+<p>我们理解的世界，和计算机的世界要一一对应</p>
+
+<p>计算机也需要定义一些东西。</p>
+
+<p>人名：张三，李四</p>
+
+<h3 id="变量的定义">变量的定义</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+<span class="k">import</span> <span class="s">"fmt"</span>
+<span class="c">/*
+main函数，go言的启动入口
+*/</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="c">// name 是变量</span>
+  <span class="k">var</span> <span class="n">name</span> <span class="kt">string</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
+  <span class="k">var</span> <span class="n">age</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">19</span>
+  <span class="n">name</span> <span class="o">=</span> <span class="s">"zhangsan"</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">age</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/go/go-var-1.png" style="zoom:67%;" /></p>
+
+<h3 id="变量的定义var关键字">变量的定义var关键字</h3>
+
+<p>Go语言是静态类型语言，所有的类型我们都要明确的去定义，string表示字符串类型，go语言声明一个变量使用<code class="highlighter-rouge">var</code>关键字</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">name</span> <span class="k">type</span>
+</code></pre></div></div>
+
+<ul>
+  <li>name是变量名字</li>
+  <li>type是变量类型</li>
+</ul>
+
+<p>同时定义多个变量，<strong>变量命名规则遵循驼峰命名</strong>，如 userFiles</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 定义变量</span>
+<span class="k">var</span> <span class="p">{</span>
+  <span class="n">name</span> <span class="kt">string</span>  <span class="c">// 默认值空字符串</span>
+  <span class="n">age</span> <span class="kt">int</span> <span class="c">// 默认值 0</span>
+  <span class="n">add</span> <span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="k">var</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="kt">int</span>
+</code></pre></div></div>
+
+<p><mark>不显示赋值，变量使用默认值</mark></p>
+
+<ul>
+  <li>string默认空字符串</li>
+  <li>整形和浮点型变量默认0和0.0</li>
+  <li>布尔型默认false</li>
+  <li>切片、函数、指针变量的默认值为 nil</li>
+</ul>
+
+<h3 id="变量的初始化">变量的初始化</h3>
+
+<p>标准格式：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">变量名</span> <span class="n">类型</span> <span class="o">=</span> <span class="n">值</span> <span class="err">（</span><span class="n">表达式</span><span class="err">）</span> <span class="c">// 赋值</span>
+</code></pre></div></div>
+
+<p>比如</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">name</span> <span class="kt">string</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
+<span class="k">var</span> <span class="n">age</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">18</span>
+<span class="c">// 变量是可以重复赋值的</span>
+<span class="n">age</span> <span class="o">=</span> <span class="m">20</span>
+<span class="c">// 格式化输出</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"name:%s,age:%d"</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">age</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>只定义变量，不使用在go语言是不行的，无意义的代码就是垃圾，会报错</p>
+
+<h3 id="短变量赋值">短变量赋值</h3>
+
+<p>像java，go也有语法糖（目的偷懒），自动推到变量类型</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c">// := 编译器根据变量的值自动推导变量类型，这种写法叫短变量声明并初始化</span>
+  <span class="c">// 短变量赋值只能用在局部变量中</span>
+  <span class="n">name</span> <span class="o">:=</span> <span class="s">"kuangshen"</span>
+  <span class="n">age</span> <span class="o">:=</span> <span class="m">18</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"name:%s,age:%d"</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">age</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%T"</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">age</span><span class="p">)</span>  <span class="c">// %T输出变量的类型</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<p><img src="/assets/images/2022/go/go-var-2.jpg" style="zoom:50%;" /></p>
+
+<p><img src="../../../assets/images/2023/go/go-var-2.jpg" style="zoom:50%;" /></p>
+
+<p>小结：</p>
+
+<ol>
+  <li>定义变量使用定式，var 变量名称</li>
+  <li>给变量赋值，使用变量名赋值</li>
+</ol>
+
+<h3 id="打印内存地址">打印内存地址</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">num</span> <span class="kt">int</span>
+	<span class="n">num</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"num:%d,内存地址：%p"</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">num</span><span class="p">)</span> <span class="c">// 取地址符号 &amp;变量名</span>
+	
+	<span class="c">// 重新赋值，发现内存地址不变，说明变量名代表着一个内存地址，是编译器分配的</span>
+	<span class="n">num</span> <span class="o">=</span> <span class="m">200</span>
+  <span class="c">// 格式化输出</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"num:%d,内存地址：%p"</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">num</span><span class="p">)</span> <span class="c">// 取地址符号 &amp;变量名</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/go/go-num-1.jpg" alt="" /></p>
+
+<h3 id="变量交换">变量交换</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">a</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="k">var</span> <span class="n">b</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">200</span>
+
+	<span class="c">// go语言中，可以直接这样实现换值，不需要中间变量</span>
+  <span class="c">// 把a,b 赋值给b,a</span>
+	<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="变量的本质">变量的本质</h3>
+
+<p>变量名是给开发人员看的，它本质是一个内存地址，声明变量的时候，会开辟一块内存空间，值存到内存空间中</p>
+
+<h3 id="匿名变量">匿名变量</h3>
+
+<p>匿名变量的特点是一个下划线”__” , 本身就是一个特殊的标识符，称为空白标识符，它可以像其他标识符那样用于变量的声明、赋值，<strong>但任何赋给这个标识符的值都将被抛弃</strong>，因此不能用于后续代码中使用，也不可以使用这个标识符作为变量对其他变量进行赋值与运算。</p>
+
+<p>可以理解是一个黑洞，丢进去的东西都不见了</p>
+
+<p><mark>匿名变量不分配内存空间</mark></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">test</span><span class="p">()</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="m">100</span><span class="p">,</span><span class="m">200</span>
+<span class="p">}</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
+	<span class="n">a</span><span class="p">,</span><span class="n">_</span> <span class="o">:=</span> <span class="n">test</span><span class="p">()</span> <span class="c">// 只需要第一个返回值，所以第二个变量定义为匿名变量</span>
+	<span class="n">_</span><span class="p">,</span><span class="n">b</span> <span class="o">:=</span> <span class="n">test</span><span class="p">()</span> <span class="c">// 只需要第二个返回值，所以第一个变量定义为匿名变量</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c">// 场景</span>
+<span class="c">// 登录之后，返回用户信息，有60个字段</span>
+</code></pre></div></div>
+
+<h3 id="变量的作用域">变量的作用域</h3>
+
+<ul>
+  <li>
+    <p>局部变量</p>
+
+    <p>函数体内的变量称之为局部变量</p>
+  </li>
+  <li>
+    <p>全局变量</p>
+
+    <p>函数体为声明的变量称之为全局变量，在当前go文件中生效</p>
+  </li>
+</ul>
+
+<p>全局变量与局部变量可以使用同一个名字，<mark>就近原则会使用局部变量</mark>，打印内存地址，会发现内存地址不一样</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 全局变量必须使用var关键字，不能使用:=短变量声明</span>
+<span class="k">var</span> <span class="n">name</span> <span class="kt">string</span> <span class="o">=</span> <span class="s">"kuangsheng"</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
+	<span class="k">var</span> <span class="n">name</span> <span class="kt">string</span> <span class="o">=</span> <span class="s">"lisu"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="c">// 打印局部变量</span>
+<span class="p">}</span>
+<span class="k">func</span> <span class="n">aa</span><span class="p">(){</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="c">// 打印全局变量</span>
+<span class="p">}</span>
+<span class="c">// 就近原则，自上而下</span>
+</code></pre></div></div>
+
+<h2 id="3常量">3、常量</h2>
+
+<h3 id="const-关键字">const 关键字</h3>
+
+<p>不能被修改的变量，<mark>const</mark>标识符表示这个是常量</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="n">identifier</span> <span class="p">[</span><span class="k">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</code></pre></div></div>
+
+<p>真的无法修改码？</p>
+
+<p>Go语言底层的约定，实际上它是可以修改的，需要跳过常量名，直接找到内存地址，进行修改值</p>
+
+<p>举例</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 显示类型定义</span>
+<span class="k">const</span> <span class="n">b</span> <span class="kt">string</span> <span class="o">=</span> <span class="s">"abc"</span>
+<span class="c">// 隐式类型定义</span>
+<span class="k">const</span> <span class="n">b</span> <span class="o">=</span> <span class="s">"abc"</span>
+<span class="k">const</span> <span class="n">URL</span> <span class="o">=</span> <span class="s">"www.baidu.com"</span>
+<span class="k">const</span> <span class="n">c_name1</span><span class="p">,</span><span class="n">c_name2</span> <span class="o">=</span> <span class="n">value1</span><span class="p">,</span><span class="n">value2</span> <span class="c">// 多个相同类型的常量声明</span>
+</code></pre></div></div>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
+  <span class="c">// 建议大家使用大写字母来定义常量，区分于普通变量</span>
+	<span class="k">const</span> <span class="n">URL</span> <span class="o">=</span><span class="s">"www.baidu.com"</span>
+	<span class="k">const</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="m">3.14</span><span class="p">,</span><span class="s">"kuangshen"</span><span class="p">,</span><span class="no">false</span>
+
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">URL</span><span class="p">)</span>
+  <span class="c">// 常量声明后，可以不使用</span>
+	<span class="c">// fmt.Println(a,b,c)</span>
+  <span class="c">// 常量不能获取内存地址</span>
+	<span class="c">// fmt.Printf("%p",&amp;URL)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www.baidu.com
+3.14 kuangshen <span class="nb">false</span>
+</code></pre></div></div>
+
+<p>常量和变量放置的内存地址不同，栈、堆、常量池（编译阶段就把常量存放到常量池了）</p>
+
+<p>程序正常的执行，是压栈的过程，常量字符串是存储在静态存储区的，内容不能修改</p>
+
+<h3 id="特殊常量iota">特殊常量iota</h3>
+
+<p>特殊常量，可以认为是一个被编译器修改的常量，它是go语言的<strong>常量计数器</strong></p>
+
+<p><strong>iota在const关键字出现时将被重置为0（const内部的第一行之前），const中每新增一行常量声明将使iota计数一次，可以用作枚举值</strong></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span><span class="p">(</span>
+  <span class="n">a</span> <span class="o">=</span> <span class="no">iota</span>
+  <span class="n">b</span> <span class="o">=</span> <span class="no">iota</span>
+  <span class="n">c</span> <span class="o">=</span> <span class="no">iota</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>第一个iota等于0，每当iota在新的一行被使用时，它的值被自动加1，所以a=0,b=1,c=2，简写</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span><span class="p">(</span>
+  <span class="n">a</span> <span class="o">=</span> <span class="no">iota</span>
+  <span class="n">b</span>
+  <span class="n">c</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>举例：</p>
+
+<p><img src="/assets/images/2022/go/const-iota.png" alt="" /></p>
+
+<p>iota会经常出现在源码中</p>
+
+<h2 id="4基本数据类型">4、基本数据类型</h2>
+
+<ul>
+  <li>
+    <p>动态类型编程语言</p>
+  </li>
+  <li>
+    <p>静态类型编程语言</p>
+
+    <p>如Go，在开发的时候，就需要给一些定义的变量赋值空间大小，Go的基本数据类型</p>
+  </li>
+</ul>
+
+<p>go 语言是一种静态类型的编程语言，在go中，数据类型用于声明函数和变量。数据类型的出现是为了把数据分成所需内存大小不同的数据，编程的时候需要用大数据的时候才申请大内存，就可以充分利用内存。编译器在进行编译的时候，就要知道每个值的类型，这样编译器就知道要为这个值分配多少内存，并且知道这段分配的内存表示什么</p>
+
+<p><img src="/assets/images/2022/go/datatype.png" alt="" /></p>
+
+<h3 id="布尔型">布尔型</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span>  <span class="p">{</span>
+	<span class="k">var</span> <span class="n">isFlag</span> <span class="kt">bool</span> <span class="c">// 默认值为false</span>
+	<span class="n">isFlag</span> <span class="o">=</span> <span class="no">true</span>
+  <span class="n">isFlag</span> <span class="o">=</span> <span class="m">1</span> <span class="c">// 会报错</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">isFlag</span><span class="p">)</span>
+  <span class="c">// 格式化输出，占位符：%d整数，%s字符串，%p内存地址，%t 布尔值  %T 数据类型</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%t</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">isFlag</span><span class="p">,</span><span class="n">isFlag</span><span class="p">)</span> <span class="c">// %T 输出变量的数据类型</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">true
+</span>bool,true
+</code></pre></div></div>
+
+<h3 id="数字类型">数字类型</h3>
+
+<p>整型int 和浮点型float32、float64 ，支持复数。</p>
+
+<p>在计算机中，</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>序号</th>
+      <th>类型和描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>uint8</td>
+      <td>无符号8位整数（0到255）</td>
+    </tr>
+    <tr>
+      <td>uint16</td>
+      <td>无符号16位整数（0到65535）</td>
+    </tr>
+    <tr>
+      <td>uint32</td>
+      <td>无符号32位整数（0到4294967295）</td>
+    </tr>
+    <tr>
+      <td>uint64</td>
+      <td>无符号64位整数</td>
+    </tr>
+    <tr>
+      <td>int8</td>
+      <td>有符号8位整数 （-128到127）</td>
+    </tr>
+    <tr>
+      <td>int16</td>
+      <td>有符号16位整数 （-32768到32767）</td>
+    </tr>
+    <tr>
+      <td>int32</td>
+      <td>有符号32位整数 （-2147483648到2147483647）</td>
+    </tr>
+    <tr>
+      <td>int64</td>
+      <td>有符号64位整数 （）</td>
+    </tr>
+    <tr>
+      <td>float32</td>
+      <td>32位浮点数容易造成精度丢失，尽量使用float64</td>
+    </tr>
+    <tr>
+      <td>float64</td>
+      <td>64位浮点数</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">var</span> <span class="n">age</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">18</span> <span class="c">// 默认int不指定就是使用int64</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">age</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span>
+
+	<span class="c">// 定义一个浮点数</span>
+	<span class="k">var</span> <span class="n">money</span> <span class="kt">float32</span> <span class="o">=</span> <span class="m">3.14</span> <span class="c">// 32位浮点数容易造成精度丢失，一般使用float64</span>
+  <span class="c">// 浮点数，%f 默认保留6为小数</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">money</span><span class="p">,</span> <span class="n">money</span><span class="p">)</span>   <span class="c">// 默认打印6位小数</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%.2f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">money</span><span class="p">,</span> <span class="n">money</span><span class="p">)</span> <span class="c">// 打印2位小数</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%.1f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">money</span><span class="p">,</span> <span class="n">money</span><span class="p">)</span> <span class="c">// 打印1位小数，四舍五入</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+
+<p>验证浮点数计算不精确</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">//var i2 uint8</span>
+	<span class="c">//i2 = -100</span>
+	<span class="c">// 浮点数： 符号位 + 指数位 + 尾数位（存储过程中，可能会丢失，造成精度损失）</span>
+	<span class="c">// float64的空间 》 float32</span>
+	<span class="k">var</span> <span class="n">num1</span> <span class="kt">float32</span> <span class="o">=</span> <span class="o">-</span><span class="m">123.0000901</span>
+	<span class="k">var</span> <span class="n">num2</span> <span class="kt">float64</span> <span class="o">=</span> <span class="o">-</span><span class="m">123.0000901</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">num1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">num2</span><span class="p">)</span>
+	<span class="c">// 结论：使用float来计算，可能导致数据不精确</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-123</span>.00009
+<span class="nt">-123</span>.0000901
+</code></pre></div></div>
+
+<blockquote>
+  <p>以下列出常用数字类型的别名</p>
+</blockquote>
+
+<ul>
+  <li>byte 类似uint8</li>
+  <li>rune 类似int32</li>
+  <li>int 类似int64</li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">var</span> <span class="n">num3</span> <span class="kt">byte</span> <span class="o">=</span> <span class="m">255</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">num3</span><span class="p">)</span>
+
+	<span class="k">var</span> <span class="n">num4</span> <span class="kt">rune</span> <span class="o">=</span> <span class="m">1000000000</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">num4</span><span class="p">)</span>
+
+	<span class="c">// int 根据系统的大小32位默认int32, 64位默认int64</span>
+	<span class="k">var</span> <span class="n">num5</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">130483405804804850</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">num5</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uint8
+int32
+int
+</code></pre></div></div>
+
+<p><strong>重点记住 byte、int、float</strong></p>
+
+<h3 id="字符与字符串">字符与字符串</h3>
+
+<blockquote>
+  <p>拓展编码表</p>
+</blockquote>
+
+<p>Go语言中，所有的字符串都是由单个字符连接起来的</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 单引号 字符</span>
+	<span class="n">v1</span> <span class="o">:=</span> <span class="sc">'A'</span>
+	<span class="n">v2</span> <span class="o">:=</span> <span class="s">"A"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span> 
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int32,%!s<span class="o">(</span><span class="nv">int32</span><span class="o">=</span>65<span class="o">)</span>
+string,A
+</code></pre></div></div>
+
+<p>字符A无法用%s打印，因为它不是字符串，打印出65是ASCII码表中大小字母A的值</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 单引号 字符</span>
+	<span class="n">v1</span> <span class="o">:=</span> <span class="sc">'A'</span>
+	<span class="n">v2</span> <span class="o">:=</span> <span class="s">"A"</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span> <span class="c">// 字符A打印的ASCII码表的值，大写字母A的值是65</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int32,65
+string,A
+</code></pre></div></div>
+
+<p>百度ASCII码表的每个字符的值</p>
+
+<p>打印中文</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 单引号 字符</span>
+  <span class="c">// 扩展</span>
+  <span class="c">// 所有的中国字的编码表：GBK</span>
+  <span class="c">// 全世界的文字s编码表：Unicode编码表</span>
+	<span class="n">v3</span> <span class="o">:=</span> <span class="sc">'中'</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T,%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v3</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>int32,20013
+</code></pre></div></div>
+
+<p>总结：<mark>单个字符对应的是编码表的整形值</mark></p>
+
+<blockquote>
+  <p>字符串连接与转义字符</p>
+</blockquote>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="c">// 字符串连接 +</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello "</span> <span class="o">+</span> <span class="s">",kuangshen"</span><span class="p">)</span>
+	<span class="c">// 转义字符 \</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello</span><span class="se">\"</span><span class="s">kuangshen"</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello</span><span class="se">\n</span><span class="s">kuangshen"</span><span class="p">)</span> <span class="c">// n 换行</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"hello</span><span class="se">\t</span><span class="s">kuangshen"</span><span class="p">)</span> <span class="c">// t 制表符，4个空格=tab</span>
+<span class="err">··</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hello ,kuangshen
+hello<span class="s2">"kuangshen
+hello
+kuangshen
+hello   kuangshen
+</span></code></pre></div></div>
+
+<p>所有的转义字符，百度</p>
+
+<h3 id="数据类型转换">数据类型转换</h3>
+
+<p>由于go语言不存在隐式类型转换，因此所有类型的转换都必须是显式的声明，语法：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>valueOfTypeB <span class="o">=</span> typeB <span class="o">(</span>valueOfTypeA<span class="o">)</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import <span class="s2">"fmt"</span>
+
+func main<span class="o">()</span> <span class="o">{</span>
+	a :<span class="o">=</span> 3
+	b :<span class="o">=</span> 5.0
+
+	// 类型转换
+	c :<span class="o">=</span> float64<span class="o">(</span>a<span class="o">)</span>
+	// 转换 bool 整型是不能转换为bool
+	// e :<span class="o">=</span> bool<span class="o">(</span>a<span class="o">)</span>
+	d :<span class="o">=</span> byte<span class="o">(</span>a<span class="o">)</span>
+	fmt.Printf<span class="o">(</span><span class="s2">"%T</span><span class="se">\n</span><span class="s2">"</span>, a<span class="o">)</span>
+	fmt.Printf<span class="o">(</span><span class="s2">"%T</span><span class="se">\n</span><span class="s2">"</span>, b<span class="o">)</span>
+	fmt.Printf<span class="o">(</span><span class="s2">"%T</span><span class="se">\n</span><span class="s2">"</span>, c<span class="o">)</span>
+	//fmt.Printf<span class="o">(</span><span class="s2">"%T</span><span class="se">\n</span><span class="s2">"</span>, e<span class="o">)</span>
+	fmt.Printf<span class="o">(</span><span class="s2">"%T</span><span class="se">\n</span><span class="s2">"</span>, d<span class="o">)</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>总结： <mark>每种数据类型分配的内存空间大小是不一样的</mark></p>
+
+<h3 id="6种运算符">6种运算符</h3>
+
+<p>下面6种：</p>
+
+<ol>
+  <li>算术运算符</li>
+  <li>关系运算符</li>
+  <li>逻辑运算符</li>
+  <li>位运算符</li>
+  <li>赋值运算符</li>
+  <li>其他运算符</li>
+</ol>
+
+<blockquote>
+  <p>算术运算符</p>
+</blockquote>
+
+<p>下表列出了所有go语言的算术运算符，假定A值为10，B值为20</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>运算符</th>
+      <th>描述</th>
+      <th>实例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>+</td>
+      <td>相加</td>
+      <td>双元运算符，由两个变量构成运算</td>
+    </tr>
+    <tr>
+      <td>-</td>
+      <td>相减</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>*</td>
+      <td>相乘</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>/</td>
+      <td>相除</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>%</td>
+      <td>求余/取模</td>
+      <td>B%A输出结果0</td>
+    </tr>
+    <tr>
+      <td>++</td>
+      <td>自增</td>
+      <td>A++输出结果11，单元运算符</td>
+    </tr>
+    <tr>
+      <td>–</td>
+      <td>自减</td>
+      <td>A–输出结果9</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"fmt"</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">a</span> <span class="o">:=</span> <span class="m">10</span>
+	<span class="n">b</span> <span class="o">:=</span> <span class="m">3</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span> <span class="o">%</span> <span class="n">b</span><span class="p">)</span>
+	<span class="n">a</span><span class="o">++</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+	<span class="n">a</span><span class="o">--</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>13
+7
+30
+3
+1
+11
+10
+</code></pre></div></div>
+
+<blockquote>
+  <p>关系运算符 ，结果都是bool 布尔值</p>
+</blockquote>
+
+<p>下表列出了所有go语言的关系运算符，假定A值为10，B值为20</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>运算符</th>
+      <th>描述</th>
+      <th>实例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>==</td>
+      <td> </td>
+      <td>A==B 为false</td>
+    </tr>
+    <tr>
+      <td>!=</td>
+      <td> </td>
+      <td>A!=B 为true</td>
+    </tr>
+    <tr>
+      <td>&gt;</td>
+      <td> </td>
+      <td>A&gt;B 为false</td>
+    </tr>
+    <tr>
+      <td>&lt;</td>
+      <td> </td>
+      <td>A&lt;B 为true</td>
+    </tr>
+    <tr>
+      <td>&gt;=</td>
+      <td> </td>
+      <td>A&gt;=B 为false</td>
+    </tr>
+    <tr>
+      <td>&lt;=</td>
+      <td> </td>
+      <td>A&lt;=B 为true</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>逻辑运算符</p>
+</blockquote>
+
+<p>下表列出了所有go语言的逻辑运算符，假定A值为true，B值为false</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>运算符</th>
+      <th>描述</th>
+      <th>实例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>&amp;&amp;</strong></td>
+      <td>逻辑AND运算符，如果两边的操作数都是true，则条件true,否则false</td>
+      <td>(A &amp;&amp; B) 为false</td>
+    </tr>
+    <tr>
+      <td><strong>||</strong></td>
+      <td>逻辑OR运算符，如果两边的操作数有一个true,则条件true,否则false</td>
+      <td>(A || B) 为true</td>
+    </tr>
+    <tr>
+      <td><strong>!</strong></td>
+      <td>逻辑NOT运算符, 如果条件为true，则逻辑NOT条件false，否则true</td>
+      <td>!(A &amp;&amp; B) 为true</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>位运算符（二进制）0与1 ，加密解密场景</p>
+</blockquote>
+
+<p>下表列出了所有go语言的位算符，假定A值为60，B值为13</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>运算符</th>
+      <th>描述</th>
+      <th>实例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>&amp;</td>
+      <td>按位与运算符“&amp;”是双目运算符，都是1结果为1，否则0</td>
+      <td>A&amp;B 结果为12，二进制0000 1100</td>
+    </tr>
+    <tr>
+      <td>|</td>
+      <td>按位或运算符“|”是双目运算符，都是0结果为0，否则1</td>
+      <td>A|B结果为61，二进制0011 1101</td>
+    </tr>
+    <tr>
+      <td>^</td>
+      <td>按位异或运算符”^”是双目运算符，不同则为1，相同为0</td>
+      <td>A^B结果为49，二进制0011 0001</td>
+    </tr>
+    <tr>
+      <td>&amp;^</td>
+      <td>位清空，a&amp;^b，对于b上的每个数值，如果为0，则取a对应位上的数值，如果为1，则取0</td>
+      <td>A&amp;^B结果为48，二进制为00110000</td>
+    </tr>
+    <tr>
+      <td>«</td>
+      <td>左移运算符，左移n位就是乘以2的n次方，其功能把«左边的运算数的各二进制全部左移若干位，由«右边的数字指定移动的位数，高位丢弃，低位补0</td>
+      <td>A«2 结果位240，二进制为11110000</td>
+    </tr>
+    <tr>
+      <td>»</td>
+      <td>右移运算符，右移n位就是除以2的n次方，其功能把“«”左边的运算数的各二进制全部右移若干位，由“«”右边的数字指定移动的位数，高位补0</td>
+      <td>A»2结果为15，二进制为00001111</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 二进制 0 1 逢二进1 ，1~20的二进制表示如下</span>
+    <span class="c">// 0 1 电路问题</span>
+	<span class="c">// 1, 1</span>
+	<span class="c">// 2, 10</span>
+	<span class="c">// 3，11</span>
+	<span class="c">// 4，100</span>
+	<span class="c">// 5，101</span>
+	<span class="c">// 6, 110</span>
+	<span class="c">// 7, 111</span>
+	<span class="c">// 8, 1000</span>
+	<span class="c">// 9, 1001</span>
+	<span class="c">// 10, 1010</span>
+	<span class="c">// 11, 1011</span>
+	<span class="c">// 12, 1100</span>
+	<span class="c">// 13, 1101</span>
+	<span class="c">// 14, 1110</span>
+	<span class="c">// 15, 1111</span>
+	<span class="c">// 16, 10000</span>
+	<span class="c">// 17, 10001</span>
+	<span class="c">// 18, 10010</span>
+	<span class="c">// 19, 10011</span>
+	<span class="c">// 20, 10100</span>
+	<span class="c">// 位运算： 二进制的0 false, 1 true</span>
+	<span class="c">// &amp; 我和你 1 1 结果才是1，否则 0</span>
+	<span class="c">// | 或运算符 都是0结果为0，否则1</span>
+  <span class="c">// ^ 不同为1，相同为0</span>
+	<span class="c">// 60  0011 1100</span>
+	<span class="c">// 13  0000 1101</span>
+	<span class="c">// -------------</span>
+	<span class="c">// &amp;   0000 1100</span>
+  <span class="c">// |   0011 1101</span>
+  <span class="c">// ^   0011 0001 </span>
+	<span class="c">// 结果 12</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>go代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">var</span> <span class="n">a</span> <span class="kt">uint</span> <span class="o">=</span> <span class="m">60</span>
+<span class="k">var</span> <span class="n">b</span> <span class="kt">uint</span> <span class="o">=</span> <span class="m">13</span>
+<span class="k">var</span> <span class="n">c</span> <span class="kt">uint</span> <span class="o">=</span> <span class="m">0</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="n">b</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d,二进制%b</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>  <span class="c">// 00001100</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">|</span> <span class="n">b</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d,二进制%b</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="c">// 61,二进制111101</span>
+
+	<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&lt;&lt;</span> <span class="m">2</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d,二进制%b</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="c">// 240,二进制11110000</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d,二进制%b</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="c">// 60,二进制111100</span>
+	<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&gt;&gt;</span> <span class="m">2</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d,二进制%b</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="c">// 15,二进制1111</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="m">12</span><span class="p">,</span><span class="n">二进制1100</span>
+<span class="m">61</span><span class="p">,</span><span class="n">二进制111101</span>
+<span class="m">240</span><span class="p">,</span><span class="n">二进制11110000</span>
+<span class="m">60</span><span class="p">,</span><span class="n">二进制111100</span>
+<span class="m">15</span><span class="p">,</span><span class="n">二进制1111</span>
+</code></pre></div></div>
+
+<p>平时用的少，底层加密解密可以使用，比如说用二进制进行加密，往前移3位，就变成乱码了，往后移3位，变成正常文本，</p>
+
+<p>比如有一段代码，exe文件，底层都是二进制的文件，进行与、或位移操作就相当于加密了</p>
+
+<blockquote>
+  <p>赋值运算符</p>
+</blockquote>
+
+<p><img src="/assets/images/2022/go/go-operate.png" alt="" /></p>
+
+<blockquote>
+  <p>其他运算符</p>
+</blockquote>
+
+<p><img src="/assets/images/2022/go/other-operate.png" alt="" /></p>
+
+<h3 id="获取键盘输入">获取键盘输入</h3>
+
+<p>go语言跟c++一样由指针的概念，指向内存地址</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="k">var</span> <span class="n">x</span> <span class="kt">int</span>
+	<span class="k">var</span> <span class="n">y</span> <span class="kt">float64</span>
+
+	<span class="c">// 定义两个变量，键盘录入这两个变量值</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"请输入两个数，1、整数，2、浮点数"</span><span class="p">)</span>
+	<span class="c">// 变量取内存地址  &amp;变量</span>
+	<span class="c">// Scanln阻塞等待你的键盘输入，然后换行</span>
+<span class="n">fmt</span><span class="o">.</span><span class="n">Scanf</span><span class="p">()</span> <span class="c">// 接收格式化输入</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Scanln</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">)</span> <span class="c">// 把输入值保存到内存地址指向的内存空间</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"x:"</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"y:"</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>执行结果</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>请输入两个数，1、整数，2、浮点数
+1 3.14
+x: 1
+y: 3.14
+</code></pre></div></div>
+
+<h2 id="5格式化输出占位符">5、格式化输出占位符</h2>
+
+<ul>
+  <li>%s 打印字符串</li>
+  <li>%c 输出字符</li>
+  <li>%d 打印整形</li>
+  <li>%t 打印布尔型</li>
+  <li>%f 打印浮点数</li>
+  <li>%T 打印变量类型</li>
+  <li>%p 打印内存地址</li>
+  <li>%v 以默认的方式打印变量的值</li>
+  <li>%T 打印变量的类型</li>
+  <li>%s 正常输出字符串</li>
+  <li>%t 打印true或false</li>
+  <li>%p 带0x的指针</li>
+  <li>%d 整型</li>
+  <li>%#p 不带0x的指针</li>
+  <li>%o 不带零的八进制</li>
+  <li>%#o 带零的八进制</li>
+  <li>%x 小写的十六进制</li>
+  <li>%X 大写的十六进制</li>
+  <li>%#x 带0x的十六进制</li>
+  <li>%U 打印Unicode字符</li>
+  <li>%#U 打印带字符的Unicode</li>
+  <li>%b 打印整型的二进制</li>
+  <li>%q 字符串带双引号，字符串中的引号带转义符</li>
+  <li>%f (=%.6f) 6位小数点</li>
+  <li>%e (=%.6e) 6位小数点（科学计数法）</li>
+  <li>%g 用最少的数字来表示</li>
+  <li>%.3g 最多3位数字来表示</li>
+  <li>%.3f 最多3位小数来表示</li>
+</ul>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/go/2022/12/10/go-note-002.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

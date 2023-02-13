@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第31节：前台登录注册业务实现 - 大伟的博客 </title>
+    <meta name="keywords" content="springcloud">
+    <meta name="description"
+          content="前台登录业务，集成JWT，阿里云短信验证码集成到项目中，理解OAuth2协议，整合微信登录回调授权">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/05/06/icoding-note-031.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第31节：前台登录注册业务实现">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第31节：前台登录注册业务实现</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/05/06
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1登录业务">1、登录业务</h2>
+
+<blockquote>
+  <p>SSO（Single Sign on）模式</p>
+</blockquote>
+
+<p>淘宝天猫单点登录原理：</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/single-sign-on.png" alt="" /></p>
+
+<p>这个sso模型与游乐场的门票是一个道理的，凭证token可以访问任意服务，不能泄漏，更安全的解决方案：</p>
+
+<p>1、缓存定时失效</p>
+
+<p>2、两次登录信息不一致（电脑，手机），进行短信验证码验证，如支付宝</p>
+
+<h2 id="2集成jwt">2、集成JWT</h2>
+
+<p>登录后，传统的身份验证，可以在拦截器或过滤器进行身份验证，但是这样网站服务与身份验证在同一个工程中，耦合性强，单体应用可以使用，但是多个微服务下就不行了，因为无法横向扩展，解决方案：</p>
+
+<ul>
+  <li>session共享，服务太多会存在共享延迟的问题，可以把session缓存到redis中。</li>
+  <li>cookie令牌，用户信息缓存到第三方，代表解决方案 JWT（JSON Web Token）</li>
+</ul>
+
+<blockquote>
+  <p>JWT令牌</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>透明令牌</p>
+
+    <p>随机生成，没有办法猜测这个是如何存储和颁发！所有的请求必须要要到 OAuth2授权服务的的检测，才能判断这个令牌是否有效！</p>
+  </li>
+  <li>
+    <p>自包含令牌</p>
+
+    <p>授权服务器颁发的，包含用户的数据，声明式检查前面，颁发者、期望的接收人,,,,, 可以在本地来进行校验！</p>
+  </li>
+</ol>
+
+<blockquote>
+  <p>JWT组成</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/project-build/jwt-head-body-signature.jpg" alt="" /></p>
+
+<p>JWT对象是一个很长的字符串，通过.来进行分割为三个字符串！</p>
+
+<p>1、Header就是JWT 元数据的JSON对象</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"alg"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HS256"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"JWT"</span><span class="w">
+    </span><span class="err">.....</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>2、Claims就是有效载荷（具体的主体信息）</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">7</span><span class="err">个默认的字段：</span><span class="w">
+</span><span class="err">发行人</span><span class="w">
+</span><span class="err">到期时间</span><span class="w">
+</span><span class="err">主题</span><span class="w">
+</span><span class="err">用户</span><span class="w">
+</span><span class="err">在此之前不可用</span><span class="w">
+</span><span class="err">发布时间</span><span class="w">
+</span><span class="err">jwt</span><span class="w"> </span><span class="err">id</span><span class="w">
+</span><span class="err">我们还可以添加自己的信息</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"coding"</span><span class="p">,</span><span class="w">
+    </span><span class="err">///...</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>3、Signature就是签名哈希</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>签名哈希 就是对上面两部分数据的签名，通过指定的算法，生成哈希，确保数据不会被篡改！
+首先，需要指定一个密码（secret），保存到服务器中，secret不能向用户公开。
+根据某种算法，生成一个新的密码。
+</code></pre></div></div>
+
+<p><mark>JWT的好处</mark></p>
+
+<ul>
+  <li>
+    <p>不仅可以用于认证，还可以用来交换信息。可以减少请求服务器的次数！</p>
+  </li>
+  <li>（自包含令牌）生成的token一般会包含用户的信息，id/昵称、头像…..，</li>
+  <li>存储在客户端的，不会占用服务器端的内存资源！</li>
+</ul>
+
+<p><mark>JWT的缺点</mark></p>
+
+<ul>
+  <li>JWT 默认不加密的，你也可以加密，生成原始的令牌后然后对其再加密！同理，服务器拿到token后先解密得到明文的token字符串，再解析与校验token，所以没有被加密的时候，不建议存放私密数据！</li>
+</ul>
+
+<p>JWT头与calims载荷默认不加密的，通过nimbus-jose-jwt这个开源库解析出payload载荷信息，包括jti、exp到期时间、主题、自己添加的信息等，无需通过签名校验token，就可以获取这些payload信息，为了避免token被篡改，一般都是先用Signature（签名）校验token再解析token获取payload。</p>
+
+<p><a href="/springboot/2022/07/03/nimbus-jose-jwt.html">nimbus-jose-jwt</a> 使用他可以生成或者解析<a href="https://so.csdn.net/so/search?q=对称加密&amp;spm=1001.2101.3001.7020">对称加密</a>或者非对称加密的的JWT. JWS是JWT规范的落地实现。</p>
+
+<blockquote>
+  <p>集成到项目中</p>
+</blockquote>
+
+<p>用户中心模块 edu-ucenter</p>
+
+<p>1、pom.xml导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>io.jsonwebtoken<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>jjwt<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、创建工具类JwtUtils</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JwtUtils</span> <span class="o">{</span>
+	<span class="c1">// 这个只有在服务端有</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">APP_SECRET</span> <span class="o">=</span> <span class="s">"[asdhakdjsakjdlasjdu13123123_123!@"</span><span class="o">;</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="no">EXPIRE</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">24</span><span class="o">;</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getJwtToken</span><span class="o">(</span><span class="nc">String</span> <span class="n">id</span><span class="o">,</span><span class="nc">String</span> <span class="n">nickname</span><span class="o">){</span>
+		<span class="nc">String</span> <span class="n">jwtToken</span> <span class="o">=</span> <span class="nc">Jwts</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+				<span class="o">.</span><span class="na">setHeaderParam</span><span class="o">(</span><span class="s">"typ"</span><span class="o">,</span> <span class="s">"JWT"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">setHeaderParam</span><span class="o">(</span><span class="s">"alg"</span><span class="o">,</span> <span class="s">"HS256"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">setSubject</span><span class="o">(</span><span class="s">"member-user"</span><span class="o">)</span>  <span class="c1">// 这个token字符串的标题，也可以使用id唯一值标识</span>
+				<span class="o">.</span><span class="na">setIssuedAt</span><span class="o">(</span><span class="k">new</span> <span class="nc">Date</span><span class="o">())</span>    <span class="c1">// 创建时间</span>
+				<span class="o">.</span><span class="na">setExpiration</span><span class="o">(</span><span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">+</span> <span class="no">EXPIRE</span><span class="o">))</span>
+				<span class="o">.</span><span class="na">claim</span><span class="o">(</span><span class="s">"id"</span><span class="o">,</span> <span class="n">id</span><span class="o">)</span>   <span class="c1">// 自包含的数据</span>
+				<span class="o">.</span><span class="na">claim</span><span class="o">(</span><span class="s">"nickname"</span><span class="o">,</span> <span class="n">nickname</span><span class="o">)</span> <span class="c1">// 自包含的数据</span>
+				<span class="o">.</span><span class="na">signWith</span><span class="o">(</span><span class="nc">SignatureAlgorithm</span><span class="o">.</span><span class="na">HS256</span><span class="o">,</span> <span class="no">APP_SECRET</span><span class="o">)</span> <span class="c1">// 签名加密</span>
+				<span class="o">.</span><span class="na">compact</span><span class="o">();</span>
+		<span class="c1">// 就是一个指定规则的字符串jwtToken，这里保存用户的信息</span>
+		<span class="k">return</span> <span class="n">jwtToken</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="c1">// 检测token</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">checkToken</span><span class="o">(</span><span class="nc">String</span> <span class="n">jwtToken</span><span class="o">){</span>
+		<span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">jwtToken</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="k">try</span> <span class="o">{</span>
+			<span class="nc">Jws</span><span class="o">&lt;</span><span class="nc">Claims</span><span class="o">&gt;</span> <span class="n">claimsJws</span> <span class="o">=</span> <span class="nc">Jwts</span><span class="o">.</span><span class="na">parser</span><span class="o">().</span><span class="na">setSigningKey</span><span class="o">(</span><span class="no">APP_SECRET</span><span class="o">).</span><span class="na">parseClaimsJws</span><span class="o">(</span><span class="n">jwtToken</span><span class="o">);</span>
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="c1">// 根据用户请求头中的token获取用户的id</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getMemberIdByJwtToken</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">String</span> <span class="n">token</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeader</span><span class="o">(</span><span class="s">"token"</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">token</span><span class="o">))</span> <span class="k">return</span> <span class="s">""</span><span class="o">;</span>
+		<span class="nc">Jws</span><span class="o">&lt;</span><span class="nc">Claims</span><span class="o">&gt;</span> <span class="n">claimsJws</span> <span class="o">=</span> <span class="nc">Jwts</span><span class="o">.</span><span class="na">parser</span><span class="o">().</span><span class="na">setSigningKey</span><span class="o">(</span><span class="no">APP_SECRET</span><span class="o">).</span><span class="na">parseClaimsJws</span><span class="o">(</span><span class="n">token</span><span class="o">);</span>
+		<span class="nc">Claims</span> <span class="n">body</span> <span class="o">=</span> <span class="n">claimsJws</span><span class="o">.</span><span class="na">getBody</span><span class="o">();</span>
+		<span class="k">return</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">body</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"id"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>前台项目就可以使用jwt,给用户生成一个加密的token，服务端进行校验解析。</p>
+
+<h2 id="3阿里云短信验证码"><strong>3</strong>、阿里云短信验证码</h2>
+
+<h3 id="开通服务">开通服务</h3>
+
+<p>阿里云业务模型：</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-yun.gif" alt="" /></p>
+
+<p>这里使用跟oss\vod同一个授权子账号，</p>
+
+<p>登录阿里云控制台</p>
+
+<blockquote>
+  <p>短信业务开通</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-ssm-1.gif" alt="" /></p>
+
+<p>点击进去，开通</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-ssm-2.gif" alt="" /></p>
+
+<p>给用户组授权短信业务AliyunDysmsFullAccess</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-sms-previlge.gif" alt="" /></p>
+
+<h3 id="计费规则">计费规则</h3>
+
+<blockquote>
+  <p>短信规则</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-ssm-4.png" alt="" /></p>
+
+<p>超过70个字数，按两条短信计算，</p>
+
+<blockquote>
+  <p>计费规则</p>
+</blockquote>
+
+<p><a href="https://www.aliyun.com/price/product?spm=5176.8911205.0.0.1d541cbepQsxQP#/sms/detail">https://www.aliyun.com/price/product?spm=5176.8911205.0.0.1d541cbepQsxQP#/sms/detail</a></p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-ssm-3.gif" alt="" /></p>
+
+<h3 id="上限规则">上限规则</h3>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-ssm-5.gif" alt="" /></p>
+
+<h3 id="签名与短信模版申请">签名与短信模版申请</h3>
+
+<p>个人只配拥有一个签名，模版和签名申请一定要正规，否则通过不了。</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-sms-6.png" alt="" /></p>
+
+<h2 id="4短信微服务">4、短信微服务</h2>
+
+<p>短信模版申请通过后，我们在项目中集成短信服务，找到短信服务的帮助文档，添加依赖</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-sms-java-sdk.gif" alt="" /></p>
+
+<p>使用示例：</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/ali/ali-sms-demo=.gif" alt="" /></p>
+
+<p>新建module maven工程edu-sms 短信微服务</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/jude-edu-sms.gif" alt="" /></p>
+
+<p>发送短信验证码，测试</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestSMS</span> <span class="o">{</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">(){</span>
+        <span class="nc">DefaultProfile</span> <span class="n">profile</span> <span class="o">=</span> <span class="nc">DefaultProfile</span><span class="o">.</span><span class="na">getProfile</span><span class="o">(</span><span class="s">"cn-hangzhou"</span><span class="o">,</span> <span class="s">"&lt;accessKeyId&gt;"</span><span class="o">,</span> <span class="s">"&lt;accessSecret&gt;"</span><span class="o">);</span>
+        <span class="c1">// 连接到客户端</span>
+        <span class="nc">IAcsClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultAcsClient</span><span class="o">(</span><span class="n">profile</span><span class="o">);</span>
+        <span class="c1">// 短信请求</span>
+        <span class="nc">CommonRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CommonRequest</span><span class="o">();</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setSysMethod</span><span class="o">(</span><span class="nc">MethodType</span><span class="o">.</span><span class="na">POST</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setSysDomain</span><span class="o">(</span><span class="s">"dysmsapi.aliyuncs.com"</span><span class="o">);</span><span class="c1">// 不能改动</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setSysVersion</span><span class="o">(</span><span class="s">"2017-05-25"</span><span class="o">);</span> <span class="c1">// 版本时间，不能改动</span>
+        <span class="c1">// api事件</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setSysAction</span><span class="o">(</span><span class="s">"SendSms"</span><span class="o">);</span>
+
+        <span class="c1">// 具体的发送</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"PhoneNumbers"</span><span class="o">,</span> <span class="s">"187xxxx39"</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"SignName"</span><span class="o">,</span> <span class="s">"&lt;签名&gt;"</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"TemplateCode"</span><span class="o">,</span> <span class="s">"&lt;模版CODE&gt;"</span><span class="o">);</span>
+        <span class="c1">// 验证码</span>
+        <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"code"</span><span class="o">,</span><span class="mi">2333</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"TemplateParam"</span><span class="o">,</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">param</span><span class="o">));</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 请求发送获得响应</span>
+            <span class="nc">CommonResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getCommonResponse</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getData</span><span class="o">());</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ServerException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ClientException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试没问题，写接口服务</p>
+
+<p>web层接口的定义SmsApiController</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/send/{phone}"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="no">R</span> <span class="nf">code</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"phone"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">phone</span><span class="o">){</span>
+  <span class="c1">// 先判断否已经发送过了，从redis获取key</span>
+  <span class="nc">String</span> <span class="n">code</span> <span class="o">=</span> <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">phone</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">code</span><span class="o">)){</span>
+    <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 生成验证码</span>
+  <span class="n">code</span> <span class="o">=</span> <span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+  <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+  <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"code"</span><span class="o">,</span><span class="n">code</span><span class="o">);</span>
+
+  <span class="kt">boolean</span> <span class="n">isSend</span> <span class="o">=</span> <span class="n">smsService</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">phone</span><span class="o">,</span> <span class="s">"SMS_189520818"</span><span class="o">,</span> <span class="n">param</span><span class="o">);</span> <span class="c1">// SMS_189520818 就是短信模版CODE</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">isSend</span><span class="o">){</span>
+    <span class="c1">// 缓存到redis中，60秒失效</span>
+    <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">phone</span><span class="o">,</span><span class="n">code</span><span class="o">,</span><span class="mi">60</span><span class="o">,</span><span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+    <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+  <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">error</span><span class="o">().</span><span class="na">message</span><span class="o">(</span><span class="s">"短信发送失败"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>业务层实现类SmsServiceImpl.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SmsServiceImpl</span> <span class="kd">implements</span> <span class="nc">SmsService</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">send</span><span class="o">(</span><span class="nc">String</span> <span class="n">phoneNums</span><span class="o">,</span> <span class="nc">String</span> <span class="n">tempalteCode</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DefaultProfile</span> <span class="n">profile</span> <span class="o">=</span> <span class="nc">DefaultProfile</span><span class="o">.</span><span class="na">getProfile</span><span class="o">(</span><span class="s">"cn-hangzhou"</span><span class="o">,</span> <span class="nc">ConstantPropertiesUtils</span><span class="o">.</span><span class="na">ACCESS_KEY_ID</span><span class="o">,</span> <span class="nc">ConstantPropertiesUtils</span><span class="o">.</span><span class="na">ACCESS_KEY_SECRET</span><span class="o">);</span>
+        <span class="c1">// 连接到客户端</span>
+        <span class="nc">IAcsClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultAcsClient</span><span class="o">(</span><span class="n">profile</span><span class="o">);</span>
+        <span class="c1">// 短信请求</span>
+        <span class="nc">CommonRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CommonRequest</span><span class="o">();</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setMethod</span><span class="o">(</span><span class="nc">MethodType</span><span class="o">.</span><span class="na">POST</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setDomain</span><span class="o">(</span><span class="s">"dysmsapi.aliyuncs.com"</span><span class="o">);</span><span class="c1">// 不能改动</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setVersion</span><span class="o">(</span><span class="s">"2017-05-25"</span><span class="o">);</span> <span class="c1">// 版本时间，不能改动</span>
+        <span class="c1">// api事件</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setAction</span><span class="o">(</span><span class="s">"SendSms"</span><span class="o">);</span>
+
+        <span class="c1">// 具体的发送</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"PhoneNumbers"</span><span class="o">,</span> <span class="n">phoneNums</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"SignName"</span><span class="o">,</span> <span class="s">"狂神说Java学习网站"</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"TemplateCode"</span><span class="o">,</span> <span class="n">tempalteCode</span><span class="o">);</span>
+        <span class="c1">// 验证码</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">putQueryParameter</span><span class="o">(</span><span class="s">"TemplateParam"</span><span class="o">,</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">param</span><span class="o">));</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// 请求发送获得响应</span>
+            <span class="nc">CommonResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getCommonResponse</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getData</span><span class="o">());</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="na">getHttpResponse</span><span class="o">().</span><span class="na">isSuccess</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ServerException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ClientException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="5理解oauth2协议">5、理解OAuth2协议</h2>
+
+<h3 id="什么是oauth2">什么是oauth2</h3>
+
+<p>OAuth（Open Authorization，开放授权）是为用户资源的授权定义了一个安全、开放及简单的标准，第三方无需知道用户的账号及密码，就可获取到用户的授权信息。
+OAuth2.0是OAuth协议的延续版本，但不向后兼容OAuth 1.0即完全废止了OAuth1.0</p>
+
+<p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2020/oauth2/icoding-oauth2-1.png" alt="" /></p>
+
+<p>oauth2的清楚认识，查看《OAuth2最简向导》</p>
+
+<h3 id="oauth2的应用">oauth2的应用</h3>
+
+<p>主要应用于现代微服务安全</p>
+
+<ul>
+  <li>
+    <p>传统的单体应用安全</p>
+
+    <p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2020/oauth2/icoding-oauth2-2.png" alt="" /></p>
+  </li>
+</ul>
+
+<p>​	应用服务器保存了授权过的用户session信息</p>
+
+<ul>
+  <li>
+    <p>现代微服务安全</p>
+
+    <p>核心的技术不是用户名和密码，而是token，由AuthServer颁发token，用户使用token进行登录</p>
+
+    <p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2020/oauth2/icoding-oauth2-3.png" alt="" /></p>
+  </li>
+</ul>
+
+<p><strong>典型应用</strong></p>
+
+<p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2020/oauth2/icoding-oauth2-4.png" alt="" /></p>
+
+<h3 id="oauth2解决的问题">oauth2解决的问题</h3>
+
+<p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2020/oauth2/icoding-oauth2-5.png" alt="" /></p>
+
+<h2 id="6整合微信登录">6、整合微信登录</h2>
+
+<p>第三方应用使用微信登录的流程如下：</p>
+
+<p><img src="/Users/xjw/Desktop/项目/个人项目/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2020/oauth2/weixin-login.png" alt="" /></p>
+
+<p>主要理解为两步：</p>
+
+<p>第一步：请求CODE（生成授权URL）</p>
+
+<p>第二步：通过code获取access_token（开发回调URL）</p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/05/06/icoding-note-031.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

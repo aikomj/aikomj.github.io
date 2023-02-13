@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Spring的Controller是单例还是多例？怎么保证并发的安全 - 大伟的博客 </title>
+    <meta name="keywords" content="spring">
+    <meta name="description"
+          content="Spring的Controller默认是单例的，线程不安全的，尽量不使用成员变量，ThreadLocal成员变量，Request请求会复用线程池里线程，所以也不能达到请求并发安全，使用ConcurrentHashMap等并发安全类，微服务的并发安全考虑使用可共享信息的分布式缓存中间件如Redis">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/spring/2020/09/10/spring-controller.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Spring的Controller是单例还是多例？怎么保证并发的安全">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Spring的Controller是单例还是多例？怎么保证并发的安全</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/09/10
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1验证controller单例">1、验证controller单例</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @author riemann
+ * @date 2019/07/29 22:56
+ */</span>
+<span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ScopeTestController</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/testScope"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testScope</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(++</span><span class="n">num</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/testScope2"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testScope2</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(++</span><span class="n">num</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们首先访问 http://localhost:8080/testScope，得到的答案是1；</p>
+
+<p>然后我们再访问 http://localhost:8080/testScope2，得到的答案是 2。</p>
+
+<p><strong style="color:rgb(171, 25, 66)">得到的不同的值，这是线程不安全的。</strong></p>
+
+<h3 id="scope注解多例模式">Scope注解多例模式</h3>
+
+<blockquote>
+  <p>@Scope(“prototype”)多例</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @author riemann
+ * @date 2019/07/29 22:56
+ */</span>
+<span class="nd">@Controller</span>
+<span class="nd">@Scope</span><span class="o">(</span><span class="s">"prototype"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ScopeTestController</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/testScope"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testScope</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(++</span><span class="n">num</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/testScope2"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testScope2</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(++</span><span class="n">num</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们依旧首先访问 http://localhost:8080/testScope，得到的答案是1；</p>
+
+<p>然后我们再访问 http://localhost:8080/testScope2，得到的答案还是 1;</p>
+
+<p>对于请求线程来说得到的初始值都是1，说明线程安全的。</p>
+
+<p><strong>结论</strong></p>
+
+<ul>
+  <li>单例会导致属性重复使用</li>
+</ul>
+
+<p><strong>解决方案</strong></p>
+
+<ul>
+  <li>
+    <p>不要在controller中定义成员变量。</p>
+  </li>
+  <li>
+    <p>万一必须要定义一个非静态成员变量时候，则通过注解@Scope(“prototype”)，将其设置为多例模式。</p>
+
+    <p>缺点：增加了创建销毁bean的服务器资源开销</p>
+  </li>
+  <li>
+    <p>在Controller中使用ThreadLocal变量（但ThreadLocal 使用不好会容易导致内存泄漏，见下篇文章）</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>spring bean作用域</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>singleton: 单例模式，当spring创建applicationContext容器的时候，spring会初始化所有的该作用域实例，加上lazy-init就可以避免预处理；</p>
+  </li>
+  <li>
+    <p>prototype： 原型模式，每次通过getBean获取该bean就会新产生一个实例，创建后spring将不再对其管理；</p>
+  </li>
+  <li>
+    <p>request： 每次请求都新产生一个实例，和prototype不同就是创建后，接下来的管理，spring依然在监听；</p>
+  </li>
+  <li>
+    <p>session: 每次会话，同上；</p>
+  </li>
+  <li>
+    <p>global session: 全局的web域，类似于servlet中的application。</p>
+  </li>
+</ul>
+
+<h3 id="线程隔离类threadlocal">线程隔离类ThreadLocal</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HomeController</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">i</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocal</span><span class="o">&lt;&gt;();</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"testsingleton1"</span><span class="o">)</span>
+    <span class="nd">@ResponseBody</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">test1</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="na">get</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">i</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">i</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">intValue</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"{} -&gt; {}"</span><span class="o">,</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="n">i</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">intValue</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>多次访问url测试，打印日志如下：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:08,226 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-1 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:16,457 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-2 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:17,858 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-3 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:18,461 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-4 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:18,974 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-5 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:19,696 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-6 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:22,138 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-7 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:22,869 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-9 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:23,617 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-8 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:24,569 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-10 -&gt; 1
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:25,218 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-1 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:25,740 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-2 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:43,308 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-3 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:44,420 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-4 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:45,271 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-5 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:45,808 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-6 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:46,272 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-7 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:46,489 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-9 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:46,660 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-8 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:46,820 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-10 -&gt; 2
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:46,990 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-1 -&gt; 3
+<span class="o">[</span>INFO <span class="o">]</span> 2019-12-03 11:49:47,163 com.cjia.ds.controller.HomeController.test1<span class="o">(</span>HomeController.java:50<span class="o">)</span>
+http-nio-8080-exec-2 -&gt; 3
+</code></pre></div></div>
+
+<p>从日志分析出，二十多次的连续请求得到的结果有1有2有3等等，而我们期望不管我并发请求有多少，每次的结果都是1；同时可以发现web服务器默认的请求线程池大小为10，<mark>这10个核心线程可以被之后不同的Http请求复用</mark>，所以这也是为什么相同线程名的结果不会重复的原因。</p>
+
+<p>总结：</p>
+
+<p><strong>ThreadLocal的方式可以达到线程隔离，但还是无法达到并发安全</strong></p>
+
+<h3 id="使用并发安全的类">使用并发安全的类</h3>
+
+<p>如果非要在单例bean中使用成员变量，可以考虑使用并发安全的容器，如ConcurrentHashMap、ConcurrentHashSet、CopyOnWriteArrayList等，将我们的成员变量（一般可以是当前运行中的任务列表等这类变量）包装到这些并发安全的容器中进行管理即可。</p>
+
+<h3 id="分布式或微服务的并发安全">分布式或微服务的并发安全</h3>
+
+<p>分布式，一个服务会有多个服务实例，就要考虑全局的并发安全，就要借助于可以共享某些信息的分布式缓存中间件如Redis等，这样即可保证同一服务的所有服务实例都拥有同一份共享信息（如当前运行中的任务列表等这类变量）</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/spring/2020/09/10/spring-controller.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

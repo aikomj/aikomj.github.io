@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 除了swagger，你还用过哪几个在线文档生成器 - 大伟的博客 </title>
+    <meta name="keywords" content="swagger">
+    <meta name="description"
+          content="能够实时生成在线文档，支持全文搜索，支持在线调试，gitbook、yapi、apidoc、showdoc、smartdoc,knife4j皮肤使你的swagger更实用,跟yapi相似的Torna,让你的swagger高大上">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/tool/2021/09/21/api-doc.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="除了swagger，你还用过哪几个在线文档生成器">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>除了swagger，你还用过哪几个在线文档生成器</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/09/21
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1gitbook">1、gitbook</h2>
+
+<p>github地址：https://github.com/GitbookIO/gitbook</p>
+
+<p>开发语言：javascript</p>
+
+<p>示例地址：https://www.servicemesher.com/envoy/intro/arch_overview/dynamic_configuration.html</p>
+
+<p><img src="/assets/images/tools/api-tool-gitbook.jpg" alt="" /></p>
+
+<p>gitBook是一款文档编辑工具。它的功能类似金山WPS中的word或者微软office中的word的文档编辑工具。它可以用来写文档、建表格、插图片、生成pdf。当然，以上的功能WPS、office可能做得更好，但是，gitBook还有更最强大的功能：它可以用文档建立一个网站，让更多人了解你写的书，另外，最最核心的是，他支持Git，也就意味着，它是一个分布式的文档编辑工具。你可以随时随地来编写你的文档，也可以多人共同编写文档，哪怕多人编写同一页文档，它也能记录每个人的内容，然后告诉你他们之间的区别，也能记录你的每一次改动，你可以查看每一次的书写记录和变化，哪怕你将文档都删除了，它也能找回来！这就是它继承git后的厉害之处！</p>
+
+<ul>
+  <li>
+    <p><strong>优点</strong></p>
+
+    <p>使用起来非常简单，支持全文搜索，可以跟git完美集成，对代码无任何嵌入性，支持markdown格式的文档编写。</p>
+  </li>
+  <li>
+    <p><strong>缺点</strong></p>
+
+    <p>需要单独维护一个文档项目，如果接口修改了，需要手动去修改这个文档项目，不然可能会出现接口和文档不一致的情况。并且，不支持在线调试功能。</p>
+  </li>
+</ul>
+
+<p>个人建议：如果对外的接口比较少，或者编写之后不会经常变动可以用这个。</p>
+
+<h2 id="2knife4j">2、knife4j</h2>
+
+<h3 id="介绍">介绍</h3>
+
+<p>gitee地址：https://gitee.com/xiaoym/knife4j</p>
+
+<p>开发语言：java、javascript</p>
+
+<p>示例地址：http://swagger-bootstrap-ui.xiaominfo.com/doc.html</p>
+
+<p><img src="/assets/images/tools/api-tool-knife4j.jpg" alt="" /></p>
+
+<p>knife4j是为Java MVC框架集成Swagger生成Api文档的增强解决方案,前身是swagger-bootstrap-ui,取名kni4j是希望她能像一把匕首一样小巧,轻量,并且功能强悍。</p>
+
+<ul>
+  <li>
+    <p><strong>优点</strong></p>
+
+    <p>基于swagger生成实时在线文档，支持在线调试，全局参数、国际化、访问权限控制等，功能非常强大。</p>
+  </li>
+  <li>
+    <p><strong>缺点</strong></p>
+
+    <p>界面有一点点丑，需要依赖额外的jar包</p>
+  </li>
+</ul>
+
+<p>个人建议：如果公司对ui要求不太高，可以使用这个文档生成工具，比较功能还是比较强大的。</p>
+
+<h3 id="给swagger换上新皮肤">给swagger换上新皮肤</h3>
+
+<p>knife4j是swagger的增强版，我们在springboot项目使用knife4j，只需两步</p>
+
+<p>第1步，导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--整合Knife4j--&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.github.xiaoymin<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>knife4j-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.0.4<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>第2步，Swagger2Config中增加一个@EnableKnife4j注解，开启knife4j的增强功能</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Swagger2API文档的配置
+ */</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@EnableSwagger2</span>
+<span class="nd">@EnableKnife4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Swagger2Config</span> <span class="o">{</span>
+    
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>访问http://localhost:8088/doc.html</p>
+
+<p><img src="/assets/images/tools/knife4j.png" alt="" /></p>
+
+<h3 id="功能增强点">功能增强点</h3>
+
+<ul>
+  <li>
+    <p>返回结果集支持折叠</p>
+  </li>
+  <li>
+    <p>请求参数有JSON校验功能</p>
+
+    <p><img src="/assets/images/tools/knife4j-2.png" alt="" /></p>
+  </li>
+  <li>
+    <p>支持在头部增加token，用于登录认证</p>
+
+    <p>首先在<code class="highlighter-rouge">Authorize</code>功能中添加登录返回的Token</p>
+
+    <p><img src="/assets/images/tools/knife4j-3.jpg" alt="" /></p>
+
+    <p>之后在每个接口中的请求头中携带了Token信息</p>
+
+    <p><img src="/assets/images/tools/knife4j-4.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p><mark>离线文档</mark></p>
+
+    <p>我最喜欢这个了，以后就不用写markdown的前端接口文档了</p>
+
+    <p>直接选择<code class="highlighter-rouge">文档管理-&gt;离线文档</code>功能，然后选择<code class="highlighter-rouge">下载Markdown</code>即可；</p>
+
+    <p><img src="/assets/images/tools/knife4j-5.jpg" alt="" /></p>
+
+    <p>我们来查看下导出的Markdown离线文档，还是很详细的</p>
+
+    <p><img src="/assets/images/tools/knife4j-6.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<h3 id="全局参数">全局参数</h3>
+
+<p>支持两种类型：query表单和header请求头</p>
+
+<ul>
+  <li>
+    <p>比如我们想要在所有请求头中加入一个参数appType来区分是android还是ios调用，可以在全局参数中添加</p>
+
+    <p><img src="/assets/images/tools/knife4j-7.jpg" alt="" /></p>
+
+    <p>此时再调用接口时，请求头就会包含<code class="highlighter-rouge">appType</code>这个参数</p>
+  </li>
+</ul>
+
+<h3 id="忽略参数属性">忽略参数属性</h3>
+
+<p>场景：有时候我们创建和修改的接口会使用同一个对象作为请求参数，但是我们创建的时候并不需要id，而修改的时候会需要id，此时我们可以忽略id这个属性。</p>
+
+<ul>
+  <li>
+    <p>比如这里的创建商品接口，id、商品数量、商品评论数量都可以让后台接口生成无需传递，可以使用knife4j提供的<code class="highlighter-rouge">@ApiOperationSupport</code>注解来忽略这些属性；</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 品牌管理Controller
+ * Created by macro on 2019/4/19.
+ */</span>
+<span class="nd">@Api</span><span class="o">(</span><span class="n">tags</span> <span class="o">=</span> <span class="s">"PmsBrandController"</span><span class="o">,</span> <span class="n">description</span> <span class="o">=</span> <span class="s">"商品品牌管理"</span><span class="o">)</span>
+<span class="nd">@Controller</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/brand"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PmsBrandController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">PmsBrandService</span> <span class="n">brandService</span><span class="o">;</span>
+  
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Logger</span> <span class="no">LOGGER</span> <span class="o">=</span> <span class="nc">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="nc">PmsBrandController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+  
+    <span class="nd">@ApiOperation</span><span class="o">(</span><span class="s">"添加品牌"</span><span class="o">)</span>
+    <span class="nd">@ApiOperationSupport</span><span class="o">(</span><span class="n">ignoreParameters</span> <span class="o">=</span> <span class="o">{</span><span class="s">"id"</span><span class="o">,</span><span class="s">"productCount"</span><span class="o">,</span><span class="s">"productCommentCount"</span><span class="o">})</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"/create"</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="nc">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+    <span class="nd">@ResponseBody</span>
+    <span class="kd">public</span> <span class="nc">CommonResult</span> <span class="nf">createBrand</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">PmsBrand</span> <span class="n">pmsBrand</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">CommonResult</span> <span class="n">commonResult</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">brandService</span><span class="o">.</span><span class="na">createBrand</span><span class="o">(</span><span class="n">pmsBrand</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">commonResult</span> <span class="o">=</span> <span class="nc">CommonResult</span><span class="o">.</span><span class="na">success</span><span class="o">(</span><span class="n">pmsBrand</span><span class="o">);</span>
+            <span class="no">LOGGER</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"createBrand success:{}"</span><span class="o">,</span> <span class="n">pmsBrand</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">commonResult</span> <span class="o">=</span> <span class="nc">CommonResult</span><span class="o">.</span><span class="na">failed</span><span class="o">(</span><span class="s">"操作失败"</span><span class="o">);</span>
+            <span class="no">LOGGER</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"createBrand failed:{}"</span><span class="o">,</span> <span class="n">pmsBrand</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">commonResult</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>此时查看接口文档时，发现这三个属性已经消失，这样前端开发查看接口文档时就不会觉得你定义无用参数了，是不很很好的功能！</p>
+
+<p><img src="/assets/images/tools/knife4j-8.jpg" alt="" /></p>
+
+<p>参考资料：<a href="https://doc.xiaominfo.com/guide/">官方文档：https://doc.xiaominfo.com/guide/</a></p>
+
+<p>项目源码：<a href="https://github.com/macrozheng/mall-learning/tree/master/mall-tiny-knife4j">https://github.com/macrozheng/mall-learning/tree/master/mall-tiny-knife4j</a></p>
+
+<h2 id="3yapi">3、yapi</h2>
+
+<p>github地址：https://github.com/YMFE/yapi</p>
+
+<p>开发语言：javascript</p>
+
+<p>示例地址：http://swagger-bootstrap-ui.xiaominfo.com/doc.html</p>
+
+<p><img src="/assets/images/tools/api-tool-yapi.jpg" alt="" /></p>
+
+<p>yapi是去哪儿前端团队自主研发并开源的，主要支持以下功能：</p>
+
+<ul>
+  <li>可视化接口管理</li>
+  <li>数据mock</li>
+  <li>自动化接口测试</li>
+  <li>数据导入（包括swagger、har、postman、json、命令行）</li>
+  <li>权限管理</li>
+  <li>支持本地化部署</li>
+  <li>支持插件</li>
+  <li>支持二次开发</li>
+</ul>
+
+<p><mark>优点</mark></p>
+
+<p>功能非常强大，支持权限管理、在线调试、接口自动化测试、插件开发等，BAT等大厂等在使用，说明功能很好。</p>
+
+<p><mark>缺点</mark></p>
+
+<p>在线调试功能需要安装插件，用户体检稍微有点不好，主要是为了解决跨域问题，可能有安全性问题。不过要解决这个问题，可以自己实现一个插件，应该不难</p>
+
+<h2 id="4apidoc">4、apidoc</h2>
+
+<p>github地址：https://github.com/apidoc/apidoc</p>
+
+<p>开发语言：javascript</p>
+
+<p>示例地址：https://apidocjs.com/example/#api-User</p>
+
+<p><img src="/assets/images/tools/api-tool-apidoc.jpg" alt="" /></p>
+
+<p>apidoc 是一个简单的 RESTful API 文档生成工具，它从代码注释中提取特定格式的内容生成文档。支持诸如 Go、Java、C++、Rust 等大部分开发语言，具体可使用 apidoc lang 命令行查看所有的支持列表。</p>
+
+<ul>
+  <li>
+    <p><strong>优点</strong></p>
+
+    <p>基于代码注释生成在线文档，对代码的嵌入性比较小，支持多种语言，跨平台，也可自定义模板。支持搜索和在线调试功能。</p>
+  </li>
+  <li>
+    <p><strong>缺点</strong></p>
+
+    <p>需要在注释中增加指定注解，如果代码参数或类型有修改，需要同步修改注解相关内容，有一定的维护工作量。</p>
+  </li>
+</ul>
+
+<p>个人建议：这种在线文档生成工具提供了另外一种思路，swagger是在代码中加注解，而apidoc是在注解中加数据，代码嵌入性更小，推荐使用。</p>
+
+<h2 id="5showdoc">5、showdoc</h2>
+
+<p>github地址：https://github.com/star7th/showdoc</p>
+
+<p>开发语言：javascript、php</p>
+
+<p>示例地址：https://www.showdoc.com.cn/demo?page_id=9</p>
+
+<p>ShowDoc就是一个非常适合IT团队的在线文档分享工具，它可以加快团队之间沟通的效率。</p>
+
+<p>它都有些什么功能：</p>
+
+<ol>
+  <li>响应式网页设计，可将项目文档分享到电脑或移动设备查看。同时也可以将项目导出成word文件，以便离线浏览。</li>
+  <li>权限管理，ShowDoc上的项目有公开项目和私密项目两种。公开项目可供任何登录与非登录的用户访问，而私密项目则需要输入密码验证访问。密码由项目创建者设置。</li>
+  <li>ShowDoc采用markdown编辑器，点击编辑器上方的按钮可方便地插入API接口模板和数据字典模板。</li>
+  <li>ShowDoc为页面提供历史版本功能，你可以方便地把页面恢复到之前的版本。</li>
+  <li>支持文件导入，文件可以是postman的json文件、swagger的json文件、showdoc的markdown压缩包，系统会自动识别文件类型。</li>
+</ol>
+
+<ul>
+  <li>
+    <p><strong>优点</strong></p>
+
+    <p>支持项目权限管理，多种格式文件导入，全文搜索等功能，使用起来还是非常方便的。并且既支持部署自己的服务器，也支持在线托管两种方式。</p>
+  </li>
+  <li>
+    <p><strong>缺点</strong></p>
+
+    <p>不支持在线调试功能</p>
+  </li>
+</ul>
+
+<p>个人建议：如果不要求在线调试功能，这个在线文档工具值得使用。</p>
+
+<h2 id="6smartdoc">6、smartdoc</h2>
+
+<h3 id="简介">简介</h3>
+
+<p>使用swagger需要用到它的注解如@Api 、@ApiOperation、@ApiModel、@ApiParam，swagger通过这些注解生成Api文档，会对代码有入侵性，也会与代码注释有点重复。而smart-doc可以根据代码注释生成api文档，无需写api注解</p>
+
+<p>官方文档：<a href="https://gitee.com/smart-doc-team/smart-doc/wikis/HOME">https://gitee.com/smart-doc-team/smart-doc/wikis/HOME</a></p>
+
+<p>参考:<a href="https://github.com/macrozheng/mall-learning/tree/master/mall-tiny-smart-doc">https://github.com/macrozheng/mall-learning/tree/master/mall-tiny-smart-doc</a></p>
+
+<h3 id="生成api文档">生成API文档</h3>
+
+<p>接下来我们把<code class="highlighter-rouge">smart-doc</code>集成到SpringBoot项目中，体验一下它的API文档生成功能。</p>
+
+<p>1) 首先我们需要在项目中添加<code class="highlighter-rouge">smart-doc</code>的Maven插件，可以发现<code class="highlighter-rouge">smart-doc</code>就是个插件，连依赖都不用添加，真正零入侵啊；</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">plugin</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="na">github</span><span class="o">.</span><span class="na">shalousun</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">smart</span><span class="o">-</span><span class="n">doc</span><span class="o">-</span><span class="n">maven</span><span class="o">-</span><span class="n">plugin</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">2.2</span><span class="o">.</span><span class="mi">8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">configuration</span><span class="o">&gt;</span>
+        <span class="o">&lt;!--</span><span class="err">指定</span><span class="n">smart</span><span class="o">-</span><span class="n">doc</span><span class="err">使用的配置文件路径</span><span class="o">--&gt;</span>
+        <span class="o">&lt;</span><span class="n">configFile</span><span class="o">&gt;./</span><span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">/</span><span class="n">resources</span><span class="o">/</span><span class="n">smart</span><span class="o">-</span><span class="n">doc</span><span class="o">.</span><span class="na">json</span><span class="o">&lt;/</span><span class="n">configFile</span><span class="o">&gt;</span>
+        <span class="o">&lt;!--</span><span class="err">指定项目名称</span><span class="o">--&gt;</span>
+        <span class="o">&lt;</span><span class="n">projectName</span><span class="o">&gt;</span><span class="n">mall</span><span class="o">-</span><span class="n">tiny</span><span class="o">-</span><span class="n">smart</span><span class="o">-</span><span class="n">doc</span><span class="o">&lt;/</span><span class="n">projectName</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">configuration</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">plugin</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>2) 接下来在项目的<code class="highlighter-rouge">resources</code>目录下，添加配置文件<code class="highlighter-rouge">smart-doc.json</code>，属性说明直接参考注释即可</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">   </span><span class="p">{</span><span class="w">
+     </span><span class="nl">"serverUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8088"</span><span class="p">,</span><span class="w"> </span><span class="err">//指定后端服务访问地址</span><span class="w">
+     </span><span class="nl">"outPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"src/main/resources/static/doc"</span><span class="p">,</span><span class="w"> </span><span class="err">//指定文档的输出路径，生成到项目静态文件目录下，随项目启动可以查看</span><span class="w">
+     </span><span class="nl">"isStrict"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="err">//是否开启严格模式</span><span class="w">
+     </span><span class="nl">"allInOne"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="err">//是否将文档合并到一个文件中</span><span class="w">
+     </span><span class="nl">"createDebugPage"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="err">//是否创建可以测试的html页面</span><span class="w">
+     </span><span class="nl">"packageFilters"</span><span class="p">:</span><span class="w"> </span><span class="s2">"com.macro.mall.tiny.controller.*"</span><span class="p">,</span><span class="w"> </span><span class="err">//controller包过滤</span><span class="w">
+     </span><span class="nl">"style"</span><span class="p">:</span><span class="s2">"xt256"</span><span class="p">,</span><span class="w"> </span><span class="err">//基于highlight.js的代码高设置</span><span class="w">
+     </span><span class="nl">"projectName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mall-tiny-smart-doc"</span><span class="p">,</span><span class="w"> </span><span class="err">//配置自己的项目名称</span><span class="w">
+     </span><span class="nl">"showAuthor"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="err">//是否显示接口作者名称</span><span class="w">
+     </span><span class="nl">"allInOneDocFileName"</span><span class="p">:</span><span class="s2">"index.html"</span><span class="w"> </span><span class="err">//自定义设置输出文档名称</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<ol>
+  <li>
+    <p>打开IDEA的Maven面板，双击<code class="highlighter-rouge">smart-doc</code>插件的<code class="highlighter-rouge">smart-doc:html</code>按钮，即可生成API文档；</p>
+
+    <p><img src="/assets/images/tools/smart-doc-idea.jpg" alt="" /></p>
+
+    <p>此时我们可以发现，在项目的<code class="highlighter-rouge">static/doc</code>目录下已经生成如下文件；</p>
+
+    <p><img src="/assets/images/tools/smart-doc.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>运行项目，访问生成的API接口文档，发现文档非常详细，包括了请求参数和响应结果的各种说明，访问地址：http://localhost:8088/doc/index.html</p>
+
+    <p><img src="/assets/images/tools/smart-doc-idea.jpg" alt="" /></p>
+  </li>
+</ol>
+
+<p>我们回过来看下实体类的代码，可以发现我们只是规范地添加了字段注释，生成文档的时候就自动有了；</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PmsBrand</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+    <span class="cm">/**
+     * ID
+     */</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 名称
+     * @required
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 首字母
+     * @since 1.0
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">firstLetter</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 排序
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">sort</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 是否为品牌制造商(0,1)
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">factoryStatus</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 显示状态(0,1)
+     * @ignore
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">showStatus</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 产品数量
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">productCount</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 产品评论数量
+     */</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">productCommentCount</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 品牌logo
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">logo</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 专区大图
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">bigPic</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 品牌故事
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">brandStory</span><span class="o">;</span>
+    <span class="c1">//省略getter、setter方法</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>再来看下Controller中代码，我们同样规范地在方法上添加了注释，生成API文档的时候也自动有了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 商品品牌管理
+ */</span>
+<span class="nd">@Controller</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/brand"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PmsBrandController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">PmsBrandService</span> <span class="n">brandService</span><span class="o">;</span>
+    
+    <span class="cm">/**
+     * 分页查询品牌列表
+     *
+     * @param pageNum 页码
+     * @param pageSize 分页大小
+     */</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"/list"</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="nc">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+    <span class="nd">@ResponseBody</span>
+    <span class="nd">@PreAuthorize</span><span class="o">(</span><span class="s">"hasRole('ADMIN')"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">CommonResult</span><span class="o">&lt;</span><span class="nc">CommonPage</span><span class="o">&lt;</span><span class="nc">PmsBrand</span><span class="o">&gt;&gt;</span> <span class="nf">listBrand</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"pageNum"</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">"1"</span><span class="o">)</span>
+                                                                <span class="nc">Integer</span> <span class="n">pageNum</span><span class="o">,</span>
+                                                        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"pageSize"</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">"3"</span><span class="o">)</span>
+                                                                <span class="nc">Integer</span> <span class="n">pageSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">PmsBrand</span><span class="o">&gt;</span> <span class="n">brandList</span> <span class="o">=</span> <span class="n">brandService</span><span class="o">.</span><span class="na">listBrand</span><span class="o">(</span><span class="n">pageNum</span><span class="o">,</span> <span class="n">pageSize</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nc">CommonResult</span><span class="o">.</span><span class="na">success</span><span class="o">(</span><span class="nc">CommonPage</span><span class="o">.</span><span class="na">restPage</span><span class="o">(</span><span class="n">brandList</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ol>
+  <li><code class="highlighter-rouge">smart-doc</code>还提供了自定义注释tag，用于增强文档功能</li>
+</ol>
+
+<ul>
+  <li>@ignore：生成文档时是否要过滤该属性；</li>
+  <li>@required：用于修饰接口请求参数是否必须；</li>
+  <li>@since：用于修饰接口中属性添加的版本号</li>
+</ul>
+
+<ol>
+  <li>
+    <p>为了写出优雅的API文档接口，我们经常会对返回结果进行统一封装，<code class="highlighter-rouge">smart-doc</code>也支持这样的设置，在<code class="highlighter-rouge">smart-doc.json</code>中添加如下配置即可；</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"responseBodyAdvice"</span><span class="p">:{</span><span class="w"> </span><span class="err">//统一返回结果设置</span><span class="w">
+    </span><span class="nl">"className"</span><span class="p">:</span><span class="s2">"com.macro.mall.tiny.common.api.CommonResult"</span><span class="w"> </span><span class="err">//对应封装类</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>我们也经常会用枚举类型来封装状态码，在<code class="highlighter-rouge">smart-doc.json</code>中添加如下配置即可；</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errorCodeDictionaries"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="err">//错误码列表设置</span><span class="w">
+    </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"title"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"enumClassName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"com.macro.mall.tiny.common.api.ResultCode"</span><span class="p">,</span><span class="w"> </span><span class="err">//错误码枚举类</span><span class="w">
+    </span><span class="nl">"codeField"</span><span class="p">:</span><span class="w"> </span><span class="s2">"code"</span><span class="p">,</span><span class="w"> </span><span class="err">//错误码对应字段</span><span class="w">
+    </span><span class="nl">"descField"</span><span class="p">:</span><span class="w"> </span><span class="s2">"message"</span><span class="w"> </span><span class="err">//错误码描述对应字段</span><span class="w">
+  </span><span class="p">}]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>配置成功后，即可在API文档中生成<code class="highlighter-rouge">错误码列表</code>；</p>
+
+    <p><img src="/assets/images/tools/smart-doc-error-code.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>有时候我们也会想给某些接口添加自定义请求头，比如给一些需要登录的接口添加<code class="highlighter-rouge">Authorization</code>头，在<code class="highlighter-rouge">smart-doc.json</code>中添加如下配置即可；</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"requestHeaders"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="err">//请求头设置</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="err">//请求头名称</span><span class="w">
+    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w"> </span><span class="err">//请求头类型</span><span class="w">
+    </span><span class="nl">"desc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"token请求头的值"</span><span class="p">,</span><span class="w"> </span><span class="err">//请求头描述</span><span class="w">
+    </span><span class="nl">"value"</span><span class="p">:</span><span class="s2">"token请求头的值"</span><span class="p">,</span><span class="w"> </span><span class="err">//请求头的值</span><span class="w">
+    </span><span class="nl">"required"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="err">//是否必须</span><span class="w">
+    </span><span class="nl">"since"</span><span class="p">:</span><span class="w"> </span><span class="s2">"-"</span><span class="p">,</span><span class="w"> </span><span class="err">//添加版本</span><span class="w">
+    </span><span class="nl">"pathPatterns"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/brand/**"</span><span class="p">,</span><span class="w"> </span><span class="err">//哪些路径需要添加请求头</span><span class="w">
+    </span><span class="nl">"excludePathPatterns"</span><span class="p">:</span><span class="s2">"/admin/login"</span><span class="w"> </span><span class="err">//哪些路径不需要添加请求头</span><span class="w">
+  </span><span class="p">}]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>配置成功后，在接口文档中即可查看到自定义请求头信息了。</p>
+
+    <p><img src="/assets/images/tools/smart-doc-request-head.jpg" alt="" /></p>
+  </li>
+</ol>
+
+<h3 id="使用postman测试接口">使用postman测试接口</h3>
+
+<p>我们使用Swagger生成文档时候，是可以直接在上面测试接口的，而<code class="highlighter-rouge">smart-doc</code>的接口测试能力真的很弱，这也许是它拥抱Postman的原因吧</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">smart-doc</code>内置了Postman的<code class="highlighter-rouge">json</code>生成插件，可以一键生成并导入到Postman中去，双击<code class="highlighter-rouge">smart-doc:postman</code>按钮即可生成；</p>
+
+    <p><img src="/assets/images/tools/smart-doc-postman.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>此时将在项目的<code class="highlighter-rouge">static/doc</code>目录下生成<code class="highlighter-rouge">postman.json</code>文件；</p>
+
+    <p><img src="/assets/images/tools/smart-doc-postman-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>将<code class="highlighter-rouge">postman.json</code>文件直接导入到Postman中即可使用；</p>
+
+    <p><img src="/assets/images/tools/smart-doc-postman-3.jpg" alt="" /></p>
+  </li>
+</ol>
+
+<p>导入成功后，所有接口都将在Postman中显示，这下我们可以愉快地测试接口了！</p>
+
+<p><img src="/assets/images/tools/smart-doc-postman-4.jpg" alt="" /></p>
+
+<p><mark>总结</mark></p>
+
+<p><code class="highlighter-rouge">smart-doc</code>确实是一款好用的API文档生成工具，尤其是它零注解侵入的特点。虽然它的接口测试能力有所不足，但是可以一键生成JSON文件并导入到Postman中去，使用起来也是非常方便的！</p>
+
+<h2 id="7torna">7、Torna</h2>
+
+<h3 id="简介-1">简介</h3>
+
+<p>跟yapi相似，Torna是一个企业级饿的接口文档解决方案，可以配合swagger实用，它具有如下功能：</p>
+
+<ul>
+  <li>文档管理：支持接口文档增删改查、接口调试、字典管理及导入导出功能；</li>
+  <li>权限管理：支持接口文档的权限管理，同时有访客、开发者、管理员三种角色；</li>
+  <li>双模式：独创的双模式，<code class="highlighter-rouge">管理模式</code>可以用来编辑文档内容，<code class="highlighter-rouge">浏览模式</code>纯粹查阅文档，界面无其它元素干扰。</li>
+</ul>
+
+<p><img src="/assets/images/tools/torna-1.jpg" alt="" /></p>
+
+<h3 id="项目架构">项目架构</h3>
+
+<p>Torna是一个前后端分离项目，后端使用SpringBoot+MyBatis来实现，前端使用Vue+ElementUI来实现，技术栈非常主流！它不仅可以搭建API文档网站，还是个非常好的学习项目，让我们先来看看它的项目架构。</p>
+
+<ul>
+  <li>
+    <p>首先我们需要下载Torna的源码，下载地址：https://gitee.com/durcframework/torna</p>
+
+    <p><img src="/assets/images/tools/torna-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>下载成功后，将代码导入到IDEA中，项目结构如下，直接通过git clone 拉下来就行</p>
+
+    <p><img src="/assets/images/tools/torna-3.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>我们再来看下<code class="highlighter-rouge">server</code>模块的结构，一个非常标准的SpringBoot项目</p>
+
+    <p><img src="/assets/images/tools/torna-4.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>再来看下<code class="highlighter-rouge">front</code>模块的结构，一个非常标准的Vue项目，值得学习！</p>
+
+    <p><img src="/assets/images/tools/torna-6.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<h3 id="运行部署">运行部署</h3>
+
+<blockquote>
+  <p>Windows</p>
+</blockquote>
+
+<p><strong>后端运行</strong></p>
+
+<ul>
+  <li>
+    <p>首先创建一个数据库<code class="highlighter-rouge">torna</code>，然后导入项目中的<code class="highlighter-rouge">mysql.sql</code>脚本，导入成功后，表结构如下；</p>
+
+    <p><img src="/assets/images/tools/torna-7.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>修改项目的配置文件<code class="highlighter-rouge">server/boot/src/main/resources/application.properties</code>，修改对应的数据库连接配置</p>
+
+    <div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Server port
+</span><span class="py">server.port</span><span class="p">=</span><span class="s">7700</span>
+  
+<span class="c"># MySQL host
+</span><span class="py">mysql.host</span><span class="p">=</span><span class="s">localhost:3306</span>
+<span class="c"># Schema name
+</span><span class="py">mysql.schema</span><span class="p">=</span><span class="s">torna</span>
+<span class="c"># Insure the account can run CREATE/ALTER sql.
+</span><span class="py">mysql.username</span><span class="p">=</span><span class="s">root</span>
+<span class="py">mysql.password</span><span class="p">=</span><span class="s">root</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>然后运行项目启动类<code class="highlighter-rouge">TornaApplication</code>的main方法，控制台打印如下信息表示启动成功</p>
+
+    <p><img src="/assets/images/tools/torna-8.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p><strong>前端运行</strong></p>
+
+<ul>
+  <li>
+    <p>进入前端项目目录<code class="highlighter-rouge">front</code>，运行<code class="highlighter-rouge">npm install</code>命令安装依赖；</p>
+
+    <p><img src="/assets/images/tools/torna-9.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p>这个nom 是依赖nodejs环境的，所以要先在服务器上安装nodejs</p>
+
+<ul>
+  <li>
+    <p>此时如果遇到<code class="highlighter-rouge">node-sass</code>无法安装的情况，可以直接使用如下命令安装；</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm i node-sass <span class="nt">--sass_binary_site</span><span class="o">=</span>https://npm.taobao.org/mirrors/node-sass/
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>依赖安装完成后，可以通过<code class="highlighter-rouge">npm run dev</code>命令启动项目，启动成功后访问地址：http://localhost:9530/</p>
+
+    <p><img src="/assets/images/tools/torna-10.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>通过体验账号密码<code class="highlighter-rouge">admin@torna.cn:123456</code>可以访问Torna服务，界面还是不错的！</p>
+
+    <p><img src="/assets/images/tools/torna-11.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Linux</p>
+</blockquote>
+
+<p>在Linux下使用Docker安装Torna是非常简单的，如果你只想用Torna来做API文档服务的话可以采用这种方式。</p>
+
+<ul>
+  <li>
+    <p>拉取docker镜像</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull tanghc2020/torna:latest
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>下载完成后将配置文件<code class="highlighter-rouge">application.properties</code>拷贝配置文件到<code class="highlighter-rouge">/mydata/torna/config</code>目录下，并修改数据库配置；</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Server port</span>
+server.port<span class="o">=</span>7700
+  
+<span class="c"># MySQL host</span>
+mysql.host<span class="o">=</span>192.168.3.101:3306
+<span class="c"># Schema name</span>
+mysql.schema<span class="o">=</span>torna
+<span class="c"># Insure the account can run CREATE/ALTER sql.</span>
+mysql.username<span class="o">=</span>root
+mysql.password<span class="o">=</span>root
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>然后通过docker命令运行Torna服务，注意需要使用 -v 做容器目录挂载到宿主机上，方便修改配置文件</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-p</span> 7700:7700 <span class="nt">--name</span> torna <span class="se">\</span>
+<span class="nt">-v</span> /mydata/torna/config:/torna/config <span class="se">\</span>
+<span class="nt">-d</span> tanghc2020/torna:latest
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>由于镜像中直接包含了前端和后端项目，所以可以直接使用，访问地址：http://192.168.3.101:7700</p>
+
+    <p>其实这个就是容器内前端项目的地址，它把请求转发到容器里的后端项目了</p>
+
+    <p><img src="/assets/images/tools/torna-12.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<h3 id="使用">使用</h3>
+
+<p>Torna支持从多种工具导入接口文档，包括Swagger、smart-doc、OpenAPI、Postman等，接下来我们来体验下它的功能！</p>
+
+<p>Torna能大大增强Swagger的功能，并且界面足够美观，下面我们来体验下！</p>
+
+<ul>
+  <li>
+    <p>在使用之前，我们需要在Torna中进行配置才行，首先我们来配置一个开放用户，新建一个<code class="highlighter-rouge">macro</code>的账号，记住<code class="highlighter-rouge">AppKey</code>和<code class="highlighter-rouge">Secret</code>；</p>
+
+    <p><img src="/assets/images/tools/torna-13.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>然后创建一个项目<code class="highlighter-rouge">mall-tiny-trona</code>；</p>
+
+    <p><img src="/assets/images/tools/torna-14.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>接下来创建一个模块，打开<code class="highlighter-rouge">OpenAPI</code>标签，获取<code class="highlighter-rouge">请求路径</code>和<code class="highlighter-rouge">token</code>；</p>
+
+    <p><img src="/assets/images/tools/torna-15.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>之后在使用Swagger的项目中集成Torna插件，非常简单，添加如下依赖即可；</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Torna Swagger 插件 --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>cn.torna<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>swagger-plugin<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.2.6<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>然后在<code class="highlighter-rouge">resources</code>目录下添加配置文件<code class="highlighter-rouge">torna.json</code>，配置说明参考注释即可；</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">开启推送</span><span class="w">
+  </span><span class="nl">"enable"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">扫描package，多个用;隔开</span><span class="w">
+  </span><span class="nl">"basePackage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"com.macro.mall.tiny.controller"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">推送URL，IP端口对应Torna服务器</span><span class="w">
+  </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:7700/api"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">appKey</span><span class="w">
+  </span><span class="nl">"appKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"20211103905498418195988480"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">secret</span><span class="w">
+  </span><span class="nl">"secret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"~#ZS~!*2B3I01vbW0f9iKH,rzj-%Xv^Q"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">模块token</span><span class="w">
+  </span><span class="nl">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"74365d40038d4f648ae65a077d956836"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">调试环境，格式：环境名称</span><span class="p">,</span><span class="err">调试路径，多个用</span><span class="s2">"|"</span><span class="err">隔开</span><span class="w">
+  </span><span class="nl">"debugEnv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test,http://localhost:8088"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">推送人</span><span class="w">
+  </span><span class="nl">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">"macro"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">打开调试:</span><span class="kc">true</span><span class="err">/</span><span class="kc">false</span><span class="w">
+  </span><span class="nl">"debug"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">是否替换文档，</span><span class="kc">true</span><span class="err">：替换，</span><span class="kc">false</span><span class="err">：不替换（追加）。默认：</span><span class="kc">true</span><span class="w">
+  </span><span class="nl">"isReplace"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>接下来通过调用<code class="highlighter-rouge">SwaggerPlugin</code>的<code class="highlighter-rouge">pushDoc</code>方法来推送接口文档到Torna；</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RunWith</span><span class="o">(</span><span class="nc">SpringRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@SpringBootTest</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MallTinyApplicationTests</span> <span class="o">{</span>
+  
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">pushDoc</span><span class="o">(){</span>
+        <span class="c1">// 将文档推送到Torna服务中去，默认查找resources下的torna.json</span>
+        <span class="nc">SwaggerPlugin</span><span class="o">.</span><span class="na">pushDoc</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>推送成功后，在接口列表将显示如下接口信息；</p>
+
+    <p><img src="/assets/images/tools/torna-16.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>查看一下接口的详细信息，还是很全面的，界面也不错！</p>
+
+    <p><img src="/assets/images/tools/torna-17.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>把我们的项目运行起来，就可以直接在上面进行接口调试了，调用下登录接口试试；</p>
+
+    <p><img src="/assets/images/tools/torna-19.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>如果我们想设置公共请求头的话，比如用于登录认证的<code class="highlighter-rouge">Authorization</code>头，可以在<code class="highlighter-rouge">模块配置</code>中进行配置；</p>
+
+    <p><img src="/assets/images/tools/torna-18.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>在后端接口没有完成前，我们如果需要Mock数据的话，可以使用Mock功能</p>
+
+    <p><img src="/assets/images/tools/torna-20.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>这里我们对登录接口进行了一下Mock，当然你也可以使用Mock脚本，这下只要接口定义好，前端就可以使用Mock的数据联调了。</p>
+
+    <p><img src="/assets/images/tools/torna-21.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>结合smart-doc使用</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>首先修改<code class="highlighter-rouge">mall-tiny-smart-doc</code>项目的smart-doc配置文件<code class="highlighter-rouge">smart-doc.json</code>，添加如下关于Torna的配置；</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="err">//</span><span class="w"> </span><span class="err">torna平台对接appKey</span><span class="w">
+  </span><span class="nl">"appKey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"20211103905498418195988480"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//torna平台appToken</span><span class="w">
+  </span><span class="nl">"appToken"</span><span class="p">:</span><span class="w"> </span><span class="s2">"b6c50f442eb348f48867d85f4ef2eaea"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//torna平台secret</span><span class="w">
+  </span><span class="nl">"secret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"~#ZS~!*2B3I01vbW0f9iKH,rzj-%Xv^Q"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//torna平台地址，填写自己的私有化部署地址</span><span class="w">
+  </span><span class="nl">"openUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:7700/api"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//测试项目接口环境</span><span class="w">
+  </span><span class="nl">"debugEnvName"</span><span class="p">:</span><span class="s2">"测试环境"</span><span class="p">,</span><span class="w">
+  </span><span class="err">//测试项目接口地址</span><span class="w">
+  </span><span class="nl">"debugEnvUrl"</span><span class="p">:</span><span class="s2">"http://localhost:8088"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>由于smart-doc的Maven插件已经自带推送文档到Torna的功能，我们只需双击<code class="highlighter-rouge">smart-doc:torna-rest</code>按钮即可；</p>
+
+    <p><img src="/assets/images/tools/torna-22.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>接下来在Torna中，我们就可以看到相关的接口文档了，非常方便！</p>
+
+    <p><img src="/assets/images/tools/torna-23.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p><mark>总结</mark></p>
+
+<p>Torna对于Swagger来说正是这样一种工具。Torna的文档界面和调试功能明显比Swagger高大上多了，而且还增加了权限管理功能，文档的安全性大大增强，大家觉得不错的话可以尝试下它！</p>
+
+<p>参考：</p>
+
+<ul>
+  <li>官方文档：<a href="http://torna.cn/">http://torna.cn/</a></li>
+  <li>项目源码地址: <a href="https://github.com/macrozheng/mall-learning/tree/master/mall-tiny-torna">https://github.com/macrozheng/mall-learning/tree/master/mall-tiny-torna</a></li>
+</ul>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/tool/2021/09/21/api-doc.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

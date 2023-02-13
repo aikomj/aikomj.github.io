@@ -1,9 +1,9 @@
 ---
 layout: post
-title: spring cloud aibaba教程：Sentinel的使用
+title: spring cloud aibaba教程：Sentinel服务限流
 category: springcloud
 tags: [springcloud]
-keywords: springcloud
+keywords: sentinel
 excerpt: 为微服务提供流量控制、熔断降级，提供界面化配置规则，有效解决“服务雪崩”效益
 lock: noneed
 ---

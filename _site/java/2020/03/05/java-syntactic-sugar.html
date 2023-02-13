@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> java的语法糖 - 大伟的博客 </title>
+    <meta name="keywords" content="java">
+    <meta name="description"
+          content="专为开发者设计，提高开发效率，代码更优雅易读">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2020/03/05/java-syntactic-sugar.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="java的语法糖">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>java的语法糖</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/05
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1什么是语法糖">1、什么是语法糖</h2>
+
+<p>​	语法糖（Syntactic Sugar），也称糖衣语法，是由英国计算机学家 Peter.J.Landin 发明的一个术语，指在计算机语言中添加的某种语法，这种语法对语言的功能并没有影响，更方便程序员使用。<font color="red">简而言之，语法糖让程序更加简洁，有更高的可读性</font>。</p>
+
+<p>​	我们所熟知的编程语言中几乎都有语法糖，java 从1.7开始就一直在添加各种糖，未来还会向着“高糖”的方向发展。</p>
+
+<p><strong>解语法糖</strong></p>
+
+<p>​	java虚拟机其实并不支持语法糖的，所以在编译阶段语法糖会被还原成简单的集成语法结构，这个过程就是解语法糖。如果你去看com.sun.tools.javac.main.JavaCompiler的源码，就会发现在compile()中有一个步骤是调用desugar()，这个方法就是负责解语法糖的。</p>
+
+<p><img src="/assets/images/2020/java/java-compile-desugar.png" alt="image-20200305140952384" /></p>
+
+<h3 id="糖块1-switch-支持-string-与枚举">糖块1. switch 支持 String 与枚举</h3>
+
+<p>java7中switch开始支持String，对于编译器来说，<font color="red">switch中其实只能使用整型，任何类型的比较都要转换成整型</font>,比如byte。short，char(转换成ackii码是整型)以及int。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">switchDemoString</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"world"</span><span class="o">;</span>
+        <span class="k">switch</span> <span class="o">(</span><span class="n">str</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">case</span> <span class="s">"hello"</span><span class="o">:</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"hello"</span><span class="o">);</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="k">case</span> <span class="s">"world"</span><span class="o">:</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"world"</span><span class="o">);</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="k">default</span><span class="o">:</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>// 反编译后得到</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">switchDemoString</span>
+<span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">switchDemoString</span><span class="o">()</span>
+    <span class="o">{</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span>
+    <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"world"</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">s</span><span class="o">;</span>
+        <span class="k">switch</span><span class="o">((</span><span class="n">s</span> <span class="o">=</span> <span class="n">str</span><span class="o">).</span><span class="na">hashCode</span><span class="o">())</span>
+        <span class="o">{</span>
+        <span class="k">default</span><span class="o">:</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="k">case</span> <span class="mi">99162322</span><span class="o">:</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"hello"</span><span class="o">))</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"hello"</span><span class="o">);</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="k">case</span> <span class="mi">113318802</span><span class="o">:</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"world"</span><span class="o">))</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"world"</span><span class="o">);</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>看到这个代码，字符串的switch是通过equals()和hashCode()来实现的，hashCode()方法返回的是int，而不是long。进行switch的实际是哈希值，然后通过equals方法比较进行安全检查，这个检查是必要的，因为哈希可能会发生碰撞。因此它的性能不如使用枚举进行switch或者使用纯整数switch，但这也不是很差。</p>
+
+<h3 id="糖块2-泛型">糖块2. 泛型</h3>
+
+<p>java虚拟机在编译阶段通过类型擦除的方式来解语法糖。</p>
+
+<p>类型擦除的过程：</p>
+
+<ol>
+  <li>将所有泛型参数用最顶级的父类型来替代</li>
+  <li>移除所有类型参数</li>
+</ol>
+
+<p>例子：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;();</span>  
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"hollis"</span><span class="o">);</span>  
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"wechat"</span><span class="o">,</span> <span class="s">"Hollis"</span><span class="o">);</span>  
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"blog"</span><span class="o">,</span> <span class="s">"www.dalbll.com"</span><span class="o">);</span>  
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">A</span> <span class="kd">extends</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="no">A</span><span class="o">&gt;&gt;</span> <span class="no">A</span> <span class="nf">max</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;</span><span class="no">A</span><span class="o">&gt;</span> <span class="n">xs</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Iterator</span><span class="o">&lt;</span><span class="no">A</span><span class="o">&gt;</span> <span class="n">xi</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+    <span class="no">A</span> <span class="n">w</span> <span class="o">=</span> <span class="n">xi</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+    <span class="k">while</span> <span class="o">(</span><span class="n">xi</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+        <span class="no">A</span> <span class="n">x</span> <span class="o">=</span> <span class="n">xi</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">w</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">w</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>类型擦除后：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Map</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">();</span>  
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"hollis"</span><span class="o">);</span>  
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"wechat"</span><span class="o">,</span> <span class="s">"Hollis"</span><span class="o">);</span>  
+<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"blog"</span><span class="o">,</span> <span class="s">"www.dalbll.com"</span><span class="o">);</span>  
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="nc">Comparable</span> <span class="nf">max</span><span class="o">(</span><span class="nc">Collection</span> <span class="n">xs</span><span class="o">){</span>
+    <span class="nc">Iterator</span> <span class="n">xi</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+    <span class="nc">Comparable</span> <span class="n">w</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Comparable</span><span class="o">)</span><span class="n">xi</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+    <span class="k">while</span><span class="o">(</span><span class="n">xi</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span>
+    <span class="o">{</span>
+        <span class="nc">Comparable</span> <span class="n">x</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Comparable</span><span class="o">)</span><span class="n">xi</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">w</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">w</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="err">虚拟机中没有泛型，只有普通类和普通方法，所以泛型的类型参数在编译阶段会被擦除，如</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;.</span><span class="na">class</span><span class="err">或</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span><span class="err">是不存在的，只有</span><span class="nc">List</span><span class="o">.</span><span class="na">class</span><span class="err">存在。</span>
+</code></pre></div></div>
+
+<h3 id="糖块3自动装箱和拆箱">糖块3.自动装箱和拆箱</h3>
+
+<p>自动装箱就是将基本类型转换成封装类，如int的变量转换成Integer对象，反之就是拆箱。</p>
+
+<p>基本类型byte, short, char, int, long, float, double 和 boolean</p>
+
+<p>对应的封装类为Byte, Short, Character, Integer, Long, Float, Double, Boolean</p>
+
+<p>例子：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 装箱</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="nc">Integer</span> <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="c1">// 拆箱</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Integer</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span>
+<span class="o">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="nc">Integer</span> <span class="n">n</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span>
+<span class="o">{</span>
+    <span class="nc">Integer</span> <span class="n">i</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="na">intValue</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从源码看出，装箱过程是调用包装器的valueOf方法实现的，拆箱过程是调用包装器的xxxValue方法实现的。</p>
+
+<h3 id="糖块4可变数量的参数">糖块4.可变数量的参数</h3>
+
+<p>这个是在java1.5引入的特性。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="n">print</span><span class="o">(</span><span class="s">"Holis"</span><span class="o">,</span> <span class="s">"公众号:dalbll"</span><span class="o">,</span> <span class="s">"博客：www.dalbll.com"</span><span class="o">,</span> <span class="s">"QQ：2274840169"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">print</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">strs</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strs</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+    <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">strs</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span>
+<span class="o">{</span>
+    <span class="n">print</span><span class="o">(</span><span class="k">new</span> <span class="nc">String</span><span class="o">[]</span> <span class="o">{</span>
+        <span class="s">"dalbll"</span><span class="o">,</span> <span class="s">"\u516C\u4F17\u53F7:Hollis"</span><span class="o">,</span> <span class="s">"\u535A\u5BA2\uFF1Awww.dalbll.com.com"</span><span class="o">,</span> <span class="s">"QQ\uFF1A907607222"</span>
+    <span class="o">});</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">transient</span> <span class="kt">void</span> <span class="nf">print</span><span class="o">(</span><span class="nc">String</span> <span class="n">strs</span><span class="o">[])</span>
+<span class="o">{</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strs</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">strs</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从编译代码看出，可变参数被使用的时候，会创建一个包含实参数值的数组，作为参数传递给调用方法的。</p>
+
+<h3 id="糖块5-枚举">糖块5. 枚举</h3>
+
+<p>枚举是一个特殊的类，特殊之处就是它的构造函数的调用可以自己定义名字去使用;</p>
+
+<p>例子</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="n">t</span> <span class="o">{</span>
+    <span class="no">SPRING</span><span class="o">,</span><span class="no">SUMMER</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">T</span> <span class="kd">extends</span> <span class="nc">Enum</span>
+<span class="o">{</span>
+    <span class="kd">private</span> <span class="nf">T</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="no">T</span><span class="o">[]</span> <span class="nf">values</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="no">T</span> <span class="n">at</span><span class="o">[];</span>
+        <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
+        <span class="no">T</span> <span class="n">at1</span><span class="o">[];</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">at</span> <span class="o">=</span> <span class="no">ENUM</span><span class="n">$VALUES</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">at1</span> <span class="o">=</span> <span class="k">new</span> <span class="no">T</span><span class="o">[</span><span class="n">i</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="na">length</span><span class="o">],</span> <span class="mi">0</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">at1</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="no">T</span> <span class="nf">valueOf</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="no">T</span><span class="o">)</span><span class="nc">Enum</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">demo</span><span class="o">/</span><span class="no">T</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="no">T</span> <span class="no">SPRING</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="no">T</span> <span class="no">SUMMER</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="no">T</span> <span class="no">ENUM</span><span class="n">$VALUES</span><span class="o">[];</span>
+    <span class="kd">static</span>
+    <span class="o">{</span>
+        <span class="no">SPRING</span> <span class="o">=</span> <span class="k">new</span> <span class="no">T</span><span class="o">(</span><span class="s">"SPRING"</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="no">SUMMER</span> <span class="o">=</span> <span class="k">new</span> <span class="no">T</span><span class="o">(</span><span class="s">"SUMMER"</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="no">ENUM</span><span class="n">$VALUES</span> <span class="o">=</span> <span class="o">(</span><span class="k">new</span> <span class="no">T</span><span class="o">[]</span> <span class="o">{</span>
+            <span class="no">SPRING</span><span class="o">,</span> <span class="no">SUMMER</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>当我们使用enum定义一个枚举，编译器会创建一个final类型的类型继承Enum类。</p>
+
+<h3 id="糖块6内部类">糖块6.内部类</h3>
+
+<p>内部类可以理解为外部类的一个普通成员，它只是编译时的一个概念</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Outter</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">userName</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getUserName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userName</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserName</span><span class="o">(</span><span class="nc">String</span> <span class="n">userName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userName</span> <span class="o">=</span> <span class="n">userName</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">class</span> <span class="nc">Inner</span><span class="o">{</span>
+        <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+
+        <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>编译后会生成两个class文件：Outter.class和Outter$Inner.class</p>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Outter</span><span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getUserName</span><span class="o">()</span>
+    <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userName</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserName</span><span class="o">(</span><span class="nc">String</span> <span class="n">userName</span><span class="o">){</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userName</span> <span class="o">=</span> <span class="n">userName</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args1</span><span class="o">[])</span>
+    <span class="o">{</span>
+    <span class="o">}</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">userName</span><span class="o">;</span>
+  
+    <span class="kd">class</span> <span class="nc">Inner</span>
+    <span class="o">{</span>
+        <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span>
+        <span class="o">{</span>
+            <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span>
+        <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+        <span class="kd">final</span> <span class="nc">OutterClass</span> <span class="k">this</span><span class="err">$</span><span class="mi">0</span><span class="o">;</span>
+
+        <span class="nc">InnerClass</span><span class="o">()</span>
+        <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">this</span><span class="err">$</span><span class="mi">0</span> <span class="o">=</span> <span class="nc">OutterClass</span><span class="o">.</span><span class="na">this</span><span class="o">;</span>
+            <span class="kd">super</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="糖块7-断言">糖块7. 断言</h3>
+
+<p>java在执行的时候默认不开启断言检查，需要开启-enableassertions或-ea</p>
+
+<p>代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AssertTest</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="o">;</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"公众号：dalbll"</span><span class="o">);</span>
+        <span class="k">assert</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">b</span> <span class="o">:</span> <span class="s">"Hollis"</span><span class="o">;</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"博客：www.dalbll.com"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AssertTest</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="nf">AssertTest</span><span class="o">()</span>
+    <span class="o">{</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[]){</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="k">if</span><span class="o">(!</span><span class="n">$assertionsDisabled</span> <span class="o">&amp;&amp;</span> <span class="n">a</span> <span class="o">!=</span> <span class="n">b</span><span class="o">)</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">AssertionError</span><span class="o">();</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\u516C\u4F17\u53F7\uFF1AHollis"</span><span class="o">);</span>
+    <span class="k">if</span><span class="o">(!</span><span class="n">$assertionsDisabled</span> <span class="o">&amp;&amp;</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">AssertionError</span><span class="o">(</span><span class="s">"dalbll"</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span>
+    <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"\u535A\u5BA2\uFF1Awww.dalbll.com"</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">static</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">$assertionsDisabled</span> <span class="o">=</span> <span class="o">!</span><span class="n">com</span><span class="o">/</span><span class="n">dalbll</span><span class="o">/</span><span class="n">suguar</span><span class="o">/</span><span class="nc">AssertTest</span><span class="o">.</span><span class="na">desiredAssertionStatus</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从代码看出，断言底层实现是if语言，如果断言结果为true，什么都不做，程序继续执行，为false，就抛出AssertError来打断程序的执行。</p>
+
+<h3 id="糖块8数值字面量">糖块8.数值字面量</h3>
+
+<p>java7中，允许在整数或浮点数间插入任意多个下划线，这些下划线不会对数值产生影响，目的是方便阅读</p>
+
+<p>例子</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10_000</span><span class="o">;</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span>
+<span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10000</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看到编译阶段会把下划线_去掉</p>
+
+<h3 id="糖块9for-each">糖块9.for-each</h3>
+
+<p>for-each是用来增强for循环的，我们看这个语法糖背后是如何实现的</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span><span class="o">[]</span> <span class="n">strs</span> <span class="o">=</span> <span class="o">{</span><span class="s">"Hollis"</span><span class="o">,</span> <span class="s">"公众号：dalbll"</span><span class="o">,</span> <span class="s">"博客：www.dalbll.com"</span><span class="o">};</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">s</span> <span class="o">:</span> <span class="n">strs</span><span class="o">)</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">strList</span> <span class="o">=</span> <span class="nc">ImmutableList</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Hollis"</span><span class="o">,</span> <span class="s">"公众号：dalbll"</span><span class="o">,</span> <span class="s">"博客：www.dalbll.com"</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">s</span> <span class="o">:</span> <span class="n">strList</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">transient</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span>
+<span class="o">{</span>
+    <span class="nc">String</span> <span class="n">strs</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span>
+        <span class="s">"dalbll"</span><span class="o">,</span> <span class="s">"\u516C\u4F17\u53F7\uFF1Adalbll"</span><span class="o">,</span> <span class="s">"\u535A\u5BA2\uFF1Awww.dalbll.com"</span>
+    <span class="o">};</span>
+    <span class="nc">String</span> <span class="n">args1</span><span class="o">[]</span> <span class="o">=</span> <span class="n">strs</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">args1</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span>
+    <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">args1</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nc">List</span> <span class="n">strList</span> <span class="o">=</span> <span class="nc">ImmutableList</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"dalbll"</span><span class="o">,</span> <span class="s">"\u516C\u4F17\u53F7\uFF1Adalbll"</span><span class="o">,</span> <span class="s">"\u535A\u5BA2\uFF1Awww.dalbll.com"</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">s</span><span class="o">;</span>
+    <span class="k">for</span><span class="o">(</span><span class="nc">Iterator</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">strList</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看出，for-each是用普通的for循环和迭代器实现的。</p>
+
+<h3 id="糖块10try-with-resource">糖块10.try-with-resource</h3>
+
+<p>java里，操作文件IO流、数据库连接的开销是非常昂贵的资源，用完之后必须通过close方法关闭，否则可能会导致内存泄露问题，我们传统的写法是使用try-catch-finally</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">line</span><span class="o">;</span>
+        <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileReader</span><span class="o">(</span><span class="s">"d:\\hollischuang.xml"</span><span class="o">));</span>
+        <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// handle exception</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">br</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// handle exception</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>java7开始支持更好的写法，使用try-with-resource语句</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileReader</span><span class="o">(</span><span class="s">"d:\\ hollischuang.xml"</span><span class="o">)))</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">line</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// handle exception</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>是不是更简洁优雅了，反编译看它的背后原理</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">transient</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span>
+    <span class="o">{</span>
+        <span class="nc">BufferedReader</span> <span class="n">br</span><span class="o">;</span>
+        <span class="nc">Throwable</span> <span class="n">throwable</span><span class="o">;</span>
+        <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileReader</span><span class="o">(</span><span class="s">"d:\\ hollischuang.xml"</span><span class="o">));</span>
+        <span class="n">throwable</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">line</span><span class="o">;</span>
+        <span class="k">try</span>
+        <span class="o">{</span>
+            <span class="k">while</span><span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">catch</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">throwable2</span><span class="o">)</span>
+        <span class="o">{</span>
+            <span class="n">throwable</span> <span class="o">=</span> <span class="n">throwable2</span><span class="o">;</span>
+            <span class="k">throw</span> <span class="n">throwable2</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">br</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">throwable</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="k">try</span>
+                <span class="o">{</span>
+                    <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="k">catch</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">throwable1</span><span class="o">)</span>
+                <span class="o">{</span>
+                    <span class="n">throwable</span><span class="o">.</span><span class="na">addSuppressed</span><span class="o">(</span><span class="n">throwable1</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="k">else</span>
+                <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="k">break</span> <span class="no">MISSING_BLOCK_LABEL_113</span><span class="o">;</span>
+            <span class="nc">Exception</span> <span class="n">exception</span><span class="o">;</span>
+            <span class="n">exception</span><span class="o">;</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">br</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">throwable</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+                    <span class="k">try</span>
+                    <span class="o">{</span>
+                        <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                    <span class="o">}</span>
+                    <span class="k">catch</span><span class="o">(</span><span class="nc">Throwable</span> <span class="n">throwable3</span><span class="o">)</span>
+                      <span class="o">{</span>
+                        <span class="n">throwable</span><span class="o">.</span><span class="na">addSuppressed</span><span class="o">(</span><span class="n">throwable3</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="k">else</span>
+                    <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="k">throw</span> <span class="n">exception</span><span class="o">;</span>
+        <span class="nc">IOException</span> <span class="n">ioexception</span><span class="o">;</span>
+        <span class="n">ioexception</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看出是编译器帮我们做了关闭资源的操作，所以语法糖的作用是方便程序员的是使用，最终会转成编译器认识的语言。</p>
+
+<h3 id="糖块11lambda表达式">糖块11.Lambda表达式</h3>
+
+<p>这个应该要熟悉使用，作为java程序员标配要懂的知识。lambda表达式是依赖JVM底层提供的api实现的。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">strList</span> <span class="o">=</span> <span class="nc">ImmutableList</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"dalbll"</span><span class="o">,</span> <span class="s">"公众号：dalbll"</span><span class="o">,</span> <span class="s">"博客：www.dalbll.com"</span><span class="o">);</span>
+    <span class="n">strList</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span> <span class="n">s</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">);</span> <span class="o">}</span> <span class="o">);</span>
+  	<span class="c1">// 或者</span>
+  	<span class="n">strList</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>反编译后</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="cm">/* varargs */</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">ImmutableList</span> <span class="n">strList</span> <span class="o">=</span> <span class="nc">ImmutableList</span><span class="o">.</span><span class="na">of</span><span class="o">((</span><span class="nc">Object</span><span class="o">)</span><span class="s">"dalbll"</span><span class="o">,</span> <span class="o">(</span><span class="nc">Object</span><span class="o">)</span><span class="s">"\u516c\u4f17\u53f7\uff1adalbll"</span><span class="o">,</span> <span class="o">(</span><span class="nc">Object</span><span class="o">)</span><span class="s">"\u535a\u5ba2\uff1awww.dalbll.com"</span><span class="o">);</span>
+    <span class="n">strList</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="nc">Consumer</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;)</span><span class="nc">LambdaMetafactory</span><span class="o">.</span><span class="na">metafactory</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="o">(</span><span class="nc">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="nc">Object</span><span class="o">;)</span><span class="no">V</span><span class="o">,</span> <span class="n">lambda$main</span><span class="err">$</span><span class="mi">0</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span> <span class="o">),</span> <span class="o">(</span><span class="nc">Ljava</span><span class="o">/</span><span class="n">lang</span><span class="o">/</span><span class="nc">String</span><span class="o">;)</span><span class="no">V</span><span class="o">)());</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kd">static</span> <span class="cm">/* synthetic */</span> <span class="kt">void</span> <span class="n">lambda$main</span><span class="err">$</span><span class="mi">0</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看出forEach方法中，调用了java.lang.invoke.LambdaMetafactory.metafactory方法，该方法的第五个参数调用了lambda$main$0方法进行了输出。</p>
+
+<p>使用lambda表达式的例子代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1、创建一个线程使用lambda表达式</span>
+<span class="k">new</span> <span class="nf">Thread</span><span class="o">(()-&gt;{</span><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">40</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="n">ticket</span><span class="o">.</span><span class="na">saleTicket</span><span class="o">();},</span><span class="s">"A"</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
+
+<span class="c1">// 2、线程池使用lambda表达式</span>
+<span class="nc">ExecutorService</span> <span class="n">threadPool</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadPoolExecutor</span><span class="o">(</span>
+  <span class="mi">2</span><span class="o">,</span>
+  <span class="mi">5</span><span class="o">,</span>
+  <span class="mi">3L</span><span class="o">,</span>
+  <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">,</span>
+  <span class="k">new</span> <span class="nc">LinkedBlockingDeque</span><span class="o">&lt;&gt;(</span><span class="mi">3</span><span class="o">),</span>
+  <span class="nc">Executors</span><span class="o">.</span><span class="na">defaultThreadFactory</span><span class="o">(),</span>
+  <span class="k">new</span> <span class="nc">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
+<span class="k">try</span> <span class="o">{</span>
+  <span class="c1">// 线程池的使用方式！</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">threadPool</span><span class="o">.</span><span class="na">execute</span><span class="o">(()-&gt;{</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" ok"</span><span class="o">);</span>
+    <span class="o">});</span>
+  <span class="o">}</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+  <span class="c1">// 使用完毕后需要关闭！</span>
+  <span class="n">threadPool</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="c1">// 3、函数式接口使用lambda表达式</span>
+<span class="cm">/**
+ * 函数式接口是我们现在必须要要掌握且精通的
+ * 4个！
+ * Java 8
+ *
+ * Function ： 有一个输入参数有一个输出参数
+ * Consumer：有一个输入参数，没有输出参数
+ * Supplier：没有输入参数，只有输出参数
+ * Predicate：有一个输入参数，判断是否正确！
+ */</span>
+<span class="nc">Function</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">function</span> <span class="o">=</span> <span class="o">(</span><span class="n">str</span><span class="o">)-&gt;{</span><span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();};</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">function</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">"a45645646"</span><span class="o">));</span>
+
+<span class="nc">Predicate</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">predicate</span> <span class="o">=</span> <span class="n">str</span><span class="o">-&gt;{</span><span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();};</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">predicate</span><span class="o">.</span><span class="na">test</span><span class="o">(</span><span class="s">"456"</span><span class="o">));</span>
+
+<span class="nc">Supplier</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">supplier</span> <span class="o">=</span> <span class="o">()-&gt;{</span><span class="k">return</span> <span class="s">"《hello，spring》"</span><span class="o">;};</span>
+<span class="nc">Consumer</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">consumer</span> <span class="o">=</span> <span class="n">s</span><span class="o">-&gt;{</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">);};</span>
+
+<span class="n">consumer</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">supplier</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+
+<span class="c1">// 4、Stream流式计算使用lambda表达式</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">u1</span><span class="o">,</span> <span class="n">u2</span><span class="o">,</span> <span class="n">u3</span><span class="o">,</span> <span class="n">u4</span><span class="o">,</span> <span class="n">u5</span><span class="o">);</span>
+<span class="c1">// 计算等操作交给流</span>
+<span class="c1">// forEach(消费者类型接口)</span>
+<span class="n">users</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+  <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">u</span><span class="o">-&gt;{</span><span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="na">getId</span><span class="o">()%</span><span class="mi">2</span><span class="o">==</span><span class="mi">0</span><span class="o">;})</span>
+  <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">u</span><span class="o">-&gt;{</span><span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="na">getAge</span><span class="o">()&gt;</span><span class="mi">24</span><span class="o">;})</span>
+  <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">u</span><span class="o">-&gt;{</span><span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">toUpperCase</span><span class="o">();})</span>
+  <span class="o">.</span><span class="na">sorted</span><span class="o">((</span><span class="n">o1</span><span class="o">,</span><span class="n">o2</span><span class="o">)-&gt;{</span><span class="k">return</span> <span class="n">o2</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">o1</span><span class="o">);})</span>
+  <span class="o">.</span><span class="na">limit</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+
+<span class="c1">// 5、mybatis-plus中使用lambda表达式</span>
+ <span class="nc">UpdateWrapper</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="n">updateWrapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UpdateWrapper</span><span class="o">&lt;&gt;();</span>
+        <span class="c1">// 在一些新的框架中，链式编程，lambda表达式，函数式接口十分常用！</span>
+        <span class="n">updateWrapper</span>
+                <span class="o">.</span><span class="na">like</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"k"</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">or</span><span class="o">(</span><span class="n">wrapper</span><span class="o">-&gt;</span><span class="n">wrapper</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"Coding2"</span><span class="o">).</span><span class="na">eq</span><span class="o">(</span><span class="s">"age"</span><span class="o">,</span><span class="mi">0</span><span class="o">));</span>
+</code></pre></div></div>
+
+<h3 id="双冒号运算符">双冒号运算符</h3>
+
+<p>::是jdk8中引入方法的lamba语法之一，作用是调用类或实例中的方法。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">静态方法引用（</span><span class="kd">static</span> <span class="n">method</span><span class="err">）语法：</span><span class="nl">classname:</span><span class="o">:</span><span class="n">methodname</span> <span class="err">例如：</span><span class="nl">Person:</span><span class="o">:</span><span class="n">getAge</span>
+<span class="err">对象的实例方法引用语法：</span><span class="nl">instancename:</span><span class="o">:</span><span class="n">methodname</span> <span class="err">例如：</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span>
+<span class="err">对象的超类方法引用语法：</span> <span class="kd">super</span><span class="o">::</span><span class="n">methodname</span>
+<span class="err">类构造器引用语法：</span> <span class="nl">classname:</span><span class="o">:</span><span class="k">new</span> <span class="err">例如：</span><span class="nl">ArrayList:</span><span class="o">:</span><span class="k">new</span>
+<span class="err">数组构造器引用语法：</span> <span class="n">typename</span><span class="o">[]::</span><span class="k">new</span> <span class="err">例如：</span> <span class="nc">String</span><span class="o">[]:</span><span class="k">new</span>
+
+<span class="c1">// 例子代码</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// 使用双冒号::来构造静态函数引用，结合函数式接口使用</span>
+    <span class="nc">Function</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">fun</span> <span class="o">=</span> <span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">;</span>
+    <span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">"123"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+
+    <span class="c1">// 使用双冒号::来构造非静态函数引用</span>
+    <span class="nc">String</span> <span class="n">content</span> <span class="o">=</span> <span class="s">"Hello JDK8"</span><span class="o">;</span>
+    <span class="nc">Function</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">func</span> <span class="o">=</span> <span class="nl">content:</span><span class="o">:</span><span class="n">substring</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+
+    <span class="c1">// 构造函数引用</span>
+    <span class="nc">BiFunction</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">,</span> <span class="nc">User</span><span class="o">&gt;</span> <span class="n">biFunction</span> <span class="o">=</span> <span class="nl">User:</span><span class="o">:</span><span class="k">new</span><span class="o">;</span>
+    <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">biFunction</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">"mengday"</span><span class="o">,</span> <span class="mi">28</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="c1">// 函数引用也是一种函数式接口，所以也可以将函数引用作为方法的参数</span>
+    <span class="n">sayHello</span><span class="o">(</span><span class="nl">String:</span><span class="o">:</span><span class="n">toUpperCase</span><span class="o">,</span> <span class="s">"hello"</span><span class="o">);</span>
+<span class="o">}</span>    
+</code></pre></div></div>
+
+<h3 id="optional-可选值">Optional 可选值</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.function.Function</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.function.Predicate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.function.Supplier</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @since 1.8
+ */</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Optional</span><span class="o">&lt;?&gt;</span> <span class="no">EMPTY</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Optional</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="no">T</span> <span class="n">value</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nf">Optional</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 返回一个空的 Optional实例</span>
+    <span class="kd">public</span> <span class="kd">static</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">empty</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"unchecked"</span><span class="o">)</span>
+        <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">t</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;)</span> <span class="no">EMPTY</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">t</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="nf">Optional</span><span class="o">(</span><span class="no">T</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 返回具有 Optional的当前非空值的Optional</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">of</span><span class="o">(</span><span class="no">T</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nc">Optional</span><span class="o">&lt;&gt;(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 返回一个 Optional指定值的Optional，如果非空，则返回一个空的 Optional</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">ofNullable</span><span class="o">(</span><span class="no">T</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">empty</span><span class="o">()</span> <span class="o">:</span> <span class="n">of</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果Optional中有一个值，返回值，否则抛出 NoSuchElementException 。</span>
+    <span class="kd">public</span> <span class="no">T</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">NoSuchElementException</span><span class="o">(</span><span class="s">"No value present"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果存在值返回true，否则为 false</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isPresent</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果存在值，则使用该值调用指定的消费者，否则不执行任何操作。</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">ifPresent</span><span class="o">(</span><span class="nc">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">consumer</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果一个值存在，并且该值给定的谓词相匹配时，返回一个 Optional描述的值，否则返回一个空的 Optional</span>
+    <span class="kd">public</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">filter</span><span class="o">(</span><span class="nc">Predicate</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">predicate</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">predicate</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">isPresent</span><span class="o">())</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="n">predicate</span><span class="o">.</span><span class="na">test</span><span class="o">(</span><span class="n">value</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span> <span class="o">:</span> <span class="n">empty</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果存在一个值，则应用提供的映射函数，如果结果不为空，则返回一个 Optional结果的 Optional 。</span>
+    <span class="kd">public</span><span class="o">&lt;</span><span class="no">U</span><span class="o">&gt;</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">U</span><span class="o">&gt;</span> <span class="nf">map</span><span class="o">(</span><span class="nc">Function</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="no">U</span><span class="o">&gt;</span> <span class="n">mapper</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">mapper</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">isPresent</span><span class="o">())</span>
+            <span class="k">return</span> <span class="nf">empty</span><span class="o">();</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nc">Optional</span><span class="o">.</span><span class="na">ofNullable</span><span class="o">(</span><span class="n">mapper</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果一个值存在，应用提供的 Optional映射函数给它，返回该结果，否则返回一个空的 Optional 。</span>
+    <span class="kd">public</span><span class="o">&lt;</span><span class="no">U</span><span class="o">&gt;</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">U</span><span class="o">&gt;</span> <span class="nf">flatMap</span><span class="o">(</span><span class="nc">Function</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">,</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="no">U</span><span class="o">&gt;&gt;</span> <span class="n">mapper</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">mapper</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">isPresent</span><span class="o">())</span>
+            <span class="k">return</span> <span class="nf">empty</span><span class="o">();</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">mapper</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 如果值存在，就返回值，不存在就返回指定的其他值</span>
+    <span class="kd">public</span> <span class="no">T</span> <span class="nf">orElse</span><span class="o">(</span><span class="no">T</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">value</span> <span class="o">:</span> <span class="n">other</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="kd">public</span> <span class="no">T</span> <span class="nf">orElseGet</span><span class="o">(</span><span class="nc">Supplier</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">value</span> <span class="o">:</span> <span class="n">other</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="o">&lt;</span><span class="no">X</span> <span class="kd">extends</span> <span class="nc">Throwable</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">orElseThrow</span><span class="o">(</span><span class="nc">Supplier</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="no">X</span><span class="o">&gt;</span> <span class="n">exceptionSupplier</span><span class="o">)</span> <span class="kd">throws</span> <span class="no">X</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="n">exceptionSupplier</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// Optional类已经成为Java 8类库的一部分，在Guava中早就有了，可能Oracle是直接拿来使用了</span>
+    <span class="c1">// Optional用来解决空指针异常，使代码更加严谨，防止因为空指针NullPointerException对代码造成影响</span>
+    <span class="nc">String</span> <span class="n">msg</span> <span class="o">=</span> <span class="s">"hello"</span><span class="o">;</span>
+    <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">optional</span> <span class="o">=</span> <span class="nc">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+    <span class="c1">// 判断是否有值，不为空</span>
+    <span class="kt">boolean</span> <span class="n">present</span> <span class="o">=</span> <span class="n">optional</span><span class="o">.</span><span class="na">isPresent</span><span class="o">();</span>
+    <span class="c1">// 如果有值，则返回值，如果等于空则抛异常</span>
+    <span class="nc">String</span> <span class="n">value</span> <span class="o">=</span> <span class="n">optional</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="c1">// 如果为空，返回else指定的值</span>
+    <span class="nc">String</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">optional</span><span class="o">.</span><span class="na">orElse</span><span class="o">(</span><span class="s">"hi"</span><span class="o">);</span>
+    <span class="c1">// 如果值不为空，就执行Lambda表达式</span>
+    <span class="n">optional</span><span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span><span class="n">opt</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">opt</span><span class="o">));</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<p>语法糖是提供给开发人员方便开发的语法，可以提升开发效率，要想被执行，需要进行解糖转换为jvm认识的语法，解糖后会发现，它其实是由其他更简单的语法构成的。</p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2020/03/05/java-syntactic-sugar.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,12 +1,14 @@
 ---
 layout: post
-title: 我对Oracle的使用
+title: 工作中Oracle的认识与使用
 category: mysql
 tags: [mysql]
 keywords: oracle
 excerpt: 基本的sql优化策略,insert append原理解析,归档模式，快速插入大量数据的4种方法，DML操作与锁，行锁原理，5个阻塞场景分析
 lock: noneed
 ---
+
+刚毕业出来工作的那几年，还会有公司使用oracle，但是oracle高成本的版权费和硬件维护成本，国内已经比较少公司使用oracle了
 
 ## 1、sql优化策略
 

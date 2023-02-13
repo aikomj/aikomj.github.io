@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第38节：ElasticSearch实战-1 - 大伟的博客 </title>
+    <meta name="keywords" content="elasticSearch">
+    <meta name="description"
+          content="ElasticSearch与Solr的比较，核心概念，什么是倒排索引，安装ES，ES Head,kibana,ik分词器，自定义词库">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/05/23/icoding-note-038.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第38节：ElasticSearch实战-1">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第38节：ElasticSearch实战-1</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/05/23
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1入门">1、入门</h2>
+
+<h3 id="elasticsearch概述">ElasticSearch概述</h3>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-baike.gif" alt="" /></p>
+
+<p>原来我们基于数据库搜索：select * from xxx where xx=xxx，使用sql查询</p>
+
+<p>大数据量下，索引失效了，就十分的慢，真正的大数据搜索都不会直接使用SQL查询，而是将数据导入到搜索引擎中，通过搜索引擎查询数据。</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/mysql-to-es.gif" alt="" /></p>
+
+<p>ElasticSearch（下面简称ES） 现在主流用的是6.x和7.x版本，如何用它和它的原理思想最重要。</p>
+
+<p>第一个版本：2010年2月，开源在github上</p>
+
+<p>官网下载：<a href="https://www.elastic.co/cn/downloads/elasticsearch">https://www.elastic.co/cn/downloads/elasticsearch</a></p>
+
+<p>文档地址：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.x/getting-started.html">https://www.elastic.co/guide/en/elasticsearch/reference/7.x/getting-started.html</a></p>
+
+<h3 id="与solr的比较">与Solr的比较</h3>
+
+<p><strong>Solr简介</strong></p>
+
+<ul>
+  <li>
+    <p>Apache下的顶级开源项目，使用java开发，基于Lucene封装的全文搜索服务器。</p>
+  </li>
+  <li>
+    <p>提供的功能：大量的配置，索引进行了优化。</p>
+  </li>
+  <li>
+    <p>是独立运行的服务器</p>
+  </li>
+  <li>
+    <p>使用的方式：Post发送一个请求xml文档，添加、删除、更新，Get请求进行查询</p>
+  </li>
+</ul>
+
+<p><strong>ES简介</strong></p>
+
+<ul>
+  <li>是一个<mark>实时分布式搜索和分析引擎</mark>，在大数据领域使用十分广泛，比如百度搜索高亮，商品搜索</li>
+  <li>实时搜索，效率十分高，使用倒排索引</li>
+  <li>是一个基于Apache Lucene的开源搜索引擎</li>
+</ul>
+
+<p><strong>Lucene简介</strong></p>
+
+<ul>
+  <li>是一个开源的全文检索引擎工具包，查询引擎、索引引擎、文本分析。现在很少直接使用Lucene来实现全文检索了</li>
+</ul>
+
+<p><strong>全文检索</strong></p>
+
+<ul>
+  <li>Baidu，Google，GitHub 都是通过从互联网上提取的各个网站的信息（网页文字），将这些信息建立到数据库中的。</li>
+</ul>
+
+<p><strong>数据来源</strong></p>
+
+<ul>
+  <li>爬虫，主动收集</li>
+  <li>数据库中的内容</li>
+  <li>清洗完毕的数据</li>
+  <li>搞懂数据是如何存储和操作的</li>
+</ul>
+
+<p>性能对比</p>
+
+<p>1、当单纯的对已有数据进行搜索时，Solr更快。</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/search-fesh-index-while-idle.gif" alt="" /></p>
+
+<p>2、当实时建立索引时, Solr会产生io阻塞，查询性能较差, Elasticsearch具有明显的优势。</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/search-fresh-index-while-indexing.gif" alt="" /></p>
+
+<p>3、随着数据量的增加，Solr的搜索效率会变得更低，而Elasticsearch却没有明显的变化。</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/search-fresh-index-while-indexing2.gif" alt="" /></p>
+
+<p><strong>综上所述，Solr的架构不适合实时搜索的应用，而ES更适合</strong></p>
+
+<p>4、实际生产环境测试</p>
+
+<p>下图为将搜索引擎从Solr转到Elasticsearch以后的平均查询速度有了50倍的提升。</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-solr-average-execution-time-prod.gif" alt="" /></p>
+
+<p>小结：</p>
+
+<p>1、ES开箱即用，Solr相对复杂一点</p>
+
+<p>2、Solr需要独立部署在tomcat上，可以实现集群和分片，<font color="red">自身不支持集群结构，需要zookeeper来进行集群的支持提供服务注册</font>，进行分布式索引查询，也是可以自己实现故障转移的（3组节点，每组2个solr，互为主从），ES自带集群管理，分布式搜索。</p>
+
+<p>3、Solr支持的数据格式XML、JSON，ES仅支持JSON</p>
+
+<p>4、Solr官方提供的功能更多，ES注重核心功能，拥有良好的插件机制，高级功能可以使用第三方插件。</p>
+
+<p>5、Solr对已有数据查询更快，索引更新时查询很慢，ES建立索引快，实时查询比较快</p>
+
+<p>6、Solr生态和用户较大，ES相对来说较少，ES版本更新快，很多人还在用旧版本6.x</p>
+
+<h3 id="es的核心概念">ES的核心概念</h3>
+
+<p>Lucene是一个Java语言开发的开源全文检索引擎工具包，用Netty封装成服务，使用JSON访问就是ES了。</p>
+
+<p>ES内置了分布式集群（多节点）和分布式索引（数据分片）的管理。使用ES的搜索系统管理架构图如下：</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-search-system-arch.gif" alt="" /></p>
+
+<p>核心术语：</p>
+
+<p><strong>1、索引index</strong></p>
+
+<p>​	ES将数据存储到索引中，用sql领域的术语来类比，索引就像数据库，可以向索引写入文档和读取文档，索引是具有某些类似特征的文档集合。</p>
+
+<p><strong>2、文档document</strong></p>
+
+<p>​	ES索引中一条一条的数据，相当于数据库表里的一行一行的数据</p>
+
+<p><strong>3、映射Mappings</strong></p>
+
+<p>​	相当于表结构定义，定义字段内容信息</p>
+
+<p><strong>4、类型type</strong></p>
+
+<p>​	文档的类型（分组），允许一个索引存储多种文档类型，7.x版本后默认为doc。</p>
+
+<p>​	ES6.x，一个文档只能包含一个映射类型</p>
+
+<p>​	ES7.x，映射类型默认是_doc，</p>
+
+<p>​	ES8.x，将完成删除type</p>
+
+<p>​	<img src="/assets/images/2020/icoding/elasticsearch/index-type-id.gif" alt="" /></p>
+
+<p><strong>5、节点node</strong></p>
+
+<p>​	单个ES服务实例称为节点，很多时候部署一个ES节点就足以应付大多数简单应用，但是考虑到容错性和数据的膨胀，单机无法应用这些状况。</p>
+
+<p><strong>6、集群cluster</strong></p>
+
+<p>​	集群是一组具有相同cluster.name的节点集合，集群状态通过绿、黄、红来标识</p>
+
+<ul>
+  <li>绿色，一切都很好，集群功能齐全</li>
+  <li>黄色，所有数据均可用，但尚未分配一些副本</li>
+  <li><mark>红色，</mark>某些数据由于某种原因不可用，集群功能不齐全，这个时候要尽快修复</li>
+</ul>
+
+<p><strong>7、分片shard</strong></p>
+
+<ul>
+  <li>
+    <p>数据分片的概念，需要进行水平扩展服务节点只需要加入新的机器到集群中即可，允许分片跨节点分布，从而提供性能和吞吐量。</p>
+  </li>
+  <li>
+    <p>集群的每个数据节点都是HA的</p>
+
+    <p>主分片：承担数据写入访问的作用</p>
+
+    <p>replica备份分片：除了做备份以外，还承担了读数据的水平负载作用（可执行搜索），创建索引时要定义正确数量的分片和副本分片。创建索引后，也可以动态更改副本分片数。</p>
+  </li>
+</ul>
+
+<p><strong>8、NRT （Near Real Time）</strong></p>
+
+<p>​	ES中新的文档（doc）被加入后可查询的时间间隔非常微弱，接近实时</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Mysql</th>
+      <th>ES</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>数据库(database)</td>
+      <td>索引（index）</td>
+    </tr>
+    <tr>
+      <td>表（table）</td>
+      <td>types （7.x后默认为doc）</td>
+    </tr>
+    <tr>
+      <td>行（rows）</td>
+      <td>文档（documents）</td>
+    </tr>
+    <tr>
+      <td>字段（columns）</td>
+      <td>字段（fields）</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>物理设计，一个集群至少包含一个节点，一个节点就是一个es进程，节点可以有多个索引，如创建一个索引</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-head-create-index.gif" alt="" /></p>
+
+<p>这个索引有5个主分片，每个主分片有一个副本分片，分布在不同的节点内，某个节点挂了，数据也不至于丢失</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-nodes.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-nodes.png" alt="" /></p>
+
+<h3 id="安装es">安装ES</h3>
+
+<p>去官网下载，也可以用docker安装，这里我使用第一种方式</p>
+
+<blockquote>
+  <p>windows安装</p>
+</blockquote>
+
+<p>1、解压安装包即可使用</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-files.gif" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin: 启动文件
+config: 配置文件
+		log4j: 日志配置
+		jvm: java虚拟机的配置
+		es.yml: es的配置文件
+lib: 相关类库jar包
+logs: 日志
+modules: 功能模块
+plguins: 放置插件使用，如ik中文分词器，拼音分词器
+</code></pre></div></div>
+
+<p>2、由于ES默认占有的内存资源很大，所以需要修改jvm参数</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/jvm-xms.gif" alt="" /></p>
+
+<font color="red">启动ES前一定要配置好jdk环境变量</font>
+
+<p>3、双击启动即可</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-start-on-window.gif" alt="" /></p>
+
+<p>4、查看启动日志</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-load-modules-on-start.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-load-modules-on-start2.gif" alt="" /></p>
+
+<p>启动时会加载模块</p>
+
+<p>5、访问 http://localhost:9200</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-acess-test.gif" alt="" /></p>
+
+<blockquote>
+  <p>linux安装</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># linux下，不能用root启动es，所以我直接创建一个用户esuser来安装es</span>
+<span class="o">[</span>root@helloworld ~]# adduser esuser
+<span class="c"># 下载</span>
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.6.1-linux-x86_64.tar.gz
+<span class="c"># 1、切换esuser,上传ElasticSearch到服务器，解压</span>
+<span class="o">[</span>root@helloworld ~]# su esuser
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">pwd</span>
+/home/esuser
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span>rz
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zxvf</span> elasticsearch-7.6.1-linux-x86_64.tar.gz
+<span class="o">[</span>esuser@helloworld elasticsearch-7.6.1]<span class="nv">$ </span><span class="nb">mkdir </span>data
+<span class="c"># 2、修改配置文件，注意留空格</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi elasticsearch.yml 
+cluster.name: jude-es <span class="c"># 给集群设置一个名字，如果是集群，所有在这个集群中的节点集群名都要一样</span>
+node.name: es-node-1 <span class="c"># 如果是集群，集群中每个节点的名字都不能一样</span>
+path.data: /home/esuser/elasticsearc-7.6.1/data
+path.logs: /home/esuser/elasticsearc-7.6.1/logs
+network.host: 0.0.0.0 <span class="c"># 不限制ip访问 ES，生产环境应该要设置可以访问的ip</span>
+http.port: 9200 <span class="c"># 访问 服务端口，节点通信的端口是9300</span>
+cluster.initial_master_nodes: <span class="o">[</span><span class="s2">"es-node-1"</span><span class="o">]</span> <span class="c"># master节点服务发现，和上面的节点名一致</span>
+<span class="c"># 改小java的堆内存,这个自己设置，默认是1g内存</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi jvm.options
+<span class="nt">-Xms512m</span>
+<span class="nt">-Xmx512m</span>
+<span class="c"># 3、修改sysctl.conf文件，需要切回root用户</span>
+<span class="o">[</span>root@helloworld bin]# vi /etc/sysctl.conf
+vm.max_map_count<span class="o">=</span>262145
+<span class="c"># 修改后刷新生效</span>
+<span class="o">[</span>root@helloworld bin]# sysctl <span class="nt">-p</span>
+<span class="c"># 修改 /etc/security/limits.conf,文件尾部添加</span>
+<span class="o">[</span>root@helloworld ~]# vi /etc/security/limits.conf
+esuser soft nofile 65536
+esuser hard nofile 65536
+esuser <span class="nb">nproc </span>2048
+esuser <span class="nb">nproc </span>4096
+<span class="c"># 4、启动，需要使用esuser用户，到elasticsearch的bin目录下执行</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./elasticsearch <span class="c"># 先在线启动确认没有报错</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./elasticsearch <span class="nt">-d</span> <span class="c"># 后台启动</span>
+</code></pre></div></div>
+
+<h3 id="安装-es-head">安装 ES Head</h3>
+
+<p>ES本身没有界面控制，我们使用第三方工具来测试查看</p>
+
+<p>elasticSearch-head 需要nodejs环境，在自己本机安装就行了</p>
+
+<p>下载地址：<a href="https://github.com/mobz/elasticsearch-head">https://github.com/mobz/elasticsearch-head</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Running with built <span class="k">in </span>server
+    git clone git://github.com/mobz/elasticsearch-head.git
+    <span class="nb">cd </span>elasticsearch-head
+    npm <span class="nb">install
+    </span>npm run start
+
+    open http://localhost:9100/
+</code></pre></div></div>
+
+<p>配置ES的可以跨域访问</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在elasticsearch.yaml里加入</span>
+http.cors.enabled: <span class="nb">true</span>
+<span class="c"># 开放所有ip访问，线上这样设置不安全，建议head与elasticsearch在同一台服务器上</span>
+http.cors.allow-origin: <span class="s2">"*"</span>	
+<span class="c"># 重启elasticsearch</span>
+</code></pre></div></div>
+
+<p>连接成功</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-head-es.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-head-pages.gif" alt="" /></p>
+
+<h3 id="es设置用户密码访问">ES设置用户密码访问</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、修改配置文件，开启x-pack验证</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi elasticsearch.yml 
+http.cors.enabled: <span class="nb">true
+</span>http.cors.allow-origin: <span class="s2">"*"</span>
+http.cors.allow-headers: Authorization
+xpack.security.enabled: <span class="nb">true
+</span>xpack.security.transport.ssl.enabled: <span class="nb">true</span>
+
+<span class="c"># 2、</span>
+</code></pre></div></div>
+
+<h2 id="2倒排索引">2、倒排索引</h2>
+
+<p>ES使用的是一种倒排索引的结构，</p>
+
+<p>Redis在查询的时候：key-value？是通过key来找到的value，是否可以通过value来找key？通过value找到和这个value相似度极高的内容？不可以，所以需要全文搜索引擎，引出倒排索引概念</p>
+
+<p>倒排索引（Inverted Index）：比如通过歌词来查歌名，通过内容检索名称，而这个名称在系统中其实就是一个索引，通过歌来找歌词这是正排索引</p>
+
+<p>比如拿课程学习举例：</p>
+
+<p>文档编号     文档内容</p>
+
+<p>1                 艾编程架构师之路</p>
+
+<p>2     			艾编程Java成长之路		（分词：艾编程   Java  成长   之路）</p>
+
+<p>3				 ES成长学习入门</p>
+
+<p>搜索的分词		这个分词在哪个文档中出现				文档编号:次数:位置</p>
+
+<p>成长     							2,3  												2:1:&lt;3&gt;,3:1:&lt;2&gt;</p>
+
+<p>ES的索引流程：建立索引-&gt;分片-&gt;集群中不同的节点上，每个分片还有一个副本分片。</p>
+
+<p>每个分片保存了一些倒排索引词条-&gt;词条对应的文档记录</p>
+
+<h2 id="3elk">3、ELK</h2>
+
+<p>ELK是三个技术的总和（ElasticSearch、Logstash、Kibana）</p>
+
+<p>ElasticSearch 是一个基于Lucene、分布式、通过Restful Api进行交互的实时搜索平台</p>
+
+<p>Logstash 是ELK的中央数据流引擎，作用是将收集不同的数据（文件、数据库、MQ），需要通过它过滤</p>
+
+<p>Kibana 将这些数据进行可视化的展示出来，提供实时分析功能</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/elk.gif" alt="" /></p>
+
+<h3 id="安装kibana">安装Kibana</h3>
+
+<p>官网地址：<a href="https://www.elastic.co/cn/downloads/kibana">https://www.elastic.co/cn/downloads/kibana</a></p>
+
+<font color="red">ES和Kibana的版本必须一致</font>
+
+<blockquote>
+  <p>window安装</p>
+</blockquote>
+
+<p>下载后直接解压</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-on-window.gif" alt="" /></p>
+
+<p>启动</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-on-window-start.gif" alt="" /></p>
+
+<blockquote>
+  <p>linux安装</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># es 和 kibana放在同一目录下，也不能root用户启动kibana</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">ls
+</span>elasticsearch-7.6.1  kibana-7.6.1-linux-x86_64.tar.gz
+<span class="c"># 1、解压</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-zxvf</span> kibana-7.6.1-linux-x86_64.tar.gz
+<span class="c"># 改名字</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">mv </span>kibana-7.6.1-linux-x86_64 kibana-7.6.1
+<span class="c"># 2、修改kibana的yaml配置，</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span><span class="nb">cd </span>kibana-7.6.1
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi kibana.yml
+server.port: 5601 <span class="c"># 默认端口5601,可以不修改</span>
+server.host: <span class="s2">"0.0.0.0"</span> <span class="c"># 开放ip访问，默认localhost</span>
+elasticsearch.hosts: <span class="o">[</span><span class="s2">"http://localhost:9200"</span><span class="o">]</span> <span class="c"># es实例节点，默认localhost:9200</span>
+i18n.locale: <span class="s2">"zh-CN"</span>  <span class="c"># 汉化</span>
+<span class="c"># 3、启动,cd到kibana的bin目录</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./kibana  <span class="c"># 在线运行</span>
+<span class="nb">nohup </span>kibana <span class="o">&gt;</span> kibana.log 2&gt;&amp;1 &amp; <span class="c"># 后台运行</span>
+<span class="c"># 注意，云服务器防火墙和安全组要开放5601端口，</span>
+</code></pre></div></div>
+
+<p>启动后，ES会多了几个kibana的索引</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-kibana-index2.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/es-kibana-index.gif" alt="" /></p>
+
+<p>访问：http://localhost:5601/app/kibana#/home</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-home.gif" alt="" /></p>
+
+<blockquote>
+  <p>开放工具</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-dev-tool.gif" alt="" /></p>
+
+<p>建一个索引，包含数据</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-create-index-doc.gif" alt="" /></p>
+
+<p>查看elasticsearch-head，多了一个索引index_customer</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-create-index-doc2.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/kibana-create-index-doc3.gif" alt="" /></p>
+
+<h2 id="4ik中文分词器">4、IK中文分词器</h2>
+
+<p>分词：将一个完成的词或者语句，拆分为一个一个关键字（词条），搜索的时候就会进行关键字查找搜索。其实ES在添加文档的时候，就会对文档内容按指定的分词器进行拆分了。</p>
+
+<h3 id="安装">安装</h3>
+
+<font color="red">要与ES版本对应</font>
+
+<p>github地址： <a href="https://github.com/medcl/elasticsearch-analysis-ik/releases">https://github.com/medcl/elasticsearch-analysis-ik/releases</a></p>
+
+<blockquote>
+  <p>window安装</p>
+</blockquote>
+
+<p>1、解压到es插件目录中</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/ik-plugin-on-window.gif" alt="" /></p>
+
+<p>2、重启ES观察是否加载成功</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/ik-es-load.gif" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 通过命令查询</span>
+<span class="o">[</span>esuser@helloworld bin]<span class="nv">$ </span>./elasticsearch-plugin list
+ik
+</code></pre></div></div>
+
+<blockquote>
+  <p>linux安装</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#安装unzip</span>
+yum <span class="nt">-y</span> <span class="nb">install </span>unzip
+<span class="c"># 1、下载完解压到elasticsearch的plugin/ik目录下</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span>unzip elasticsearch-analysis-ik-7.6.1.zip  <span class="nt">-d</span> /home/esuser/elasticsearch-7.6.1/plugins/ik
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span><span class="nb">cd </span>elasticsearch-7.6.1/plugins/ik
+<span class="o">[</span>esuser@helloworld ik]<span class="nv">$ </span><span class="nb">ls
+</span>commons-codec-1.9.jar    config                               httpclient-4.5.2.jar  plugin-descriptor.properties
+commons-logging-1.2.jar  elasticsearch-analysis-ik-7.6.1.jar  httpcore-4.4.4.jar    plugin-security.policy
+<span class="c"># 2、重启elasticsearch</span>
+<span class="c"># 新增分词器后，先加的记录是不能被匹配出来的，要后加的记录才能匹配，因为文档在新增的时候就进行了分词，可以重建索引，对所有的文档记录重新分词，但相对会损耗些资源。</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>使用kibana测试ik分词器</p>
+</blockquote>
+
+<p>ik分词器提供了两种算法：</p>
+
+<ul>
+  <li>
+    <p>ik_smart 最少切分，发现只有一个词</p>
+
+    <p><img src="/assets/images/2020/icoding/elasticsearch/ik_smart.gif" alt="" /></p>
+
+    <p>在ik分词器的词库里，“中国共产党”是一个词，所以就可以最少拆分出一个词来，但是”艾编程”并不在ik分词器的词库里，也就是说它不是一个词，所以拆分出“艾”和“编程”两个词（最少）。怎么把“艾编程”当做一个词，自定义词库。</p>
+
+    <p><img src="/assets/images/2020/icoding/elasticsearch/ik_smart2.gif" alt="" /></p>
+  </li>
+  <li>
+    <p>Ik_max_word 最细粒度划分，穷尽词库</p>
+
+    <p><img src="/assets/images/2020/icoding/elasticsearch/ik_max_word.gif" alt="" /></p>
+  </li>
+</ul>
+
+<h3 id="自定义词库">自定义词库</h3>
+
+<p>在ik分词器的配置中ik/config，有很多dic文件，保存了大量的关键字（词条），就是拆分的依据</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/ik-dic.gif" alt="" /></p>
+
+<p>点击其中一个看看</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/main-dic.gif" alt="" /></p>
+
+<p>可以看到很多个词语。</p>
+
+<p>1、定义自己的.dic，然后放入自己的词</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>vi my.dic
+<span class="c"># 添加 “艾编程”</span>
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span><span class="nb">cat </span>my.dic 
+艾编程
+</code></pre></div></div>
+
+<p>2、配置到IKAnalyzer.cfg.xml中</p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/my-dic.gif" alt="" /></p>
+
+<p>3、重启ES，测试“艾编程”</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span>ps <span class="nt">-ef</span>|grep elastic
+<span class="o">[</span>esuser@helloworld config]<span class="nv">$ </span><span class="nb">kill</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/ik_smart_icoding.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/elasticsearch/ik_max_word_icoding.gif" alt="" /></p>
+
+<p>发现“艾编程”已是一个可识别的词了。</p>
+
+<h2 id="5基础操作">5、基础操作</h2>
+
+<blockquote>
+  <p>Rest风格</p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>url风格</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PUT/POST</td>
+      <td>localhost:9200/索引/类型名称/文档id</td>
+      <td>创建文档（指定id）</td>
+    </tr>
+    <tr>
+      <td>POST</td>
+      <td>localhost:9200/索引/类型名称</td>
+      <td>创建文档（随机id）</td>
+    </tr>
+    <tr>
+      <td>POST</td>
+      <td>localhost:9200/索引/类型名称/文档id/_update</td>
+      <td>修改文档</td>
+    </tr>
+    <tr>
+      <td>DELETE</td>
+      <td>localhost:9200/索引/类型名称/文档id</td>
+      <td>删除文档</td>
+    </tr>
+    <tr>
+      <td>GET</td>
+      <td>localhost:9200/索引/类型名称/文档id</td>
+      <td>通过id查询文档</td>
+    </tr>
+    <tr>
+      <td>POST</td>
+      <td>localhost:9200/索引/类型名称/文档id/_search</td>
+      <td>查询所有数据</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/05/23/icoding-note-038.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

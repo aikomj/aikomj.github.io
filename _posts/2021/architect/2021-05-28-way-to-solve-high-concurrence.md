@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 对高并发的理解
+title: 聊聊高并发
 category: architect
 tags: [architect]
 keywords: architect
@@ -117,6 +117,8 @@ lock: noneed
 1、做好分层架构：这是横向扩展的提前，因为高并发系统往往业务复杂，通过分层处理可以简化复杂问题，更容易做到横向扩展。
 
 ![](\assets\images\2021\architect\high-concurrent-3.png)
+
+![](../../..\assets\images\2021\architect\high-concurrent-3.png)
 
 上面这种图是互联网最常见的分层架构，当然真实的高并发系统架构会在此基础上进一步完善。比如会做动静分离并引入CDN，反向代理层可以是LVS+Nginx，Web层可以是统一的API网关，业务服务层可进一步按垂直业务做微服务化，存储层可以是各种异构数据库。
 

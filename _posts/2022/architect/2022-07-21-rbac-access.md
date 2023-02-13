@@ -1,9 +1,9 @@
 ---
 layout: post
-title: 权限系统就该这么设计，yyds
+title: 权限系统就该这么设计
 category: architect
 tags: [architect]
-keywords: springcloud
+keywords: architect
 excerpt: 主流权限模型ACL、DAC、MAC、ABAC、RBAC
 lock: noneed
 ---

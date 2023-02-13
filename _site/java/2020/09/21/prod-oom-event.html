@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 生产环境JVM内存溢出案例分析 - 大伟的博客 </title>
+    <meta name="keywords" content="jvm">
+    <meta name="description"
+          content="公司的业务量比较大，在生产环境经常会出现JVM内存溢出的现象,如何快速响应，快速定位，快速恢复业务">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2020/09/21/prod-oom-event.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="生产环境JVM内存溢出案例分析">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>生产环境JVM内存溢出案例分析</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/09/21
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1前言">1、前言</h2>
+
+<p>如果我们所在公司的业务量比较大，在生产环境经常会出现JVM内存溢出的现象，那我们该如何快速响应，快速定位，快速恢复问题呢？</p>
+
+<p>本文将通过一个线上环境JVM内存溢出的案例向大家介绍一下处理思路与分析方法。</p>
+
+<p>案例：架构组接到某项目组反馈，Zabbix监控上显示JMX不可用，请求协助处理。</p>
+
+<h2 id="2分析思路">2、分析思路</h2>
+
+<ul>
+  <li>JMX不可用，往往是由于垃圾回收时间停顿时间过长、内存溢出等问题引起的。</li>
+  <li>线上故障分析的原则是首先要采取措施快速恢复故障对业务的影响，然后才是采集信息、分析定位问题，并最终给出解决办法。</li>
+</ul>
+
+<h3 id="如何快速恢复业务">如何快速恢复业务</h3>
+
+<p>通常线上的故障会对业务造成重大影响，影响用户体验，如果线上服务器出现故障，应规避对业务造成影响，但不能简单的重启服务器，因为需要尽可能保留现场，为后续的问题分析打下基础。</p>
+
+<blockquote>
+  <p>那我们如何快速规避对业务的影响，并能保留现场呢？</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>通常的做法是隔离故障服务器。</p>
+
+    <p>通常线上服务器是集群部署，一个好的分布式负载方案会自动剔除故障的机器，从而实现高可用架构，但如果未被剔除，则需要运维人员将故障服务器进行剔除，保留现场进行分析。</p>
+
+    <p>如果是nginx软负载，修改配置需要重启nginx服务，会影响业务，nginx上面还有一层keepalive保证nginx的高可用，我们可以先关闭一个nginx服务，修改后启动，然后修改其它nginx服务，这样保证nginx集群在修改过程是可用的。</p>
+  </li>
+  <li>
+    <p>服务降级</p>
+
+    <p>发生内存泄露，通常情况下是由于代码的原因造成的，一般无法立即对代码进行修复，很容易会发送连锁反应造成应用服务器一台一台接连宕机，故障面积会慢慢扩大，针对此种情况，应快速定位发生内存泄露的原因，将该服务进行降级，避免对其他服务造成影响。最简单的降级方法是根据F5(Nginx)转发策略，对该功能定向到一个单独的集群，与其他流量进行隔离，确保其他业务不受牵连，给故障排查、解决提供宝贵的缓冲时间。</p>
+  </li>
+</ul>
+
+<h3 id="分析解决问题">分析解决问题</h3>
+
+<p><strong>1、查看日志，确定内存溢出的类型</strong>，只有两个地方会发生OOM</p>
+
+<ul>
+  <li>heap</li>
+  <li>方法区（1.7 永久代实现，1.8 元空间实现）</li>
+</ul>
+
+<p><strong>2、收集内存溢出Dump文件</strong></p>
+
+<p>两种方式：</p>
+
+<ul>
+  <li>
+    <p>设置JVM启动参数 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jvmdump</p>
+
+    <p>在每次发生内存溢出时，JVM会自动将堆转储，dump文件存放在-XX:HeapDumpPath指定的路径下。</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># springboot 项目打包后，部署到服务器，设置JVM启动参数，启动项目</span>
+java <span class="nt">-jar</span> <span class="nt">-XX</span>:+HeapDumpOnOutOfMemoryError <span class="nt">-XX</span>:HeapDumpPath<span class="o">=</span>/opt/jvmdump <span class="nt">-XX</span>:MetaspaceSize<span class="o">=</span>128m <span class="nt">-XX</span>:MaxMetaspaceSize<span class="o">=</span>128m <span class="nt">-Xms1024m</span> <span class="nt">-Xmx1024m</span> <span class="nt">-Xmn256m</span> <span class="nt">-Xss256k</span> <span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8 <span class="nt">-XX</span>:+UseConcMarkSweepGC 
+ newframe-1.0.0.jar
+  
+<span class="nt">-XX</span>:MetaspaceSize<span class="o">=</span>128m （元空间默认大小）
+<span class="nt">-XX</span>:MaxMetaspaceSize<span class="o">=</span>128m （元空间最大大小）
+<span class="nt">-Xms1024m</span> （堆最大大小）
+<span class="nt">-Xmx1024m</span> （堆默认大小）
+<span class="nt">-Xmn256m</span> （新生代大小）
+<span class="nt">-Xss256k</span> （棧最大深度大小）
+<span class="nt">-XX</span>:SurvivorRatio<span class="o">=</span>8 （新生代分区比例 8:2）
+<span class="nt">-XX</span>:+UseConcMarkSweepGC （指定使用的垃圾收集器，这里使用CMS收集器）
+<span class="nt">-XX</span>:+PrintGCDetails （打印详细的GC日志）
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>使用jmap命令收集</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jmap <span class="nt">-dump</span>:live,format<span class="o">=</span>b,file<span class="o">=</span>/opt/jvm/dump.hprof pid
+<span class="c"># 后缀hprof的dump文件也可以使用jprofile 打开分析</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><strong>3、分析Dump文件</strong></p>
+
+<p>这里使用工具MAT（MemoryAnalyzer）进行分析，打开dump文件后，</p>
+
+<ul>
+  <li>首页</li>
+</ul>
+
+<p><img src="\assets\images\2020\java\jvm-oom-mat.jpg" alt="" /></p>
+
+<ul>
+  <li>直方图，将堆中所有的内存消耗情况统计出来，其如图所示</li>
+</ul>
+
+<p><img src="\assets\images\2020\java\jvm-oom-mat2.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>以线程为维度，树状形式展开</p>
+
+    <p><img src="\assets\images\2020\java\jvm-oom-mat3.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p>直接看上面这个线程占了堆内存的43.2%，分析这个线程</p>
+
+<p><img src="\assets\images\2020\java\jvm-oom-mat4.jpg" alt="" /></p>
+
+<p><img src="\assets\images\2020\java\jvm-oom-mat5.png" alt="" /></p>
+
+<blockquote>
+  <p>Shallow Heap: 这个对象实际占用的大小，通常是指对象的成员的基本类型的大小，就是不包含对象所引用内容的大小。如一个Person对象包含int类型的age,String类型的name,double类型的height,加上对象头占用12B, int类型占用4B(32位，1B=8位)，String类型占用8B,double类型占用8B,共32B，一个Person对象的实际大小是32B,它没有引用其他对象，所以Retained 内存也是32B.</p>
+
+  <p>Retained Heap:  在Shallow Heap的基础上（对象本身的大小），加上对象引用内容的实际大小，这个就是GC垃圾回收器实际要回收的内存大小</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>org.apache.ibatis.executor.result.DefaultResultHandler 可以看出是数据库的查询结果，它占用了863，004，432 B（字节），占用堆内存的43%，它内部持有一个ArrayList 对象，可以看到这个List 链表 内部实际是一个数组，List 是根据扩容因子自动扩容的，看数组的长度160066可知List容量已扩展到可存储160066个元素，实际已存储了146033个元素。初步判断从数据库查询了大量数据，导致内存溢出</p>
+  </li>
+  <li>
+    <p>找出具体的方法，具体的sql语句查询大量数据</p>
+
+    <p>具体方法：首先完全展开一个线程，从展开图的底部向上寻找：其线程的入口(控制层代码)</p>
+
+    <p><img src="\assets\images\2020\java\jvm-oom-mat5.jpg" alt="" /></p>
+
+    <p>继续往上查找，要找到SQL语句，应该找到Mybatis处理结果集相关的类，如图所示</p>
+
+    <p><img src="\assets\images\2020\java\jvm-oom-mat6.jpg" alt="" /></p>
+
+    <p>然后展开boundSql即能找到SQL语句，鼠标可以放在SQL属性中，右键，可以将SQL语句复制出来。</p>
+
+    <p><img src="\assets\images\2020\java\jvm-oom-mat7.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<p><strong>分析结果：</strong></p>
+
+<p>根据前面的分析，最终找到这是在做导出功能的时候，没有使用分页对数据进行分页查询，分页写入Excel文件，而是一次将全部数据查询，导致导出功能如果并发数超过4个时，就会将所有内存耗尽。</p>
+
+<p><strong>解决方案：</strong></p>
+
+<ul>
+  <li>首先在运维层面将该请求导入到指定的一台服务器上，是导出任务与其他任务进行隔离，避免对其他重要服务造成影响。</li>
+  <li>项目组对其代码进行修复，可以使用分页查数据，然后分配写入Excel。</li>
+</ul>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2020/09/21/prod-oom-event.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

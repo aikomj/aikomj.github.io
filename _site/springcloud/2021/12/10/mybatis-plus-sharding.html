@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Mybatis-plus支持分库分表啦 - 大伟的博客 </title>
+    <meta name="keywords" content="spring cloud">
+    <meta name="description"
+          content="继shardingsphere后，mybatis-plus也支持客户端级别的分库分表了">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springcloud/2021/12/10/mybatis-plus-sharding.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Mybatis-plus支持分库分表啦">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Mybatis-plus支持分库分表啦</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/12/10
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1介绍">1、介绍</h2>
+
+<p>mycat是服务端代理模式的数据切分方案，shardingsphere则是客户端代理模式的数据切分方案，mybatis-plus最近发布的mybatis-mate，也是客户端代理模式的数据切分方案，跟shardingsphere真的好像，支持分库分表，数据审计、数据敏感词过滤（AC算法），字段加密，字典回写（数据绑定），数据权限，表结构自动生成 SQL 维护等，旨在更敏捷优雅处理数据。主要功能</p>
+
+<ul>
+  <li>字典绑定</li>
+  <li>字段加密</li>
+  <li>数据脱敏</li>
+  <li>表结构动态维护</li>
+  <li>数据审计记录</li>
+  <li>数据权限</li>
+  <li>数据库分库分表、动态数据源、读写分离</li>
+</ul>
+
+<h2 id="2使用">2、使用</h2>
+
+<p>更多了解还是需要看官方文档 <a href="https://baomidou.com/guide/mybatis-mate.html">https://baomidou.com/guide/mybatis-mate.html</a></p>
+
+<p><img src="/assets/images/2021/springcloud/mybatis-mate.png" alt="" /></p>
+
+<p>官方例子地址：<a href="https://gitee.com/baomidou/mybatis-mate-examples">https://gitee.com/baomidou/mybatis-mate-examples</a></p>
+
+<p>springboot项目整合使用，pom.xml导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.baomidou<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>mybatis-mate-starter<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0.8<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+// 注解（实体分包使用）
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.baomidou<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>mybatis-mate-annotation<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0.8<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<h3 id="字典回写数据绑定">字典回写数据绑定</h3>
+
+<p>例如 user_sex 类型 sex 字典结果映射到 sexText 属性</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@FieldDict</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"user_sex"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"sexText"</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Integer</span> <span class="n">sex</span><span class="o">;</span>
+
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">sexText</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>实现 IDataDict 接口提供字典数据源，注入到 Spring 容器即可</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataDict</span> <span class="kd">implements</span> <span class="nc">IDataDict</span> <span class="o">{</span>
+    <span class="cm">/**
+     * 从数据库或缓存中获取
+     */</span>
+    <span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="no">SEX_MAP</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;(){</span>
+        <span class="n">put</span><span class="o">(</span><span class="s">"0"</span><span class="o">,</span> <span class="s">"女"</span><span class="o">);</span>
+        <span class="n">put</span><span class="o">(</span><span class="s">"1"</span><span class="o">,</span> <span class="s">"男"</span><span class="o">);</span>
+    <span class="o">};</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getNameByCode</span><span class="o">(</span><span class="nc">FieldDict</span> <span class="n">fieldDict</span><span class="o">,</span> <span class="nc">String</span> <span class="n">code</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"字段类型："</span> <span class="o">+</span> <span class="n">fieldDict</span><span class="o">.</span><span class="na">type</span><span class="o">()</span> <span class="o">+</span> <span class="s">"，编码："</span> <span class="o">+</span> <span class="n">code</span><span class="o">);</span>
+        <span class="k">return</span> <span class="no">SEX_MAP</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">code</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="字段加密">字段加密</h3>
+
+<p>属性 @FieldEncrypt 注解即可加密存储，会自动解密查询结果，支持全局配置加密密钥算法，及注解密钥算法，可以实现 IEncryptor 注入自定义算法。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@FieldEncrypt</span><span class="o">(</span><span class="n">algorithm</span> <span class="o">=</span> <span class="nc">Algorithm</span><span class="o">.</span><span class="na">PBEWithMD5AndDES</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">password</span><span class="o">;</span>
+</code></pre></div></div>
+
+<h3 id="字段脱敏">字段脱敏</h3>
+
+<p>属性 @FieldSensitive 注解即可自动按照预设策略对源数据进行脱敏处理，默认 SensitiveType 内置 9 种常用脱敏策略。例如：中文名、银行卡账号、手机号码等 脱敏策略。也可以自定义策略如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@FieldSensitive</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"testStrategy"</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>
+
+<span class="nd">@FieldSensitive</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">SensitiveType</span><span class="o">.</span><span class="na">mobile</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">mobile</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>自定义脱敏策略 testStrategy 添加到默认策略中注入 Spring 容器即可。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SensitiveStrategyConfig</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 注入脱敏策略
+     */</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">ISensitiveStrategy</span> <span class="nf">sensitiveStrategy</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 自定义 testStrategy 类型脱敏处理</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">SensitiveStrategy</span><span class="o">().</span><span class="na">addStrategy</span><span class="o">(</span><span class="s">"testStrategy"</span><span class="o">,</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="n">t</span> <span class="o">+</span> <span class="s">"***test***"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><em>演示文章敏感词过滤</em></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ArticleController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SensitiveWordsMapper</span> <span class="n">sensitiveWordsMapper</span><span class="o">;</span>
+
+    <span class="c1">// 测试访问下面地址观察请求地址、界面返回数据及控制台（ 普通参数 ）</span>
+    <span class="c1">// 无敏感词 http://localhost:8080/info?content=tom&amp;see=1&amp;age=18</span>
+    <span class="c1">// 英文敏感词 http://localhost:8080/info?content=my%20content%20is%20tomcat&amp;see=1&amp;age=18</span>
+    <span class="c1">// 汉字敏感词 http://localhost:8080/info?content=%E7%8E%8B%E5%AE%89%E7%9F%B3%E5%94%90%E5%AE%8B%E5%85%AB%E5%A4%A7%E5%AE%B6&amp;see=1</span>
+    <span class="c1">// 多个敏感词 http://localhost:8080/info?content=%E7%8E%8B%E5%AE%89%E7%9F%B3%E6%9C%89%E4%B8%80%E5%8F%AA%E7%8C%ABtomcat%E6%B1%A4%E5%A7%86%E5%87%AF%E7%89%B9&amp;see=1&amp;size=6</span>
+    <span class="c1">// 插入一个字变成非敏感词 http://localhost:8080/info?content=%E7%8E%8B%E7%8C%AB%E5%AE%89%E7%9F%B3%E6%9C%89%E4%B8%80%E5%8F%AA%E7%8C%ABtomcat%E6%B1%A4%E5%A7%86%E5%87%AF%E7%89%B9&amp;see=1&amp;size=6</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/info"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">info</span><span class="o">(</span><span class="nc">Article</span> <span class="n">article</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">ParamsConfig</span><span class="o">.</span><span class="na">toJson</span><span class="o">(</span><span class="n">article</span><span class="o">);</span>
+    <span class="o">}</span>
+
+
+    <span class="c1">// 添加一个敏感词然后再去观察是否生效 http://localhost:8080/add</span>
+    <span class="c1">// 观察【猫】这个词被过滤了 http://localhost:8080/info?content=%E7%8E%8B%E5%AE%89%E7%9F%B3%E6%9C%89%E4%B8%80%E5%8F%AA%E7%8C%ABtomcat%E6%B1%A4%E5%A7%86%E5%87%AF%E7%89%B9&amp;see=1&amp;size=6</span>
+    <span class="c1">// 嵌套敏感词处理 http://localhost:8080/info?content=%E7%8E%8B%E7%8C%AB%E5%AE%89%E7%9F%B3%E6%9C%89%E4%B8%80%E5%8F%AA%E7%8C%ABtomcat%E6%B1%A4%E5%A7%86%E5%87%AF%E7%89%B9&amp;see=1&amp;size=6</span>
+    <span class="c1">// 多层嵌套敏感词 http://localhost:8080/info?content=%E7%8E%8B%E7%8E%8B%E7%8C%AB%E5%AE%89%E7%9F%B3%E5%AE%89%E7%9F%B3%E6%9C%89%E4%B8%80%E5%8F%AA%E7%8C%ABtomcat%E6%B1%A4%E5%A7%86%E5%87%AF%E7%89%B9&amp;see=1&amp;size=6</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/add"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">add</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">Long</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">3L</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">sensitiveWordsMapper</span><span class="o">.</span><span class="na">selectById</span><span class="o">(</span><span class="n">id</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"插入一个敏感词："</span> <span class="o">+</span> <span class="n">sensitiveWordsMapper</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="k">new</span> <span class="nc">SensitiveWords</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="s">"猫"</span><span class="o">)));</span>
+            <span class="c1">// 插入一个敏感词，刷新算法引擎敏感词</span>
+            <span class="nc">SensitiveWordsProcessor</span><span class="o">.</span><span class="na">reloadSensitiveWords</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="s">"ok"</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 测试访问下面地址观察控制台（ 请求json参数 ）</span>
+    <span class="c1">// idea 执行 resources 目录 TestJson.http 文件测试</span>
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/json"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">json</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">Article</span> <span class="n">article</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">ParamsConfig</span><span class="o">.</span><span class="na">toJson</span><span class="o">(</span><span class="n">article</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="ddl数据结构自动维护">DDL数据结构自动维护</h3>
+
+<p>解决升级表结构初始化，版本发布更新 SQL 维护问题，目前支持 MySql、PostgreSQL。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PostgresDdl</span> <span class="kd">implements</span> <span class="nc">IDdl</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 执行 SQL 脚本方式
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getSqlFiles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+                <span class="c1">// 内置包方式</span>
+                <span class="s">"db/tag-schema.sql"</span><span class="o">,</span>
+                <span class="c1">// 文件绝对路径方式</span>
+                <span class="s">"D:\\db\\tag-data.sql"</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>不仅仅可以固定执行，也可以动态执行！！</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ddlScript</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="k">new</span> <span class="nc">StringReader</span><span class="o">(</span><span class="s">"DELETE FROM user;\n"</span> <span class="o">+</span>
+                <span class="s">"INSERT INTO user (id, username, password, sex, email) VALUES\n"</span> <span class="o">+</span>
+                <span class="s">"(20, 'Duo', '123456', 0, 'Duo@baomidou.com');"</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>它还支持多数据源执行</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MysqlDdl</span> <span class="kd">implements</span> <span class="nc">IDdl</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sharding</span><span class="o">(</span><span class="nc">Consumer</span><span class="o">&lt;</span><span class="nc">IDdl</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 多数据源指定，主库初始化从库自动同步</span>
+        <span class="nc">String</span> <span class="n">group</span> <span class="o">=</span> <span class="s">"mysql"</span><span class="o">;</span>
+        <span class="nc">ShardingGroupProperty</span> <span class="n">sgp</span> <span class="o">=</span> <span class="nc">ShardingKey</span><span class="o">.</span><span class="na">getDbGroupProperty</span><span class="o">(</span><span class="n">group</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">!=</span> <span class="n">sgp</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 主库</span>
+            <span class="n">sgp</span><span class="o">.</span><span class="na">getMasterKeys</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">key</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="nc">ShardingKey</span><span class="o">.</span><span class="na">change</span><span class="o">(</span><span class="n">group</span> <span class="o">+</span> <span class="n">key</span><span class="o">);</span>
+                <span class="n">consumer</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+            <span class="o">});</span>
+            <span class="c1">// 从库</span>
+            <span class="n">sgp</span><span class="o">.</span><span class="na">getSlaveKeys</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">key</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="nc">ShardingKey</span><span class="o">.</span><span class="na">change</span><span class="o">(</span><span class="n">group</span> <span class="o">+</span> <span class="n">key</span><span class="o">);</span>
+                <span class="n">consumer</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+            <span class="o">});</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 执行 SQL 脚本方式
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">getSqlFiles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"db/user-mysql.sql"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="动态多数据源主从自由切换">动态多数据源主从自由切换</h3>
+
+<p>@Sharding 注解使数据源不限制随意使用切换，你可以在 mapper 层添加注解</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Mapper</span>
+<span class="nd">@Sharding</span><span class="o">(</span><span class="s">"mysql"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserMapper</span> <span class="kd">extends</span> <span class="nc">BaseMapper</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Sharding</span><span class="o">(</span><span class="s">"postgres"</span><span class="o">)</span>
+    <span class="nc">Long</span> <span class="nf">selectByUsername</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>自定义策略统一数据源</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyShardingStrategy</span> <span class="kd">extends</span> <span class="nc">RandomShardingStrategy</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 决定切换数据源 key {@link ShardingDatasource}
+     *
+     * @param group 动态数据库组
+     * @param invocation {@link Invocation}
+     * @param sqlCommandType {@link SqlCommandType}
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">determineDatasourceKey</span><span class="o">(</span><span class="nc">String</span> <span class="n">group</span><span class="o">,</span> <span class="nc">Invocation</span> <span class="n">invocation</span><span class="o">,</span> <span class="nc">SqlCommandType</span> <span class="n">sqlCommandType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 数据源组 group 自定义选择即可， keys 为数据源组内主从多节点，可随机选择或者自己控制</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">changeDatabaseKey</span><span class="o">(</span><span class="n">group</span><span class="o">,</span> <span class="n">sqlCommandType</span><span class="o">,</span> <span class="n">keys</span> <span class="o">-&gt;</span> <span class="n">chooseKey</span><span class="o">(</span><span class="n">keys</span><span class="o">,</span> <span class="n">invocation</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>开启主从、健康检查</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">mybatis-mate</span><span class="pi">:</span>
+  <span class="na">sharding</span><span class="pi">:</span>
+    <span class="na">health</span><span class="pi">:</span> <span class="no">true</span> <span class="c1"># 健康检测</span>
+    <span class="na">primary</span><span class="pi">:</span> <span class="s">mysql</span> <span class="c1"># 默认选择数据源</span>
+    <span class="na">datasource</span><span class="pi">:</span>
+      <span class="na">mysql</span><span class="pi">:</span> <span class="c1"># 数据库组</span>
+        <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s">node1</span>
+          <span class="s">...</span>
+        <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s">node2</span>
+          <span class="na">cluster</span><span class="pi">:</span> <span class="s">slave</span> <span class="c1"># 从库读写分离时候负责 sql 查询操作，主库 master 默认可以不写</span>
+          <span class="s">...</span>
+      <span class="na">postgres</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s">node1</span> <span class="c1"># 数据节点</span>
+          <span class="s">...</span>
+</code></pre></div></div>
+
+<h3 id="分布式事务日志打印">分布式事务日志打印</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * &lt;p&gt;
+ * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间
+ * &lt;/p&gt;
+ */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Component</span>
+<span class="nd">@Intercepts</span><span class="o">({</span><span class="nd">@Signature</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">StatementHandler</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">"query"</span><span class="o">,</span> <span class="n">args</span> <span class="o">=</span> <span class="o">{</span><span class="nc">Statement</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">ResultHandler</span><span class="o">.</span><span class="na">class</span><span class="o">}),</span>
+        <span class="nd">@Signature</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">StatementHandler</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">"update"</span><span class="o">,</span> <span class="n">args</span> <span class="o">=</span> <span class="o">{</span><span class="nc">Statement</span><span class="o">.</span><span class="na">class</span><span class="o">}),</span>
+        <span class="nd">@Signature</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="nc">StatementHandler</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="s">"batch"</span><span class="o">,</span> <span class="n">args</span> <span class="o">=</span> <span class="o">{</span><span class="nc">Statement</span><span class="o">.</span><span class="na">class</span><span class="o">})})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PerformanceInterceptor</span> <span class="kd">implements</span> <span class="nc">Interceptor</span> <span class="o">{</span>
+    <span class="cm">/**
+     * SQL 执行最大时长，超过自动停止运行，有助于发现问题。
+     */</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">maxTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="cm">/**
+     * SQL 是否格式化
+     */</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">format</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="cm">/**
+     * 是否写入日志文件&lt;br&gt;
+     * true 写入日志文件，不阻断程序执行！&lt;br&gt;
+     * 超过设定的最大执行时长异常提示！
+     */</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">writeInLog</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">intercept</span><span class="o">(</span><span class="nc">Invocation</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+        <span class="nc">Statement</span> <span class="n">statement</span><span class="o">;</span>
+        <span class="nc">Object</span> <span class="n">firstArg</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getArgs</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Proxy</span><span class="o">.</span><span class="na">isProxyClass</span><span class="o">(</span><span class="n">firstArg</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Statement</span><span class="o">)</span> <span class="nc">SystemMetaObject</span><span class="o">.</span><span class="na">forObject</span><span class="o">(</span><span class="n">firstArg</span><span class="o">).</span><span class="na">getValue</span><span class="o">(</span><span class="s">"h.statement"</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Statement</span><span class="o">)</span> <span class="n">firstArg</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">MetaObject</span> <span class="n">stmtMetaObj</span> <span class="o">=</span> <span class="nc">SystemMetaObject</span><span class="o">.</span><span class="na">forObject</span><span class="o">(</span><span class="n">statement</span><span class="o">);</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Statement</span><span class="o">)</span> <span class="n">stmtMetaObj</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">"stmt.statement"</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// do nothing</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">stmtMetaObj</span><span class="o">.</span><span class="na">hasGetter</span><span class="o">(</span><span class="s">"delegate"</span><span class="o">))</span> <span class="o">{</span><span class="c1">//Hikari</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">statement</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Statement</span><span class="o">)</span> <span class="n">stmtMetaObj</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">"delegate"</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">originalSql</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">originalSql</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">originalSql</span> <span class="o">=</span> <span class="n">statement</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="n">originalSql</span> <span class="o">=</span> <span class="n">originalSql</span><span class="o">.</span><span class="na">replaceAll</span><span class="o">(</span><span class="s">"[\\s]+"</span><span class="o">,</span> <span class="s">" "</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">indexOfSqlStart</span><span class="o">(</span><span class="n">originalSql</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">originalSql</span> <span class="o">=</span> <span class="n">originalSql</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">index</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 计算执行 SQL 耗时</span>
+        <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="nc">SystemClock</span><span class="o">.</span><span class="na">now</span><span class="o">();</span>
+        <span class="nc">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">timing</span> <span class="o">=</span> <span class="nc">SystemClock</span><span class="o">.</span><span class="na">now</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">;</span>
+
+        <span class="c1">// 格式化 SQL 打印执行结果</span>
+        <span class="nc">Object</span> <span class="n">target</span> <span class="o">=</span> <span class="nc">PluginUtils</span><span class="o">.</span><span class="na">realTarget</span><span class="o">(</span><span class="n">invocation</span><span class="o">.</span><span class="na">getTarget</span><span class="o">());</span>
+        <span class="nc">MetaObject</span> <span class="n">metaObject</span> <span class="o">=</span> <span class="nc">SystemMetaObject</span><span class="o">.</span><span class="na">forObject</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
+        <span class="nc">MappedStatement</span> <span class="n">ms</span> <span class="o">=</span> <span class="o">(</span><span class="nc">MappedStatement</span><span class="o">)</span> <span class="n">metaObject</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="s">"delegate.mappedStatement"</span><span class="o">);</span>
+        <span class="nc">StringBuilder</span> <span class="n">formatSql</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+        <span class="n">formatSql</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">" Time："</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">timing</span><span class="o">);</span>
+        <span class="n">formatSql</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">" ms - ID："</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">ms</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+        <span class="n">formatSql</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n Execute SQL："</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">sqlFormat</span><span class="o">(</span><span class="n">originalSql</span><span class="o">,</span> <span class="n">format</span><span class="o">)).</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isWriteInLog</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getMaxTime</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">timing</span> <span class="o">&gt;</span> <span class="k">this</span><span class="o">.</span><span class="na">getMaxTime</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">formatSql</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">formatSql</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">formatSql</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getMaxTime</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">timing</span> <span class="o">&gt;</span> <span class="k">this</span><span class="o">.</span><span class="na">getMaxTime</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">" The SQL execution time is too large, please optimize ! "</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">plugin</span><span class="o">(</span><span class="nc">Object</span> <span class="n">target</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">target</span> <span class="k">instanceof</span> <span class="nc">StatementHandler</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nc">Plugin</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">target</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setProperties</span><span class="o">(</span><span class="nc">Properties</span> <span class="n">prop</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">maxTime</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">"maxTime"</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">format</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">"format"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">maxTime</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">maxTime</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">maxTime</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNotEmpty</span><span class="o">(</span><span class="n">format</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">format</span> <span class="o">=</span> <span class="nc">Boolean</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">format</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getMaxTime</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">maxTime</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">PerformanceInterceptor</span> <span class="nf">setMaxTime</span><span class="o">(</span><span class="kt">long</span> <span class="n">maxTime</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">maxTime</span> <span class="o">=</span> <span class="n">maxTime</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isFormat</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">format</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">PerformanceInterceptor</span> <span class="nf">setFormat</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">format</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">format</span> <span class="o">=</span> <span class="n">format</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isWriteInLog</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">writeInLog</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">PerformanceInterceptor</span> <span class="nf">setWriteInLog</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">writeInLog</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">writeInLog</span> <span class="o">=</span> <span class="n">writeInLog</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">Method</span> <span class="nf">getMethodRegular</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">String</span> <span class="n">methodName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Object</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">clazz</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">Method</span> <span class="n">method</span> <span class="o">:</span> <span class="n">clazz</span><span class="o">.</span><span class="na">getDeclaredMethods</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">methodName</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">method</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="nf">getMethodRegular</span><span class="o">(</span><span class="n">clazz</span><span class="o">.</span><span class="na">getSuperclass</span><span class="o">(),</span> <span class="n">methodName</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取sql语句开头部分
+     *
+     * @param sql
+     * @return
+     */</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="nf">indexOfSqlStart</span><span class="o">(</span><span class="nc">String</span> <span class="n">sql</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">upperCaseSql</span> <span class="o">=</span> <span class="n">sql</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">();</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">set</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
+        <span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">upperCaseSql</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">"SELECT "</span><span class="o">));</span>
+        <span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">upperCaseSql</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">"UPDATE "</span><span class="o">));</span>
+        <span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">upperCaseSql</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">"INSERT "</span><span class="o">));</span>
+        <span class="n">set</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">upperCaseSql</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="s">"DELETE "</span><span class="o">));</span>
+        <span class="n">set</span><span class="o">.</span><span class="na">remove</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">set</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">set</span><span class="o">);</span>
+        <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="nl">Integer:</span><span class="o">:</span><span class="n">compareTo</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="nc">SqlFormatter</span> <span class="n">sqlFormatter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SqlFormatter</span><span class="o">();</span>
+
+    <span class="cm">/**
+     * 格式sql
+     *
+     * @param boundSql
+     * @param format
+     * @return
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">sqlFormat</span><span class="o">(</span><span class="nc">String</span> <span class="n">boundSql</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">format</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">format</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">sqlFormatter</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">boundSql</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">ignored</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">boundSql</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>使用</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestController</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">BuyService</span> <span class="n">buyService</span><span class="o">;</span>
+
+    <span class="c1">// 数据库 test 表 t_order 在事务一致情况无法插入数据，能够插入说明多数据源事务无效</span>
+    <span class="c1">// 测试访问 http://localhost:8080/test</span>
+    <span class="c1">// 制造事务回滚 http://localhost:8080/test?error=true 也可通过修改表结构制造错误</span>
+    <span class="c1">// 注释 ShardingConfig 注入 dataSourceProvider 可测试事务无效情况</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/test"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">test</span><span class="o">(</span><span class="nc">Boolean</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">buyService</span><span class="o">.</span><span class="na">buy</span><span class="o">(</span><span class="kc">null</span> <span class="o">!=</span> <span class="n">error</span> <span class="o">&amp;&amp;</span> <span class="n">error</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="数据权限">数据权限</h3>
+
+<p>mapper层添加注解</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 测试 test 类型数据权限范围，混合分页模式</span>
+<span class="nd">@DataScope</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"test"</span><span class="o">,</span> <span class="n">value</span> <span class="o">=</span> <span class="o">{</span>
+        <span class="c1">// 关联表 user 别名 u 指定部门字段权限</span>
+        <span class="nd">@DataColumn</span><span class="o">(</span><span class="n">alias</span> <span class="o">=</span> <span class="s">"u"</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">"department_id"</span><span class="o">),</span>
+        <span class="c1">// 关联表 user 别名 u 指定手机号字段（自己判断处理）</span>
+        <span class="nd">@DataColumn</span><span class="o">(</span><span class="n">alias</span> <span class="o">=</span> <span class="s">"u"</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">"mobile"</span><span class="o">)</span>
+<span class="o">})</span>
+<span class="nd">@Select</span><span class="o">(</span><span class="s">"select u.* from user u"</span><span class="o">)</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="nf">selectTestList</span><span class="o">(</span><span class="nc">IPage</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="n">page</span><span class="o">,</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">,</span> <span class="nd">@Param</span><span class="o">(</span><span class="s">"name"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">username</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>模拟业务处理逻辑</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="nc">IDataScopeProvider</span> <span class="nf">dataScopeProvider</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">AbstractDataScopeProvider</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">setWhere</span><span class="o">(</span><span class="nc">PlainSelect</span> <span class="n">plainSelect</span><span class="o">,</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> <span class="nc">DataScopeProperty</span> <span class="n">dataScopeProperty</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// args 中包含 mapper 方法的请求参数，需要使用可以自行获取</span>
+            <span class="cm">/*
+                // 测试数据权限，最终执行 SQL 语句
+                SELECT u.* FROM user u WHERE (u.department_id IN ('1', '2', '3', '5'))
+                AND u.mobile LIKE '%1533%'
+             */</span>
+            <span class="k">if</span> <span class="o">(</span><span class="s">"test"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">dataScopeProperty</span><span class="o">.</span><span class="na">getType</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="c1">// 业务 test 类型</span>
+                <span class="nc">List</span><span class="o">&lt;</span><span class="nc">DataColumnProperty</span><span class="o">&gt;</span> <span class="n">dataColumns</span> <span class="o">=</span> <span class="n">dataScopeProperty</span><span class="o">.</span><span class="na">getColumns</span><span class="o">();</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nc">DataColumnProperty</span> <span class="n">dataColumn</span> <span class="o">:</span> <span class="n">dataColumns</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="s">"department_id"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">dataColumn</span><span class="o">.</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+                        <span class="c1">// 追加部门字段 IN 条件，也可以是 SQL 语句</span>
+                        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">deptIds</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
+                        <span class="n">deptIds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"1"</span><span class="o">);</span>
+                        <span class="n">deptIds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"2"</span><span class="o">);</span>
+                        <span class="n">deptIds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"3"</span><span class="o">);</span>
+                        <span class="n">deptIds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"5"</span><span class="o">);</span>
+                        <span class="nc">ItemsList</span> <span class="n">itemsList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ExpressionList</span><span class="o">(</span><span class="n">deptIds</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="nl">StringValue:</span><span class="o">:</span><span class="k">new</span><span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
+                        <span class="nc">InExpression</span> <span class="n">inExpression</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">InExpression</span><span class="o">(</span><span class="k">new</span> <span class="nc">Column</span><span class="o">(</span><span class="n">dataColumn</span><span class="o">.</span><span class="na">getAliasDotName</span><span class="o">()),</span> <span class="n">itemsList</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">plainSelect</span><span class="o">.</span><span class="na">getWhere</span><span class="o">())</span> <span class="o">{</span>
+                            <span class="c1">// 不存在 where 条件</span>
+                            <span class="n">plainSelect</span><span class="o">.</span><span class="na">setWhere</span><span class="o">(</span><span class="k">new</span> <span class="nc">Parenthesis</span><span class="o">(</span><span class="n">inExpression</span><span class="o">));</span>
+                        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                            <span class="c1">// 存在 where 条件 and 处理</span>
+                            <span class="n">plainSelect</span><span class="o">.</span><span class="na">setWhere</span><span class="o">(</span><span class="k">new</span> <span class="nc">AndExpression</span><span class="o">(</span><span class="n">plainSelect</span><span class="o">.</span><span class="na">getWhere</span><span class="o">(),</span> <span class="n">inExpression</span><span class="o">));</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="s">"mobile"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">dataColumn</span><span class="o">.</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+                        <span class="c1">// 支持一个自定义条件</span>
+                        <span class="nc">LikeExpression</span> <span class="n">likeExpression</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LikeExpression</span><span class="o">();</span>
+                        <span class="n">likeExpression</span><span class="o">.</span><span class="na">setLeftExpression</span><span class="o">(</span><span class="k">new</span> <span class="nc">Column</span><span class="o">(</span><span class="n">dataColumn</span><span class="o">.</span><span class="na">getAliasDotName</span><span class="o">()));</span>
+                        <span class="n">likeExpression</span><span class="o">.</span><span class="na">setRightExpression</span><span class="o">(</span><span class="k">new</span> <span class="nc">StringValue</span><span class="o">(</span><span class="s">"%1533%"</span><span class="o">));</span>
+                        <span class="n">plainSelect</span><span class="o">.</span><span class="na">setWhere</span><span class="o">(</span><span class="k">new</span> <span class="nc">AndExpression</span><span class="o">(</span><span class="n">plainSelect</span><span class="o">.</span><span class="na">getWhere</span><span class="o">(),</span> <span class="n">likeExpression</span><span class="o">));</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>最终执行sql输出</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="n">u</span><span class="p">.</span><span class="o">*</span> <span class="k">FROM</span> <span class="k">user</span> <span class="n">u</span>
+  <span class="k">WHERE</span> <span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="n">department_id</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">,</span> <span class="s1">'5'</span><span class="p">))</span>
+  <span class="k">AND</span> <span class="n">u</span><span class="p">.</span><span class="n">mobile</span> <span class="k">LIKE</span> <span class="s1">'%1533%'</span> <span class="k">LIMIT</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springcloud/2021/12/10/mybatis-plus-sharding.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

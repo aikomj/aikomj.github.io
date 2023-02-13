@@ -73,3 +73,5 @@ Retained Size = 当前对象的大小+当前对象的引用大小(直接或者�
 
 ![](\assets\images\2020\java\jvm-oom-mat3.jpg)
 
+![](../../..\assets\images\2020\java\jvm-oom-mat3.jpg)
+

@@ -20,8 +20,6 @@ dto到vo的属性拷贝工具，12种转换工具的性能比较
 
 ![](/assets/images/2022/java/copy-properties-2.jpg)
 
-
-
 源码 :[https://github.com/fuzhengwei/guide-vo2dto](https://github.com/fuzhengwei/guide-vo2dto)
 
 在案例工程下创建 interfaces.assembler 包，定义 `IAssembler<SOURCE, TARGET>#sourceToTarget(SOURCE var)` 接口，提供不同方式的对象转换操作类实现，学习的过程中可以直接下载运行调试。

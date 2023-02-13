@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 遍历 HashMap 的 5 种最佳方式，我不信你全知道！
+title: 遍历HashMap的5种最佳方式，我不信你全知道！
 category: java
 tags: [java]
 keywords: java
@@ -156,5 +156,4 @@ public class IterateHashMapExample {
 Output:
 
 ![](/assets/images/2020/java/iterate-hashmap-example.jpg)
-
 

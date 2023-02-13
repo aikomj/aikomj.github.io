@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第9节：SpringBoot操作数据库 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="SpringData集成JDBC原理，集成Druid，集成Mybatis，Mybatis的流式查询、传递参数的7种方法、转义字符、sql和include标签配合使用定义可重用sql代码段，bind标签模糊查询传参，查询是否存在不再使用count，改用limit 1">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/03/15/icoding-note-009.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第9节：SpringBoot操作数据库">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第9节：SpringBoot操作数据库</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/15
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>开发网站 = 数据库操作 + web操作 + 模版引擎展示页面（后端 thymleaf [taɪm lif]+ 前端 vue ）</p>
+
+<h2 id="1springdata简介">1、SpringData简介</h2>
+
+<p>数据库操作我们来学习SpringData,无论是使用SQL、NoSQL(NOT ONLY SQL)，在数据库操作底层都是使用SpringData来封装的，它是与SpringBoot、SpringCloud齐名的项目。</p>
+
+<p>官网地址：<a href="https://spring.io/projects/spring-data">https://spring.io/projects/spring-data</a></p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata.gif" alt="" /></p>
+
+<p>使用IDEA构建项目，选择SQL和NoSQL，可以看到SpringData支持的数据库封装模块</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-sql-nosql.gif" alt="" /></p>
+
+<p>SpringData 封装大量的xxTemplate供我们直接操作数据库，十分方便，简化了企业开发。</p>
+
+<h2 id="2集成jdbc">2、集成JDBC</h2>
+
+<p>1.导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--点进去，依赖HikariCP 作为默认数据源 --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-jdbc<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="c">&lt;!--默认版本8.0, 连接数据库url需要配置时区--&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>mysql<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>mysql-connector-java<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2.配置application.yml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">datasource</span><span class="pi">:</span>
+    <span class="na">username</span><span class="pi">:</span> <span class="s">root</span>
+    <span class="na">password</span><span class="pi">:</span> <span class="s">mysql8013</span>
+    <span class="c1"># 注意8.0以上需要时区的配置</span>
+    <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:mysql://localhost:3306/spring_data_study?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=utf-8</span>
+    <span class="na">driver-class-name</span><span class="pi">:</span> <span class="s">com.mysql.cj.jdbc.Driver</span>
+</code></pre></div></div>
+
+<p>使用idea支持多种数据库的客户端连接，</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/idea-datasource.gif" alt="" /></p>
+
+<p>连接数据库时如果idea没对应数据库的驱动，它会提示下载的</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/idea-datasource-driver.gif" alt="" /></p>
+
+<p>连接mysql，查询表数据</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/idea-datasource-console-query-sql.gif" alt="" /></p>
+
+<p>3.测试链接</p>
+
+<p>在测试类里，我们Autowired（自动装配）引入datasource bean</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-autowired-datasource.gif" alt="" /></p>
+
+<p>点击上图中的图标，它能帮我们导向自动装配的依赖包，发现是DataSourceConfiguration.class注入bean的，下载它的源码，</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-datasource-configuration.gif" alt="" /></p>
+
+<p>你会发现除了Hikari DataSource configuration 外，其它都是红色的因为缺失依赖类没生效，我们导入的依赖包spring-boot-starter-jdbc里面有hikari的依赖包，所以Hikari DataSource configuration生效，成为默认的数据源，</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-hikari.gif" alt="" /></p>
+
+<p>再深入一点，DataSourceConfiguration.class其实一个抽象类，它是在哪里被继承或者调用的？在idea 选择DataSourceConfiguration.class，mac系统按option+F7，window系统按alt+F7,控制台会显示它哪里被引用了</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-datasource-autoconfigure.gif" alt="" /></p>
+
+<p>发现是DataSourceAutoConfiguration的内部类PooledDataSourceConfiguration，点进去，</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-datasource-autoconfigure2.gif" alt="" /></p>
+
+<p>是我们熟悉的自动配置类，PooledDataSourceConfiguration 在springboot启动时引入Hikari,Tomcat,Dbcp2等数据源</p>
+
+<p>测试类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Autowired</span>
+	<span class="nc">DataSource</span> <span class="n">dataSource</span><span class="o">;</span>
+
+	<span class="nd">@Test</span>
+	<span class="kt">void</span> <span class="nf">contextLoads</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">SQLException</span> <span class="o">{</span>
+		<span class="c1">// 查看数据源  class com.zaxxer.hikari.HikariDataSource</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dataSource</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
+
+		<span class="c1">// 连接数据库</span>
+		<span class="nc">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">dataSource</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">connection</span><span class="o">);</span>
+		<span class="c1">// 断开连接</span>
+		<span class="n">connection</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+
+<p>结果：</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-hikari-test.gif" alt="" /></p>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p>spring在连接数据库，我们发现三个自动配置的核心类</p>
+
+<p>DataSourceConfiguration 自动配置的数据源</p>
+
+<p>DataSourceAutoConfiguration 自动配置类</p>
+
+<p>DataSourceProperties 配置文件绑定</p>
+
+<p>4.测试CRUD</p>
+
+<p>使用JdbcTemplate</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcController</span> <span class="o">{</span>
+  <span class="c1">// jdbcTemplate 会自动帮我们配置完需要的环境，拿来即用</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">JdbcTemplate</span> <span class="n">jdbcTemplate</span><span class="o">;</span>
+
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/list"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;&gt;</span> <span class="nf">listEmployees</span><span class="o">(){</span>
+		<span class="c1">// 耦合性太强，不支持实体类字段名驼峰规则</span>
+		<span class="nc">String</span> <span class="n">sql</span> <span class="o">=</span><span class="s">"select * from employee"</span><span class="o">;</span>
+		<span class="k">return</span> <span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">queryForList</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="c1">// jdbcTemplate 自动帮我们处理了事物</span>
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/save"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">save</span><span class="o">(){</span>
+		<span class="nc">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">"insert into employee(last_name, email, gender, department, department_name, birth)\n"</span> <span class="o">+</span>
+				<span class="s">"value ('jude','74678309@qq.com',1,101,'技术部','"</span><span class="o">+</span><span class="k">new</span> <span class="nc">Date</span><span class="o">().</span><span class="na">toLocaleString</span><span class="o">()+</span><span class="s">"')"</span><span class="o">;</span>
+		<span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
+		<span class="k">return</span> <span class="s">"ok"</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="c1">// jdbcTemplate 自动帮我们处理了事物</span>
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/update/{id}"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">update</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">id</span><span class="o">){</span>
+		<span class="nc">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">"update employee set last_name =?,email=? where id="</span><span class="o">+</span><span class="n">id</span><span class="o">;</span>
+		<span class="nc">Object</span><span class="o">[]</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Object</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+		<span class="n">params</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s">"大伟"</span><span class="o">;</span>
+		<span class="n">params</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="s">"1234567@qq.com"</span><span class="o">;</span>
+		<span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">sql</span><span class="o">,</span><span class="n">params</span><span class="o">);</span>
+
+		<span class="k">return</span> <span class="s">"ok"</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/delete/{id}"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">delete</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">id</span><span class="o">){</span>
+		<span class="nc">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">"delete from employee where id = ?"</span><span class="o">;</span>
+		<span class="n">jdbcTemplate</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">sql</span><span class="o">,</span><span class="n">id</span><span class="o">);</span>
+		<span class="k">return</span> <span class="s">"ok"</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3集成druid德鲁伊">3、集成Druid（德鲁伊）</h2>
+
+<blockquote>
+  <p>简介</p>
+</blockquote>
+
+<p>Java程序很大的一部分工作都是要操作数据库的，为了提高操作性能，一般都会使用连接池。Druid就是一个不错的选择，它是阿里巴巴的开源组件之一，集合了C3P0,DBCP的优点，并且<strong><font color="red">自带日志监控，它可以天然的监控SQL和数据库连接池的状况</font></strong></p>
+
+<p>Druid 是一个用 Java 编写的面向列的开源分布式数据存储。 Druid  被设计来快速摄取大量事实数据，并在数据之上提供低延迟查询。Druid  这个名字来自于许多角色扮演游戏中的变形德鲁伊类角色，以反映系统架构可以迁移到解决不同类型的数据问题的特性。 Druid 通常用于商业智能 /  OLAP 应用程序，以分析大量的实时和历史数据。</p>
+
+<p><strong><font color="red">任何池化技术，道理都是相通的，配置参数达到更高的性能,可以对比之前学习的线程池</font></strong></p>
+
+<p>在Github查看druid的常用配置参数，地址：<a href="https://github.com/alibaba/druid/wiki">https://github.com/alibaba/druid/wiki</a></p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-druid-github.gif" alt="" /></p>
+
+<p>通用配置</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dataSource"</span> <span class="na">class=</span><span class="s">"com.alibaba.druid.pool.DruidDataSource"</span> <span class="na">init-method=</span><span class="s">"init"</span> <span class="na">destroy-method=</span><span class="s">"close"</span><span class="nt">&gt;</span> 
+    <span class="c">&lt;!-- 基本属性 url、user、password --&gt;</span>  
+   <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"url"</span> <span class="na">value=</span><span class="s">"${jdbc_url}"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"username"</span> <span class="na">value=</span><span class="s">"${jdbc_user}"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span> <span class="na">value=</span><span class="s">"${jdbc_password}"</span> <span class="nt">/&gt;</span>
+
+   <span class="c">&lt;!-- 配置监控统计拦截的filters --&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"filters"</span> <span class="na">value=</span><span class="s">"stat"</span> <span class="nt">/&gt;</span>
+
+   <span class="c">&lt;!-- 配置初始化大小、最小、最大 ,获取连接等待超时的时间--&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"initialSize"</span> <span class="na">value=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+    	<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"minIdle"</span> <span class="na">value=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+   	 <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxActive"</span> <span class="na">value=</span><span class="s">"20"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxWait"</span> <span class="na">value=</span><span class="s">"60000"</span> <span class="nt">/&gt;</span>
+    
+ <span class="c">&lt;!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 --&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"timeBetweenEvictionRunsMillis"</span> <span class="na">value=</span><span class="s">"60000"</span> <span class="nt">/&gt;</span>
+  <span class="c">&lt;!-- 连接保持空闲而不被驱逐的最小时间 --&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"minEvictableIdleTimeMillis"</span> <span class="na">value=</span><span class="s">"300000"</span> <span class="nt">/&gt;</span>
+
+  <span class="c">&lt;!-- 用来检测连接是否有效的sql--&gt;</span>
+   	<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"validationQuery"</span> <span class="na">value=</span><span class="s">"select 1"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"testWhileIdle"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"testOnBorrow"</span> <span class="na">value=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"testOnReturn"</span> <span class="na">value=</span><span class="s">"false"</span> <span class="nt">/&gt;</span>
+
+  <span class="c">&lt;!--  是否缓存preparedStatement mysql建议关闭--&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"poolPreparedStatements"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"maxOpenPreparedStatements"</span> <span class="na">value=</span><span class="s">"20"</span> <span class="nt">/&gt;</span>
+     <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"asyncInit"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+ <span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></div>
+
+<p><strong>1) 导入log4j,druid依赖</strong></p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>druid<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.1.20<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>log4j<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>log4j<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.2.17<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p><strong>2) application.yaml配置数据源</strong></p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+ <span class="na">datasource</span><span class="pi">:</span>
+  <span class="na">username</span><span class="pi">:</span> <span class="s">root</span>
+  <span class="na">password</span><span class="pi">:</span> <span class="s">mysql8013</span>
+  <span class="c1"># 注意8.0以上需要时区的配置</span>
+  <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:mysql://localhost:3306/spring_data_study?</span><span class="err">	</span><span class="s">serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=utf-8</span>
+  <span class="na">driver-class-name</span><span class="pi">:</span> <span class="s">com.mysql.cj.jdbc.Driver</span>
+ <span class="err">	</span><span class="na">type</span><span class="pi">:</span> <span class="s">com.alibaba.druid.pool.DruidDataSource</span>
+ <span class="err">	</span><span class="na">initialSize</span><span class="pi">:</span> <span class="m">5</span>
+<span class="err"> 	</span><span class="na">minIdle</span><span class="pi">:</span> <span class="m">1</span>
+<span class="err"> 	</span><span class="c1"># 最大连接池数量</span>
+<span class="err"> 	</span><span class="na">maxActive</span><span class="pi">:</span> <span class="m">20</span>
+<span class="err"> 	</span><span class="c1"># 获取连接最大等待时间，单位毫秒</span>
+<span class="err"> 	</span><span class="na">maxWait</span><span class="pi">:</span> <span class="m">60000</span>
+<span class="err"> 	</span><span class="na">timeBetweenEvictionRunsMillis</span><span class="pi">:</span> <span class="m">60000</span>
+<span class="err"> 	</span><span class="c1"># 连接保持空闲而不被驱逐的最长时间，缺省30分钟</span>
+<span class="err"> 	</span><span class="na">minEvictableIdleTimeMillis</span><span class="pi">:</span> <span class="m">300000</span>
+<span class="err"> 	</span><span class="na">validationQuery</span><span class="pi">:</span> <span class="s">select </span><span class="m">1</span>
+<span class="err"> 	</span><span class="c1"># 申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能，缺省false</span>
+<span class="err">	</span><span class="na">testOnBorrow</span><span class="pi">:</span> <span class="no">false</span>
+ <span class="err">	</span><span class="s"># 归还连接是执行validationQuery检测连接是否有效，做了这个配置会降低性能，缺省false</span>
+ <span class="err">	</span><span class="s">testOnReturn</span><span class="pi">:</span> <span class="no">false</span>
+ <span class="err">	</span><span class="s"># 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效，缺省false,建议配置true,保证安全性</span>
+ <span class="err">	</span><span class="s">testWhileIdle</span><span class="pi">:</span> <span class="no">true</span>
+ <span class="err">	</span><span class="s"># 就是PSCache，PSCache对支持游标的数据库性能提升巨大，如oracle。mysql5.5以上版本才开始支持PSCache，建议开启。默认false</span>
+ <span class="err">	</span><span class="s">poolPreparedStatements</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="s"># 当大于0时，poolPrepareStatements自动触发修改为true,</span>
+<span class="err">	</span><span class="na">maxOpenPreparedStatements</span><span class="pi">:</span> <span class="m">100</span>
+<span class="err"> 	</span><span class="na">maxPoolPreparedStatementPerConnectionSize</span><span class="pi">:</span> <span class="m">20</span>
+
+ <span class="c1"># 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：</span>
+ <span class="c1"># 监控统计用的filter:stat</span>
+ <span class="c1"># 日志用的filter:log4j</span>
+ <span class="c1"># 防御sql注入的filter:wal</span>
+ <span class="na">filters</span><span class="pi">:</span> <span class="s">stat,wall,log4j</span>
+ <span class="c1"># 合并多个DruidDataSource的监控数据，多数据源做主从时使用</span>
+ <span class="na">useGlobalDataSourceStat</span><span class="pi">:</span> <span class="no">true</span>
+ <span class="na">connectionProperties</span><span class="pi">:</span> <span class="s">druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500</span><span class="err">		</span>
+</code></pre></div></div>
+
+<p>解释：</p>
+
+<ul>
+  <li>
+    <p>timeBetweenEvictionRunsMillis：缺省1分钟，Destroy 线程会检测连接的间隔时间，如果连接空闲时间大于等于minEvictableIdleTimeMills则关闭物理连接；testWhileIdle的判断依据</p>
+  </li>
+  <li>
+    <p>maxPoolPreparedStatementPerConnectionSize：要启用PSCache，必须配置大于0，当大于0时，poolPrepareStatements自动触发修改为true，单个connection独享一个statement cache，所以maxOpenPreparedStatements是针对单个connection连接的。</p>
+  </li>
+</ul>
+
+<p><strong>连接池运行原理</strong></p>
+
+<ol>
+  <li>
+    <p>初始化时创建 initialSize 个连接</p>
+  </li>
+  <li>
+    <p>有DB操作访问的时候，从里面取一个</p>
+  </li>
+  <li>
+    <p>如果当前使用的连接数=maxActive,就会进入等待，等待超过maxWait则会报错；没有到maxActive获取一个空闲连接，没有空闲就创建一个新连接</p>
+  </li>
+  <li>
+    <p>使用完毕还回连接池</p>
+  </li>
+  <li>
+    <p>每一个connection在连接池都是有空闲时长的</p>
+  </li>
+  <li>
+    <p>maxActive如何配置，理论上取最大并发数，如何评估？一分钟活跃用户1000*5=5000/10=300~500</p>
+  </li>
+</ol>
+
+<p><strong>3) 创建druidConfig，绑定配置，配置监控</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DruidConfig</span> <span class="o">{</span>
+  <span class="c1">// 绑定配置</span>
+  <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.datasource"</span><span class="o">)</span>
+  <span class="nd">@Bean</span>
+  <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">druidDataSource</span><span class="o">(){</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">DruidDataSource</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 注册后台监控页面</span>
+  <span class="nd">@Bean</span>
+  <span class="kd">public</span> <span class="nc">ServletRegistrationBean</span> <span class="nf">statViewServlet</span><span class="o">(){</span>
+    <span class="nc">ServletRegistrationBean</span> <span class="n">bean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ServletRegistrationBean</span><span class="o">(</span><span class="k">new</span> <span class="nc">StatViewServlet</span><span class="o">(),</span><span class="s">"/druid/*"</span><span class="o">);</span>
+    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="c1">// 后台的登录用户和密码,可以把用户名，密码放到数据库中查询，方便随时修改密码</span>
+    <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">StatViewServlet</span><span class="o">.</span><span class="na">PARAM_NAME_USERNAME</span><span class="o">,</span><span class="s">"admin"</span><span class="o">);</span>
+    <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">StatViewServlet</span><span class="o">.</span><span class="na">PARAM_NAME_PASSWORD</span><span class="o">,</span><span class="s">"123456"</span><span class="o">);</span>
+
+    <span class="c1">// 访问权限</span>
+    <span class="c1">// param.put(StatViewServlet.PARAM_NAME_ALLOW,"localhost");    // 多个访问ip用逗号隔开</span>
+    <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">StatViewServlet</span><span class="o">.</span><span class="na">PARAM_NAME_ALLOW</span><span class="o">,</span><span class="s">""</span><span class="o">);</span> <span class="c1">//为空，所有人都可以访问</span>
+    <span class="c1">// 拒绝访问</span>
+    <span class="c1">//param.put(StatViewServlet.PARAM_NAME_DENY,"192.168.12,2");</span>
+    <span class="n">bean</span><span class="o">.</span><span class="na">setInitParameters</span><span class="o">(</span><span class="n">param</span><span class="o">);</span>
+
+    <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>启动项目，浏览器访问localhost:8080/druid,在登录页面输入配置的账号和密码</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-druid-monitor.gif" alt="" /></p>
+
+<p>你执行的sql，表被查询、更新、delete了多少次都可以监控到</p>
+
+<p><img src="/assets/images/2020/icoding/springdata/springdata-druid-monitor-sql.gif" alt="" /></p>
+
+<p><strong>4) 增加过滤配置</strong></p>
+
+<p>在druidconfig增加过滤器的配置，排除某些请求不被druid监控拦截</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 过滤器配置</span>
+<span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="nc">FilterRegistrationBean</span> <span class="nf">webStatFilter</span><span class="o">(){</span>
+  <span class="nc">FilterRegistrationBean</span> <span class="n">bean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FilterRegistrationBean</span><span class="o">();</span>
+  <span class="n">bean</span><span class="o">.</span><span class="na">setFilter</span><span class="o">(</span><span class="k">new</span> <span class="nc">WebStatFilter</span><span class="o">());</span>
+  <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">param</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+
+  <span class="c1">// 配置哪些请求可以被过滤</span>
+  <span class="n">param</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"exclusions"</span><span class="o">,</span><span class="s">"*.js,*.css,/druid/*"</span><span class="o">);</span> <span class="c1">// 排除</span>
+
+  <span class="n">bean</span><span class="o">.</span><span class="na">setInitParameters</span><span class="o">(</span><span class="n">param</span><span class="o">);</span>
+  <span class="n">bean</span><span class="o">.</span><span class="na">setUrlPatterns</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"/*"</span><span class="o">));</span>
+  <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>5) 关闭druid监控</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">spring.datasource.druid.filter.config.enabled</span><span class="p">=</span><span class="s">false</span>
+<span class="py">spring.datasource.druid.web-stat-filter.enabled</span><span class="p">=</span><span class="s">false</span>
+<span class="py">spring.datasource.druid.stat-view-servlet.enabled</span><span class="p">=</span><span class="s">false</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p>在SpringBoot未来的集成中，都是以下套路，这是一种思想：</p>
+
+<p>1、导入pom依赖</p>
+
+<p>2、application.yaml编写一些配置</p>
+
+<p>3、编写Config类</p>
+
+<p>同理SpringCloud套路：</p>
+
+<p>1、导入pom依赖</p>
+
+<p>2、编写一些配置</p>
+
+<p>3、开启一个注解，如@Enablexxx</p>
+
+<blockquote>
+  <p>数据库密码加密访问</p>
+</blockquote>
+
+<blockquote>
+  <p>mcsp-rcc的druid连接impala超时断开问题</p>
+</blockquote>
+
+<p>impala服务端设置了数据库的连接会话有效时间是300秒，如果空闲连接超过300秒则被impala认为是无效连接，从而导致java程序拿着一个自己认为是有效的session去连接impala结果被invalid session id 无效会话的异常</p>
+
+<p><img src="\assets\images\2020\icoding\springdata\druid-invalid-session.jpeg" alt="" /></p>
+
+<p>使用druid做连接池，点进<code class="highlighter-rouge">DruidDataSource</code>类看有配置属性 ,增加一些连接配置来避免这个问题</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"impalaDataSource"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">impalaDataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// minEvictableIdleTimeMillis 会话连接保持空闲而不被关闭的最小时间，默认30分钟</span>
+        <span class="c1">// maxEvictableIdleTimeMillis 会话连接保持空闲而不被关闭的最大时间，默认7小时</span>
+        <span class="nc">DruidDataSource</span> <span class="n">dataSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DruidDataSource</span><span class="o">();</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"impala-datasource"</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setInitialSize</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setMinIdle</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>   <span class="c1">// 连接池中容许保持空闲状态的最小连接数量,低于这个数量将创建新的连接,</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setMaxActive</span><span class="o">(</span><span class="mi">20</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setMaxWait</span><span class="o">(</span><span class="mi">40000</span><span class="o">);</span> <span class="c1">// 连接等待时间，40秒还没有连接到数据库则连接失败</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setUrl</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setDriverClassName</span><span class="o">(</span><span class="n">driverClass</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setTimeBetweenEvictionRunsMillis</span><span class="o">(</span><span class="mi">60000</span><span class="o">);</span> <span class="c1">// 每隔60秒检查空闲连接</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setMinEvictableIdleTimeMillis</span><span class="o">(</span><span class="mi">60000</span><span class="o">);</span>   <span class="c1">// 会话最小空闲时间</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setMaxEvictableIdleTimeMillis</span><span class="o">(</span><span class="mi">290000</span><span class="o">);</span> <span class="c1">// 会话最大空闲时间</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setValidationQuery</span><span class="o">(</span><span class="s">"select 1"</span><span class="o">);</span> <span class="c1">// SQL查询,用来验证从连接池取出的连接,在将连接返回给调用者之前,验证连接是否可用</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setTestWhileIdle</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span> <span class="c1">// 校验连接池中的空闲连接是否可用,默认true</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setTestOnBorrow</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>  <span class="c1">// 从连接池中取出连接前进行校验，如果校验失败，则从池中去除连接并尝试取出另一个，开启这个会消耗内存CPU资源,默认false</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setTestOnReturn</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>  <span class="c1">// 连接归还到连接池前不进行校验,默认false</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setRemoveAbandoned</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span> <span class="c1">// 删除泄漏的连接，为避免误删正在使用的连接，官网建议生产环境上不开启</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setRemoveAbandonedTimeout</span><span class="o">(</span><span class="mi">290</span><span class="o">);</span> <span class="c1">// 如果从连接池获取的连接超过这个时间还不归还连接池，则被认为是泄漏连接，可以被删除回收</span>
+        <span class="n">dataSource</span><span class="o">.</span><span class="na">setLogAbandoned</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span><span class="c1">// 标记当Statement或连接被泄露时是否打印程序的stack traces日志。</span>
+
+        <span class="k">return</span> <span class="n">dataSource</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>主要开启了testOnBorrow 和 设置了连接的最大空闲时间maxEvictableIdleTimeMillis小于300秒，从连接池获取的连接是有效的，</p>
+
+<p>参考：<a href="https://www.cnblogs.com/zhoading/p/8072882.html">https://www.cnblogs.com/zhoading/p/8072882.html</a></p>
+
+<p><a href="https://my.oschina.net/haogrgr/blog/224010">https://my.oschina.net/haogrgr/blog/224010</a></p>
+
+<h2 id="4集成mybatis">4、集成MyBatis</h2>
+
+<h3 id="整合使用">整合使用</h3>
+
+<p>1.导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--mybatis是自己写的启动器，不是官方的--&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.mybatis.spring.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>mybatis-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.1.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2.编写实体类,dao类和mapper.xml文件</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 部门类</span>
+<span class="nd">@Data</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Department</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">departmentName</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="c1">// dao类</span>
+<span class="nd">@Mapper</span> <span class="c1">// 表示这是一个MyBatis的Mapper</span>
+<span class="nd">@Repository</span>  <span class="c1">// dao层使用的</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">DepartmentMapper</span> <span class="o">{</span>
+    <span class="c1">// 获取所有的部门信息</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Department</span><span class="o">&gt;</span> <span class="nf">listDepartment</span><span class="o">();</span>
+
+    <span class="c1">// 通过id获取部门信息</span>
+    <span class="nc">Department</span> <span class="nf">getDepartment</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="cp">&lt;!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd"&gt;</span>
+
+<span class="c">&lt;!--绑定接口--&gt;</span>
+<span class="nt">&lt;mapper</span> <span class="na">namespace=</span><span class="s">"com.jude.demo.mapper.DepartmentMapper"</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!--绑定接口中的方法--&gt;</span>
+    <span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"listDepartment"</span> <span class="na">resultType=</span><span class="s">"Department"</span><span class="nt">&gt;</span>
+        select * from department
+    <span class="nt">&lt;/select&gt;</span>
+
+    <span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"getDepartment"</span> <span class="na">resultType=</span><span class="s">"Department"</span><span class="nt">&gt;</span>
+        select * from department where id = #{id}
+    <span class="nt">&lt;/select&gt;</span>
+<span class="nt">&lt;/mapper&gt;</span>
+</code></pre></div></div>
+
+<p>3.配置mybatis</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.jude.*.entity
+  mapper-locations: classpath:/mapper/**/*.xml
+</code></pre></div></div>
+
+<p>如果mapper.xml文件是放在java目录下的需要maven过滤资源，builder配置如下</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--Maven默认不支持从 src java目录下获取除了代码之外的配置文件，我们需要过滤一下配置！--&gt;</span>
+    <span class="nt">&lt;build&gt;</span>
+        <span class="nt">&lt;resources&gt;</span>
+            <span class="c">&lt;!-- 配置文件导出 --&gt;</span>
+            <span class="nt">&lt;resource&gt;</span>
+                <span class="nt">&lt;directory&gt;</span>src/main/java<span class="nt">&lt;/directory&gt;</span>
+                <span class="nt">&lt;includes&gt;</span>
+                    <span class="nt">&lt;include&gt;</span>**/*.xml<span class="nt">&lt;/include&gt;</span>
+                <span class="nt">&lt;/includes&gt;</span>
+                <span class="nt">&lt;filtering&gt;</span>true<span class="nt">&lt;/filtering&gt;</span>
+            <span class="nt">&lt;/resource&gt;</span>
+        <span class="nt">&lt;/resources&gt;</span>
+        <span class="nt">&lt;plugins&gt;</span>
+            <span class="nt">&lt;plugin&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;/plugin&gt;</span>
+        <span class="nt">&lt;/plugins&gt;</span>
+    <span class="nt">&lt;/build&gt;</span>
+</code></pre></div></div>
+
+<p>我的mapper.xml文件是放在resource目录下的，所以不需要maven配置过滤。</p>
+
+<p>4.编写congroller测试</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DepartmentController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="nc">DepartmentMapper</span> <span class="n">departmentMapper</span><span class="o">;</span>
+
+    <span class="c1">// 查询全部部门</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/listDepartment"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Department</span><span class="o">&gt;</span> <span class="nf">listDepartment</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="n">departmentMapper</span><span class="o">.</span><span class="na">listDepartment</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 通过id获取部门信息</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/getDepartment/{id}"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Department</span> <span class="nf">getDepartment</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Integer</span> <span class="n">id</span><span class="o">){</span>
+        <span class="k">return</span> <span class="n">departmentMapper</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>数据库连接按上面druid数据源配置不用修改</p>
+
+<h3 id="mapperscannerconfigurer源码分析">MapperScannerConfigurer源码分析</h3>
+
+<p>配置了MapperScannerConfigurer，mybatis执行mapper接口方法就会被jdk动态代理拦截，创建动态代理类MapperProxy，下面举例分析</p>
+
+<p>mapper接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">format</span><span class="o">.</span><span class="na">dynamicproxy</span><span class="o">.</span><span class="na">mybatis</span><span class="o">.</span><span class="na">dao</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserDao</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">getById</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">add</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>    
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">update</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>    
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">delete</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>    
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="nf">getAll</span><span class="o">();</span>    
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>spring.xml方式配置MapperScannerConfigurer bean实例</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.mybatis.spring.mapper.MapperScannerConfigurer"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"basePackage"</span> <span class="na">value=</span><span class="s">"org.format.dynamicproxy.mybatis.dao"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"sqlSessionFactoryBeanName"</span> <span class="na">value=</span><span class="s">"sqlSessionFactory"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></div>
+
+<p>执行一个UserDao接口方法，看到实现的动态代理类是MapperProxy类</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-mapperproxy.png" alt="" /></p>
+
+<p>点击MapperProxy的源码</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-mapperproxy-2.png" alt="" /></p>
+
+<p>实现了InvocationHandler，说明使用了jdk自带的动态代理。</p>
+
+<p>继续分析MapperScannerConfigurer的源码，</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-mapperscanner.png" alt="" /></p>
+
+<p>实现了接口<code class="highlighter-rouge">BeanDefinitionRegistryPostProcessor</code> bean定义注册后置处理器，重写方法postProcessBeanDefinitionRegistry 后置处理</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">postProcessBeanDefinitionRegistry</span><span class="o">(</span><span class="nc">BeanDefinitionRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">processPropertyPlaceHolders</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">processPropertyPlaceHolders</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nc">ClassPathMapperScanner</span> <span class="n">scanner</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPathMapperScanner</span><span class="o">(</span><span class="n">registry</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setAddToConfig</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">addToConfig</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setAnnotationClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">annotationClass</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setMarkerInterface</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">markerInterface</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setSqlSessionFactory</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionFactory</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setSqlSessionTemplate</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionTemplate</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setSqlSessionFactoryBeanName</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionFactoryBeanName</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setSqlSessionTemplateBeanName</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionTemplateBeanName</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setResourceLoader</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">applicationContext</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setBeanNameGenerator</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nameGenerator</span><span class="o">);</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">setMapperFactoryBeanClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mapperFactoryBeanClass</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">lazyInitialization</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">scanner</span><span class="o">.</span><span class="na">setLazyInitialization</span><span class="o">(</span><span class="nc">Boolean</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">lazyInitialization</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">registerFilters</span><span class="o">();</span>
+    <span class="n">scanner</span><span class="o">.</span><span class="na">scan</span><span class="o">(</span>
+        <span class="nc">StringUtils</span><span class="o">.</span><span class="na">tokenizeToStringArray</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">basePackage</span><span class="o">,</span> <span class="nc">ConfigurableApplicationContext</span><span class="o">.</span><span class="na">CONFIG_LOCATION_DELIMITERS</span><span class="o">));</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>通过ClassPathMapperScanner 类路径mapper扫描器执行scan方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">int</span> <span class="nf">scan</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">basePackages</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">beanCountAtScanStart</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">.</span><span class="na">getBeanDefinitionCount</span><span class="o">();</span>
+  <span class="k">this</span><span class="o">.</span><span class="na">doScan</span><span class="o">(</span><span class="n">basePackages</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">includeAnnotationConfig</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">AnnotationConfigUtils</span><span class="o">.</span><span class="na">registerAnnotationConfigProcessors</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">.</span><span class="na">getBeanDefinitionCount</span><span class="o">()</span> <span class="o">-</span> <span class="n">beanCountAtScanStart</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>跳到doScan方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cm">/**
+   * Calls the parent search that will search and register all the candidates. Then the registered objects are post
+   * processed to set them as MapperFactoryBeans
+   */</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="nf">doScan</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">basePackages</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">beanDefinitions</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">doScan</span><span class="o">(</span><span class="n">basePackages</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">beanDefinitions</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+      <span class="no">LOGGER</span><span class="o">.</span><span class="na">warn</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="s">"No MyBatis mapper was found in '"</span> <span class="o">+</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">basePackages</span><span class="o">)</span>
+          <span class="o">+</span> <span class="s">"' package. Please check your configuration."</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">processBeanDefinitions</span><span class="o">(</span><span class="n">beanDefinitions</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">beanDefinitions</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>其中<code class="highlighter-rouge">super.doScan</code>先调用父类ClassPathBeanDefinitionScanner.doScan方法获取basePackage下所有接口描述持有类BeanDefinitionHolder集合，方法源码如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">protected</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="nf">doScan</span><span class="o">(</span><span class="nc">String</span><span class="o">...</span> <span class="n">basePackages</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Assert</span><span class="o">.</span><span class="na">notEmpty</span><span class="o">(</span><span class="n">basePackages</span><span class="o">,</span> <span class="s">"At least one base package must be specified"</span><span class="o">);</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">beanDefinitions</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedHashSet</span><span class="o">();</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">var3</span> <span class="o">=</span> <span class="n">basePackages</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">var4</span> <span class="o">=</span> <span class="n">basePackages</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">var5</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">var5</span> <span class="o">&lt;</span> <span class="n">var4</span><span class="o">;</span> <span class="o">++</span><span class="n">var5</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">String</span> <span class="n">basePackage</span> <span class="o">=</span> <span class="n">var3</span><span class="o">[</span><span class="n">var5</span><span class="o">];</span>
+            <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">BeanDefinition</span><span class="o">&gt;</span> <span class="n">candidates</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">findCandidateComponents</span><span class="o">(</span><span class="n">basePackage</span><span class="o">);</span>
+            <span class="nc">Iterator</span> <span class="n">var8</span> <span class="o">=</span> <span class="n">candidates</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+
+            <span class="k">while</span><span class="o">(</span><span class="n">var8</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
+                <span class="nc">BeanDefinition</span> <span class="n">candidate</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BeanDefinition</span><span class="o">)</span><span class="n">var8</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="nc">ScopeMetadata</span> <span class="n">scopeMetadata</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">scopeMetadataResolver</span><span class="o">.</span><span class="na">resolveScopeMetadata</span><span class="o">(</span><span class="n">candidate</span><span class="o">);</span>
+                <span class="n">candidate</span><span class="o">.</span><span class="na">setScope</span><span class="o">(</span><span class="n">scopeMetadata</span><span class="o">.</span><span class="na">getScopeName</span><span class="o">());</span>
+                <span class="nc">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">beanNameGenerator</span><span class="o">.</span><span class="na">generateBeanName</span><span class="o">(</span><span class="n">candidate</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">candidate</span> <span class="k">instanceof</span> <span class="nc">AbstractBeanDefinition</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="na">postProcessBeanDefinition</span><span class="o">((</span><span class="nc">AbstractBeanDefinition</span><span class="o">)</span><span class="n">candidate</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+                <span class="o">}</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">candidate</span> <span class="k">instanceof</span> <span class="nc">AnnotatedBeanDefinition</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nc">AnnotationConfigUtils</span><span class="o">.</span><span class="na">processCommonDefinitionAnnotations</span><span class="o">((</span><span class="nc">AnnotatedBeanDefinition</span><span class="o">)</span><span class="n">candidate</span><span class="o">);</span>
+                <span class="o">}</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">checkCandidate</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">candidate</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nc">BeanDefinitionHolder</span> <span class="n">definitionHolder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BeanDefinitionHolder</span><span class="o">(</span><span class="n">candidate</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+                    <span class="n">definitionHolder</span> <span class="o">=</span> <span class="nc">AnnotationConfigUtils</span><span class="o">.</span><span class="na">applyScopedProxyMode</span><span class="o">(</span><span class="n">scopeMetadata</span><span class="o">,</span> <span class="n">definitionHolder</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+                    <span class="n">beanDefinitions</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">definitionHolder</span><span class="o">);</span>
+                    <span class="k">this</span><span class="o">.</span><span class="na">registerBeanDefinition</span><span class="o">(</span><span class="n">definitionHolder</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">registry</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">beanDefinitions</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>然后执行processBeanDefinitions(beanDefinitions)方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">processBeanDefinitions</span><span class="o">(</span><span class="nc">Set</span><span class="o">&lt;</span><span class="nc">BeanDefinitionHolder</span><span class="o">&gt;</span> <span class="n">beanDefinitions</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">GenericBeanDefinition</span> <span class="n">definition</span><span class="o">;</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">BeanDefinitionHolder</span> <span class="n">holder</span> <span class="o">:</span> <span class="n">beanDefinitions</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">definition</span> <span class="o">=</span> <span class="o">(</span><span class="nc">GenericBeanDefinition</span><span class="o">)</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanDefinition</span><span class="o">();</span>
+      <span class="nc">String</span> <span class="n">beanClassName</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">();</span>
+      <span class="no">LOGGER</span><span class="o">.</span><span class="na">debug</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="s">"Creating MapperFactoryBean with name '"</span> <span class="o">+</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"' and '"</span> <span class="o">+</span> <span class="n">beanClassName</span>
+          <span class="o">+</span> <span class="s">"' mapperInterface"</span><span class="o">);</span>
+
+      <span class="c1">// the mapper interface is the original class of the bean  mapper接口是原bean类型</span>
+      <span class="c1">// but, the actual class of the bean is MapperFactoryBean  改为MapperFactoryBean类型</span>
+      <span class="n">definition</span><span class="o">.</span><span class="na">getConstructorArgumentValues</span><span class="o">().</span><span class="na">addGenericArgumentValue</span><span class="o">(</span><span class="n">beanClassName</span><span class="o">);</span> <span class="c1">// issue #59</span>
+      <span class="n">definition</span><span class="o">.</span><span class="na">setBeanClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mapperFactoryBeanClass</span><span class="o">);</span> <span class="c1">// bean类型修改</span>
+
+      <span class="n">definition</span><span class="o">.</span><span class="na">getPropertyValues</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">"addToConfig"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">addToConfig</span><span class="o">);</span>
+
+      <span class="kt">boolean</span> <span class="n">explicitFactoryUsed</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionFactoryBeanName</span><span class="o">))</span> <span class="o">{</span>
+        <span class="n">definition</span><span class="o">.</span><span class="na">getPropertyValues</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">"sqlSessionFactory"</span><span class="o">,</span>
+            <span class="k">new</span> <span class="nf">RuntimeBeanReference</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionFactoryBeanName</span><span class="o">));</span>
+        <span class="n">explicitFactoryUsed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionFactory</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">definition</span><span class="o">.</span><span class="na">getPropertyValues</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">"sqlSessionFactory"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">sqlSessionFactory</span><span class="o">);</span>
+        <span class="n">explicitFactoryUsed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+
+      <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionTemplateBeanName</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">explicitFactoryUsed</span><span class="o">)</span> <span class="o">{</span>
+          <span class="no">LOGGER</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span>
+              <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">"Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored."</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">definition</span><span class="o">.</span><span class="na">getPropertyValues</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">"sqlSessionTemplate"</span><span class="o">,</span>
+            <span class="k">new</span> <span class="nf">RuntimeBeanReference</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionTemplateBeanName</span><span class="o">));</span>
+        <span class="n">explicitFactoryUsed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sqlSessionTemplate</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">explicitFactoryUsed</span><span class="o">)</span> <span class="o">{</span>
+          <span class="no">LOGGER</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span>
+              <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">"Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored."</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">definition</span><span class="o">.</span><span class="na">getPropertyValues</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">"sqlSessionTemplate"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">sqlSessionTemplate</span><span class="o">);</span>
+        <span class="n">explicitFactoryUsed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+
+      <span class="k">if</span> <span class="o">(!</span><span class="n">explicitFactoryUsed</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">LOGGER</span><span class="o">.</span><span class="na">debug</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="s">"Enabling autowire by type for MapperFactoryBean with name '"</span> <span class="o">+</span> <span class="n">holder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'."</span><span class="o">);</span>
+        <span class="n">definition</span><span class="o">.</span><span class="na">setAutowireMode</span><span class="o">(</span><span class="nc">AbstractBeanDefinition</span><span class="o">.</span><span class="na">AUTOWIRE_BY_TYPE</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="n">definition</span><span class="o">.</span><span class="na">setLazyInit</span><span class="o">(</span><span class="n">lazyInitialization</span><span class="o">);</span> <span class="c1">// </span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>MapperScannerConfigurer的作用也就是将对应的接口的类型改造为MapperFactoryBean</strong>，而这个MapperFactoryBean的属性mapperInterface是原bean类型。MapperFactoryBean实例注入了mapper接口和sqlSessionFactory属性。</p>
+
+<p>分析MapperFactoryBean的源码</p>
+
+<p>MapperFactoryBean继承了SqlSessionDaoSupport类，SqlSessionDaoSupport类继承DaoSupport抽象类，DaoSupport抽象类实现了InitializingBean接口，因此实例化MapperFactoryBean对象后，都会调用InitializingBean接口的afterPropertiesSet方法。</p>
+
+<p><img src="\assets\images\2021\mysql\mapperFactoryBean.png" alt="" /></p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-dao-support.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">SqlSessionDaoSupport</code>设置sqlSessionFactory同时也会创建自己的sqlSessionTemplate</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-set-sqlsessionFactory.png" alt="" /></p>
+
+<p>checkDaoConfig是个抽象方法，MapperFactoryBean重写了该方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">checkDaoConfig</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">super</span><span class="o">.</span><span class="na">checkDaoConfig</span><span class="o">();</span>
+  <span class="n">notNull</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mapperInterface</span><span class="o">,</span> <span class="s">"Property 'mapperInterface' is required"</span><span class="o">);</span>
+
+  <span class="nc">Configuration</span> <span class="n">configuration</span> <span class="o">=</span> <span class="n">getSqlSession</span><span class="o">().</span><span class="na">getConfiguration</span><span class="o">();</span>
+  <span class="c1">// mapperInterface属性加入Configuration 配置类</span>
+  <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">addToConfig</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">configuration</span><span class="o">.</span><span class="na">hasMapper</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mapperInterface</span><span class="o">))</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">configuration</span><span class="o">.</span><span class="na">addMapper</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mapperInterface</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Error while adding the mapper '"</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">mapperInterface</span> <span class="o">+</span> <span class="s">"' to configuration."</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+      <span class="nc">ErrorContext</span><span class="o">.</span><span class="na">instance</span><span class="o">().</span><span class="na">reset</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从Spring IOC容器取bean实例时调用getObject方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="no">T</span> <span class="nf">getObject</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">getSqlSession</span><span class="o">().</span><span class="na">getMapper</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mapperInterface</span><span class="o">);</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里的getSqlSession().getMapper方法是sqlSessionFactory下的sqlSessionTemplate的getMapper方法，前面<code class="highlighter-rouge">SqlSessionDaoSupport</code>赋值sqlSessionFactory时创建的sqlSessionTemplate</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-sqlsessionTemplate.png" alt="" /></p>
+
+<p>调用Configuration的getMapper()方法，使用了MybatisPlus那就是MybatisConfiguration配置类，否则原Mybatis的<code class="highlighter-rouge">Configuration</code></p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-configuration.png" alt="" /></p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-mapperRegistry.png" alt="" /></p>
+
+<p>如果是mybatis-plus的MybatisMapperRegistry则继承了MapperRegistry重写了getMapper方法</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-plus-mapperRegistry.png" alt="" /></p>
+
+<p>MapperProxyFactory构造MapperProxy：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MapperProxyFactory</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">mapperInterface</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Method</span><span class="o">,</span> <span class="nc">MapperMethodInvoker</span><span class="o">&gt;</span> <span class="n">methodCache</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span>
+
+  <span class="kd">public</span> <span class="nf">MapperProxyFactory</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">mapperInterface</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mapperInterface</span> <span class="o">=</span> <span class="n">mapperInterface</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">getMapperInterface</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">mapperInterface</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Method</span><span class="o">,</span> <span class="nc">MapperMethodInvoker</span><span class="o">&gt;</span> <span class="nf">getMethodCache</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">methodCache</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"unchecked"</span><span class="o">)</span>
+  <span class="kd">protected</span> <span class="no">T</span> <span class="nf">newInstance</span><span class="o">(</span><span class="nc">MapperProxy</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">mapperProxy</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">(</span><span class="no">T</span><span class="o">)</span> <span class="nc">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span><span class="n">mapperInterface</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">Class</span><span class="o">[]</span> <span class="o">{</span> <span class="n">mapperInterface</span> <span class="o">},</span> <span class="n">mapperProxy</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="no">T</span> <span class="nf">newInstance</span><span class="o">(</span><span class="nc">SqlSession</span> <span class="n">sqlSession</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="nc">MapperProxy</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">mapperProxy</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MapperProxy</span><span class="o">&lt;&gt;(</span><span class="n">sqlSession</span><span class="o">,</span> <span class="n">mapperInterface</span><span class="o">,</span> <span class="n">methodCache</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nf">newInstance</span><span class="o">(</span><span class="n">mapperProxy</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>MapperProxyFactory就是使用了jdk组带的Proxy完成动态代理。</strong></p>
+
+<p>参考：<a href="https://www.cnblogs.com/fangjian0423/p/spring-mybatis-MapperScannerConfigurer-analysis.html">https://www.cnblogs.com/fangjian0423/p/spring-mybatis-MapperScannerConfigurer-analysis.html</a></p>
+
+<h2 id="5mybatis的流式查询">5、Mybatis的流式查询</h2>
+
+<p><strong>流式查询</strong>指的是查询成功后不是返回一个集合而是返回一个迭代器，应用每次从迭代器取一条查询结果。流式查询的好处是能够降低内存使用。</p>
+
+<p>如果没有流式查询，我们想要从数据库取 1000 万条记录而又没有足够的内存时，就不得不分页查询，而分页查询效率取决于表设计，如果设计的不好，就无法执行高效的分页查询。因此流式查询是一个数据库访问框架必须具备的功能。</p>
+
+<p>流式查询的过程当中，数据库连接是保持打开状态的，因此要注意的是：执行一个流式查询后，数据库访问框架就不负责关闭数据库连接了，需要应用在取完数据后自己关闭。</p>
+
+<p><strong>MyBatis 流式查询接口</strong></p>
+
+<p><code class="highlighter-rouge">MyBatis</code> 提供了一个叫 <code class="highlighter-rouge">org.apache.ibatis.cursor.Cursor</code> 的接口类用于流式查询，这个接口继承了 <code class="highlighter-rouge">java.io.Closeable</code> 和 <code class="highlighter-rouge">java.lang.Iterable</code> 接口，由此可知：</p>
+
+<ol>
+  <li>Cursor 是可关闭的；</li>
+  <li>Cursor 是可遍历的。</li>
+</ol>
+
+<p>Cursor 听名字跟sql server的游标类似，Cursor 提供了三个方法：</p>
+
+<ol>
+  <li><code class="highlighter-rouge">isOpen()</code>：用于在取数据之前判断 Cursor 对象是否是打开状态。只有当打开时 Cursor 才能取数据；</li>
+  <li><code class="highlighter-rouge">isConsumed()</code>：用于判断查询结果是否全部取完。</li>
+  <li><code class="highlighter-rouge">getCurrentIndex()</code>：返回已经获取了多少条数据</li>
+</ol>
+
+<p>因为 Cursor 实现了迭代器接口，因此在实际使用当中，从 Cursor 取数据非常简单：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cursor</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">rowObject</span> <span class="o">-&gt;</span> <span class="o">{...});</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>举例</p>
+</blockquote>
+
+<p>下面是一个Mapper类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Mapper</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FooMapper</span> <span class="o">{</span>
+    <span class="nd">@Select</span><span class="o">(</span><span class="s">"select * from foo limit #{limit}"</span><span class="o">)</span>
+    <span class="nc">Cursor</span><span class="o">&lt;</span><span class="nc">Foo</span><span class="o">&gt;</span> <span class="nf">scan</span><span class="o">(</span><span class="nd">@Param</span><span class="o">(</span><span class="s">"limit"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>方法 scan() 是一个非常简单的查询。通过指定 Mapper 方法的返回值为 Cursor 类型，<code class="highlighter-rouge">MyBatis</code> 就知道这个查询方法一个流式查询。</p>
+
+<p>然后在Controller层直接调用这个Dao层的scan方法（省略无关的代码）</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"foo/scan/0/{limit}"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">scanFoo</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"limit"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">Cursor</span><span class="o">&lt;</span><span class="nc">Foo</span><span class="o">&gt;</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">fooMapper</span><span class="o">.</span><span class="na">scan</span><span class="o">(</span><span class="n">limit</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// 1</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">foo</span> <span class="o">-&gt;</span> <span class="o">{});</span> <span class="c1">// 2</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>上面的代码中，fooMapper 是 @Autowired 进来的。注释 1 处调用 scan 方法，得到 Cursor 对象并保证它能最后关闭，jdk8的try with resource写法；2 处则是从 cursor 中取数据。</p>
+
+<p>我们来执行scanFoo（）方法，这时候会报错</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">IllegalStateException</span><span class="o">:</span> <span class="no">A</span> <span class="nc">Cursor</span> <span class="n">is</span> <span class="n">already</span> <span class="n">closed</span><span class="o">.</span>
+</code></pre></div></div>
+
+<p>这是因为我们前面说了在取数据的过程中需要保持数据库连接，而 Mapper 方法通常在执行完后连接就关闭了（具体可以查看注解@Mapper的源码），因此 Cusor 也一并关闭了。所以我们要保持数据库连接打开的，有三种方案</p>
+
+<ul>
+  <li>
+    <p>方案一：SqlSessionFactory</p>
+
+    <p>我们可以用 SqlSessionFactory 来手工打开数据库连接，将 Controller 方法修改如下：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"foo/scan/1/{limit}"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">scanFoo1</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"limit"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span>
+        <span class="nc">SqlSession</span> <span class="n">sqlSession</span> <span class="o">=</span> <span class="n">sqlSessionFactory</span><span class="o">.</span><span class="na">openSession</span><span class="o">();</span> <span class="c1">// 1</span>
+        <span class="nc">Cursor</span><span class="o">&lt;</span><span class="nc">Foo</span><span class="o">&gt;</span> <span class="n">cursor</span> <span class="o">=</span>
+              <span class="n">sqlSession</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">FooMapper</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">scan</span><span class="o">(</span><span class="n">limit</span><span class="o">)</span> <span class="c1">// 2</span>
+    <span class="o">)</span> <span class="o">{</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">foo</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>上面的代码中，1 处我们开启了一个 SqlSession （实际上也代表了一个数据库连接），并保证它最后能关闭；2 处我们使用 SqlSession 来获得 Mapper 对象。这样才能保证得到的 Cursor 对象是打开状态的。</p>
+
+    <p>注意这里的try使用了JDK7开始支持的try-with-resource语法，sqlSession和cursor会在使用完后自动关闭连接的，这是编译器在将java源码文件编译为class字节码文件时加上了关闭连接的操作，有兴趣的小伙伴可以反编译class文件认证一下。</p>
+  </li>
+  <li>
+    <p>方案二：TransactionTemplate</p>
+
+    <p>在 Spring 中，我们可以用 TransactionTemplate 来执行一个数据库事务，这个过程中数据库连接同样是打开的，执行完后，数据库连接才关闭，这就是Spring的 xxxTemplate模版技术，简化开发的思想。代码如下：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"foo/scan/2/{limit}"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">scanFoo2</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"limit"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="nc">TransactionTemplate</span> <span class="n">transactionTemplate</span> <span class="o">=</span>
+            <span class="k">new</span> <span class="nf">TransactionTemplate</span><span class="o">(</span><span class="n">transactionManager</span><span class="o">);</span> <span class="c1">// 1</span>
+  
+    <span class="n">transactionTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">status</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="c1">// 2</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Cursor</span><span class="o">&lt;</span><span class="nc">Foo</span><span class="o">&gt;</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">fooMapper</span><span class="o">.</span><span class="na">scan</span><span class="o">(</span><span class="n">limit</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">foo</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="o">});</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">});</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>上面的代码中，1 处我们创建了一个 TransactionTemplate 对象（此处 transactionManager 是怎么来的不用多解释，本文假设读者对 Spring 数据库事务的使用比较熟悉了），2 处执行数据库事务，而数据库事务的内容则是调用 Mapper 对象的流式查询。注意这里的 Mapper 对象无需通过 SqlSession 创建，@Autowired由spring容器自动注入。</p>
+  </li>
+  <li>
+    <p>方案三：@Transactional 注解</p>
+
+    <p>这个大家都比较熟悉了，本质上和方案二一样，代码如下：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"foo/scan/3/{limit}"</span><span class="o">)</span>
+<span class="nd">@Transactional</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">scanFoo3</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"limit"</span><span class="o">)</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">Cursor</span><span class="o">&lt;</span><span class="nc">Foo</span><span class="o">&gt;</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">fooMapper</span><span class="o">.</span><span class="na">scan</span><span class="o">(</span><span class="n">limit</span><span class="o">))</span> <span class="o">{</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">foo</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p>它仅仅是在原来方法上面加了个 <code class="highlighter-rouge">@Transactional</code> 注解。这个方案看上去最简洁，<strong>但请注意 Spring 框架当中注解使用的坑：只在外部调用时生效</strong>。在当前类中调用这个方法，依旧会报错。</p>
+
+    <p>以上是三种实现 MyBatis 流式查询的方法。</p>
+  </li>
+</ul>
+
+<h2 id="6mybatis传递参数的7种方法">6、Mybatis传递参数的7种方法</h2>
+
+<h3 id="匿名参数-顺序传递参数">匿名参数 顺序传递参数</h3>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询_匿名顺序传参"</span><span class="o">)</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"findByParams"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByParams</span><span class="o">(</span><span class="nc">Short</span> <span class="n">gender</span><span class="o">,</span><span class="nc">String</span> <span class="n">age</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">selectByGenderAndAge</span><span class="o">(</span><span class="n">gender</span><span class="o">,</span><span class="n">age</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">selectByGenderAndAge</span><span class="o">(</span><span class="nc">Short</span> <span class="n">gender</span><span class="o">,</span><span class="nc">String</span> <span class="n">age</span> <span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"selectByGenderAndAge"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="nt">&gt;</span>
+  select * from employee where gender = #{gender} and age = #{age}
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<p>上面方式按参数名去引用的话会报如下错误，mybatis错误提示很细致，这里明确给我们提示</p>
+
+<p>匿名参数只能使用arg1, arg0, param1, param2 类似的形式</p>
+
+<p>这种传参方式的缺点是不够灵活，必须严格按照参数顺序来引用，<mark>不推荐</mark></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BindingException: Parameter <span class="s1">'gender'</span> not found. Available parameters are <span class="o">[</span>arg1, arg0, param1, param2]
+</code></pre></div></div>
+
+<p>正确方式</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"selectByGenderAndAge"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="nt">&gt;</span>
+  select *  from employee where gender = #{param1} and age = #{param2}
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<h3 id="使用param注解">使用@Param注解</h3>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询_注解方式传参"</span><span class="o">)</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"findByParams2"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByParams2</span><span class="o">(</span><span class="nc">Short</span> <span class="n">gender</span><span class="o">,</span><span class="nc">String</span> <span class="n">age</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">selectByGenderAndAge2</span><span class="o">(</span><span class="n">gender</span><span class="o">,</span><span class="n">age</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">selectByGenderAndAge</span><span class="o">(</span> <span class="nd">@Param</span><span class="o">(</span><span class="s">"gender"</span><span class="o">)</span> <span class="nc">Short</span> <span class="n">gender</span><span class="o">,</span><span class="nd">@Param</span><span class="o">(</span><span class="s">"age"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">age</span> <span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"selectByGenderAndAge"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="nt">&gt;</span>
+  select * from employee where gender = #{gender} and age = #{age}
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<h3 id="使用map">使用Map</h3>
+
+<p>实际开发中使用map来传递多个参数是一种推荐的方式</p>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询"</span><span class="o">)</span>
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"findByMapParams"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByMapParams</span><span class="o">(</span><span class="nc">Short</span> <span class="n">gender</span><span class="o">,</span><span class="nc">String</span> <span class="n">age</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="nc">Map</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"gender"</span><span class="o">,</span><span class="n">gender</span><span class="o">);</span>
+    <span class="n">params</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"age"</span><span class="o">,</span><span class="n">age</span><span class="o">);</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">selectByMapParams</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">selectByMapParams</span><span class="o">(</span><span class="nc">Map</span> <span class="n">params</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"selectByMapParams"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="na">parameterType=</span><span class="s">"map"</span><span class="nt">&gt;</span>
+  select * from employee where gender = #{gender} and age = #{age}
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<p>可以看到使用map来传递多个参数，可以直接使用参数名称进行引用</p>
+
+<h3 id="使用java-bean">使用java bean</h3>
+
+<p>也可以使用bean的方式来传递多个参数，使用时parameterType指定为对应的bean类型即可。</p>
+
+<p>这就传参方式的优点是比较方便，controller层使用@RequestBody接收到实体类参数后，直接传递给mapper层调用即可，不需要在进行参数的转换</p>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询_通过Java Bean传递多个参数"</span><span class="o">)</span>
+<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"findByBeans"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByBeans</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">Employee</span> <span class="n">employee</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">selectByBeans</span><span class="o">(</span><span class="n">employee</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span> <span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">selectByBeans</span><span class="o">(</span><span class="nc">Employee</span> <span class="n">employee</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"selectByBeans"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="na">parameterType=</span><span class="s">"com.wg.demo.po.Employee"</span><span class="nt">&gt;</span>
+  select * from employee where gender = #{gender} and age = #{age}
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<h3 id="使用jsonobject">使用JsonObject</h3>
+
+<p>这也是推荐的一种传参方式，controller层收到JSON型数据后，直接传递给mapper层进行查询操作，简单方便，不用定义Java bean(pojo)</p>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询_通过JSON传递多个参数"</span><span class="o">)</span>
+<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"findByJSONObject"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByJSONObject</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">JSONObject</span> <span class="n">params</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">findByJSONObject</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span> <span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">findByJSONObject</span><span class="o">(</span><span class="nc">JSONObject</span> <span class="n">params</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"findByJSONObject"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="na">parameterType=</span><span class="s">"com.alibaba.fastjson.JSONObject"</span><span class="nt">&gt;</span>
+  select * from employee where gender = #{gender} and age = #{age}
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<h3 id="传递集合类型参数listsetarray">传递集合类型参数List、Set、Array</h3>
+
+<p>在一些复杂的查询中（如 sql中的 in操作），传统的参数传递已无法满足需求，这时候就要用到List、Set、Array类型的参数传递，具体使用如下：</p>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询_通过List、Set、Array传递多个参数"</span><span class="o">)</span>
+<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"findByList"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByList</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">findByList</span> <span class="o">(</span><span class="n">list</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span> <span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">findByList</span><span class="o">(</span><span class="nc">List</span> <span class="n">list</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"findByList"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="nt">&gt;</span>
+  SELECT * from employee where age in
+  <span class="nt">&lt;foreach</span> <span class="na">collection=</span><span class="s">"list"</span> <span class="na">open=</span><span class="s">"("</span> <span class="na">separator=</span><span class="s">","</span> <span class="na">close=</span><span class="s">")"</span> <span class="na">item=</span><span class="s">"age"</span><span class="nt">&gt;</span>
+    #{age}
+  <span class="nt">&lt;/foreach&gt;</span>
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<p>这里foreach表示循环操作，具体的参数含义如下：</p>
+
+<ul>
+  <li>
+    <p>foreach元素的属性主要有 item，index，collection，open，separator，close。</p>
+  </li>
+  <li>
+    <p>item表示集合中每一个元素进行迭代时的别名</p>
+  </li>
+  <li>
+    <p>index指定一个名字，用于表示在迭代过程中，每次迭代到的位置</p>
+  </li>
+  <li>
+    <p>open表示该语句以什么开始</p>
+  </li>
+  <li>
+    <p>separator表示在每次进行迭代之间以什么符号作为分隔符</p>
+  </li>
+  <li>
+    <p>close表示以什么结束</p>
+  </li>
+  <li>
+    <p>collection</p>
+
+    <p>在使用foreach的时候最关键的也是最容易出错的就是collection属性，该属性是必须指定的，但是在不同情况下，该属性的值是不一样的，主要有一下3种情况：</p>
+
+    <ul>
+      <li>1.如果传入的是单参数且参数类型是一个List的时候，collection属性值为list</li>
+      <li>2.如果传入的是单参数且参数类型是一个array数组的时候，collection的属性值为array</li>
+      <li>3.如果传入的参数是多个的时候，我们就需要把它们封装成一个Map或者Object</li>
+    </ul>
+  </li>
+</ul>
+
+<p>测试一下</p>
+
+<p><img src="\assets\images\2020\icoding\springdata\mybatis-params-list.png" alt="" /></p>
+
+<h3 id="参数类型为对象集合">参数类型为对象+集合</h3>
+
+<p>该类参数与java Bean参数形式类似，只不过更复杂一些，如下面的Department类，除了基本字段还包括一个Employee的列表，bean如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Department</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">deptName</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">descr</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Date</span> <span class="n">createTime</span><span class="o">;</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="n">employees</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ApiOperation</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"多个参数查询_对象+集合参数"</span><span class="o">)</span>
+<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"findByDepartment"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ResultMsg</span> <span class="nf">findByDepartment</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">Department</span> <span class="n">department</span><span class="o">){</span>
+    <span class="nc">List</span> <span class="n">result</span><span class="o">=</span> <span class="n">employeeMapper</span><span class="o">.</span><span class="na">findByDepartment</span><span class="o">(</span><span class="n">department</span><span class="o">);</span>
+    <span class="k">return</span> <span class="nc">ResultMsg</span><span class="o">.</span><span class="na">getMsg</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>mapper</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">List</span> <span class="o">&lt;</span><span class="nc">Employee</span><span class="o">&gt;</span> <span class="nf">findByDepartment</span><span class="o">(</span><span class="nd">@Param</span><span class="o">(</span><span class="s">"department"</span><span class="o">)</span><span class="nc">Department</span> <span class="n">department</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"findByDepartment"</span> <span class="na">resultMap=</span><span class="s">"BaseResultMap"</span> <span class="na">parameterType=</span><span class="s">"com.wg.demo.po.Department"</span><span class="nt">&gt;</span>
+    SELECT * from employee where dept_id =#{department.id} and age in
+    <span class="nt">&lt;foreach</span> <span class="na">collection=</span><span class="s">"department.employees"</span> <span class="na">open=</span><span class="s">"("</span> <span class="na">separator=</span><span class="s">","</span> <span class="na">close=</span><span class="s">")"</span> <span class="na">item=</span><span class="s">"employee"</span><span class="nt">&gt;</span>
+        #{employee.age}
+    <span class="nt">&lt;/foreach&gt;</span>
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<p>这里foreach 对应Departmen部门中的List employees</p>
+
+<p>测试一下</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span><span class="w"> </span><span class="err">请求参数：</span><span class="w"> </span><span class="err">查询部门Id=</span><span class="mi">1</span><span class="err">，并且年龄</span><span class="w"> </span><span class="err">等于</span><span class="mi">24</span><span class="err">和</span><span class="mi">25</span><span class="err">的员工</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="nl">"createTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-07-02T10:17:16.756Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"deptName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"descr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"employees"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"24"</span><span class="p">,</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25"</span><span class="p">,</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>结果</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"北新街ndcpc"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"24"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"createTime"</span><span class="p">:</span><span class="w"> </span><span class="mi">1562062434000</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"deptId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"gender"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"318397755696631808"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"kls0bx19cy"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"北新街lavi0"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"createTime"</span><span class="p">:</span><span class="w"> </span><span class="mi">1562062436000</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"deptId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"gender"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"318397755801489408"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gj9q3ygikh"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"result"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SUCCESS"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"resultCode"</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"resultMsg"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="7mybatis其他">7、Mybatis其他</h2>
+
+<h3 id="转义字符">转义字符</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"&lt;"</span> 使用 &amp;lt<span class="p">;</span>替换
+<span class="s2">"&gt;"</span> 使用 &amp;gt<span class="p">;</span>替换
+</code></pre></div></div>
+
+<h3 id="抽取公共sql语句">抽取公共SQL语句</h3>
+
+<blockquote>
+  <p>定义可重用的查询列</p>
+</blockquote>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;sql</span> <span class="na">id=</span><span class="s">"all_column"</span><span class="nt">&gt;</span>id,username,pazzword,state,reg_date<span class="nt">&lt;/sql&gt;</span>
+<span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"getUser"</span> <span class="na">resultType=</span><span class="s">"cn.jq.mybatis.model.User"</span><span class="nt">&gt;</span>
+  select 
+  <span class="nt">&lt;include</span> <span class="na">refid=</span><span class="s">"all_column"</span><span class="nt">&gt;&lt;/include&gt;</span> 
+  from t_user where id = #{id}
+<span class="nt">&lt;/select&gt;</span>
+
+-- 结果
+select id,username,pazzword,state,reg_date from t_user where id = ? 
+</code></pre></div></div>
+
+<p>通过 property子标签给sql标签里传值，通过 <code class="highlighter-rouge">${}</code> 获取值，比如给查询表起个别名</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;sql</span> <span class="na">id=</span><span class="s">"all_column"</span><span class="nt">&gt;</span>${alias}.id,${alias}.username,${alias}.pazzword,${alias}.state,${alias}.reg_date<span class="nt">&lt;/sql&gt;</span>
+<span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"getUser"</span> <span class="na">resultType=</span><span class="s">"cn.jq.mybatis.model.User"</span><span class="nt">&gt;</span>
+  select 
+  <span class="nt">&lt;include</span> <span class="na">refid=</span><span class="s">"all_column"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"alias"</span> <span class="na">value=</span><span class="s">"t1"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/include&gt;</span> 
+  from t_user t1 where t1.id = #{id}
+<span class="nt">&lt;/select&gt;</span>
+ 
+-- 结果
+select t1.id,t1.username,t1.pazzword,t1.state,t1.reg_date from t_user t1 where t1.id = ? 
+</code></pre></div></div>
+
+<blockquote>
+  <p>定义可重用的查询条件</p>
+</blockquote>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;sql</span> <span class="na">id=</span><span class="s">"condition_sql"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;if</span> <span class="na">test=</span><span class="s">"username != null and username != ''"</span><span class="nt">&gt;</span>
+    and username like concat('%',concat(#{username},'%')) 
+  <span class="nt">&lt;/if&gt;</span>
+  <span class="nt">&lt;if</span> <span class="na">test=</span><span class="s">"state != null and state &gt;= 0"</span><span class="nt">&gt;</span>
+    and state like #{state}
+  <span class="nt">&lt;/if&gt;</span>
+<span class="nt">&lt;/sql&gt;</span>
+
+<span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"getUserBylike"</span> <span class="na">resultType=</span><span class="s">"cn.jq.mybatis.model.User"</span><span class="nt">&gt;</span>
+  select * from t_user 
+  <span class="nt">&lt;where&gt;</span>
+    <span class="nt">&lt;include</span> <span class="na">refid=</span><span class="s">"condition_sql"</span><span class="nt">&gt;&lt;/include&gt;</span>
+  <span class="nt">&lt;/where&gt;</span>
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>sql标签和include标签配合使用，sql标签里和其他增删改查标签一样支持动态slq标签；</li>
+  <li>include标签可以通过property子标签给sql标签里传值，sql标签里用 ${} 获取</li>
+</ul>
+
+<h3 id="bind模糊查询">bind模糊查询</h3>
+
+<p>bind标签可以从 OGNL表达式中创建一个变量并将其绑定到上下文，比如：模糊查询 传参，使用bind元素拼接 <code class="highlighter-rouge">%</code>号，不能传null值</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;select</span> <span class="na">id=</span><span class="s">"getUserBylike"</span> <span class="na">resultType=</span><span class="s">"cn.jq.mybatis.model.User"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;bind</span> <span class="na">name=</span><span class="s">"new_username"</span> <span class="na">value=</span><span class="s">"'%'+username+'%'"</span><span class="nt">/&gt;</span>
+  select * from t_user where
+  <span class="nt">&lt;choose&gt;</span>
+    <span class="nt">&lt;when</span> <span class="na">test=</span><span class="s">"username != null and username != ''"</span><span class="nt">&gt;</span>
+      username like #{new_username}
+    <span class="nt">&lt;/when&gt;</span>
+    <span class="nt">&lt;when</span> <span class="na">test=</span><span class="s">"state != null and state &gt;= 0"</span><span class="nt">&gt;</span>
+      state like #{state}
+    <span class="nt">&lt;/when&gt;</span>
+    <span class="nt">&lt;otherwise&gt;</span>
+      1=1
+    <span class="nt">&lt;/otherwise&gt;</span>
+  <span class="nt">&lt;/choose&gt;</span>
+<span class="nt">&lt;/select&gt;</span>
+</code></pre></div></div>
+
+<p>结果：</p>
+
+<p><img src="\assets\images\2021\mysql\mybatis-bind-like-search.png" alt="" /></p>
+
+<h3 id="查询是否存在">查询是否存在</h3>
+
+<p>根据某一条件从数据库表中查询 『有』与『没有』，只有两种状态，那为什么在写SQL的时候，还要SELECT count(*) 呢，</p>
+
+<p>多次REVIEW代码时，发现如下现象：业务代码中，需要根据一个或多个条件，查询是否存在记录，不关心有多少条记录。普遍的SQL及代码写法如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#####</span> <span class="n">SQL</span><span class="err">写法</span><span class="o">:</span>  
+<span class="no">SELECT</span> <span class="nf">count</span><span class="o">(*)</span> <span class="no">FROM</span> <span class="n">table</span> <span class="no">WHERE</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="no">AND</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>  
+  
+<span class="err">#####</span> <span class="n">Java</span><span class="err">写法</span><span class="o">:</span>  
+<span class="kt">int</span> <span class="n">nums</span> <span class="o">=</span> <span class="n">xxDao</span><span class="o">.</span><span class="na">countXxxxByXxx</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>  
+<span class="k">if</span> <span class="o">(</span> <span class="n">nums</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>  
+  <span class="c1">//当存在时，执行这里的代码  </span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+  <span class="c1">//当不存在时，执行这里的代码  </span>
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>优化写法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">SELECT</span> <span class="mi">1</span> <span class="no">FROM</span> <span class="n">table</span> <span class="no">WHERE</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="no">AND</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span> <span class="no">LIMIT</span> <span class="mi">1</span>  
+  
+<span class="err">#####</span> <span class="n">Java</span><span class="err">写法</span><span class="o">:</span>  
+<span class="nc">Integer</span> <span class="n">exist</span> <span class="o">=</span> <span class="n">xxDao</span><span class="o">.</span><span class="na">existXxxxByXxx</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>  
+<span class="k">if</span> <span class="o">(</span> <span class="n">exist</span> <span class="o">!=</span> <span class="no">NULL</span> <span class="o">)</span> <span class="o">{</span>  
+  <span class="c1">//当存在时，执行这里的代码  </span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+  <span class="c1">//当不存在时，执行这里的代码  </span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>SQL不再使用<code class="highlighter-rouge">count</code>，而是改用<code class="highlighter-rouge">LIMIT 1</code>，让数据库查询时遇到一条就返回，不要再继续查找还有多少条了业务代码中直接判断是否非空即可。</p>
+
+<p>根据查询条件查出来的条数越多，性能提升的越明显，在某些情况下，还可以减少联合索引的创建。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/03/15/icoding-note-009.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

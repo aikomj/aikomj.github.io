@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 成为一个高级程序员，不必担心自己的技术过时 - 大伟的博客 </title>
+    <meta name="keywords" content="life">
+    <meta name="description"
+          content="一个高级工程师，就是公司里有更多担当能力的技术人员角色">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/life/2021/01/15/tobe-a-senior-programmer.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="成为一个高级程序员，不必担心自己的技术过时">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>成为一个高级程序员，不必担心自己的技术过时</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/01/15
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="前言">前言</h2>
+
+<p>程序员是吃青春饭的吗？等我们老了，技术过时了，公司有什么理由不裁掉我们，去雇一些既有活力、薪资要求又低的年轻人呢？这个老生常谈的问题困扰着诸多渐入中年的程序员。本文告诉你如何增强自己的核心竞争力，在知识飞速更新的行业中站稳脚跟，跨过“初级工程师”和“高级工程师”之间的鸿沟。</p>
+
+<h2 id="1高级工程师">1、高级工程师</h2>
+
+<h3 id="软技能">软技能</h3>
+
+<p>包括下面4点，这些软技能可能会成倍地增加我们工作的影响力</p>
+
+<ul>
+  <li>代码审查礼节；</li>
+  <li>如何优雅地遏制范围蔓延；</li>
+  <li>如何向其他部门直观的方式解释高科技问题；</li>
+  <li>如何在生产任务爆满和日以继夜的比赛中保持镇定自若等。</li>
+</ul>
+
+<h3 id="解决问题">解决问题</h3>
+
+<p>作为一名程序员 ，编码硬实力固然很重要，但公司为何在花点小钱就能打发刚入行的新人的情况下，仍然乐于向我们这些“老年人”支付大笔工资，那是因为高级开发者，避免下面的问题</p>
+
+<p>1、你的代码的可维护性如何？是否有其他工程师不停地轻敲你的肩膀，让你解释你代码的每一行都是如何工作的？你的变量名具有描述性吗？你的方法是直观、易理解的吗？当你发现自己在复制粘贴很多行代码时，你是否能将这些代码的功能写入可重用的服务中？</p>
+
+<p>2、别人能够从你在拉取请求中留下的评论中受益吗？你的反馈意见是有<strong>建设性</strong>，还是太过粗糙？当你发现别人的知识存在缺口时，你只是告诉他们“把这条线从ABC更改为XYZ”，还是有能力引导他们认识到自己的方法可能不是最佳方法，让他们成长为更优秀的开发者？毕竟，同样是学习新东西，授人以鱼不如授之以渔。</p>
+
+<p>3、如果今天有100,000个用户创建帐户，你的代码是否会开始引发大量超时和500个错误？你能<strong>保证</strong>公关能把这事儿兜住吗？你的程序支持高并发，高可用吗</p>
+
+<p>4、你如何将非常技术的问题分解为公司其他部门可以理解的简单语言？向市场解释为什么一个功能实际上不可行时，你是否会让大量的工程术语从嘴里溜出来？</p>
+
+<p>5、你对面向对象的编程有深刻的了解吗？你提出的系统架构是不是“顶多算说得通”？</p>
+
+<p>6、你是否会主动提出想法，使你的团队效率更高？当需要改动现有进程时，你是否能够向所有参与方说明收益？你能使所有人都对这一变化感到兴奋吗？你是否可以持续跟进，并确保新流程确实有效？</p>
+
+<p>7、你要尊重别人的时间，当你要求别人帮助你解决问题时，你能准确描述你遇到问题的代码库的确切定位（如抛出异常的行号、你在问别人之前已经尝试过的debug方法，免得别人再浪费时间重复你已经做过的工作），在别人走到你办公桌前，你已经整理好要问的问题并在MacBook上打开了。</p>
+
+<p>8、在与其他部门一起确定大型项目的范围时，你对要开发的新功能的问题了解得有多深入？在开始编码之前，你是否能够考虑到每个边缘情况？你是否能够及早识别范围蔓延并尽早制止，从而使团队免于周六加班？</p>
+
+<p>9、你的多任务处理能力如何？你的大脑会超负荷吗？同样，在处理<strong>大型</strong>功能时，比如涉及50个文件的功能……你可以一次将它们全部保存在脑海中吗？你有养成扎实的记笔记习惯吗？你打算如何计划跟踪今天下班前弹出的500万件事？</p>
+
+<p>10、领导可以放心地让你去负责面试候选人吗？你是否擅长通过有限的信息来对人员进行分类，并可视化他们和团队的适合程度？你能识别出在什么情况下，在工程方面优秀的候选人却不能很好地融入公司文化吗？这种候选人你会建议录取吗？同样，即使你和候选人在Zoom里聊了5分钟就知道他不可能被录取，你是否还可以确保他仍然可以从你们的聊天中学到东西？毕竟，语言在网络上的传播速度是很快的。</p>
+
+<p>11、你知道如何向你的<strong>下属</strong>反馈他们的绩效吗？你和他们有良好的工作关系吗？你是否将他们视为敌人？你是否正在积极尝试减轻他们的压力，使他们的生活更轻松？你是否曾经说过“你们那边有什么烦人的任务我可以帮忙削减吗”？公司雇人都是有原因的，你的下属可能比你想象的更有经验和资格。</p>
+
+<p>12、你有能力扑灭生产大火吗？你是否会在遇到<strong>大麻烦</strong>时惊慌、不知所措（比如AWS中断使网站瘫痪、不小心搞丢了customer_invoices表单、某些错误导致了不同用户帐户之间的数据泄漏等）？你是会在压力之下崩溃，还是会在解决问题的同时保持镇静，并与其他部门进行有效的沟通？</p>
+
+<p><strong>高级开发者，就会在工作中解决问题，而非制造问题。</strong></p>
+
+<p>他们减少压力。他们按时完成任务。他们知道如何编写经得起时间考验、可维护的代码。他们值得更高的工资。他们对项目的方向可以有准确的把控。他们可以发现当前流程中的缺陷，并使每个人都接受他们的想法以进行改进。他们可以指导应届毕业生。他们处事冷静，不会在周二与你的最大客户的电话会议上情绪崩溃、破口大骂。</p>
+
+<p>很多人想踏实当个技术人员，并不想一直向上升去当领导当主管，我认为这种想法没什么问题。编程是目前最令人鼓舞的职业之一，许多企业愿意给经验丰富的“老兵”开<strong>很多很多</strong>工资，来保证业务进行顺利。</p>
+
+<p>回顾我的旅程，能从初级开发者过渡到高级开发者，归功于我每周（在繁重的编码任务之间）都试着花几个小时专注于以下事件：</p>
+
+<ul>
+  <li>改进我们进行技术面试的方式，保证我们与候选人之间的沟通信噪比更高（如改善我们的面试问题、重新考虑我们的电子邮件模板、考虑是否要给面试者布置线下笔试题、反思我们对工作的描述是否准确、我们向哪里投放招聘广告、换位思考如果我正在寻找工作会如何回复该招聘信息、如何在候选人做出决定之前使其更深入地了解我们的公司文化和发展历程等等）。</li>
+  <li>与产品团队合作，以更细致的方式对即将开展的工作进行分类，从而使产品团队和最终要去接收JIRA tickets的工程师之间的沟通更加顺畅，而不需要磨叽好几个来回。</li>
+  <li>组织团建活动和团队聚餐。</li>
+  <li>当CEO/CTO为即将到来的季度制定的目标听起来有点过于乐观时，向他们提出提醒和意见，以免团队其他成员受不了过分辛苦的工作而逃离你们公司。</li>
+  <li>
+    <p>最好能每周与所有大的客户进行一次确认电话（亲自回答他们所有的技术问题，并确保双方之间的关系保持健康）。</p>
+  </li>
+  <li>用6个月的时间进行积极的安全审核，不断提醒客户我们会认真对待他们的隐私，并在公司发展的每个检查点努力完善我们的流程。</li>
+  <li>找出其他开发人员在知识上的不足之处，然后让他们查缺补漏（使用能激发他们学习兴趣的方式）：如使用vim宏处理CSV文件、Linux终端中实用的短命令、高级SQL命令、如何使PR描述更具描述性、解释负载平衡器如何工作、讨论合并和重新定基之间的区别等</li>
+  <li>帮助设计团队在花数小时将线框转换为高保真模型之前，先弄清楚哪些功能易于开发。</li>
+  <li>改进我们的流程，让其他部门知道何时会增加新功能（编写更好的发行说明、在每周的内部产品演示中回答他们的问题、帮助他们编写客户能理解的外部文档），因为没人知道的功能不会解决任何实际问题。</li>
+</ul>
+
+<p>最终发现更多的是偏向管理，站在一个大整体的高度上去看待问题。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/life/2021/01/15/tobe-a-senior-programmer.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

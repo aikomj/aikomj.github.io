@@ -8,7 +8,7 @@ excerpt: 我用起来顺手的数据库设计工具
 lock: noneed
 ---
 
-原文：[http://www.macrozheng.com/#/reference/navicat_designer](http://www.macrozheng.com/#/reference/navicat_designer)
+转载自[http://www.macrozheng.com/#/reference/navicat_designer](http://www.macrozheng.com/#/reference/navicat_designer)
 
 ## 1、数据库设计
 
@@ -79,8 +79,6 @@ lock: noneed
 - 然后通过逆向工程从数据库中去生成数据库设计图，该功能在工具目录下面；
 
 ![](/assets/images/2020/icoding/mysql/navicat_designer_12.png)
-
-
 
 之后选择需要导入的数据库`pd-test`；
 

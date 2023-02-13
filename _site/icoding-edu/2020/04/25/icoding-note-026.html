@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第26节：SpringCloud（上） - 大伟的博客 </title>
+    <meta name="keywords" content="springcloud">
+    <meta name="description"
+          content="宏观了解SpringCloud,微服务概述，SpringCloud与Dubbo比较，SpringCloud版本，Eureka服务注册与发现">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/04/25/icoding-note-026.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第26节：SpringCloud（上）">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第26节：SpringCloud（上）</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/04/25
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1宏观了解springcloud">1、宏观了解SpringCloud</h2>
+
+<p>前提要懂的技术栈：Mybatis、Spring、SpringMVC、SpringBoot、Vue、Maven、Git、</p>
+
+<p>JSON、Ajax</p>
+
+<blockquote>
+  <p>开发框架：</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Spring：（IOC  AOP  Template模版化）
+		Spring 是一个轻量级的开源Java框架，IOC容器，目的：解决企业级开发的复杂性问题（粘合剂）
+		随着时间的推移...越来越复杂了，需要简化
+SpringBoot：脚手架
+  	不是新东西，Spring的升级版
+  	新一代JavaEE开发标准
+  	自动配置
+  	约定大于配置
+    基于SpringBoot 我们可以快速开发我们的应用
+    （单体）-----》（微服务）  业务逻辑实际没有发生变化，是架构产生变化
+    基于SpringBoot 也可以开发独立的微服务，通过RestTemplate互相访问，通过注册中心把微服务管			理起来。
+</code></pre></div></div>
+
+<blockquote>
+  <p>微服务架构：（新架构）</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>核心思想：拆分，模块化！
+单体：
+	单体是一台机器，所有东西都是部署在一个电脑上！
+	访问：直接访问项目即可，方法是本地调用本地方法
+
+微服务：
+	很多个服务，部署一般在多台服务器上！
+	多个服务被代理，访问代理（nginx访问代理）
+	对内RPC，对外RestFul
+
+微服务架构的4个核心问题：
+	- 客户端怎么访问服务？
+	- 服务之间如何通信？
+	- 服务如何治理？
+	- 服务挂了怎么办？j &gt; 解决方案
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1、SpringCloud是一个生态，并不是一个技术，其中包含很多技术
+	SpringCloud Netflix 一站式解决方案，上面的4个核心问题，他都可以解决
+	Api网关：zuul
+	通信：Feign-&gt;HttpClient http的通信方式，同步并阻塞的
+	服务注册与发现： Eureka
+	熔断机制： Hystrix
+	
+	2018年底 ，Netflix 宣布无限期停止维护
+	
+2、Apache Dubbo + Zookeeper
+	api网关: 没有，借助别人的
+	Dubbo: 基于Java 的高性能的Rpc通信框架，异步非阻塞的
+	服务注册与发现: Zookeeper（动物园管理者）
+	熔断机制： 没有，借助Hystrix
+
+3、SpringCloud Alibaba,一站式解决方案，上面的4个核心问题，他都可以解决
+
+本质：
+	- API网关，路由
+	- Http，RPC 通信方式，服务调用
+	- 服务注册与发现，高可用
+	- 熔断机制，服务降级 （网络是不可靠的）
+</code></pre></div></div>
+
+<blockquote>
+  <p>最新概念：服务网格，下一代服务标准，ServerMesh</p>
+</blockquote>
+
+<p>代表解决方案：istrio ,未来要掌握的。</p>
+
+<h2 id="2微服务概述">2、微服务概述</h2>
+
+<p>引用ThougthWorks公司的科学家Martin Fowler在2014年提出的一段话：</p>
+
+<p>原文：<a href="https://martinfowler.com/articles/microservices.html">https://martinfowler.com/articles/microservices.html</a></p>
+
+<p>汉化： <a href="https://www.cnblogs.com/liuning8023/p/4493156.html">https://www.cnblogs.com/liuning8023/p/4493156.html</a></p>
+
+<p>​		<font color="red">微服务架构</font>是一种架构模式，或者说一种架构风格，<strong>它提倡将单一的应用程序划分一组小的服务</strong>，每个服务运行在其独立的自己的进程内，服务之间互相协调，互相配置，为用户提供最终价值。</p>
+
+<p>​		<strong>服务之间采用轻量级的通信机制互相沟通，每个服务都围绕具体的业务进行构建</strong>，并且能够被独立的部署到生产环境中。应尽量避免统一的、集中式的服务管理机制，对具体的一个服务而言，应根据业务上下文，选择合适的语言，工具进行构建，可以有一个非常轻量级的集中式管理来协调这些服务，可以使用不同的语言来编写服务，也可以使用不同的数据存储。</p>
+
+<p>​		微服务化的核心就是将传统的一站式应用，根据业务拆分成一个一个的服务，彻底的去耦合，<strong>每个服务提供单一业务功能</strong>，一个服务做一件事情，从技术角度看就是一种小而独立的处理过程，类似进程的概念，能够自行单独启动和销毁，<strong>拥有自己的独立数据库</strong></p>
+
+<blockquote>
+  <p>微服务与微服务架构</p>
+</blockquote>
+
+<p><strong><font color="red">微</font>服务</strong></p>
+
+<p>​	强调的服务的大小，关注的是某一个点，是具体解决一个问题，提供落地对应服务的一个服务应用，狭义的看，可以是IDEA中的一个微服务工程或者Module</p>
+
+<p><strong>微服务<font color="red">架构</font></strong></p>
+
+<p>​	一种新的架构形式，2014年Martin Fowler提出</p>
+
+<blockquote>
+  <p>微服务优缺点</p>
+</blockquote>
+
+<ol>
+  <li>每个服务足够内聚，小，代码容易理解，聚焦一个指定的业务功能；</li>
+  <li>开发简单，开发效率高，一个服务可能只是专一的干一件事</li>
+  <li>微服务能被小团队单独开发，2-5个人</li>
+  <li>微服务事松耦合的，是有功能意义的服务，无论是在开发阶段或部署阶段都是独立的</li>
+  <li>微服务能使用不同的语言开发</li>
+  <li>易于和第三方集成，微服务允许容易且灵活的方式集成自动部署</li>
+  <li>微服务易于被一个开发人员理解，修改和维护，这样小团队能关注自己的工作成果，无需通过合作才能体现价值</li>
+  <li>微服务允许你利用融合最新技术</li>
+  <li>微服务只是业务逻辑的代码，不会和html、css或其他界面混合</li>
+  <li>每个微服务都有自己的存储能力，可以有自己的独立数据库，也可以统一数据库</li>
+</ol>
+
+<p><strong>缺点</strong></p>
+
+<ul>
+  <li>开发人员要处理分布式系统的复杂性</li>
+  <li>随着服务的增加，运维的压力也在增大</li>
+  <li>服务间通信成本</li>
+  <li>数据一致性</li>
+  <li>系统集成测试</li>
+  <li>性能监控</li>
+</ul>
+
+<blockquote>
+  <p>微服务技术栈有哪些</p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th>目的</th>
+      <th>落地技术</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>服务开发</td>
+      <td>SpringBoot,Spring</td>
+    </tr>
+    <tr>
+      <td>服务注册与发现</td>
+      <td>Eureka、Consul、Zookeeper、Nacos</td>
+    </tr>
+    <tr>
+      <td>服务调用</td>
+      <td>Rest 、RPC、gRPC</td>
+    </tr>
+    <tr>
+      <td>服务熔断器</td>
+      <td>Hystrix、Envoy等</td>
+    </tr>
+    <tr>
+      <td>负载均衡</td>
+      <td>Ribbon、Nginx等</td>
+    </tr>
+    <tr>
+      <td>服务接口调用（客户端调用服务的简化工具）</td>
+      <td>Feign</td>
+    </tr>
+    <tr>
+      <td>消息队列</td>
+      <td>Kafka、RabbitMQ、ActiveMQ、RocketMQ</td>
+    </tr>
+    <tr>
+      <td>服务配置中心管理</td>
+      <td>SpringCloudConfig、Nacos、Chef等</td>
+    </tr>
+    <tr>
+      <td>服务路由（Api网关）</td>
+      <td>Zuul、SpringCloud gateway</td>
+    </tr>
+    <tr>
+      <td>服务监控</td>
+      <td>Zabbix、Nagios</td>
+    </tr>
+    <tr>
+      <td>服务部署</td>
+      <td>Docker、Kubernetes</td>
+    </tr>
+    <tr>
+      <td>数据流操作开发包</td>
+      <td>SpringCloud Stream（封装Redis、RabbitMQ、Kafka等）</td>
+    </tr>
+    <tr>
+      <td>消息总线</td>
+      <td>SpringCloud Bus</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="/assets/images/2020/springcloud/spring-cloud-alibaba.gif" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/spring-cloud.gif" alt="" /></p>
+
+<p>​		SpirngCloud，基于SpringBoot提供的一套微服务解决方案，包括服务注册与发现、配置中心、链接监控，服务网关，负载均衡，断路器，路由等组件，除了基于netflix开源组件做流抽象封装外，还有一些选项中立的开源组件，是各个微服务架构落地技术的集合体，俗称微服务全家桶。</p>
+
+<p>​		SpringBoot并没有重复造轮子，它只是将目前各家公司开发比较成熟的服务框架组合起来，通过SpringBoot风格进行封装，屏蔽了复杂的配置和实现原理，最终给开发者留出了一套简单易懂，易部署易维护的分布式系统开发工具包。</p>
+
+<p><strong>SpringBoot 专注于快速、方便的开发单个个体微服务，SpringCloud关注全局的服务治理框架，依赖SpringBoot</strong></p>
+
+<blockquote>
+  <p>面试题：Dubbo 和 SpringCloud的对比</p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>Dubbo</th>
+      <th>SpringCloud</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>服务注册中心</td>
+      <td>Zookeeper</td>
+      <td>Eureka</td>
+    </tr>
+    <tr>
+      <td>服务调用方式</td>
+      <td>RPC</td>
+      <td>REST API (HTTP)</td>
+    </tr>
+    <tr>
+      <td>服务监控</td>
+      <td>Dubbo-monitor</td>
+      <td>Spring Boot Admin</td>
+    </tr>
+    <tr>
+      <td>断路器</td>
+      <td>不完善</td>
+      <td>Hystrix</td>
+    </tr>
+    <tr>
+      <td>服务网关</td>
+      <td>无</td>
+      <td>Zuul、Gateway</td>
+    </tr>
+    <tr>
+      <td>分布式配置</td>
+      <td>无</td>
+      <td>SpringCloud Config</td>
+    </tr>
+    <tr>
+      <td>服务跟踪</td>
+      <td>无</td>
+      <td>SpringCloud Sleuth</td>
+    </tr>
+    <tr>
+      <td>消息总线</td>
+      <td>无</td>
+      <td>SpringCloud Bus</td>
+    </tr>
+    <tr>
+      <td>数据流</td>
+      <td>无</td>
+      <td>SpringCloud Stream</td>
+    </tr>
+    <tr>
+      <td>批量任务</td>
+      <td>无</td>
+      <td>SpringCloud Task</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>最大区别：SpringCloud抛弃了Dubbo的RPC通信，采用基于HTTP的Rest方式</strong></p>
+
+<p>REST相比RPC更为灵活，服务提供者和服务调用者不存在代码级别的强依赖，这在强调快速演化的微服务环境下，显得更加合适。</p>
+
+<p><strong>解决问题领域不一样：Dubbo的定位是一款RPC框架（远程服务本地调用），Spring Cloud的目标是微服务架构下的一站式解决方案</strong></p>
+
+<blockquote>
+  <p>SpringCloud版本</p>
+</blockquote>
+
+<p>SpringCloud 是一个由很多独立子项目组成的大型综合项目，每个子项目有不同的发行节奏，都维护着自己的发布版本号，为避免与子项目的发布版本号混淆，采用伦敦地铁站的名称来命名版本，根据字母表的顺序来对应时间顺序，SpringBoot需要与SpringCloud版本对应</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>SpringCloud</th>
+      <th>中文</th>
+      <th>SpringBoot大版本</th>
+      <th>SpringBoot代表</th>
+      <th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Angel，2015-3 发布</td>
+      <td>安吉尔</td>
+      <td>1.2.x</td>
+      <td>1.2.8</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Brixton，2016-5</td>
+      <td>布里克斯顿</td>
+      <td>1.3.x</td>
+      <td>1.3.8</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Camden，2016-9</td>
+      <td>卡梅登</td>
+      <td>1.4.x</td>
+      <td>1.4.2</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Dalston，2017-4</td>
+      <td>达斯顿</td>
+      <td>1.5.x</td>
+      <td>1.5.x</td>
+      <td>常用</td>
+    </tr>
+    <tr>
+      <td>Edgware，</td>
+      <td>艾奇韦尔</td>
+      <td>1.5.x</td>
+      <td>1.5.19</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Finchley，2018-6</td>
+      <td>芬奇利</td>
+      <td>2.0.x</td>
+      <td>2.0.8</td>
+      <td>常用</td>
+    </tr>
+    <tr>
+      <td>Greenwich，2019-1</td>
+      <td>格林威治</td>
+      <td>2.1.x</td>
+      <td>2.1.2</td>
+      <td>常用</td>
+    </tr>
+    <tr>
+      <td>Hoxton</td>
+      <td>霍克斯顿</td>
+      <td>2.2.x</td>
+      <td>2.2.6</td>
+      <td>最新</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>版本说明</p>
+
+<p>SNAPSHOT
+快照版，可以稳定使用，且仍在继续改进版本。</p>
+
+<p>PRE
+preview edition，
+预览版,内部测试版. 主要是给开发人员和测试人员测试和找BUG用的，不建议使用；</p>
+
+<p>RC
+Release Candidate，发行候选版本，基本不再加入新的功能，主要修复bug。是最终发布成正式版的前一个版本，将bug修改完就可以发布成正式版了。</p>
+
+<p>SR
+Service Release，表示bug修复
+修正版或更新版，修正了正式版推出后发现的Bug。</p>
+
+<p>GA
+General Availability，正式发布的版本，官方开始推荐广泛使用，国外有的用GA来表示release版本。</p>
+
+<blockquote>
+  <p>Spring Boot版本格式：主版本号.子版本号.修正版本号：</p>
+
+  <p>如：SpringBoot 2.1.5</p>
+
+  <p>其中2: 表示的主版本号，表示是我们的SpringBoot第二代产品。
+其中1: 表示的是次版本号，增加了一些新的功能但是主体的架构是没有变化的
+其中5: 表示的是bug修复版。
+所以2.1.5合起来就是springboot的第二代版本的第1个小版本的第5次bug修复版本。</p>
+</blockquote>
+
+<h2 id="3eureka">3、Eureka</h2>
+
+<p>服务注册与发现</p>
+
+<p>基本原理，C/S架构</p>
+
+<p><img src="/assets/images/2020/springcloud/eureka-serve-client.gif" alt="" /></p>
+
+<p>Dubbo的服务调用架构</p>
+
+<p><img src="/assets/images/2020/springcloud/dubbo.gif" alt="" /></p>
+
+<blockquote>
+  <p>构建Eureka Serve端</p>
+</blockquote>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、编写配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">server</span><span class="pi">:</span>
+  <span class="na">port</span><span class="pi">:</span> <span class="m">7001</span>
+
+<span class="na">eureka</span><span class="pi">:</span>
+  <span class="na">instance</span><span class="pi">:</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">localhost</span> <span class="c1"># 实例名称，</span>
+  <span class="na">client</span><span class="pi">:</span>
+    <span class="na">registerWithEureka</span><span class="pi">:</span> <span class="no">false</span>   <span class="c1"># 不需要检索自己</span>
+    <span class="na">fetchRegistry</span><span class="pi">:</span> <span class="no">false</span>  <span class="c1"># 是否将自己注册到注册中心，服务端不需要注册自己</span>
+    <span class="na">serviceUrl</span><span class="pi">:</span>
+      <span class="na">defaultZone</span><span class="pi">:</span> <span class="s">http://${eureka.instance.hostname}:${server.port}/eureka/</span> <span class="c1"># 注册中心地址，多个注册中心用,分隔</span>
+
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">eureka-server</span>
+</code></pre></div></div>
+
+<p>3、启动类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaServer</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EurekaServerApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">EurekaServerApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>构建Eureka Client端</p>
+</blockquote>
+
+<p>1、导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>2、编写配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">eureka</span><span class="pi">:</span>
+  <span class="na">client</span><span class="pi">:</span>
+    <span class="na">serviceUrl</span><span class="pi">:</span>
+      <span class="na">defaultZone</span><span class="pi">:</span> <span class="s">http://localhost:7001/eureka/</span>
+</code></pre></div></div>
+
+<p>3、启动类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaClient</span> <span class="c1">// Eureka客户端，专用注解</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConsumerDeptApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">ConsumerDeptApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>完善服务注册信息</p>
+</blockquote>
+
+<p>导入依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>编写配置文件</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">info</span><span class="pi">:</span>
+  <span class="s">app.name</span><span class="pi">:</span> <span class="s">edu服务提供者</span>
+  <span class="s">company.name</span><span class="pi">:</span> <span class="s">jude</span>
+  <span class="s">build.artifactId</span><span class="pi">:</span> <span class="err">@</span><span class="s">project.artifactId@</span>
+  <span class="s">build.version</span><span class="pi">:</span> <span class="err">@</span><span class="s">project.version@</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/actuator-info.gif" alt="" /></p>
+
+<blockquote>
+  <p>Eureka的自我保护机制</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/springcloud/eureka-self-protect.gif" alt="" /></p>
+
+<p>某一时刻，某一服务不能使用了，eureka不会立刻清理，但依旧会保持微服务的实例信息。</p>
+
+<ul>
+  <li>
+    <p>心跳检测，微服务每30秒向eureka server发送心跳， eureka  server若90s之内都没有收到某个客户端的心跳，则认为此服务出了问题， 会从注册的服务列表中将其删除，并通知订阅它的客户端更新服务列表，  而且还会通知其他eureka server更新此信息</p>
+  </li>
+  <li>
+    <p>eureka server保护机制，通过打卡开关，默认开启，可以让eureka server处于保护状态，主要是用于某eureka  server由于网络或其他原因，导致接收不到其他微服务的心跳，此时不能盲目的将其他微服务从服务列表中删除。  具体规则：如果一段时间内，85%的服务都没有发送心跳，则此server进入保护状态，此状态下，可以正常接受注册，可以正常提供查询服务，但是不与其他server同步信息，也不会通知订阅它的客户端，这样就不会误杀其他微服务</p>
+  </li>
+</ul>
+
+<font color="red">不建议关闭，如果要关闭</font>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">eureka.server.enable-self-preservation</span> <span class="p">=</span> <span class="s">false # 默认true</span>
+</code></pre></div></div>
+
+<p>参考 <a href="http://bhsc881114.github.io/2018/04/01/eureka%E7%BC%93%E5%AD%98%E7%BB%86%E8%8A%82%E4%BB%A5%E5%8F%8A%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E7%9A%84%E6%9C%80%E4%BD%B3%E9%85%8D%E7%BD%AE/">eureka缓存细节以及生产环境的最佳配置</a></p>
+
+<p>Eureka Server端配置</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 中小规模下，自我保护模式坑比好处多，所以关闭它
+</span><span class="py">eureka.server.enableSelfPreservation</span><span class="p">=</span><span class="s">false</span>
+<span class="c"># 心跳阈值计算周期，如果开启自我保护模式，可以改一下这个配置
+## eureka.server.renewalThresholdUpdateIntervalMs=120000
+</span>
+<span class="c"># 主动失效检测间隔,配置成5秒
+</span><span class="py">eureka.server.evictionIntervalTimerInMs</span><span class="p">=</span><span class="s">5000</span>
+
+<span class="c"># 心跳间隔，5秒
+</span><span class="py">eureka.instance.leaseRenewalIntervalInSeconds</span><span class="p">=</span><span class="s">5</span>
+<span class="c"># 没有心跳的淘汰时间，10秒
+</span><span class="py">eureka.instance.leaseExpirationDurationInSeconds</span><span class="p">=</span><span class="s">10</span>
+
+<span class="c"># 禁用readOnlyCacheMap
+</span><span class="py">eureka.server.useReadOnlyResponseCache</span><span class="p">=</span><span class="s">false</span>
+</code></pre></div></div>
+
+<p>服务提供者和clinet配置</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## 心跳间隔，5秒
+</span><span class="py">eureka.instance.leaseRenewalIntervalInSeconds</span><span class="p">=</span><span class="s">5</span>
+<span class="c">## 没有心跳的淘汰时间，10秒
+</span><span class="py">eureka.instance.leaseExpirationDurationInSeconds</span><span class="p">=</span><span class="s">10</span>
+
+<span class="c"># 定时刷新本地缓存时间
+</span><span class="py">eureka.client.registryFetchIntervalSeconds</span><span class="p">=</span><span class="s">5</span>
+<span class="c"># ribbon缓存时间
+</span><span class="py">ribbon.ServerListRefreshInterval</span><span class="p">=</span><span class="s">2000</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>服务发现，服务列表</p>
+</blockquote>
+
+<p>微服务从注册中心获取的服务列表</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 通过服务发现来获得这个服务的信息</span>
+<span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="nc">DiscoveryClient</span> <span class="n">client</span><span class="o">;</span>
+
+<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/discovery"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Object</span> <span class="nf">discovery</span><span class="o">(){</span>
+  <span class="c1">// 获得微服务列表清单</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getServices</span><span class="o">();</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"client.getServices()==&gt;"</span><span class="o">+</span><span class="n">list</span><span class="o">);</span>
+  <span class="c1">// 得到具体的微服务</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ServiceInstance</span><span class="o">&gt;</span> <span class="n">instances</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getInstances</span><span class="o">(</span><span class="s">"SPRINGCLOUD-PROVIDER-DEPT"</span><span class="o">);</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="nc">ServiceInstance</span> <span class="n">instance</span> <span class="o">:</span> <span class="n">instances</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span>
+      <span class="n">instance</span><span class="o">.</span><span class="na">getServiceId</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span> <span class="o">+</span>
+      <span class="n">instance</span><span class="o">.</span><span class="na">getHost</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span> <span class="o">+</span>
+      <span class="n">instance</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span> <span class="o">+</span>
+      <span class="n">instance</span><span class="o">.</span><span class="na">getUri</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\t"</span>
+    <span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">client</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>主启动类添加注解@EnableDiscoveryClient</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaClient</span> <span class="c1">// 本服务启动之后，就会自动注册到 Eureka 中</span>
+<span class="nd">@EnableDiscoveryClient</span> <span class="c1">// 显示定义服务发现</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeptProvider8001</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">DeptProvider8001</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/04/25/icoding-note-026.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

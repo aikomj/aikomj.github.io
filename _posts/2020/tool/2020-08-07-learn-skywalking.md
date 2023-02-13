@@ -2,15 +2,15 @@
 layout: post
 title: 体验分布式系统的监控工具Skywalking
 category: tool
-tags: springcloud
-keywords: sky walking
+tags: [tool]
+keywords: skywalking
 excerpt: Skywalking是一个分布式系统的应用程序性能监视工具，专为微服务、云原生架构和基于容器（Docker、K8s、Mesos）架构而设计
 lock: noneed
 ---
 
 Skywalking是一个分布式系统的应用程序性能监视工具，专为微服务、云原生架构和基于容器（Docker、K8s、Mesos）架构而设计。SkyWalking 是观察性分析平台和应用性能管理系统。提供分布式追踪、服务网格遥测分析、度量聚合和可视化一体化解决方案。支持Java, .Net Core,  PHP, NodeJS, Golang, LUA语言探针，支持Envoy + Istio构建的Service Mesh。
 
-
+转载自 https://www.fangzhipeng.com/architecture/2020/06/12/skywalking-test.html
 
 ## 1、安装ES
 
@@ -229,16 +229,7 @@ kill 进程ID
 
 
 
-## 4、skywalking集群
-
-
-
-
-
-## 源码下载
+**源码下载**
 
 [https://github.com/forezp/distributed-lab/tree/master/boot-es](https://github.com/forezp/distributed-lab/tree/master/boot-es)
-
-> 本文为转载文章  
-> 原文链接：https://www.fangzhipeng.com/architecture/2020/06/12/skywalking-test.html
 

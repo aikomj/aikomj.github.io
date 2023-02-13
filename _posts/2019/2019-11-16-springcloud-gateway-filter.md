@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringCloud Gateway 教程第3篇：filter 过滤篇
+title: SpringCloud Gateway 教程第3篇：filter 过滤
 category: springcloud
 tags: [springcloud]
 keywords: springcloud

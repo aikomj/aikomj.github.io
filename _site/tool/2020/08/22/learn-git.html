@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> git入门进阶高级 - 大伟的博客 </title>
+    <meta name="keywords" content="git">
+    <meta name="description"
+          content="带你了解git版本控制常用的功能，协同开发，分支管理，gitlab的安装使用">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/tool/2020/08/22/learn-git.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="git入门进阶高级">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>git入门进阶高级</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/08/22
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1git与svn">1、git与svn</h2>
+
+<p><img src="/assets/images/2020/springcloud/git/git-and-svn.jpg" alt="" /></p>
+
+<p><img src="../../../assets/images/2020/springcloud/git/git-and-svn.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Svn 是集中式版本控制，所有版本都依赖这个中心点，不支持离线工作</p>
+  </li>
+  <li>
+    <p>Git 是分布式版本控制，都是由用户自己的电脑完成控制，目的去中心化，然后自己的版本提交到远程仓库，协同开发，拉取远程仓库版本到本地，保持版本一致。</p>
+
+    <p>git的缺点是：</p>
+
+    <p>1、保密性差，一旦开发者把整个库克隆下来就可以完全公开所有代码，权限控制不友好，如果需要对开发者限制各种权限建议使用svn.</p>
+  </li>
+</ul>
+
+<h2 id="2git的协作开发流程">2、git的协作开发流程</h2>
+
+<h3 id="创建到提交">创建到提交</h3>
+
+<p><img src="/assets/images/2020/springcloud/git/git-work-flow.jpg" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建本地仓库</span>
+git init
+
+<span class="c"># 查看文件状态：红色表示文件还没添加到暂存区，绿色表示文件已经放入暂存区</span>
+git status 
+<span class="c"># 添加到暂存区</span>
+git add 文件
+git add <span class="nb">.</span>  <span class="c"># 提交所有的文件到暂存区</span>
+git <span class="nb">rm</span> <span class="nt">--cached</span> good.txt <span class="c"># 从暂存区拉回到工作区</span>
+<span class="c"># 从暂存区添加文件到本地仓库</span>
+git commit <span class="nt">-m</span> <span class="s1">'注释xxxxx'</span>
+</code></pre></div></div>
+
+<p>整个工程是不可逆的： 一定工作区 -&gt; 暂存区-&gt; 版本区（本地仓库）</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-status.jpg" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># log查看版本</span>
+git log <span class="nt">--pretty</span><span class="o">=</span>oneline
+<span class="c"># 以一行的方式显示git log记录</span>
+git log <span class="nt">--oneline</span>
+<span class="c"># 查看最后面的两个日志记录</span>
+git log <span class="nt">-n</span> number
+<span class="c"># 以树状的方式展示最后两次的提交</span>
+git log <span class="nt">--graph</span> <span class="nt">-n</span> 2
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-log-1.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-log-2.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-log-n.jpg" alt="" /></p>
+
+<h3 id="版本撤回">版本撤回</h3>
+
+<blockquote>
+  <p>第一种方式：指定版本号撤回</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log <span class="nt">--oneline</span> <span class="c"># 查看版本号</span>
+git reset <span class="nt">--hard</span> 版本号
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-reset.jpg" alt="" /></p>
+
+<p>git当前版本已经移动到上一版本</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-reset-2.jpg" alt="" /></p>
+
+<blockquote>
+  <p>第二种方式：HEAD指针偏移往前版本移动</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git reset <span class="nt">--hard</span> HEAD^  <span class="c"># 往前移动一个版本</span>
+git reset <span class="nt">--hard</span> HEAD^^  <span class="c"># 往前移动两个版本</span>
+git reset <span class="nt">--hard</span> HEAD~3 <span class="c"># 往前移动3个版本，使用波浪线简写</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-reset-3.jpg" alt="" /></p>
+
+<blockquote>
+  <p>移动错了，现在我想往新的版本移动，如何操作</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log <span class="nt">--oneline</span> <span class="nt">--reflog</span> <span class="c"># 查看所有的版本</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-reset-4.jpg" alt="" /></p>
+
+<p>发现在当前master后面还有4个版本，这时候，我们可以指定版本撤回</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git reset <span class="nt">--hard</span> 1b1257d
+</code></pre></div></div>
+
+<h3 id="windows凭据">windows凭据</h3>
+
+<p><img src="\assets\images\2020\springcloud\git\windows-auth.png" alt="" /></p>
+
+<p>点进去删除你的gitee凭据</p>
+
+<p><img src="\assets\images\2020\springcloud\git\windows-auth-2.png" alt="" /></p>
+
+<h2 id="3忽略不需要提交的文件">3、忽略不需要提交的文件</h2>
+
+<p>一般maven项目，除了src和pom.xml文件，其他文件都不需要提交</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ingore.jpg" alt="" /></p>
+
+<blockquote>
+  <p>第一种方式使用TortoiseGit小乌龟忽略</p>
+</blockquote>
+
+<p>选择你需要忽略的文件，右键如下操作</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ingore-2.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ingore-3.jpg" alt="" /></p>
+
+<p>它是以追加文件的方式将忽略文件放到.gitignore文件的</p>
+
+<blockquote>
+  <p>第二种方式vim 创建</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ingore-4.jpg" alt="" /></p>
+
+<p>与.git同目录</p>
+
+<h2 id="4协同开发">4、协同开发</h2>
+
+<p>远程仓库：</p>
+
+<ul>
+  <li>
+    <p>国外github</p>
+  </li>
+  <li>
+    <p>国内gitee</p>
+
+    <p>创建仓库后</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 1、设置全局签名</span>
+git config <span class="nt">--global</span> user.name <span class="s2">"xieer"</span>
+git config <span class="nt">--global</span> user.email <span class="s2">"dxxx@163.com"</span>
+<span class="c"># 2、添加本地仓库和远程仓库的关联-https连接</span>
+git remote add origin https://gitee.com/jacobmj/aikomj.github.io.git
+<span class="c"># 删除之前关联的</span>
+git remote <span class="nb">rm </span>origin
+<span class="c"># 修改远程关联的仓库</span>
+git remote set-url origin https://gitee.com/jacobmj/aikomj.github.io.git
+<span class="c"># 首次提交代码需要填写gitee的登录账号密码</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>自己服务器搭建gitlab</p>
+  </li>
+</ul>
+
+<h3 id="创建版本库设置签名">创建版本库设置签名</h3>
+
+<p>设置用户名和密码，注意和远程仓库的登录账号和密码没有任何关系，<mark>设置签名只是为了区分不同开发人员的身份，</mark></p>
+
+<p>查看提交代码的开发人员的身份</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-log-3.jpg" alt="" /></p>
+
+<p>有两种方式：</p>
+
+<blockquote>
+  <p>第一种：项目级别的签名，仅在当前本地库有效</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在项目根目录下执行</span>
+git config user.name <span class="s2">"xiaoer"</span>
+git config user.email <span class="s2">"xxxxx@163.com"</span>
+
+<span class="c"># 查看局部签名信息</span>
+.git/config
+<span class="o">[</span>user]
+ name <span class="o">=</span> xiaoer
+ email <span class="o">=</span> xxxx@163.com
+</code></pre></div></div>
+
+<p><strong>优先级高于全局签名</strong></p>
+
+<p><img src="/assets/images/2020/springcloud/git/gitconfig-3.jpg" alt="" /></p>
+
+<p>发现config已关联了远程仓库</p>
+
+<blockquote>
+  <p>第二种：系统级别签名（全局），登录当前系统的用户都有效</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> user.name <span class="s2">"xiaoer"</span>
+git config <span class="nt">--global</span> user.email <span class="s2">"xxxxx@163.com"</span>
+</code></pre></div></div>
+
+<p>全局签名的信息放在系统盘的/用户目录/用户名目录/.gitconfig文件中，如我下面的mac用户名下</p>
+
+<p><img src="/assets/images/2020/springcloud/git/gitconfig.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/gitconfig-2.jpg" alt="" /></p>
+
+<h3 id="提交文件到远程仓库">提交文件到远程仓库</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push origin master
+<span class="c"># 首次提交代码需要填写gitee的登录账号密码，windows环境下git会把你的远程仓库的登录账号密码存储到凭据管理中</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-user-password.jpg" alt="" /></p>
+
+<p>如果gitee上的账号密码修改了，凭据一定要删除重新输入</p>
+
+<h3 id="克隆远程仓库">克隆远程仓库</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://gitee.com/jacobmj/aikomj.github.io.git
+</code></pre></div></div>
+
+<ul>
+  <li>它会自动创建本地仓库</li>
+  <li>它会自动与远程仓库进行关联</li>
+  <li>已经与远程仓库同步，只执行一次</li>
+</ul>
+
+<h3 id="ssh协议免密操作">ssh协议免密操作</h3>
+
+<p>避免https连接方式的频繁输入登录用户和密码，使用ssh连接方式</p>
+
+<p>1、打开命令工具“git bash here”输入命令“ssh-keygen -t rsa” 生成密钥（放在本地）和公钥（放在远程仓库gitee），</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh-keygen <span class="nt">-t</span> rsa
+</code></pre></div></div>
+
+<p>原理：密钥放在本地，公钥放到远程仓库gitee，后续每次的提交都会携带密钥到远程仓库比较，比较一致就push成功</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ssh-keygen.jpg" alt="" /></p>
+
+<p>2、打开公钥的内容复制出来</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ssh-keygen-2.jpg" alt="" /></p>
+
+<p>3、登录gitee码云，把公钥地址复制到SSH公钥</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ssh-keygen-3.jpg" alt="" /></p>
+
+<p>4、修改项目根目录下的.git/config，把远程仓库的关联地址修改为ssh连接</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote set-url origin git@gitee.com:jacobmj/aikomj.github.io.git
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ssh-keygen-4.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-ssh-keygen-5.jpg" alt="" /></p>
+
+<p>5、ssh测试</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push origin master
+
+git pull origin master
+
+都不用输入账号密码了
+</code></pre></div></div>
+
+<h3 id="邀约团队人员">邀约团队人员</h3>
+
+<p>如果别的账号把自己的代码clone下来，想push代码到分支master，如果该账号还不是团队协作开发中的一员，他是没有权限push代码的</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-push-auth.jpg" alt="" /></p>
+
+<p>你可以clone，但要经我的同意才可以修改我的代码</p>
+
+<blockquote>
+  <p>邀约开发人员(gitee码云)</p>
+</blockquote>
+
+<p>1、点击管理</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-1.jpg" alt="" /></p>
+
+<p>2、邀请用户</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-2.jpg" alt="" /></p>
+
+<p>3、使用邮箱或者手机邀请用户</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-3.jpg" alt="" /></p>
+
+<p>4、被邀请人收到站内信，点击同意</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-4.jpg" alt="" /></p>
+
+<p>点击接受</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-5.jpg" alt="" /></p>
+
+<p>5、邀请成功，查看开发者</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-6.jpg" alt="" /></p>
+
+<p>开发者重新push代码，就有权限啦</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-team-7.jpg" alt="" /></p>
+
+<h2 id="5git分支管理">5、git分支管理</h2>
+
+<p><strong>重点</strong></p>
+
+<p>分支在实际开发中的作用：假如你准备开发一个新功能，但是需要两周才能完成，第一周你写了50%的代码，如果立刻提交，由于代码还没有写完，不完整的代码库会导致别人不能干活。如果等代码全部写完才一次提交，又存在丢失每天进度的巨大风险。</p>
+
+<p>分支相当于版本的隔离</p>
+
+<blockquote>
+  <p>解决方案：使用分支，合并分支</p>
+</blockquote>
+
+<p>实际企业开发都使用分支，主干分支是master</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-branch-2.jpg" alt="" /></p>
+
+<p>1) 创建分支</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git branch dev <span class="c"># 创建分支dev</span>
+git checkout dev <span class="c"># 选中当前分支为dev</span>
+
+<span class="c"># 使用复合命令</span>
+git checkout <span class="nt">-b</span> dev <span class="c"># 创建分支dev并选中当前分支为dev</span>
+</code></pre></div></div>
+
+<p>2) 查看分支</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git branch
+<span class="k">*</span> master
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/git/git-branch-1.jpg" alt="" /></p>
+
+<p>3) 添加文件，提交文件到当前分支</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vim test.txt
+git add <span class="nb">.</span>
+git commit <span class="nt">-m</span> <span class="s1">'e.txt'</span>
+</code></pre></div></div>
+
+<p>4) 推送分支到远程仓库</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push origin dev
+</code></pre></div></div>
+
+<p>就会在远程仓库多一个dev分支，相当于在当前版本的master复制一份出来，并在此版本上修改代码</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-branch-3.jpg" alt="" /></p>
+
+<p><strong>注意是推送到dev分支</strong></p>
+
+<p>5) 合并分支</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout master <span class="c"># 先切回master分支</span>
+git merge dev <span class="c"># 将dev下面的的内容全部合并到master</span>
+<span class="c"># 提交到master分支</span>
+git push origin master
+</code></pre></div></div>
+
+<p>实际开发中，每个开发人员都可能开一个分支，并在自己的分支上模块开发，最后都合并到master，构成完整的项目。</p>
+
+<p>在实际代码管理，一般会分测试环境、预览环境、正式环境，个人开发分支一般基于项目分支或者迭代版本分支基础上新开出来的分支进行开发，管理如下图：</p>
+
+<p><img src="\assets\images\2020\springcloud\git\req-sit-uat-ver.jpg" alt="" /></p>
+
+<p>分支命名参考</p>
+
+<p><img src="\assets\images\2021\springcloud\git-feature-version-name.jpg" alt="" /></p>
+
+<h2 id="6idea操作git">6、idea操作git</h2>
+
+<h3 id="提交代码到远程仓库">提交代码到远程仓库</h3>
+
+<p>让idea提交代码到远程仓库，步骤</p>
+
+<ul>
+  <li>
+    <p>创建maven工程</p>
+
+    <p>项目版本控制，相当于执行git init 命令初始本地 仓库</p>
+
+    <p><img src="/assets/images/2020/springcloud/git/idea-vcs.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>提交代码到本地仓库</p>
+  </li>
+  <li>
+    <p>设计忽略文件.gitignore在当前项目</p>
+
+    <p>先安装idea的ignore插件，重启idea</p>
+
+    <p><img src="/assets/images/2020/springcloud/git/idea-vcs-ignore.jpg" alt="" /></p>
+
+    <p>项目右键新建.gitignore文件</p>
+
+    <p><img src="/assets/images/2020/springcloud/git/idea-vcs-1.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>提交忽略文件到本地仓库</p>
+
+    <p><img src="/assets/images/2020/springcloud/git/idea-vcs-ignore-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>推送代码到远程仓库</p>
+
+    <p>项目关联远程仓库，同时这里也可以修改远程仓库地址</p>
+
+    <p><img src="/assets/images/2020/springcloud/git/idea-vcs-2.jpg" alt="" /></p>
+
+    <p>push</p>
+
+    <p><img src="/assets/images/2020/springcloud/git/idea-vcs-3.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>拉取远程仓库代码到本地仓库</p>
+  </li>
+  <li>
+    <p>修改远程仓库地址</p>
+  </li>
+</ul>
+
+<h3 id="项目克隆和pull">项目克隆和pull</h3>
+
+<p><img src="/assets/images/2020/springcloud/git/git-clone.jpg" alt="" /></p>
+
+<h3 id="分支的创建和合并">分支的创建和合并</h3>
+
+<blockquote>
+  <p>创建</p>
+</blockquote>
+
+<p>idea打开项目，在右下角，看到当前项目的HEAD主分支是master，选择创建分支</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-4.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-5.jpg" alt="" /></p>
+
+<p>Checkout  branch 表示当前本地仓库代码的分支是1.0，提交代码也会提交到1.0这个分支上</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-6.jpg" alt="" /></p>
+
+<p>将本地仓库1.0的分支提交到远程仓库的1.0分支</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-7.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-8.jpg" alt="" /></p>
+
+<p>这样master分支的代码与1.0分支的代码就完全的隔离了，当来了新的业务是不是可以考虑用新的分支去做了，如果搭一个基础的项目框架可以考虑使用分支保存，用分支也是一种解决开发冲突的方案。</p>
+
+<blockquote>
+  <p>合并</p>
+</blockquote>
+
+<p>1、先check out 切回master分支</p>
+
+<p>项目右下角，可以看到当前代码的分支上1.0，我们选择master-&gt; check out</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-9.jpg" alt="" /></p>
+
+<p>2、合并1.0分支的代码</p>
+
+<p>可以看到当前代码的分支已切回到master，选择1.0 -&gt; merge into current</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-10.jpg" alt="" /></p>
+
+<h3 id="版本撤回-1">版本撤回</h3>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-reset-head.png" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-reset-head-2.png" alt="" /></p>
+
+<p>HEAD^ 是还原到上一个版本，HEAD^^ 是还原到上上一个版本。
+ Reset Type 有三种：</p>
+
+<ul>
+  <li>mixed   默认方式，只保留源码，回退commit和index信息</li>
+  <li>soft      回退到某个版本，只回退了commit的信息，不会恢复到index file一级。如果还要提交，直接commit</li>
+  <li>hard    彻底回退，本地源码也会变成上一个版本内容</li>
+</ul>
+
+<h3 id="文件冲突的解决方案">文件冲突的解决方案</h3>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-vcs-conflicts.jpg" alt="" />
+双击冲突文件，处理冲突。</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-conflict.png" alt="" /></p>
+
+<p>找来项目负责人和其他小伙伴，协商以谁的代码为准</p>
+
+<p>查找本地仓库的代码历史，有效时间为12个小时，超出时间范围的代码历史会被丢弃，通过这种方式找回被覆盖的代码</p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-local-history.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/git-local-history2.jpg" alt="" /></p>
+
+<h3 id="代码暂存之git-stash">代码暂存之git stash</h3>
+
+<p>编号 100 的需求完成之后，现在我们又接到一个新的需求，正在 dev-101 分支进行开发，开发还未完成。</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-1.png" alt="" /></p>
+
+<p>突然线上出现 bug，需要我们紧急进行修改，于是我们要基于最新的 master 分支新建一个 bug 分支 bug-12，需要先切换到  master 分支，但是当前分支的代码没有commit， 如果直接切换到 master 分支的话，dev-101 分支上的新增代码就会跑到  master 分支，而代码又不能此时 commit ，于是就轮到 stash 出场了。</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-2.png" alt="" /></p>
+
+<p>Stash 会保存当前工作进度，会把暂存区和工作区的改动保存起来。</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-3.png" alt="" /></p>
+
+<p>添加备注，选择 <strong>CREATE STASH</strong>。你会发现当前工作区内的代码被恢复成了原样。</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-4.png" alt="" /></p>
+
+<p>此刻切换到 master 分支，并创建 bug-12 分支进行修复 bug，修复完成后合并到 master 分支并 push 到远程仓库</p>
+
+<h3 id="代码暂存还原">代码暂存还原</h3>
+
+<p>将 bug-12 与 master 合并完成之后，现在要接着写 dev-101 需求代码，首先先切换到 dev-101 分支；但是之前的代码已经被我们放到了 git 的 stash 当中，我们现在要把代码还原到工作区当中。选择 Unstash Changes</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-5.png" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-6.png" alt="" /></p>
+
+<p>选择之前保存的，同时勾选  Pop stash（还原完成后，会自动删除这个 stash），确定后，工作区之前写的代码就又回来了。</p>
+
+<p><img src="/assets/images/2020/springcloud/git/idea-stash-7.png" alt="" /></p>
+
+<p>Stash 利用好了，就可以自如切换分支，面对突如其来的需求也不必烦恼了~</p>
+
+<h2 id="7gitlab仓库的搭建">7、gitlab仓库的搭建</h2>
+
+<blockquote>
+  <p>docker方式安装gitlab</p>
+</blockquote>
+
+<p>参考我的这篇博客<a href="/icoding-edu/2020/06/11/icoding-note-047.html">gitlab+jenkins自动化部署</a></p>
+
+<blockquote>
+  <p>rpm方式安装</p>
+</blockquote>
+
+<h3 id="成员管理">成员管理</h3>
+
+<p>创建分组</p>
+
+<p><img src="/assets/images/2020/springcloud/git/group-1.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/springcloud/git/group-2.jpg" alt="" /></p>
+
+<p>可以把项目放到组下</p>
+
+<h3 id="删除项目仓库">删除项目仓库</h3>
+
+<p>进入项目后，左边菜单栏settings-&gt;general-&gt;Adance-&gt;remove project</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/tool/2020/08/22/learn-git.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> java - 大伟的博客 </title>
+    <meta name="keywords" content="Spring,Spring Boot,Spring Cloud,Jvm,Docker,FastDFS,Java,MQ,Redis">
+    <meta name="description"
+          content="本站是大伟的技术分享博客，参考自纯洁的微笑《技术人如何搭建自己的技术博客》。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、Dubbo、微服务架构相关的研究与知识分享。">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java-base">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+    <link rel="stylesheet" href="/assets/css/blog-page.css">
+    
+
+    <!-- CSS set in layout -->
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Java 基础系列文章">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Java 基础系列文章</h1>
+            <span class="meta-info">
+                
+                    <span class="mega-octicon octicon-home"></span> &nbsp;&nbsp; Java 人的精神家园。>&nbsp;&nbsp;>&nbsp;&nbsp;<a href ="http://www.justdojava.com/" target="_blank" ><font color="#EB9439">点我直达</font></a>
+                
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container">
+
+    <div class="row">
+
+    <div class="col-md-12">
+
+        <ul id="posts-list">
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2022-12-06</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2022/12/06/read-zipfile.html" target="_blank">读取zip压缩文件内容</a>
+                        <p style="color:#666">JDK压缩输入流ZipInputStream直接读取压缩包内容，可读取UNI小程序获取版本信息，使用ant解压工具类读取压缩文件</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2022-07-17</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2022/07/17/seventeen-utils.html" target="_blank">提升开发效率的17个工具类</a>
+                        <p style="color:#666">Collections,CollectionUtils,Objects,StringUtils,IOUtils,MDC,ClassUtils,BeanUtils,ReflectionUtils,Base64Utils,DigestUtils,SerializationUtils，HttpStatus,gson与map的转换</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2022-03-24</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2022/03/24/beanutils-and-other.html" target="_blank">Bean自动映射工具</a>
+                        <p style="color:#666">常用的get/set,spring的beanutils.copyProperties,详细介绍MapStruct的使用</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2022-02-28</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2022/02/28/compress-image.html" target="_blank">1M图片压缩优化到100kb</a>
+                        <p style="color:#666">JDK原生API压缩图像实战与其他开源库介绍</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2022-01-28</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2022/01/28/hashset-make-sure-element-unique.md.html" target="_blank">HashSet如何保证元素不重复</a>
+                        <p style="color:#666">它会调用元素类的hashcode与equal方法进行判断元素是否已存在</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-11-05</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/11/05/serialize-and-deserialize.html" target="_blank">序列化和反序列化详解</a>
+                        <p style="color:#666">序列化将内存中的java对象转为字节数组用于网络传输或写到磁盘，目的端收到字节数组按指定的数据结构规则恢复为java对象，就是反序列化</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-09-01</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/09/01/relearn-java-note-045.html" target="_blank">重学Java第45讲：LinkedList的扩容机制</a>
+                        <p style="color:#666">核心私有内部类Node，常用操作add方法添加元素、remove方法删除元素、set方法更新元素、indexOf和get方法查找元素</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-08-26</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/08/26/relearn-java-note-044.html" target="_blank">重学Java第44讲：ArrayList的扩容机制</a>
+                        <p style="color:#666">添加元素时调用grow方法扩容原来1.5倍以上，移位运算与位权，添加元素到指定位置，set方法更新元素，remove方法删除元素，indexof方法查找元素，时间复杂度的概念，ArrayList 执行效率的时间复杂度</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-07-08</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/07/08/relearn-java-note-043.html" target="_blank">重学Java第43讲：throw 和 throws</a>
+                        <p style="color:#666">throw 主动抛出异常，throws 关键字写在方法上声明可能产生的异常，让调用方法通过try catch进行捕捉处理</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-05-18</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/05/18/rule-executor.html" target="_blank">使用一个规则执行器替代大量if判断</a>
+                        <p style="color:#666">自定义规则执行器</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-03-16</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/03/16/persistant-object.html" target="_blank">java 中那些持久化对象persistant object</a>
+                        <p style="color:#666">PO,BO,VO,DTO,DAO</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-03-11</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/03/11/no-if-else.html" target="_blank">消除if...else，写出更优雅的代码</a>
+                        <p style="color:#666">使用注解，动态拼接bean名称，模版方法判断，策略工厂模式，责任链模式获取匹配的bean进行处理，枚举场景举例，stream流过滤场景，Assert类断言替换</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-03-04</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/03/04/code-review.html" target="_blank">代码Review的那些事儿</a>
+                        <p style="color:#666">代码Review的好处，做好一场合格的代码评审</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-03-02</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/03/02/new-feature-in-jdk8.html" target="_blank">java8的新特性介绍</a>
+                        <p style="color:#666">Optional类避免显示null,Stream流使用，lambda表达式，函数式接口，冒号方法引用，扩展接口-默认方法和静态方法，新的日期时间API，java类库新增Base64</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-02-02</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/02/02/object-how-to-use-less-memory.html" target="_blank">如何在开发中使用对象减少对内存的使用</a>
+                        <p style="color:#666">都知道堆内存要回收垃圾，那么你也得知道如何在开发中使用对象来减少内存使用，软引用，使用享元模式，分析对象的外在状态和内在状态成员变量</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-01-27</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/01/27/arrays-aslist-careful-use.html" target="_blank">请谨慎使用Arrays.asList,ArrayList的subList，小心踩坑</a>
+                        <p style="color:#666">巴里巴巴java开发手册上也有说明，Arrays.asList返回的ArrayList是Arrays的内部类，subList并不是ArrayList，只是一个视图，所有操作都会反映到原列表</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2021-01-22</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2021/01/22/javassist-update-class-file.html" target="_blank">使用javassist修改class文件</a>
+                        <p style="color:#666">简单的动态编程，反编译class文件查看代码，javassist修改</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-12-15</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/12/15/string-length.html" target="_blank">String的长度限制,Java的常见陷阱，生成随机数的4种方法</a>
+                        <p style="color:#666">Integer.parseInt的转换失败陷阱，Bigdecimal.divide的除不尽陷阱，Collection.emptyList、Array.asList不支持添加/删除元素操作，List使用Iterator迭代遍历时删除，Java生成随机数的4种方式</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-11-26</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/11/26/annotation.html" target="_blank">Java注解的原理，来了解一下</a>
+                        <p style="color:#666">用来注释注解的注解叫做元注解,编写自己的注解</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-11-24</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/11/24/spider.html" target="_blank">使用java做爬虫</a>
+                        <p style="color:#666">使用python做爬虫是比较简单，java也可以做的到，去爬某东上的商品数据</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-10-23</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/10/23/java-if-npe.html" target="_blank">优雅的NPE判断</a>
+                        <p style="color:#666">不使用if null 逻辑，采用JDK8的Optional，自己设计工具类OptionalBean优雅判断NPE</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-10-16</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/10/16/java-io.html" target="_blank">Java的IO流</a>
+                        <p style="color:#666">Java IO按数据格式和传输方式分组，基于字节操作的IO、基于字符操作的IO、基于磁盘操作的IO、基于网络操作的IO,字节与字符的转化，网络IO的工作方式-BIO\NIO\AIO</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-09-22</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/09/22/java-ops.html" target="_blank">JAVA 线上故障排查完整套路，CPU-&gt;磁盘-&gt;内存-&gt;网络-&gt;GC</a>
+                        <p style="color:#666">线上故障主要会包括cpu、磁盘、内存以及网络问题</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-09-21</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/09/21/prod-oom-event.html" target="_blank">生产环境JVM内存溢出案例分析</a>
+                        <p style="color:#666">公司的业务量比较大，在生产环境经常会出现JVM内存溢出的现象,如何快速响应，快速定位，快速恢复业务</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-09-17</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/09/17/java-threadlocal.html" target="_blank">ThreadLocal使用与内存泄漏</a>
+                        <p style="color:#666">threadLocal线程局部变量为我们解决了多线程访问变量的安全问题,key是弱引用，只能生存到下次GC前，如果很多线程使用Threadlocal可能会引起内存泄露，不同的请求获取相同的ThreadLocal值如何解决，InheritableThreadLocal可继承线程变量在线程池中执行被获取相同值的原因，因为线程变量没有被重新set值</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-09-11</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/09/11/java-taishan.html" target="_blank">阿里Java开发手册泰山版-个人精简</a>
+                        <p style="color:#666">会当凌绝顶，一览众山小</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-09-09</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/09/09/integer-cache.html" target="_blank">为什么 Java 中“1000==1000”为false，而”100==100“为true？</a>
+                        <p style="color:#666">integer的缓存，快戳进来看答案</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-07-26</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/07/26/java-error-exception-throwable.html" target="_blank">Error和Exception,抽象类,EOF错误</a>
+                        <p style="color:#666">error 一般指与JVM相关的问题如OOM就是error，exception是指程序中可以遇见性的异常</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-07-05</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/07/05/java-hashmap-iterator.html" target="_blank">遍历HashMap的5种最佳方式，我不信你全知道！</a>
+                        <p style="color:#666">5种方式都很常用</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-03-11</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/icoding-edu/2020/03/11/icoding-note-007.html" target="_blank">飞天班第7节：深入JVM系列（下）</a>
+                        <p style="color:#666">GC的作用域（堆中），一个对象的历程，GC的复制算法（新生代）、标记清除压缩算法（老年代），GC Root 可达性算法确定垃圾对象，JVM常用调优参数-X, -XX,全面认识OOM的6种溢出情况，4种垃圾回收器-串行、并行、并法、G1垃圾回收器，强引用、软引用、弱引用、虚引用的了解</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-03-08</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/icoding-edu/2020/03/08/icoding-note-006.html" target="_blank">飞天班第6节：深入JVM系列（上）</a>
+                        <p style="color:#666">JVM的位置，JVM架构图，类加载过程，加载static,加载final常量池，Native方法，程序计数器，方法区的前世今生，理解栈帧，堆的新生区、养老区、永久区（1.7前），元空间（1.8），jvm分析常用命令，Dump内存快照分析工具jconsole,jprofile</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-03-05</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/03/05/java-syntactic-sugar.html" target="_blank">java的语法糖</a>
+                        <p style="color:#666">专为开发者设计，提高开发效率，代码更优雅易读</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                <li class="posts-list-item">
+                    <div class="posts-content">
+                        <span class="posts-list-meta">2020-01-04</span>
+                        <a class="posts-list-name bubble-float-left" href="http://47.113.95.179/jk-blog/java/2020/01/04/enum.html" target="_blank">枚举、static与final</a>
+                        <p style="color:#666">java里枚举是一个特殊的类，static、final关键字</p>
+                        <span class="circle"></span>
+                    </div>
+                </li>
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        </ul> 
+
+        <!-- Pagination -->
+        
+
+
+        <!-- Comments -->
+       <div class="comment">
+         
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java-base',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+       </div>
+    </div>
+
+</div>
+<script>
+    $(document).ready(function(){
+
+        // Enable bootstrap tooltip
+        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+
+    });
+</script>
+
+
+
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

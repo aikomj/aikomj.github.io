@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 体验分布式系统的监控工具Skywalking - 大伟的博客 </title>
+    <meta name="keywords" content="skywalking">
+    <meta name="description"
+          content="Skywalking是一个分布式系统的应用程序性能监视工具，专为微服务、云原生架构和基于容器（Docker、K8s、Mesos）架构而设计">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/tool/2020/08/07/learn-skywalking.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="体验分布式系统的监控工具Skywalking">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>体验分布式系统的监控工具Skywalking</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/08/07
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>Skywalking是一个分布式系统的应用程序性能监视工具，专为微服务、云原生架构和基于容器（Docker、K8s、Mesos）架构而设计。SkyWalking 是观察性分析平台和应用性能管理系统。提供分布式追踪、服务网格遥测分析、度量聚合和可视化一体化解决方案。支持Java, .Net Core,  PHP, NodeJS, Golang, LUA语言探针，支持Envoy + Istio构建的Service Mesh。</p>
+
+<p>转载自 https://www.fangzhipeng.com/architecture/2020/06/12/skywalking-test.html</p>
+
+<h2 id="1安装es">1、安装ES</h2>
+
+<p>本案例将skywalking中的数据存储在elasticesearch中，需要提前安装好elasticsearch7.x，可以参考这篇文章（https://www.fangzhipeng.com/springboot/2020/06/01/sb-es.html）安装，当然skywalking也可以将数据存储在其他数据库中，比如mysql、infludb等。</p>
+
+<p>安装es有两种方式：直接下载tar解压安装或docker安装，这里不细说，安装完后通过elasticsearch-header访问，我的es的版本是7.6.1</p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/elasticsearch.jpg" alt="" /></p>
+
+<h2 id="2skywalking">2、skywalking</h2>
+
+<h3 id="安装">安装</h3>
+
+<p>官方下载<a href="http://skywalking.apache.org/downloads/">http://skywalking.apache.org/downloads/</a></p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/download.jpg" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 下载</span>
+wget https://mirror.bit.edu.cn/apache/skywalking/8.1.0/apache-skywalking-apm-es7-8.1.0.tar.gz
+<span class="c"># 解压</span>
+<span class="nb">tar</span> <span class="nt">-xzvf</span> apache-skywalking-apm-es7-8.1.0.tar.gz 
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/skywalking-es7.jpg" alt="" /></p>
+
+<p>目录解释</p>
+
+<ul>
+  <li>bin目录存放的是启动脚本，包含oapService.sh、webappService.sh等启动脚本</li>
+  <li>config是oap服务的配置，包含一个application.yml的配置文件</li>
+  <li>agent是skywalking的agent，一般用来采集业务系统的日志</li>
+  <li>webapp目录是skywalking前端的UI界面服务的配置</li>
+</ul>
+
+<h3 id="整体架构">整体架构</h3>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/arch.png" alt="" /></p>
+
+<p>上面4个角色解释：</p>
+
+<ul>
+  <li>
+    <p>Agent:</p>
+
+    <p>与业务系统绑定在一起，负责收集各种监控数据</p>
+  </li>
+  <li>
+    <p>Oapservice</p>
+
+    <p>负责处理监控数据的，Skywalking oapservice通常以集群的形式存在。</p>
+
+    <p>接受skywalking  agent的监控数据，并存储在数据库中（本案例使用elasticsearch）;</p>
+
+    <p>接受skywalking  webapp的前端请求，从数据库查询数据，并返回数据给前端。d</p>
+  </li>
+  <li>
+    <p>webapp</p>
+
+    <p>前端界面，用于展示数据</p>
+  </li>
+  <li>
+    <p>数据库</p>
+
+    <p>用于存储监控数据的数据库，比如mysql、elasticsearch等</p>
+  </li>
+</ul>
+
+<h3 id="启动oapservice">启动oapservice</h3>
+
+<p>1、修改oapservice的配置文件config/application.yml。</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">cluster</span><span class="pi">:</span>
+  <span class="na">standalone</span><span class="pi">:</span>
+<span class="na">storage</span><span class="pi">:</span>
+<span class="err">	</span><span class="na">selector</span><span class="pi">:</span> <span class="s">${SW_STORAGE:elasticsearch7}</span>
+<span class="err">	</span><span class="na">elasticsearch7</span><span class="pi">:</span>
+    <span class="na">nameSpace</span><span class="pi">:</span> <span class="s">${SW_NAMESPACE:"my-application"}</span>
+    <span class="na">clusterNodes</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_CLUSTER_NODES:localhost:9200,localhost:9201}</span>
+    <span class="na">protocol</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_HTTP_PROTOCOL:"http"}</span>
+    <span class="na">trustStorePath</span><span class="pi">:</span> <span class="s">${SW_SW_STORAGE_ES_SSL_JKS_PATH:"../es_keystore.jks"}</span>
+    <span class="na">trustStorePass</span><span class="pi">:</span> <span class="s">${SW_SW_STORAGE_ES_SSL_JKS_PASS:""}</span>
+    <span class="na">user</span><span class="pi">:</span> <span class="s">${SW_ES_USER:"elastic"}</span>
+    <span class="na">password</span><span class="pi">:</span> <span class="s">${SW_ES_PASSWORD:"elastic666"}</span>
+    <span class="na">indexShardsNumber</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_INDEX_SHARDS_NUMBER:2}</span>
+    <span class="na">indexReplicasNumber</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_INDEX_REPLICAS_NUMBER:0}</span>
+    <span class="na">recordDataTTL</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_RECORD_DATA_TTL:7}</span> 
+    <span class="na">otherMetricsDataTTL</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_OTHER_METRIC_DATA_TTL:45}</span> 
+    <span class="na">monthMetricsDataTTL</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_MONTH_METRIC_DATA_TTL:18}</span> 
+    <span class="na">bulkActions</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_BULK_ACTIONS:1000}</span>
+    <span class="na">flushInterval</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_FLUSH_INTERVAL:10}</span>
+    <span class="na">concurrentRequests</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_CONCURRENT_REQUESTS:2}</span> 
+    <span class="na">resultWindowMaxSize</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_QUERY_MAX_WINDOW_SIZE:10000}</span>
+    <span class="na">metadataQueryMaxSize</span><span class="pi">:</span> <span class="s">${SW_STORAGE_ES_QUERY_MAX_SIZE:5000}</span>
+
+</code></pre></div></div>
+
+<ul>
+  <li>cluster.standalone集群以单体的形式存在</li>
+  <li>storage.elasticsearch7，存储使用elasticsearch7.x版本。</li>
+  <li>storage.elasticsearch7.clusterNodes填elasticsearch的节点地址</li>
+</ul>
+
+<p>2、启动</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld apache-skywalking-apm-bin-es7]<span class="nv">$ </span>./bin/oapService.sh
+SkyWalking OAP started successfully!
+</code></pre></div></div>
+
+<p>oapService服务暴露了2个端口，分别为(接收)收集监控数据的端口11800和接收前端请求的端口12800。</p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/oapservice-start.jpg" alt="" /></p>
+
+<p>启动后，oapservice会在elasticsearch建立相应的索引，登录es-header查看es集群</p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/es-oapservice-index.jpg" alt="" /></p>
+
+<h3 id="启动webapp">启动webapp</h3>
+
+<p>skywalking webapp是用于展示数据的前端界面</p>
+
+<p>1、在webapp目录下修改webapp.yml</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld apache-skywalking-apm-bin-es7]<span class="nv">$ </span><span class="nb">cd </span>webapp/
+<span class="o">[</span>esuser@helloworld webapp]<span class="nv">$ </span>vi webapp.yml
+server:
+  port: 8080  <span class="c"># webapp的启动端口</span>
+collector:
+  path: /graphql
+  ribbon:
+    ReadTimeout: 10000
+    <span class="c"># Point to all backend's restHost:restPort, split by ,</span>
+    listOfServers: 127.0.0.1:12800  <span class="c"># 填写Skywalking oapservice的12800端口。</span>
+</code></pre></div></div>
+
+<p>2、启动</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld apache-skywalking-apm-bin-es7]<span class="nv">$ </span>./bin/webappService.sh
+SkyWalking Web Application started successfully!
+</code></pre></div></div>
+
+<h3 id="springboot项目集成">springboot项目集成</h3>
+
+<p>1、将agent目录拷贝到部署spring boot项目的机器里，修改agent的配置，配置文件是agent/config/agent.config：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld agent]<span class="nv">$ </span>vim config/agent.config 
+agent.service_name<span class="o">=</span><span class="k">${</span><span class="nv">SW_AGENT_NAME</span>:jacob-test-app<span class="k">}</span>
+collector.backend_service<span class="o">=</span><span class="k">${</span><span class="nv">SW_AGENT_COLLECTOR_BACKEND_SERVICES</span>:127.0.0.1:11800<span class="k">}</span>
+
+<span class="c"># Logging file_name</span>
+logging.file_name<span class="o">=</span><span class="k">${</span><span class="nv">SW_LOGGING_FILE_NAME</span>:skywalking-api.log<span class="k">}</span>
+
+<span class="c"># Logging level</span>
+logging.level<span class="o">=</span><span class="k">${</span><span class="nv">SW_LOGGING_LEVEL</span>:DEBUG<span class="k">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>agent.service_name填和springboot的application.name即可，也可以随意取名字，但是不要和其他应用重名</p>
+  </li>
+  <li>
+    <p>collector.backend_service填写oapService服务的地址，端口填11800。</p>
+  </li>
+</ul>
+
+<p>2、springboot工程打jar包复制到服务器上，以javaagent的形式启动springboot工程：</p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/boot-es.jpg" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span>java <span class="nt">-javaagent</span>:/home/esuser/apache-skywalking-apm-bin-es7/agent/skywalking-agent.jar <span class="nt">-jar</span> boot-es-0.0.1-SNAPSHOT.jar 
+</code></pre></div></div>
+
+<ul>
+  <li>-javaagent:/root/skywalking/apache-skywalking-apm-bin-es7/agent/skywalking-agent.jar，指定javaagent的目录，即skywalking-agent.jar在机器上的绝对路径。</li>
+</ul>
+
+<h3 id="测试">测试</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld ~]# curl localhost:8089/testInsert
+insert success[root@helloworld ~]# 
+<span class="o">[</span>root@helloworld ~]# curl localhost:8089/testGetAll
+</code></pre></div></div>
+
+<p>springboot工程启动会建立es的索引映射</p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/es-user.jpg" alt="" /></p>
+
+<p>调用testInsert插入数据</p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/es-user-2.jpg" alt="" /></p>
+
+<p>云服务器开放skywalking webapp的端口8080，浏览器访问http://ip:8080/</p>
+
+<p><strong>仪表盘</strong></p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/skywalking-webapp.jpg" alt="" /></p>
+
+<p><strong>拓扑图</strong></p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/skywalking-webapp-2.jpg" alt="" /></p>
+
+<p><strong>追踪接口数据</strong></p>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/skywalking-webapp-3.jpg" alt="" /></p>
+
+<h3 id="关闭">关闭</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看java进程</span>
+<span class="o">[</span>esuser@helloworld ~]<span class="nv">$ </span>jps
+<span class="nb">kill </span>进程ID
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/springcloud/skywalking/skywalking-jps.jpg" alt="" /></p>
+
+<h2 id="3skywalking安全漏洞">3、skywalking安全漏洞</h2>
+
+<p><img src="/assets/images/2020/springcloud/skywalking-sql-bug.jpg" alt="" /></p>
+
+<p><strong>源码下载</strong></p>
+
+<p><a href="https://github.com/forezp/distributed-lab/tree/master/boot-es">https://github.com/forezp/distributed-lab/tree/master/boot-es</a></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/tool/2020/08/07/learn-skywalking.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

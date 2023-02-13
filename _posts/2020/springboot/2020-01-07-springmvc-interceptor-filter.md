@@ -3,7 +3,7 @@ layout: post
 title: SpringMVC的拦截器Interceptor和过滤器的区别联系
 category: spring
 tags: [spring]
-keywords: springmvc
+keywords: spring
 excerpt: 理解客户端发起一个请求经过Filter和Interceptor，dispatch路由到控制层然后经过视图解析器，Interceptor和Filter，视图页面渲染，最终在客户端加载视图的过程
 lock: noneed
 ---
@@ -32,7 +32,7 @@ lock: noneed
 
 ## 2.多个过滤器与拦截器的代码执行顺序
 
-如果在一个项目中只有一个拦截器或者过滤器，那么理解起来是比较容易的。但是我们是否思考过：如果一个项目中有多个拦截器或者过滤器，那么它们的执行顺序应该是什么样的？或者再复杂点，一个项目中既有多个拦截器，又有多个过滤器，这时它们的执行顺序又是什么样的呢？下面是代码
+如果在一个项目中只有一个拦截器或者过滤器，那么理解起来是比较容易的。但是我们是否思考过：如果一个项目中有多个拦截器或者过滤器，那么它们的执行顺序应该是什么样的？或者再复杂点，一个项目中既有多个拦截器，又有多个过滤器，这时它们的执行顺序又是什么样的呢？下面举例
 
 ### 定义过滤器
 
@@ -108,6 +108,8 @@ public class TestFilter2 extends OncePerRequestFilter {
 
 ### 定义拦截器
 
+拦截器`BaseInterceptor`
+
 ```java
 package cn.zifangsky.interceptor;
 
@@ -142,7 +144,7 @@ public class BaseInterceptor implements HandlerInterceptor{
 }
 ```
 
-指定controller请求的拦截器
+拦截器`TestInterceptor`
 
 ```java
 package cn.zifangsky.interceptor; 
@@ -153,7 +155,7 @@ import org.springframework.web.servlet.ModelAndView;
  
 public class TestInterceptor implements HandlerInterceptor {
   // 在DispatcherServlet之前执行
-	public boolean preHandle(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2) throws Exception {
+public boolean preHandle(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2) throws Exception {
 	System.out.println("************TestInterceptor preHandle executed**********");
     return true;
 }
@@ -170,7 +172,7 @@ public void afterCompletion(HttpServletRequest arg0, HttpServletResponse ar
 }
 ```
 
-在SpringMVC的[配置文件](http://www.07net01.com/tags-配置文件-0.html)中注册这两个拦截器：
+在SpringMVC的配置文件中注册这两个拦截器：
 
 ```xml
 <!-- 拦截器 -->
@@ -234,18 +236,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+reque
 
 ### 测试
 
-启动此测试项目，可以看到控制台中输出如下：
+启动此测试项目，浏览器访问：http://localhost:9180/FilterDemo/，控制台中输出如下：
 
 ![](/assets/images/2020/spring/springmvc-filter-runonstart.png)
 
+![](../../../assets/images/2020/spring/springmvc-filter-runonstart.png)
+
 这就说明了过滤器的运行是依赖于servlet容器的，跟springmvc等框架并没有关系。并且，多个过滤器的执行顺序跟xml文件中定义的先后关系有关。
 
-浏览器访问：http://localhost:9180/FilterDemo/test.html，控制台输出：
+浏览器访问：http://localhost:9180/FilterDemo/test.html，控制台输出如下：
 
 ![](/assets/images/2020/spring/springmvc-filter-run-on-request.png)
+
+![](../../../assets/images/2020/spring/springmvc-filter-run-on-request.png)
 
 大家就可以很清晰地看到有多个拦截器和过滤器存在时的整个执行顺序了。当然，对于过个拦截器它们之间的执行顺序跟在SpringMVC的配置文件中定义的先后顺序有关
 
 最后，用一张图说明过滤器和拦截器的执行流程
 
 ![](/assets/images/2020/spring/springmvc-filter-interceptor-request-excecute.png)
+
+![](../../../assets/images/2020/spring/springmvc-filter-interceptor-request-excecute.png)

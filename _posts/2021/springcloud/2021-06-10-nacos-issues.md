@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 没错，使用Nacos踩坑了
+title: 使用Nacos 1.4.1 版本的一个bug
 category: springcloud
 tags: [nacos]
 keywords: nacos

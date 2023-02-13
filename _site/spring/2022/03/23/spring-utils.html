@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> spring自带的工具类推荐 - 大伟的博客 </title>
+    <meta name="keywords" content="spring">
+    <meta name="description"
+          content="断言，对象工具类，集合工具类，文件资源工具类，反射AOP工具类">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/spring/2022/03/23/spring-utils.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="spring自带的工具类推荐">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>spring自带的工具类推荐</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/03/23
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1断言">1、断言</h2>
+
+<ol>
+  <li>断言是一个逻辑判断，用于检查不应该发生的情况</li>
+  <li>Assert 关键字在 JDK1.4 中引入，可通过 JVM 参数<code class="highlighter-rouge">-enableassertions</code>开启</li>
+  <li>SpringBoot 中提供了 Assert 断言工具类，通常用于数据合法性检查</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 要求参数 object 必须为非空（Not Null），否则抛出异常，不予放行</span>
+<span class="c1">// 参数 message 参数用于定制异常信息。</span>
+<span class="kt">void</span> <span class="nf">notNull</span><span class="o">(</span><span class="nc">Object</span> <span class="n">object</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数必须空（Null），否则抛出异常，不予『放行』。</span>
+<span class="c1">// 和 notNull() 方法断言规则相反</span>
+<span class="kt">void</span> <span class="nf">isNull</span><span class="o">(</span><span class="nc">Object</span> <span class="n">object</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数必须为真（True），否则抛出异常，不予『放行』。</span>
+<span class="kt">void</span> <span class="nf">isTrue</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expression</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数（List/Set）必须非空（Not Empty），否则抛出异常，不予放行</span>
+<span class="kt">void</span> <span class="nf">notEmpty</span><span class="o">(</span><span class="nc">Collection</span> <span class="n">collection</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数（String）必须有长度（即，Not Empty），否则抛出异常，不予放行</span>
+<span class="kt">void</span> <span class="nf">hasLength</span><span class="o">(</span><span class="nc">String</span> <span class="n">text</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数（String）必须有内容（即，Not Blank），否则抛出异常，不予放行</span>
+<span class="kt">void</span> <span class="nf">hasText</span><span class="o">(</span><span class="nc">String</span> <span class="n">text</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数是指定类型的实例，否则抛出异常，不予放行</span>
+<span class="kt">void</span> <span class="nf">isInstanceOf</span><span class="o">(</span><span class="nc">Class</span> <span class="n">type</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">obj</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+<span class="c1">// 要求参数 `subType` 必须是参数 superType 的子类或实现类，否则抛出异常，不予放行</span>
+<span class="kt">void</span> <span class="nf">isAssignable</span><span class="o">(</span><span class="nc">Class</span> <span class="n">superType</span><span class="o">,</span> <span class="nc">Class</span> <span class="n">subType</span><span class="o">,</span> <span class="nc">String</span> <span class="n">message</span><span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="2对象">2、对象</h2>
+
+<h3 id="objectutils">ObjectUtils</h3>
+
+<ul>
+  <li>
+    <p>获取对象的基本信息</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 获取对象的类名。参数为 null 时，返回字符串："null" </span>
+<span class="nc">String</span> <span class="nf">nullSafeClassName</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span>
+<span class="c1">// 参数为 null 时，返回 0</span>
+<span class="kt">int</span> <span class="nf">nullSafeHashCode</span><span class="o">(</span><span class="nc">Object</span> <span class="n">object</span><span class="o">)</span>
+<span class="c1">// 参数为 null 时，返回字符串："null"</span>
+<span class="nc">String</span> <span class="nf">nullSafeToString</span><span class="o">(</span><span class="kt">boolean</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span>
+<span class="c1">// 获取对象 HashCode（十六进制形式字符串）。参数为 null 时，返回 0 </span>
+<span class="nc">String</span> <span class="nf">getIdentityHexString</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span>
+<span class="c1">// 获取对象的类名和 HashCode。 参数为 null 时，返回字符串："" </span>
+<span class="nc">String</span> <span class="nf">identityToString</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span>
+<span class="c1">// 相当于 toString()方法，但参数为 null 时，返回字符串：""</span>
+<span class="nc">String</span> <span class="nf">getDisplayString</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>判断</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 判断数组是否为空</span>
+<span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">(</span><span class="nc">Object</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span>
+<span class="c1">// 判断参数对象是否是数组</span>
+<span class="kt">boolean</span> <span class="nf">isArray</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span>
+<span class="c1">// 判断数组中是否包含指定元素</span>
+<span class="kt">boolean</span> <span class="nf">containsElement</span><span class="o">(</span><span class="nc">Object</span><span class="o">[]</span> <span class="n">array</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">element</span><span class="o">)</span>
+<span class="c1">// 相等，或同为 null时，返回 true</span>
+<span class="kt">boolean</span> <span class="nf">nullSafeEquals</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o1</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">o2</span><span class="o">)</span>
+<span class="cm">/*
+判断参数对象是否为空，判断标准为：
+    Optional: Optional.empty()
+       Array: length == 0
+CharSequence: length == 0
+  Collection: Collection.isEmpty()
+         Map: Map.isEmpty()
+ */</span>
+<span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>其他方法</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 向参数数组的末尾追加新元素，并返回一个新数组</span>
+<span class="o">&lt;</span><span class="no">A</span><span class="o">,</span> <span class="no">O</span> <span class="kd">extends</span> <span class="no">A</span><span class="o">&gt;</span> <span class="no">A</span><span class="o">[]</span> <span class="nf">addObjectToArray</span><span class="o">(</span><span class="no">A</span><span class="o">[]</span> <span class="n">array</span><span class="o">,</span> <span class="no">O</span> <span class="n">obj</span><span class="o">)</span>
+<span class="c1">// 原生基础类型数组 --&gt; 包装类数组</span>
+<span class="nc">Object</span><span class="o">[]</span> <span class="nf">toObjectArray</span><span class="o">(</span><span class="nc">Object</span> <span class="n">source</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="stringutils">StringUtils</h3>
+
+<ul>
+  <li>
+    <p>字符串判断</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 判断字符串是否为 null，或 ""。注意，包含空白符的字符串为非空</span>
+<span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">(</span><span class="nc">Object</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 判断字符串是否是以指定内容结束。忽略大小写</span>
+<span class="kt">boolean</span> <span class="nf">endsWithIgnoreCase</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">,</span> <span class="nc">String</span> <span class="n">suffix</span><span class="o">)</span>
+<span class="c1">// 判断字符串是否已指定内容开头。忽略大小写</span>
+<span class="kt">boolean</span> <span class="nf">startsWithIgnoreCase</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">,</span> <span class="nc">String</span> <span class="n">prefix</span><span class="o">)</span> 
+<span class="c1">// 是否包含空白符</span>
+<span class="kt">boolean</span> <span class="nf">containsWhitespace</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 判断字符串非空且长度不为 0，即，Not Empty</span>
+<span class="kt">boolean</span> <span class="nf">hasLength</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 判断字符串是否包含实际内容，即非仅包含空白符，也就是 Not Blank</span>
+<span class="kt">boolean</span> <span class="nf">hasText</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 判断字符串指定索引处是否包含一个子串。</span>
+<span class="kt">boolean</span> <span class="nf">substringMatch</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">str</span><span class="o">,</span> <span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="nc">CharSequence</span> <span class="n">substring</span><span class="o">)</span>
+<span class="c1">// 计算一个字符串中指定子串的出现次数</span>
+<span class="kt">int</span> <span class="nf">countOccurrencesOf</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">,</span> <span class="nc">String</span> <span class="n">sub</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>字符串操作</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 查找并替换指定子串</span>
+<span class="nc">String</span> <span class="nf">replace</span><span class="o">(</span><span class="nc">String</span> <span class="n">inString</span><span class="o">,</span> <span class="nc">String</span> <span class="n">oldPattern</span><span class="o">,</span> <span class="nc">String</span> <span class="n">newPattern</span><span class="o">)</span>
+<span class="c1">// 去除尾部的特定字符</span>
+<span class="nc">String</span> <span class="nf">trimTrailingCharacter</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">,</span> <span class="kt">char</span> <span class="n">trailingCharacter</span><span class="o">)</span> 
+<span class="c1">// 去除头部的特定字符</span>
+<span class="nc">String</span> <span class="nf">trimLeadingCharacter</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">,</span> <span class="kt">char</span> <span class="n">leadingCharacter</span><span class="o">)</span>
+<span class="c1">// 去除头部的空白符</span>
+<span class="nc">String</span> <span class="nf">trimLeadingWhitespace</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 去除头部的空白符</span>
+<span class="nc">String</span> <span class="nf">trimTrailingWhitespace</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 去除头部和尾部的空白符</span>
+<span class="nc">String</span> <span class="nf">trimWhitespace</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 删除开头、结尾和中间的空白符</span>
+<span class="nc">String</span> <span class="nf">trimAllWhitespace</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span>
+<span class="c1">// 删除指定子串</span>
+<span class="nc">String</span> <span class="nf">delete</span><span class="o">(</span><span class="nc">String</span> <span class="n">inString</span><span class="o">,</span> <span class="nc">String</span> <span class="n">pattern</span><span class="o">)</span>
+<span class="c1">// 删除指定字符（可以是多个）</span>
+<span class="nc">String</span> <span class="nf">deleteAny</span><span class="o">(</span><span class="nc">String</span> <span class="n">inString</span><span class="o">,</span> <span class="nc">String</span> <span class="n">charsToDelete</span><span class="o">)</span>
+<span class="c1">// 对数组的每一项执行 trim() 方法</span>
+<span class="nc">String</span><span class="o">[]</span> <span class="nf">trimArrayElements</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span>
+<span class="c1">// 将 URL 字符串进行解码</span>
+<span class="nc">String</span> <span class="nf">uriDecode</span><span class="o">(</span><span class="nc">String</span> <span class="n">source</span><span class="o">,</span> <span class="nc">Charset</span> <span class="n">charset</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>路径相关工具方法</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 解析路径字符串，优化其中的 “..” </span>
+<span class="nc">String</span> <span class="nf">cleanPath</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span>
+<span class="c1">// 解析路径字符串，解析出文件名部分</span>
+<span class="nc">String</span> <span class="nf">getFilename</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span>
+<span class="c1">// 解析路径字符串，解析出文件后缀名</span>
+<span class="nc">String</span> <span class="nf">getFilenameExtension</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span>
+<span class="c1">// 比较两个两个字符串，判断是否是同一个路径。会自动处理路径中的 “..” </span>
+<span class="kt">boolean</span> <span class="nf">pathEquals</span><span class="o">(</span><span class="nc">String</span> <span class="n">path1</span><span class="o">,</span> <span class="nc">String</span> <span class="n">path2</span><span class="o">)</span>
+<span class="c1">// 删除文件路径名中的后缀部分</span>
+<span class="nc">String</span> <span class="nf">stripFilenameExtension</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span> 
+<span class="c1">// 以 “. 作为分隔符，获取其最后一部分</span>
+<span class="nc">String</span> <span class="nf">unqualify</span><span class="o">(</span><span class="nc">String</span> <span class="n">qualifiedName</span><span class="o">)</span>
+<span class="c1">// 以指定字符作为分隔符，获取其最后一部分</span>
+<span class="nc">String</span> <span class="nf">unqualify</span><span class="o">(</span><span class="nc">String</span> <span class="n">qualifiedName</span><span class="o">,</span> <span class="kt">char</span> <span class="n">separator</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="3集合">3、集合</h2>
+
+<h3 id="collectionutils">CollectionUtils</h3>
+
+<ul>
+  <li>
+    <p>集合判断</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 判断 List/Set 是否为空</span>
+<span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">collection</span><span class="o">)</span>
+<span class="c1">// 判断 Map 是否为空</span>
+<span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;?,?&gt;</span> <span class="n">map</span><span class="o">)</span>
+<span class="c1">// 判断 List/Set 中是否包含某个对象</span>
+<span class="kt">boolean</span> <span class="nf">containsInstance</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">collection</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">element</span><span class="o">)</span>
+<span class="c1">// 以迭代器的方式，判断 List/Set 中是否包含某个对象</span>
+<span class="kt">boolean</span> <span class="nf">contains</span><span class="o">(</span><span class="nc">Iterator</span><span class="o">&lt;?&gt;</span> <span class="n">iterator</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">element</span><span class="o">)</span>
+<span class="c1">// 判断 List/Set 是否包含某些对象中的任意一个</span>
+<span class="kt">boolean</span> <span class="nf">containsAny</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">source</span><span class="o">,</span> <span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">candidates</span><span class="o">)</span>
+<span class="c1">// 判断 List/Set 中的每个元素是否唯一。即 List/Set 中不存在重复元素</span>
+<span class="kt">boolean</span> <span class="nf">hasUniqueObject</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">collection</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>集合操作</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 将 Array 中的元素都添加到 List/Set 中</span>
+<span class="o">&lt;</span><span class="no">E</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">mergeArrayIntoCollection</span><span class="o">(</span><span class="nc">Object</span> <span class="n">array</span><span class="o">,</span> <span class="nc">Collection</span><span class="o">&lt;</span><span class="no">E</span><span class="o">&gt;</span> <span class="n">collection</span><span class="o">)</span>  
+<span class="c1">// 将 Properties 中的键值对都添加到 Map 中</span>
+<span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">mergePropertiesIntoMap</span><span class="o">(</span><span class="nc">Properties</span> <span class="n">props</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="no">K</span><span class="o">,</span><span class="no">V</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">)</span>
+<span class="c1">// 返回 List 中最后一个元素</span>
+<span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">lastElement</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span>  
+<span class="c1">// 返回 Set 中最后一个元素</span>
+<span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">lastElement</span><span class="o">(</span><span class="nc">Set</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">set</span><span class="o">)</span> 
+<span class="c1">// 返回参数 candidates 中第一个存在于参数 source 中的元素</span>
+<span class="o">&lt;</span><span class="no">E</span><span class="o">&gt;</span> <span class="no">E</span> <span class="nf">findFirstMatch</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">source</span><span class="o">,</span> <span class="nc">Collection</span><span class="o">&lt;</span><span class="no">E</span><span class="o">&gt;</span> <span class="n">candidates</span><span class="o">)</span>
+<span class="c1">// 返回 List/Set 中指定类型的元素。</span>
+<span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">findValueOfType</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">collection</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">)</span>
+<span class="c1">// 返回 List/Set 中指定类型的元素。如果第一种类型未找到，则查找第二种类型，以此类推</span>
+<span class="nc">Object</span> <span class="nf">findValueOfType</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">collection</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">types</span><span class="o">)</span>
+<span class="c1">// 返回 List/Set 中元素的类型</span>
+<span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">findCommonElementType</span><span class="o">(</span><span class="nc">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">collection</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="4文件资源io">4、文件资源IO</h2>
+
+<h3 id="filecopyutils">FileCopyUtils</h3>
+
+<ul>
+  <li>
+    <p>输入</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 从文件中读入到字节数组中</span>
+<span class="kt">byte</span><span class="o">[]</span> <span class="nf">copyToByteArray</span><span class="o">(</span><span class="nc">File</span> <span class="n">in</span><span class="o">)</span>
+<span class="c1">// 从输入流中读入到字节数组中</span>
+<span class="kt">byte</span><span class="o">[]</span> <span class="nf">copyToByteArray</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">)</span>
+<span class="c1">// 从输入流中读入到字符串中</span>
+<span class="nc">String</span> <span class="nf">copyToString</span><span class="o">(</span><span class="nc">Reader</span> <span class="n">in</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>输出</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 从字节数组到文件</span>
+<span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">in</span><span class="o">,</span> <span class="nc">File</span> <span class="n">out</span><span class="o">)</span>
+<span class="c1">// 从文件到文件</span>
+<span class="kt">int</span> <span class="nf">copy</span><span class="o">(</span><span class="nc">File</span> <span class="n">in</span><span class="o">,</span> <span class="nc">File</span> <span class="n">out</span><span class="o">)</span>
+<span class="c1">// 从字节数组到输出流</span>
+<span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">in</span><span class="o">,</span> <span class="nc">OutputStream</span> <span class="n">out</span><span class="o">)</span> 
+<span class="c1">// 从输入流到输出流</span>
+<span class="kt">int</span> <span class="nf">copy</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">,</span> <span class="nc">OutputStream</span> <span class="n">out</span><span class="o">)</span> 
+<span class="c1">// 从输入流到输出流</span>
+<span class="kt">int</span> <span class="nf">copy</span><span class="o">(</span><span class="nc">Reader</span> <span class="n">in</span><span class="o">,</span> <span class="nc">Writer</span> <span class="n">out</span><span class="o">)</span>
+<span class="c1">// 从字符串到输出流</span>
+<span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="nc">String</span> <span class="n">in</span><span class="o">,</span> <span class="nc">Writer</span> <span class="n">out</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="resourceutils">ResourceUtils</h3>
+
+<ul>
+  <li>
+    <p>从资源路径获取文件</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 判断字符串是否是一个合法的 URL 字符串。</span>
+<span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isUrl</span><span class="o">(</span><span class="nc">String</span> <span class="n">resourceLocation</span><span class="o">)</span>
+<span class="c1">// 获取 URL</span>
+<span class="kd">static</span> <span class="no">URL</span> <span class="nf">getURL</span><span class="o">(</span><span class="nc">String</span> <span class="n">resourceLocation</span><span class="o">)</span> 
+<span class="c1">// 获取文件（在 JAR 包内无法正常使用，需要是一个独立的文件）</span>
+<span class="kd">static</span> <span class="nc">File</span> <span class="nf">getFile</span><span class="o">(</span><span class="nc">String</span> <span class="n">resourceLocation</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Resource</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 文件系统资源 D:\...</span>
+<span class="nc">FileSystemResource</span>
+<span class="c1">// URL 资源，如 file://... http://...</span>
+<span class="nc">UrlResource</span>
+<span class="c1">// 类路径下的资源，classpth:...</span>
+<span class="nc">ClassPathResource</span>
+<span class="c1">// Web 容器上下文中的资源（jar 包、war 包）</span>
+<span class="nc">ServletContextResource</span>
+<span class="c1">// 判断资源是否存在</span>
+<span class="kt">boolean</span> <span class="nf">exists</span><span class="o">()</span>
+<span class="c1">// 从资源中获得 File 对象</span>
+<span class="nc">File</span> <span class="nf">getFile</span><span class="o">()</span>
+<span class="c1">// 从资源中获得 URI 对象</span>
+<span class="no">URI</span> <span class="nf">getURI</span><span class="o">()</span>
+<span class="c1">// 从资源中获得 URI 对象</span>
+<span class="no">URL</span> <span class="nf">getURL</span><span class="o">()</span>
+<span class="c1">// 获得资源的 InputStream</span>
+<span class="nc">InputStream</span> <span class="nf">getInputStream</span><span class="o">()</span>
+<span class="c1">// 获得资源的描述信息</span>
+<span class="nc">String</span> <span class="nf">getDescription</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="streamutils">StreamUtils</h3>
+
+<ul>
+  <li>
+    <p>输入</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">in</span><span class="o">,</span> <span class="nc">OutputStream</span> <span class="n">out</span><span class="o">)</span>
+<span class="kt">int</span> <span class="nf">copy</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">,</span> <span class="nc">OutputStream</span> <span class="n">out</span><span class="o">)</span>
+<span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="nc">String</span> <span class="n">in</span><span class="o">,</span> <span class="nc">Charset</span> <span class="n">charset</span><span class="o">,</span> <span class="nc">OutputStream</span> <span class="n">out</span><span class="o">)</span>
+<span class="kt">long</span> <span class="nf">copyRange</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">,</span> <span class="nc">OutputStream</span> <span class="n">out</span><span class="o">,</span> <span class="kt">long</span> <span class="n">start</span><span class="o">,</span> <span class="kt">long</span> <span class="n">end</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>输出</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">byte</span><span class="o">[]</span> <span class="nf">copyToByteArray</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">)</span>
+<span class="nc">String</span> <span class="nf">copyToString</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">,</span> <span class="nc">Charset</span> <span class="n">charset</span><span class="o">)</span>
+<span class="c1">// 舍弃输入流中的内容</span>
+<span class="kt">int</span> <span class="nf">drain</span><span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span><span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="5反射与aop">5、反射与AOP</h2>
+
+<h3 id="reflectionutils">ReflectionUtils</h3>
+
+<ol>
+  <li>获取方法</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 在类中查找指定方法</span>
+<span class="nc">Method</span> <span class="nf">findMethod</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">)</span> 
+<span class="c1">// 同上，额外提供方法参数类型作查找条件</span>
+<span class="nc">Method</span> <span class="nf">findMethod</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">paramTypes</span><span class="o">)</span> 
+<span class="c1">// 获得类中所有方法，包括继承而来的</span>
+<span class="nc">Method</span><span class="o">[]</span> <span class="nf">getAllDeclaredMethods</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">leafClass</span><span class="o">)</span> 
+<span class="c1">// 在类中查找指定构造方法</span>
+<span class="nc">Constructor</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">accessibleConstructor</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;...</span> <span class="n">parameterTypes</span><span class="o">)</span> 
+<span class="c1">// 是否是 equals() 方法</span>
+<span class="kt">boolean</span> <span class="nf">isEqualsMethod</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">)</span> 
+<span class="c1">// 是否是 hashCode() 方法 </span>
+<span class="kt">boolean</span> <span class="nf">isHashCodeMethod</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">)</span> 
+<span class="c1">// 是否是 toString() 方法</span>
+<span class="kt">boolean</span> <span class="nf">isToStringMethod</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">)</span> 
+<span class="c1">// 是否是从 Object 类继承而来的方法</span>
+<span class="kt">boolean</span> <span class="nf">isObjectMethod</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">)</span> 
+<span class="c1">// 检查一个方法是否声明抛出指定异常</span>
+<span class="kt">boolean</span> <span class="nf">declaresException</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">exceptionType</span><span class="o">)</span> 
+</code></pre></div></div>
+
+<ol>
+  <li>执行方法</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 执行方法</span>
+<span class="nc">Object</span> <span class="nf">invokeMethod</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">target</span><span class="o">)</span>  
+<span class="c1">// 同上，提供方法参数</span>
+<span class="nc">Object</span> <span class="nf">invokeMethod</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">target</span><span class="o">,</span> <span class="nc">Object</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> 
+<span class="c1">// 取消 Java 权限检查。以便后续执行该私有方法</span>
+<span class="kt">void</span> <span class="nf">makeAccessible</span><span class="o">(</span><span class="nc">Method</span> <span class="n">method</span><span class="o">)</span> 
+<span class="c1">// 取消 Java 权限检查。以便后续执行私有构造方法</span>
+<span class="kt">void</span> <span class="nf">makeAccessible</span><span class="o">(</span><span class="nc">Constructor</span><span class="o">&lt;?&gt;</span> <span class="n">ctor</span><span class="o">)</span> 
+</code></pre></div></div>
+
+<ol>
+  <li>获取字段</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 在类中查找指定属性</span>
+<span class="nc">Field</span> <span class="nf">findField</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">)</span> 
+<span class="c1">// 同上，多提供了属性的类型</span>
+<span class="nc">Field</span> <span class="nf">findField</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">type</span><span class="o">)</span> 
+<span class="c1">// 是否为一个 "public static final" 属性</span>
+<span class="kt">boolean</span> <span class="nf">isPublicStaticFinal</span><span class="o">(</span><span class="nc">Field</span> <span class="n">field</span><span class="o">)</span> 
+</code></pre></div></div>
+
+<ol>
+  <li>设置字段</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 获取 target 对象的 field 属性值</span>
+<span class="nc">Object</span> <span class="nf">getField</span><span class="o">(</span><span class="nc">Field</span> <span class="n">field</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">target</span><span class="o">)</span> 
+<span class="c1">// 设置 target 对象的 field 属性值，值为 value</span>
+<span class="kt">void</span> <span class="nf">setField</span><span class="o">(</span><span class="nc">Field</span> <span class="n">field</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">target</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">value</span><span class="o">)</span> 
+<span class="c1">// 同类对象属性对等赋值</span>
+<span class="kt">void</span> <span class="nf">shallowCopyFieldState</span><span class="o">(</span><span class="nc">Object</span> <span class="n">src</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">dest</span><span class="o">)</span>
+<span class="c1">// 取消 Java 的权限控制检查。以便后续读写该私有属性</span>
+<span class="kt">void</span> <span class="nf">makeAccessible</span><span class="o">(</span><span class="nc">Field</span> <span class="n">field</span><span class="o">)</span> 
+<span class="c1">// 对类的每个属性执行 callback</span>
+<span class="kt">void</span> <span class="nf">doWithFields</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">FieldCallback</span> <span class="n">fc</span><span class="o">)</span> 
+<span class="c1">// 同上，多了个属性过滤功能。</span>
+<span class="kt">void</span> <span class="nf">doWithFields</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">FieldCallback</span> <span class="n">fc</span><span class="o">,</span> 
+                  <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">FieldFilter</span> <span class="n">ff</span><span class="o">)</span> 
+<span class="c1">// 同上，但不包括继承而来的属性</span>
+<span class="kt">void</span> <span class="nf">doWithLocalFields</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">,</span> <span class="nc">ReflectionUtils</span><span class="o">.</span><span class="na">FieldCallback</span> <span class="n">fc</span><span class="o">)</span> 
+</code></pre></div></div>
+
+<h3 id="aoputils">AopUtils</h3>
+
+<ul>
+  <li>
+    <p>判断代理类型</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 判断是不是 Spring 代理对象</span>
+<span class="kt">boolean</span> <span class="nf">isAopProxy</span><span class="o">()</span>
+<span class="c1">// 判断是不是 jdk 动态代理对象</span>
+<span class="n">isJdkDynamicProxy</span><span class="o">()</span>
+<span class="c1">// 判断是不是 CGLIB 代理对象</span>
+<span class="kt">boolean</span> <span class="nf">isCglibProxy</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>获取被代理对象的class</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 获取被代理的目标 class</span>
+<span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getTargetClass</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="aopcontext">AopContext</h3>
+
+<ul>
+  <li>
+    <p>获取当前对象的代理对象</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Object</span> <span class="nf">currentProxy</span><span class="o">()</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/spring/2022/03/23/spring-utils.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Redis+Caffeine 两级缓存实战 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="两级缓存的访问流程，springboot项目通过注解的方式来操作缓存，推荐使用自定义注解，然后在切面中处理缓存，减少对原业务代码的入侵">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/redis/2022/04/08/redis-and-caffeine.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Redis+Caffeine 两级缓存实战">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Redis+Caffeine 两级缓存实战</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/04/08
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1二级缓存">1、二级缓存</h2>
+
+<p>在高性能的服务架构设计中，缓存是一个不可或缺的环节。在实际的项目中，我们通常会将一些热点数据存储到<code class="highlighter-rouge">Redis</code>或<code class="highlighter-rouge">MemCache</code>这类缓存中间件中，只有当缓存的访问没有命中时再查询数据库。在提升访问速度的同时，也能降低数据库的压力。</p>
+
+<p>随着不断的发展，这一架构也产生了改进，在一些场景下可能单纯使用<code class="highlighter-rouge">Redis</code>类的远程缓存已经不够了，还需要进一步配合本地缓存使用，例如<code class="highlighter-rouge">Guava cache</code>或<code class="highlighter-rouge">Caffeine</code>，从而再次提升程序的响应速度与服务性能。于是，就产生了使用本地缓存作为一级缓存，再加上远程缓存作为二级缓存的<strong>两级缓存</strong>架构。</p>
+
+<p>在先不考虑并发等复杂问题的情况下，两级缓存的访问流程可以用下面这张图来表示：</p>
+
+<p><img src="\assets\images\2022\redis\read-two-cache.jpg" alt="" /></p>
+
+<h3 id="优点与问题">优点与问题</h3>
+
+<p>那么，使用两级缓存相比单纯使用远程缓存，具有什么优势呢？</p>
+
+<ul>
+  <li>本地缓存基于本地环境的内存，访问速度非常快，对于一些变更频率低、实时性要求低的数据，可以放在本地缓存中，提升访问速度</li>
+  <li>使用本地缓存能够减少和<code class="highlighter-rouge">Redis</code>类的远程缓存间的数据交互，减少网络I/O开销，降低这一过程中在网络通信上的耗时</li>
+</ul>
+
+<p><strong>考虑问题</strong></p>
+
+<ul>
+  <li>两级缓存与数据库的数据要保持一致，一旦数据发生了修改，在修改数据库的同时，本地缓存、远程缓存应该同步更新</li>
+  <li>分布式环境下，一级缓存之间也会存在一致性问题，当一个节点下的本地缓存修改后，需要通知其他节点也刷新本地缓存中的数据，否则会出现读取到过期数据的情况，这一问题可以通过类似于Redis中的发布/订阅功能解决</li>
+  <li>缓存的过期时间、过期策略以及多线程访问的问题也都需要考虑进去</li>
+</ul>
+
+<h3 id="代码实战">代码实战</h3>
+
+<p>下面开始两级缓存的代码实战，我们整合号称最强本地缓存的<code class="highlighter-rouge">Caffeine</code>作为一级缓存、性能之王的<code class="highlighter-rouge">Redis</code>作为二级缓存。首先建一个springboot项目，引入缓存要用到的相关的依赖：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.github.ben-manes.caffeine<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>caffeine<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.9.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-redis<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-cache<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.apache.commons<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>commons-pool2<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.8.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>在<code class="highlighter-rouge">application.yml</code>中配置<code class="highlighter-rouge">Redis</code>的连接信息：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">redis</span><span class="pi">:</span>
+    <span class="na">host</span><span class="pi">:</span> <span class="s">127.0.0.1</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">6379</span>
+    <span class="na">database</span><span class="pi">:</span> <span class="m">0</span>
+    <span class="na">timeout</span><span class="pi">:</span> <span class="s">10000ms</span>
+    <span class="na">lettuce</span><span class="pi">:</span>
+      <span class="na">pool</span><span class="pi">:</span>
+        <span class="na">max-active</span><span class="pi">:</span> <span class="m">8</span>
+        <span class="na">max-wait</span><span class="pi">:</span> <span class="s">-1ms</span>
+        <span class="na">max-idle</span><span class="pi">:</span> <span class="m">8</span>
+        <span class="na">min-idle</span><span class="pi">:</span> <span class="m">0</span>
+</code></pre></div></div>
+
+<p>在下面的例子中，我们将使用<code class="highlighter-rouge">RedisTemplate</code>来对<code class="highlighter-rouge">redis</code>进行读写操作，<code class="highlighter-rouge">RedisTemplate</code>使用前需要配置一下<code class="highlighter-rouge">ConnectionFactory</code>和序列化方式，这一过程比较简单就不贴出代码了，有需要本文全部示例代码的可以在<strong>文末获取</strong></p>
+
+<h3 id="版本1">版本1</h3>
+
+<p>我们可以通过手动操作<code class="highlighter-rouge">Caffeine</code>中的<code class="highlighter-rouge">Cache</code>对象来缓存数据，它是一个类似<code class="highlighter-rouge">Map</code>的数据结构，以<code class="highlighter-rouge">key</code>作为索引，<code class="highlighter-rouge">value</code>存储数据。在使用<code class="highlighter-rouge">Cache</code>前，需要先配置一下相关参数：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CaffeineConfig</span> <span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">Cache</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="nf">caffeineCache</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="nc">Caffeine</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">initialCapacity</span><span class="o">(</span><span class="mi">128</span><span class="o">)</span><span class="c1">//初始大小</span>
+                <span class="o">.</span><span class="na">maximumSize</span><span class="o">(</span><span class="mi">1024</span><span class="o">)</span><span class="c1">//最大数量</span>
+                <span class="o">.</span><span class="na">expireAfterWrite</span><span class="o">(</span><span class="mi">60</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span><span class="c1">//过期时间</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>简单解释一下<code class="highlighter-rouge">Cache</code>相关的几个参数的意义：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">initialCapacity</code>：初始缓存空大小</li>
+  <li><code class="highlighter-rouge">maximumSize</code>：缓存的最大数量，设置这个值可以避免出现内存溢出</li>
+  <li><code class="highlighter-rouge">expireAfterWrite</code>：指定缓存的过期时间，是最后一次写操作后的一个时间，这里最后一次写入后的60秒过期</li>
+</ul>
+
+<p>此外，缓存的过期策略也可以通过<code class="highlighter-rouge">expireAfterAccess</code>或<code class="highlighter-rouge">refreshAfterWrite</code>指定。</p>
+
+<p>在创建完成<code class="highlighter-rouge">Cache</code>后，我们就可以在业务代码中注入并使用它了。在没有使用任何缓存前，一个只有简单的<code class="highlighter-rouge">Service</code>层代码是下面这样的，只有crud操作：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderServiceImpl</span> <span class="kd">implements</span> <span class="nc">OrderService</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">OrderMapper</span> <span class="n">orderMapper</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Order</span> <span class="nf">getOrderById</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="n">orderMapper</span><span class="o">.</span><span class="na">selectOne</span><span class="o">(</span><span class="k">new</span> <span class="nc">LambdaQueryWrapper</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;()</span>
+              <span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="nl">Order:</span><span class="o">:</span><span class="n">getId</span><span class="o">,</span> <span class="n">id</span><span class="o">));</span>    
+        <span class="k">return</span> <span class="n">order</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>      
+        <span class="n">orderMapper</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">deleteOrder</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">orderMapper</span><span class="o">.</span><span class="na">deleteById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>读操作</p>
+</blockquote>
+
+<p>在执行正常业务外再加上操作两级缓存</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Order</span> <span class="nf">getOrderById</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="nc">CacheConstant</span><span class="o">.</span><span class="na">ORDER</span> <span class="o">+</span> <span class="n">id</span><span class="o">;</span>
+    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Order</span><span class="o">)</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">,</span>
+            <span class="n">k</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="c1">//先查询 Redis</span>
+                <span class="nc">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">k</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">obj</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from redis"</span><span class="o">);</span>
+                    <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="c1">// Redis没有则查询 DB</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from database"</span><span class="o">);</span>
+                <span class="nc">Order</span> <span class="n">myOrder</span> <span class="o">=</span> <span class="n">orderMapper</span><span class="o">.</span><span class="na">selectOne</span><span class="o">(</span><span class="k">new</span> <span class="nc">LambdaQueryWrapper</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;()</span>
+                        <span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="nl">Order:</span><span class="o">:</span><span class="n">getId</span><span class="o">,</span> <span class="n">id</span><span class="o">));</span>
+                <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">myOrder</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+                <span class="k">return</span> <span class="n">myOrder</span><span class="o">;</span>
+            <span class="o">});</span>
+    <span class="k">return</span> <span class="n">order</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在<code class="highlighter-rouge">Cache</code>的<code class="highlighter-rouge">get</code>方法中，会先从缓存中进行查找，如果找到缓存的值那么直接返回。如果没有找到则执行后面的方法，并把结果加入到缓存中。</p>
+
+<p>因此上面的逻辑就是先查找<code class="highlighter-rouge">Caffeine</code>中的缓存，没有的话查找<code class="highlighter-rouge">Redis</code>，<code class="highlighter-rouge">Redis</code>再不命中则查询数据库，写入<code class="highlighter-rouge">Redis</code>缓存的操作需要手动写入，而<code class="highlighter-rouge">Caffeine</code>的写入由<code class="highlighter-rouge">get</code>方法自己完成。</p>
+
+<p>在上面的例子中，设置<code class="highlighter-rouge">Caffeine</code>的过期时间为60秒，而<code class="highlighter-rouge">Redis</code>的过期时间为120秒，下面进行测试，首先看第一次接口调用时，进行了数据库的查询：</p>
+
+<p><img src="\assets\images\2022\redis\caffeine-read-1.png" alt="" /></p>
+
+<p>而在之后60秒内访问接口时，都没有打印打任何sql或自定义的日志内容，说明接口没有查询<code class="highlighter-rouge">Redis</code>或数据库，直接从<code class="highlighter-rouge">Caffeine</code>中读取了缓存。</p>
+
+<p>等到距离第一次调用接口进行缓存的60秒后，再次调用接口：</p>
+
+<p><img src="\assets\images\2022\redis\caffeine-read-2.png" alt="" /></p>
+
+<p>可以看到这时从<code class="highlighter-rouge">Redis</code>中读取了数据，因为这时<code class="highlighter-rouge">Caffeine</code>中的缓存已经过期了，但是<code class="highlighter-rouge">Redis</code>中的缓存没有过期仍然可用。</p>
+
+<blockquote>
+  <p>写操作</p>
+</blockquote>
+
+<p>下面再来看一下修改操作，代码在原先的基础上添加了手动修改<code class="highlighter-rouge">Redis</code>和<code class="highlighter-rouge">Caffeine</code>缓存的逻辑：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update order data"</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">key</span><span class="o">=</span><span class="nc">CacheConstant</span><span class="o">.</span><span class="na">ORDER</span> <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="na">getId</span><span class="o">();</span>
+    <span class="n">orderMapper</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+    <span class="c1">//修改 Redis</span>
+    <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">key</span><span class="o">,</span><span class="n">order</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+    <span class="c1">// 修改本地缓存</span>
+    <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span><span class="n">order</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>看一下下面图中接口的调用、以及缓存的刷新过程。可以看到在更新数据后，同步刷新了缓存中的内容，再之后的访问接口时不查询数据库，也可以拿到正确的结果：</p>
+
+<p><img src="\assets\images\2022\redis\caffeine-read-3.gif" alt="" /></p>
+
+<blockquote>
+  <p>删除操作</p>
+</blockquote>
+
+<p>在删除数据的同时，手动移除<code class="highlighter-rouge">Reids</code>和<code class="highlighter-rouge">Caffeine</code>中的缓存：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">deleteOrder</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"delete order"</span><span class="o">);</span>
+    <span class="n">orderMapper</span><span class="o">.</span><span class="na">deleteById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">key</span><span class="o">=</span> <span class="nc">CacheConstant</span><span class="o">.</span><span class="na">ORDER</span> <span class="o">+</span> <span class="n">id</span><span class="o">;</span>
+    <span class="n">redisTemplate</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+    <span class="n">cache</span><span class="o">.</span><span class="na">invalidate</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们在删除某个缓存后，再次调用之前的查询接口时，又会出现重新查询数据库的情况：</p>
+
+<p><img src="\assets\images\2022\redis\caffeine-read-4.png" alt="" /></p>
+
+<h3 id="版本2">版本2</h3>
+
+<p>在<code class="highlighter-rouge">spring</code>项目中，提供了<code class="highlighter-rouge">CacheManager</code>接口和一些注解，允许让我们通过注解的方式来操作缓存。先来看一下常用几个注解说明：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">@Cacheable</code>：根据键从缓存中取值，如果缓存存在，那么获取缓存成功之后，直接返回这个缓存的结果。如果缓存不存在，那么执行方法，并将结果放入缓存中。</li>
+  <li><code class="highlighter-rouge">@CachePut</code>：不管之前的键对应的缓存是否存在，都执行方法，并将结果强制放入缓存</li>
+  <li><code class="highlighter-rouge">@CacheEvict</code>：执行完方法后，会移除掉缓存中的数据。</li>
+</ul>
+
+<p>如果要使用上面这几个注解管理缓存的话，我们就不需要配置V1版本中的那个类型为<code class="highlighter-rouge">Cache</code>的<code class="highlighter-rouge">Bean</code>了，而是需要配置<code class="highlighter-rouge">spring</code>中的<code class="highlighter-rouge">CacheManager</code>的相关参数，具体参数的配置和之前一样：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CacheManagerConfig</span> <span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">CacheManager</span> <span class="nf">cacheManager</span><span class="o">(){</span>
+        <span class="nc">CaffeineCacheManager</span> <span class="n">cacheManager</span><span class="o">=</span><span class="k">new</span> <span class="nc">CaffeineCacheManager</span><span class="o">();</span>
+        <span class="n">cacheManager</span><span class="o">.</span><span class="na">setCaffeine</span><span class="o">(</span><span class="nc">Caffeine</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">initialCapacity</span><span class="o">(</span><span class="mi">128</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">maximumSize</span><span class="o">(</span><span class="mi">1024</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">expireAfterWrite</span><span class="o">(</span><span class="mi">60</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">));</span>
+        <span class="k">return</span> <span class="n">cacheManager</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>然后在启动类上再添加上<code class="highlighter-rouge">@EnableCaching</code>注解，就可以在项目中基于注解来使用<code class="highlighter-rouge">Caffeine</code>的缓存支持了。下面，再次对<code class="highlighter-rouge">Service</code>层代码进行改造。</p>
+
+<blockquote>
+  <p>读操作</p>
+</blockquote>
+
+<p>在方法上添加<code class="highlighter-rouge">@Cacheable</code>注解：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Cacheable</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span><span class="n">key</span> <span class="o">=</span> <span class="s">"#id"</span><span class="o">)</span>
+<span class="c1">//@Cacheable(cacheNames = "order",key = "#p0")</span>
+<span class="kd">public</span> <span class="nc">Order</span> <span class="nf">getOrderById</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">key</span><span class="o">=</span> <span class="nc">CacheConstant</span><span class="o">.</span><span class="na">ORDER</span> <span class="o">+</span> <span class="n">id</span><span class="o">;</span>
+    <span class="c1">//先查询 Redis</span>
+    <span class="nc">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">obj</span><span class="o">)){</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from redis"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="o">(</span><span class="nc">Order</span><span class="o">)</span> <span class="n">obj</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">// Redis没有则查询 DB</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from database"</span><span class="o">);</span>
+    <span class="nc">Order</span> <span class="n">myOrder</span> <span class="o">=</span> <span class="n">orderMapper</span><span class="o">.</span><span class="na">selectOne</span><span class="o">(</span><span class="k">new</span> <span class="nc">LambdaQueryWrapper</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;()</span>
+            <span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="nl">Order:</span><span class="o">:</span><span class="n">getId</span><span class="o">,</span> <span class="n">id</span><span class="o">));</span>
+    <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">key</span><span class="o">,</span><span class="n">myOrder</span><span class="o">,</span><span class="mi">120</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">myOrder</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@Cacheable</code>注解的属性多达9个，好在我们日常使用时只需要配置两个常用的就可以了。其中<code class="highlighter-rouge">value</code>和<code class="highlighter-rouge">cacheNames</code>互为别名关系，表示当前方法的结果会被缓存在哪个<code class="highlighter-rouge">Cache</code>上，应用中通过<code class="highlighter-rouge">cacheName</code>来对<code class="highlighter-rouge">Cache</code>进行隔离，每个<code class="highlighter-rouge">cacheName</code>对应一个<code class="highlighter-rouge">Cache</code>实现。<code class="highlighter-rouge">value</code>和<code class="highlighter-rouge">cacheNames</code>可以是一个数组，绑定多个<code class="highlighter-rouge">Cache</code>。</p>
+
+<p>而另一个重要属性<code class="highlighter-rouge">key</code>，用来指定缓存方法的返回结果时对应的<code class="highlighter-rouge">key</code>，这个属性支持使用<code class="highlighter-rouge">SpringEL</code>表达式。通常情况下，我们可以使用下面几种方式作为<code class="highlighter-rouge">key</code>：</p>
+
+<ul>
+  <li>参数名</li>
+  <li>参数对象.属性名</li>
+  <li>p参数对应下标</li>
+</ul>
+
+<p>在上面的代码中，我们看到添加了<code class="highlighter-rouge">@Cacheable</code>注解后，在代码中只需要保留原有的业务处理逻辑和操作<code class="highlighter-rouge">Redis</code>部分的代码即可，<code class="highlighter-rouge">Caffeine</code>部分的缓存就交给spring处理了。</p>
+
+<blockquote>
+  <p>写操作</p>
+</blockquote>
+
+<p>我们再来改造一下更新方法，同样，使用<code class="highlighter-rouge">@CachePut</code>注解后移除掉手动更新<code class="highlighter-rouge">Cache</code>的操作：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@CachePut</span><span class="o">(</span><span class="n">cacheNames</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span><span class="n">key</span> <span class="o">=</span> <span class="s">"#order.id"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Order</span> <span class="nf">updateOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"update order data"</span><span class="o">);</span>
+    <span class="n">orderMapper</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+    <span class="c1">//修改 Redis</span>
+    <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="nc">CacheConstant</span><span class="o">.</span><span class="na">ORDER</span> <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span>
+            <span class="n">order</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">order</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>注意，这里和V1版本的代码有一点区别，在之前的更新操作方法中，是没有返回值的<code class="highlighter-rouge">void</code>类型，但是这里需要修改返回值的类型，否则会缓存一个空对象到缓存中对应的<code class="highlighter-rouge">key</code>上。当下次执行查询操作时，会直接返回空对象给调用方，而不会执行方法中查询数据库或<code class="highlighter-rouge">Redis</code>的操作。</p>
+
+<blockquote>
+  <p>删除操作</p>
+</blockquote>
+
+<p>使用<code class="highlighter-rouge">@CacheEvict</code>注解，方法中只需要删除<code class="highlighter-rouge">Redis</code>中的缓存即可：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@CacheEvict</span><span class="o">(</span><span class="n">cacheNames</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span><span class="n">key</span> <span class="o">=</span> <span class="s">"#id"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">deleteOrder</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"delete order"</span><span class="o">);</span>
+    <span class="n">orderMapper</span><span class="o">.</span><span class="na">deleteById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="n">redisTemplate</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="nc">CacheConstant</span><span class="o">.</span><span class="na">ORDER</span> <span class="o">+</span> <span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看到，借助<code class="highlighter-rouge">spring</code>中的<code class="highlighter-rouge">CacheManager</code>和<code class="highlighter-rouge">Cache</code>相关的注解，对V1版本的代码经过改进后，可以把全手动操作两级缓存的强入侵代码方式，改进为本地缓存交给<code class="highlighter-rouge">spring</code>管理，<code class="highlighter-rouge">Redis</code>缓存手动修改的半入侵方式。那么，还能进一步改造，使之成为对业务代码完全无入侵的方式吗？</p>
+
+<h3 id="版本3">版本3</h3>
+
+<p>模仿<code class="highlighter-rouge">spring</code>通过注解管理缓存的方式，我们也可以选择自定义注解，然后在切面中处理缓存，从而将对业务代码的入侵降到最低。</p>
+
+<p>首先定义一个注解，用于添加在需要操作缓存的方法上：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Target</span><span class="o">(</span><span class="nc">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
+<span class="nd">@Retention</span><span class="o">(</span><span class="nc">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+<span class="nd">@Documented</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">DoubleCache</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="nf">cacheName</span><span class="o">();</span>
+    <span class="nc">String</span> <span class="nf">key</span><span class="o">();</span> <span class="c1">//支持springEl表达式</span>
+    <span class="kt">long</span> <span class="nf">timeOut</span><span class="o">()</span> <span class="k">default</span> <span class="mi">120</span><span class="o">;</span>
+    <span class="nc">CacheType</span> <span class="nf">type</span><span class="o">()</span> <span class="k">default</span> <span class="nc">CacheType</span><span class="o">.</span><span class="na">FULL</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们使用<code class="highlighter-rouge">cacheName + key</code>作为缓存的真正<code class="highlighter-rouge">key</code>（仅存在一个<code class="highlighter-rouge">Cache</code>中，不做<code class="highlighter-rouge">CacheName</code>隔离），<code class="highlighter-rouge">timeOut</code>为可以设置的二级缓存<code class="highlighter-rouge">Redis</code>的过期时间，<code class="highlighter-rouge">type</code>是一个枚举类型的变量，表示操作缓存的类型，枚举类型定义如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="nc">CacheType</span> <span class="o">{</span>
+    <span class="no">FULL</span><span class="o">,</span>   <span class="c1">//存取</span>
+    <span class="no">PUT</span><span class="o">,</span>    <span class="c1">//只存</span>
+    <span class="no">DELETE</span>  <span class="c1">//删除</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>因为要使<code class="highlighter-rouge">key</code>支持<code class="highlighter-rouge">springEl</code>表达式，所以需要写一个方法，使用表达式解析器解析参数：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">parse</span><span class="o">(</span><span class="nc">String</span> <span class="n">elString</span><span class="o">,</span> <span class="nc">TreeMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">){</span>
+    <span class="n">elString</span><span class="o">=</span><span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"#\{\%s\}"</span><span class="o">,</span><span class="n">elString</span><span class="o">);</span>
+    <span class="c1">//创建表达式解析器</span>
+    <span class="nc">ExpressionParser</span> <span class="n">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SpelExpressionParser</span><span class="o">();</span>
+    <span class="c1">//通过evaluationContext.setVariable可以在上下文中设定变量。</span>
+    <span class="nc">EvaluationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StandardEvaluationContext</span><span class="o">();</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">entry</span><span class="o">-&gt;</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">setVariable</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span><span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">())</span>
+    <span class="o">);</span>
+
+    <span class="c1">//解析表达式</span>
+    <span class="nc">Expression</span> <span class="n">expression</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="na">parseExpression</span><span class="o">(</span><span class="n">elString</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TemplateParserContext</span><span class="o">());</span>
+    <span class="c1">//使用Expression.getValue()获取表达式的值，这里传入了Evaluation上下文</span>
+    <span class="nc">String</span> <span class="n">value</span> <span class="o">=</span> <span class="n">expression</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>参数中的<code class="highlighter-rouge">elString</code>对应的就是注解中<code class="highlighter-rouge">key</code>的值，<code class="highlighter-rouge">map</code>是将原方法的参数封装后的结果。简单进行一下测试：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">elString</span><span class="o">=</span><span class="s">"#order.money"</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">elString2</span><span class="o">=</span><span class="s">"#user"</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">elString3</span><span class="o">=</span><span class="s">"#p0"</span><span class="o">;</span>   
+
+    <span class="nc">TreeMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">=</span><span class="k">new</span> <span class="nc">TreeMap</span><span class="o">&lt;&gt;();</span>
+    <span class="nc">Order</span> <span class="n">order</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Order</span><span class="o">();</span>
+    <span class="n">order</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="mi">111L</span><span class="o">);</span>
+    <span class="n">order</span><span class="o">.</span><span class="na">setMoney</span><span class="o">(</span><span class="mi">123</span><span class="no">D</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"order"</span><span class="o">,</span><span class="n">order</span><span class="o">);</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"user"</span><span class="o">,</span><span class="s">"Hydra"</span><span class="o">);</span>
+
+    <span class="nc">String</span> <span class="n">val</span> <span class="o">=</span> <span class="n">parse</span><span class="o">(</span><span class="n">elString</span><span class="o">,</span> <span class="n">map</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">val2</span> <span class="o">=</span> <span class="n">parse</span><span class="o">(</span><span class="n">elString2</span><span class="o">,</span> <span class="n">map</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">val3</span> <span class="o">=</span> <span class="n">parse</span><span class="o">(</span><span class="n">elString3</span><span class="o">,</span> <span class="n">map</span><span class="o">);</span>
+
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">val</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">val2</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">val3</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>执行结果如下，可以看到支持按照参数名称、参数对象的属性名称读取，但是不支持按照参数下标读取，暂时留个小坑以后再处理。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>123.0
+Hydra
+null
+</code></pre></div></div>
+
+<p>至于<code class="highlighter-rouge">Cache</code>相关参数的配置，我们沿用V1版本中的配置即可。准备工作做完了，下面我们定义切面，在切面中操作<code class="highlighter-rouge">Cache</code>来读写<code class="highlighter-rouge">Caffeine</code>的缓存，操作<code class="highlighter-rouge">RedisTemplate</code>读写<code class="highlighter-rouge">Redis</code>缓存。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Slf4j</span> <span class="nd">@Component</span> <span class="nd">@Aspect</span> 
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CacheAspect</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">Cache</span> <span class="n">cache</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">RedisTemplate</span> <span class="n">redisTemplate</span><span class="o">;</span>
+
+    <span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"@annotation(com.cn.dc.annotation.DoubleCache)"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">cacheAspect</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Around</span><span class="o">(</span><span class="s">"cacheAspect()"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">doAround</span><span class="o">(</span><span class="nc">ProceedingJoinPoint</span> <span class="n">point</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+        <span class="nc">MethodSignature</span> <span class="n">signature</span> <span class="o">=</span> <span class="o">(</span><span class="nc">MethodSignature</span><span class="o">)</span> <span class="n">point</span><span class="o">.</span><span class="na">getSignature</span><span class="o">();</span>
+        <span class="nc">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="na">getMethod</span><span class="o">();</span>
+
+        <span class="c1">//拼接解析springEl表达式的map</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">paramNames</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="na">getParameterNames</span><span class="o">();</span>
+        <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="na">getArgs</span><span class="o">();</span>
+        <span class="nc">TreeMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">treeMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TreeMap</span><span class="o">&lt;&gt;();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">paramNames</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">treeMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">paramNames</span><span class="o">[</span><span class="n">i</span><span class="o">],</span><span class="n">args</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="nc">DoubleCache</span> <span class="n">annotation</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">getAnnotation</span><span class="o">(</span><span class="nc">DoubleCache</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">elResult</span> <span class="o">=</span> <span class="nc">ElParser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">key</span><span class="o">(),</span> <span class="n">treeMap</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">realKey</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="na">cacheName</span><span class="o">()</span> <span class="o">+</span> <span class="nc">CacheConstant</span><span class="o">.</span><span class="na">COLON</span> <span class="o">+</span> <span class="n">elResult</span><span class="o">;</span>
+
+        <span class="c1">//强制更新</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">type</span><span class="o">()==</span> <span class="nc">CacheType</span><span class="o">.</span><span class="na">PUT</span><span class="o">){</span>
+            <span class="nc">Object</span> <span class="n">object</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+            <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">realKey</span><span class="o">,</span> <span class="n">object</span><span class="o">,</span><span class="n">annotation</span><span class="o">.</span><span class="na">l2TimeOut</span><span class="o">(),</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+            <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">realKey</span><span class="o">,</span> <span class="n">object</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">object</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//删除</span>
+        <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">annotation</span><span class="o">.</span><span class="na">type</span><span class="o">()==</span> <span class="nc">CacheType</span><span class="o">.</span><span class="na">DELETE</span><span class="o">){</span>
+            <span class="n">redisTemplate</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">realKey</span><span class="o">);</span>
+            <span class="n">cache</span><span class="o">.</span><span class="na">invalidate</span><span class="o">(</span><span class="n">realKey</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">point</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="c1">//读写，查询Caffeine</span>
+        <span class="nc">Object</span> <span class="n">caffeineCache</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="na">getIfPresent</span><span class="o">(</span><span class="n">realKey</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">caffeineCache</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from caffeine"</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">caffeineCache</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">//查询Redis</span>
+        <span class="nc">Object</span> <span class="n">redisCache</span> <span class="o">=</span> <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">realKey</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">redisCache</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from redis"</span><span class="o">);</span>
+            <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">realKey</span><span class="o">,</span> <span class="n">redisCache</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">redisCache</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"get data from database"</span><span class="o">);</span>
+        <span class="nc">Object</span> <span class="n">object</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">object</span><span class="o">)){</span>
+            <span class="c1">//写入Redis</span>
+            <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">realKey</span><span class="o">,</span> <span class="n">object</span><span class="o">,</span><span class="n">annotation</span><span class="o">.</span><span class="na">l2TimeOut</span><span class="o">(),</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+            <span class="c1">//写入Caffeine</span>
+            <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">realKey</span><span class="o">,</span> <span class="n">object</span><span class="o">);</span>        
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">object</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>切面中主要做了下面几件工作：</p>
+
+<ul>
+  <li>通过方法的参数，解析注解中<code class="highlighter-rouge">key</code>的<code class="highlighter-rouge">springEl</code>表达式，组装真正缓存的<code class="highlighter-rouge">key</code></li>
+  <li>根据操作缓存的类型，分别处理存取、只存、删除缓存操作</li>
+  <li>删除和强制更新缓存的操作，都需要执行原方法，并进行相应的缓存删除或更新操作</li>
+  <li>存取操作前，先检查缓存中是否有数据，如果有则直接返回，没有则执行原方法，并将结果存入缓存</li>
+</ul>
+
+<p>修改<code class="highlighter-rouge">Service</code>层代码，代码中只保留原有业务代码，再添加上我们自定义的注解就可以了：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@DoubleCache</span><span class="o">(</span><span class="n">cacheName</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"#id"</span><span class="o">,</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="nc">CacheType</span><span class="o">.</span><span class="na">FULL</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Order</span> <span class="nf">getOrderById</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Order</span> <span class="n">myOrder</span> <span class="o">=</span> <span class="n">orderMapper</span><span class="o">.</span><span class="na">selectOne</span><span class="o">(</span><span class="k">new</span> <span class="nc">LambdaQueryWrapper</span><span class="o">&lt;</span><span class="nc">Order</span><span class="o">&gt;()</span>
+            <span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="nl">Order:</span><span class="o">:</span><span class="n">getId</span><span class="o">,</span> <span class="n">id</span><span class="o">));</span>
+    <span class="k">return</span> <span class="n">myOrder</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="nd">@DoubleCache</span><span class="o">(</span><span class="n">cacheName</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span><span class="n">key</span> <span class="o">=</span> <span class="s">"#order.id"</span><span class="o">,</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="nc">CacheType</span><span class="o">.</span><span class="na">PUT</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Order</span> <span class="nf">updateOrder</span><span class="o">(</span><span class="nc">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">orderMapper</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">order</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">order</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="nd">@DoubleCache</span><span class="o">(</span><span class="n">cacheName</span> <span class="o">=</span> <span class="s">"order"</span><span class="o">,</span><span class="n">key</span> <span class="o">=</span> <span class="s">"#id"</span><span class="o">,</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="nc">CacheType</span><span class="o">.</span><span class="na">DELETE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">deleteOrder</span><span class="o">(</span><span class="nc">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">orderMapper</span><span class="o">.</span><span class="na">deleteById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>到这里，基于切面操作缓存的改造就完成了，<code class="highlighter-rouge">Service</code>的代码也瞬间清爽了很多，让我们可以继续专注于业务逻辑处理，而不用费心去操作两级缓存了。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>本文按照对业务入侵的递减程度，依次介绍了三种管理两级缓存的方法。至于在项目中是否需要使用二级缓存，需要考虑自身业务情况，如果Redis这种远程缓存已经能够满足你的业务需求，那么就没有必要再使用本地缓存了。毕竟实际使用起来远没有那么简单，本文中只是介绍了最基础的使用，实际中的<strong>并发问题、事务的回滚问题</strong>都需要考虑，还需要思考什么数据适合放在一级缓存、什么数据适合放在二级缓存等等的其他问题。</p>
+
+<p>项目源码地址：https://github.com/trunks2008/double-cache</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/redis/2022/04/08/redis-and-caffeine.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

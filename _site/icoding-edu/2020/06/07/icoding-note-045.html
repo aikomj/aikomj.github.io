@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第45节：Docker精通-3 - 大伟的博客 </title>
+    <meta name="keywords" content="docker">
+    <meta name="description"
+          content="Dockerfile 构建镜像，发布镜像到阿里云仓库，idea整合docker使用Dockerfile创建镜像部署项目,Docker网络的原理，自定义docker网络，使用docker部署redis集群">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/06/07/icoding-note-045.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第45节：Docker精通-3">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第45节：Docker精通-3</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/06/07
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1dockerfile重点">1、DockerFile（重点）</h2>
+
+<h3 id="什么是dockerfile">什么是DockerFile</h3>
+
+<p>Dockerfile 是一个用来构建镜像的脚本文件，文本内容包含<font color="red">一条条构建镜像所需的指令</font>和说明。</p>
+
+<p><img src="/assets/images/2020/icoding/docker/local-docker-instance.png" alt="" /></p>
+
+<p>第一步，你写了个java项目，打包成jar包</p>
+
+<p>第二步，jar包+java环境通过dockerfile文件的指令构建，tag就是版本的区别，</p>
+
+<p><strong>一条条构建镜像所需的指令？有哪些指令</strong></p>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-command.png" alt="" /></p>
+
+<blockquote>
+  <p>mysql的dockerfile</p>
+</blockquote>
+
+<p>在dockerhub随便点进一个镜像的tag，就可以看到它的dockerfile（在github上），比如mysql</p>
+
+<p><img src="/assets/images/2020/icoding/docker/mysql-tags-and-dockerfile-links.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/docker/mysql-dockerfile.png" alt="" /></p>
+
+<p>可以发现mysql的基础镜像是debian:buster-silm</p>
+
+<blockquote>
+  <p>centos的dockerfile</p>
+</blockquote>
+
+<p>dockerhub上搜索centos的镜像，点其中一个tag，查看它的dockerfile</p>
+
+<p><img src="/assets/images/2020/icoding/docker/centos-tags-and-dockerfile.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/docker/centos-dockerfile.png" alt="" /></p>
+
+<p>可以发现centos的基础镜像是scratch</p>
+
+<p><img src="/assets/images/2020/icoding/docker/scratch.png" alt="" /></p>
+
+<p>scratch是所有镜像的根镜像，所有的docker镜像应该都是从dockerfile构建的！</p>
+
+<h3 id="dockerfile指令">DockerFile指令</h3>
+
+<p>完整命令如下： 在dockerfile指令中，会存在很多相似的指令，之后可以多注意一下！ 参数追加规则！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-comands-all.jpg" alt="" /></p>
+
+<p>workdir 设置工作目录，如tomcat镜像的默认工作目录是/usr/local/tomcat</p>
+
+<p>官方文档学习：<a href="https://docs.docker.com/engine/reference/builder/">https://docs.docker.com/engine/reference/builder/</a></p>
+
+<h3 id="dockerfile构建">Dockerfile构建</h3>
+
+<p>1、<mark>每个关键字，必须是大写字母</mark></p>
+
+<p>2、指令是从上到下依次执行</p>
+
+<p>3、# 代表注释</p>
+
+<p>4、每个指令本质就是构建了一个新的镜像层！将它提交！</p>
+
+<p><strong>应用来说：</strong></p>
+
+<p>代码 =&gt;.apk =&gt; 客户端下载运行</p>
+
+<p>DockerFile、Docker镜像、Docker 容器 ( 理解：相当于软件三个不同的阶段 )</p>
+
+<p>DockerFile 软件的原材料（代码）=&gt; <font color="red">Build</font> =&gt; Docker镜像（交付的产品）=&gt;  <font color="red">Run</font> =&gt; Docker 容器（最终软件的运行状态！）</p>
+
+<h3 id="实战centos">实战：CentOS</h3>
+
+<p>官方镜像：</p>
+
+<p><img src="/assets/images/2020/icoding/docker/centos-no-vim-ifconfig.png" alt="" /></p>
+
+<p>1、编写DockerFile</p>
+
+<p>一定需要有一个 DockerFile 文件、可以随意命名(但是不建议) 默认的名称 <mark>Dockerfile</mark></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba coding]# vim mydockerfile-centos
+FROM centos:7.8.2003
+MAINTAINER jude&lt;747463168@qq.com&gt;
+ENV MYPATH /usr/local <span class="c"># 配置环境变量</span>
+WORKDIR <span class="nv">$MYPATH</span>
+RUN yum <span class="nt">-y</span> <span class="nb">install </span>vim   <span class="c"># 编译镜像时运行的脚本</span>
+RUN yum <span class="nt">-y</span> <span class="nb">install </span>net-tools
+EXPOSE 80
+CMD <span class="nb">echo</span> <span class="nv">$MYPATH</span>  <span class="c"># 容器的启动命令，就是docker run的时候要启动哪些命令</span>
+CMD ech <span class="s2">"------end------"</span>
+CMD /bin/bash
+<span class="o">[</span>root@alibaba coding]# <span class="nb">ls
+</span>mydockerfile-centos
+</code></pre></div></div>
+
+<p>2、构建镜像</p>
+
+<p>通过Dockerfile进行构建镜像！ <code class="highlighter-rouge">docker build</code> 别忘记后面的 .  ，-f , 如果不要的情况下，文件名必须为 Dockerfile，-t 指定生成镜像的名称</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba coding]# docker build <span class="nt">--help</span>
+
+Usage:  docker build <span class="o">[</span>OPTIONS] PATH | URL | -
+
+Build an image from a Dockerfile
+
+Options:
+      <span class="nt">--add-host</span> list           Add a custom host-to-IP mapping <span class="o">(</span>host:ip<span class="o">)</span>
+      <span class="nt">--build-arg</span> list          Set build-time variables
+      <span class="nt">--cache-from</span> strings      Images to consider as cache sources
+      <span class="nt">--cgroup-parent</span> string    Optional parent cgroup <span class="k">for </span>the container
+      <span class="nt">--compress</span>                Compress the build context using <span class="nb">gzip</span>
+      <span class="nt">--cpu-period</span> int          Limit the CPU CFS <span class="o">(</span>Completely Fair Scheduler<span class="o">)</span> period
+      <span class="nt">--cpu-quota</span> int           Limit the CPU CFS <span class="o">(</span>Completely Fair Scheduler<span class="o">)</span> quota
+  <span class="nt">-c</span>, <span class="nt">--cpu-shares</span> int          CPU shares <span class="o">(</span>relative weight<span class="o">)</span>
+      <span class="nt">--cpuset-cpus</span> string      CPUs <span class="k">in </span>which to allow execution <span class="o">(</span>0-3, 0,1<span class="o">)</span>
+      <span class="nt">--cpuset-mems</span> string      MEMs <span class="k">in </span>which to allow execution <span class="o">(</span>0-3, 0,1<span class="o">)</span>
+      <span class="nt">--disable-content-trust</span>   Skip image verification <span class="o">(</span>default <span class="nb">true</span><span class="o">)</span>
+  <span class="nt">-f</span>, <span class="nt">--file</span> string             Name of the Dockerfile <span class="o">(</span>Default is <span class="s1">'PATH/Dockerfile'</span><span class="o">)</span>
+      <span class="nt">--force-rm</span>                Always remove intermediate containers
+      <span class="nt">--iidfile</span> string          Write the image ID to the file
+      <span class="nt">--isolation</span> string        Container isolation technology
+      <span class="nt">--label</span> list              Set metadata <span class="k">for </span>an image
+  <span class="nt">-m</span>, <span class="nt">--memory</span> bytes            Memory limit
+      <span class="nt">--memory-swap</span> bytes       Swap limit equal to memory plus swap: <span class="s1">'-1'</span> to <span class="nb">enable </span>unlimited swap
+      <span class="nt">--network</span> string          Set the networking mode <span class="k">for </span>the RUN instructions during build <span class="o">(</span>default <span class="s2">"default"</span><span class="o">)</span>
+      <span class="nt">--no-cache</span>                Do not use cache when building the image
+      <span class="nt">--pull</span>                    Always attempt to pull a newer version of the image
+  <span class="nt">-q</span>, <span class="nt">--quiet</span>                   Suppress the build output and print image ID on success
+      <span class="nt">--rm</span>                      Remove intermediate containers after a successful build <span class="o">(</span>default <span class="nb">true</span><span class="o">)</span>
+      <span class="nt">--security-opt</span> strings    Security options
+      <span class="nt">--shm-size</span> bytes          Size of /dev/shm
+  <span class="nt">-t</span>, <span class="nt">--tag</span> list                Name and optionally a tag <span class="k">in </span>the <span class="s1">'name:tag'</span> format
+      <span class="nt">--target</span> string           Set the target build stage to build.
+      <span class="nt">--ulimit</span> <span class="nb">ulimit           </span>Ulimit options <span class="o">(</span>default <span class="o">[])</span>
+      
+<span class="c"># docker build 一个镜像</span>
+<span class="o">[</span>root@alibaba coding]# docker build <span class="nt">-f</span> mydockerfile-centos <span class="nt">-t</span> mycentos:1.0 <span class="nb">.</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-build-mycentos.jpg" alt="" /></p>
+
+<p>构建完成，通过docker images 命令查看自己构建的镜像mycentos:1.0</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-build-mycentos-successfully.png" alt="" /></p>
+
+<p>3、运行镜像</p>
+
+<p>docker run 运行自己构建的镜像，默认进入工作目录是 /usr/local，且支持vim、ifconfig命令</p>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-run-mycentos.png" alt="" /></p>
+
+<p>发现docker run 只执行最后一个CMD命令  /bin/bash</p>
+
+<p>4、docker history命令查看任何一个镜像的创建过程</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-history.png" alt="" /></p>
+
+<p>发现最底下的那一层是镜像centos:7.8.2003，<font color="red">每一条命令执行完毕，提交一个新的镜像层！</font>，前面我们说过镜像是分层的。</p>
+
+<h3 id="cmd-和-entrypoint-区别">CMD 和 ENTRYPOINT 区别</h3>
+
+<p>启动容器的时候，我们都可以使用这两个命令来执行一个启动时的运行命令！</p>
+
+<ul>
+  <li>
+    <p>CMD :  设置容器的启动命令 ，Dockerfile 中有多个CMD 指令，但是只有最后一个会生效，CMD 默认的参数会被 docker run 参数替代！</p>
+  </li>
+  <li>
+    <p>ENTRYPOINT : 设置容器的入口 ENTRYPOINT 的参数 和  docker run  进行拼接！</p>
+  </li>
+</ul>
+
+<p><strong>CMD 指令：</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba coding]# vim dockerfile-cmd-test
+FROM centos:7.8.2003
+CMD <span class="o">[</span><span class="s2">"ls"</span>,<span class="s2">"-a"</span><span class="o">]</span> 
+<span class="c"># 构建镜像</span>
+<span class="o">[</span>root@alibaba coding]# docker build <span class="nt">-f</span> dockerfile-cmd-test <span class="nt">-t</span> cmdtest:1.0 <span class="nb">.</span>
+<span class="c"># run,参数替代,</span>
+<span class="o">[</span>root@alibaba coding]# docker run cmdtest:1.0 <span class="nt">-l</span> <span class="c"># 会报错CMD不会拼接命令-l</span>
+<span class="o">[</span>root@alibaba coding]# docker run cmdtest:1.0 <span class="nb">ls</span> <span class="nt">-al</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-cmd.png" alt="" /></p>
+
+<p><strong>ENTRYPOINT：</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba coding]# vim dockerfile-entrypoint-test
+FROM centos:7.8.2003
+ENTRYPOINT <span class="o">[</span><span class="s2">"ls"</span>,<span class="s2">"-a"</span><span class="o">]</span>
+<span class="c"># 构建镜像</span>
+<span class="o">[</span>root@alibaba coding]# docker build <span class="nt">-f</span> dockerfile-entrypoint-test <span class="nt">-t</span>  entrypoint <span class="nb">.</span>
+<span class="c"># run</span>
+<span class="o">[</span>root@alibaba coding]# docker run entrypoint:latest
+<span class="o">[</span>root@alibaba coding]# docker run entrypoint:latest <span class="nt">-l</span> <span class="c"># 会拼接命令为 ls -al</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-entrypoint.png" alt="" /></p>
+
+<p>容器一启动，自动执行 jar包！执行项目，如下：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FROM java:8
+<span class="c"># 拷贝当前目录下的jar包到容器内的/app.jar</span>
+COPY <span class="k">*</span>.jar /app.jar
+<span class="c"># 配置应用tomcat的端口</span>
+CMD <span class="o">[</span><span class="s2">"--server.port=8080"</span><span class="o">]</span>
+<span class="c"># 暴露容器的端口</span>
+EXPOSE 8080
+<span class="c"># 设置容器的入口程序,启动容器后就执行java命令启动程序</span>
+ENTRYPOINT <span class="o">[</span><span class="s2">"java"</span>,<span class="s2">"-jar"</span>,<span class="s2">"/app.jar"</span><span class="o">]</span>
+</code></pre></div></div>
+
+<p>小结：编写dockerfile=&gt; 构建=&gt; 运行！</p>
+
+<h3 id="实战tomcat">实战：Tomcat</h3>
+
+<p>新电脑，装我们的tomcat的步骤：</p>
+
+<p>1、下载 jdk 的包</p>
+
+<p>2、安装jdk</p>
+
+<p>3、配置环境变量</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 环境变量在末尾添加JAVA_Home</span>
+<span class="o">[</span>root@alibaba jdk1.8.0_201]# vim /etc/profile
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/local/jdk1.8.0_201
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span>.:<span class="nv">$JAVA_HOME</span>/jre/lib/rt.jar:<span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin
+<span class="c"># 使环境变量生效</span>
+<span class="o">[</span>root@alibaba jdk1.8.0_201]# <span class="nb">source</span> /etc/profile
+<span class="o">[</span>root@alibaba jdk1.8.0_201]# java <span class="nt">-version</span>
+</code></pre></div></div>
+
+<p>4、下载tomcat的包</p>
+
+<p>5、解压tomcat</p>
+
+<blockquote>
+  <p>使用dockerfile构建自己的tomcat镜像</p>
+</blockquote>
+
+<p>1、需要有原材料，jdk-8u251-linux-x64.tar.gz 和apache-tomcat-9.0.36.tar.gz 上传到服务器，</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 建一个readme.md文件</span>
+<span class="o">[</span>root@alibaba tomcat]# vim readme.md
+hello,welcome,这是一个使用dockerfile构建的tomcat镜像@jude&lt;747463168.com&gt;
+</code></pre></div></div>
+
+<p>2、编写Dockerfile</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba tomcat]# vim Dockerfile <span class="c"># 官方名称</span>
+FROM centos
+MAINTAINER coding&lt;24736743@qq.com&gt;
+<span class="c"># 复制一个文件到容器/usr/local目录内</span>
+COPY readme.md /usr/local/readme.md
+<span class="c"># 自动解压到容器/usr/local目录下</span>
+ADD jdk-8u251-linux-x64.tar.gz /usr/local/
+ADD apache-tomcat-9.0.36.tar.gz /usr/local/
+<span class="c"># 安装vim命令支持</span>
+RUN yum <span class="nt">-y</span> <span class="nb">install </span>vim
+<span class="c"># 配置环境变量</span>
+ENV MYPATH /usr/local
+<span class="c"># 工作目录</span>
+WORKDIR <span class="nv">$MYPATH</span>
+<span class="c"># 配置JDK环境</span>
+ENV JAVA_HOME /usr/local/jdk1.8.0_251
+ENV CLASSPATH <span class="nv">$JAVA_HOME</span>/lib/dt.jar:<span class="nv">$JAVA_HOME</span>/lib/tools.jar
+<span class="c"># 配置tomcat</span>
+ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.36
+ENV CATALINA_BASE /usr/local/apache-tomcat-9.0.36
+
+ENV PATH <span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$CATALINA_HOME</span>/bin:<span class="nv">$CATALINA_HOME</span>/lib
+<span class="c"># 暴露容器内部端口8080</span>
+EXPOSE 8080
+<span class="c"># 启动容器后执行命令：启动tomcat和打印日志</span>
+CMD /usr/local/apache-tomcat-9.0.36/bin/startup.sh <span class="o">&amp;&amp;</span> <span class="nb">tail</span> <span class="nt">-F</span> /usr/local/apache-tomcat-9.0.36/bin/logs/catalina.out
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-tomcat-ll.png" alt="" /></p>
+
+<p>3、构建镜像</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba tomcat]# docker build <span class="nt">-t</span> coding/tomcat <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>docker image命令查看镜像</p>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-mytomcat-image.png" alt="" /></p>
+
+<p>启动运行tomcat</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba tomcat]# docker run <span class="nt">-d</span> <span class="nt">-p</span> 9090:8080 <span class="nt">--name</span> codingtomcat <span class="nt">-v</span> /home/coding/tomcat/webapps:/usr/local/apache-tomcat-9.0.36/webapps/test <span class="nt">-v</span> /home/coding/tomcat/logs:/usr/local/apache-tomcat-9.0.36/logs coding/tomcat
+5ddf6c85a6aac4ccb6abe03caab5cdfe6f5e78c079ef396c1c4ed546be5b92d4
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-run-mytomcat.png" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 运行后挂载的webapps与logs目录</span>
+<span class="o">[</span>root@alibaba tomcat]# <span class="nb">ls
+</span>apache-tomcat-9.0.36.tar.gz  Dockerfile  jdk1.8.0_201  jdk-8u201-linux-x64.tar.gz  logs  readme.md  webapps
+</code></pre></div></div>
+
+<p>外网访问</p>
+
+<p><img src="/assets/images/2020/icoding/docker/dockerfile-mytomcat-access.jpg" alt="" /></p>
+
+<blockquote>
+  <p>小结：</p>
+</blockquote>
+
+<p>制作镜像、运行挂载，东西都没有问题了！本地docker我们到此彻底玩转！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/local-docker-instance.png" alt="" /></p>
+
+<h3 id="发布镜像到dockerhub">发布镜像到DockerHub</h3>
+
+<blockquote>
+  <p>官方镜像仓库地址  DockerHub！</p>
+</blockquote>
+
+<p>地址：<a href="https://hub.docker.com/">https://hub.docker.com/</a></p>
+
+<p>1、注册 DockerHub！</p>
+
+<p>2、登录 DockerHub！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/login-dockerhub.png" alt="" /></p>
+
+<p>3、本地docker 登录仓库</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 看登录登出命令</span>
+<span class="o">[</span>root@alibaba tomcat]# docker <span class="nt">--help</span>
+...
+login       Log <span class="k">in </span>to a Docker registry
+<span class="nb">logout      </span>Log out from a Docker registry
+...
+pull        Pull an image or a repository from a registry
+push        Push an image or a repository to a registry
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/login-dockerhub2.png" alt="" /></p>
+
+<p>4、push测试</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 登录后，push测试</span>
+<span class="o">[</span>root@alibaba tomcat]# docker push coding/tomcat:lastest
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/push-image-to-dockerhub.png" alt="" /></p>
+
+<p>5、本地镜像有问题，没有账号名称！ tag！</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 需要修改名字</span>
+<span class="o">[</span>root@alibaba tomcat]# docker tag 14113680e4b6 kuangshen/tocmat:1.0
+<span class="c"># 重新push</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/push-image-to-dockerhub2.png" alt="" /></p>
+
+<h3 id="发布镜像到本地仓库">发布镜像到本地仓库</h3>
+
+<p><a href="https://docs.docker.com/engine/reference/commandline/push/">https://docs.docker.com/engine/reference/commandline/push/</a></p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-push-local-registry.jpg" alt="" /></p>
+
+<p>使用本地服务器作为镜像仓库</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># 拉取镜像</span>
+ docker pull registry
+ 
+ <span class="c"># 创建容器</span>
+ docker run <span class="nt">-d</span> <span class="nt">-p</span> 5000:5000 registry
+ 
+ <span class="c"># 配置私有仓库地址</span>
+ <span class="o">[</span>root@alibaba tomcat]# vim /etc/docker/daemon.json 
+<span class="o">{</span>
+  <span class="s2">"registry-mirrors"</span>: <span class="o">[</span><span class="s2">"https://dyv68vb0.mirror.aliyuncs.com"</span><span class="o">]</span>,
+<span class="s2">"insecure-registries"</span>: <span class="o">[</span><span class="s2">"http://47.113.95.179:5000"</span><span class="o">]</span>
+<span class="o">}</span>
+
+<span class="c"># 重启daemon进程</span>
+systemctl daemon-reload
+<span class="c"># 重启docker</span>
+systemctl restart docker
+
+<span class="c"># 启动仓库</span>
+</code></pre></div></div>
+
+<p>访问http://47.113.95.179:5000/v2/_catalog</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba tomcat]# curl localhost:5000/v2/_catalog
+<span class="o">{</span><span class="s2">"repositories"</span>:[]<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-local-registories.jpg" alt="" /></p>
+
+<p>push测试</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 标记</span>
+<span class="o">[</span>root@alibaba tomcat]# docker tag 25821f0bd151 47.113.95.179:5000/codingtomcat
+<span class="c"># 推送</span>
+<span class="o">[</span>root@alibaba tomcat]# docker push 47.113.95.179:5000/codingtomcat
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-local-registories-push-image.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-local-registories2.jpg" alt="" /></p>
+
+<p>下载镜像</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld ~]# docker pull 47.113.95.179:5000/codingtomcat
+Using default tag: latest
+Error response from daemon: Get https://47.113.95.179:5000/v2/: http: server gave HTTP response to HTTPS client
+</code></pre></div></div>
+
+<p>问题使用http不安全，无法拉取</p>
+
+<p>如何删除本地仓库上的镜像</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看仓库容器的配置文件</span>
+<span class="o">[</span>root@alibaba tomcat]# docker <span class="nb">exec</span> <span class="nt">-it</span> 00b75ac66ff7 <span class="nb">cat</span> /etc/docker/registry/config.yml
+
+<span class="c"># 修改配置文件 增加delete 字段</span>
+<span class="o">[</span>root@alibaba tomcat]# docker <span class="nb">exec</span> <span class="nt">-it</span> 00b75ac66ff7 vi /etc/docker/registry/config.yml
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enabled: <span class="nb">true
+</span>http:        
+  addr: :5000                        
+  headers:                           
+    X-Content-Type-Options: <span class="o">[</span>nosniff]
+health:          
+  storagedriver: 
+    enabled: <span class="nb">true
+    </span>interval: 10s
+    threshold: 3
+    
+<span class="c"># 重启容器，生效配置</span>
+<span class="o">[</span>root@alibaba tomcat]# docker restart 00b75ac66ff7
+
+<span class="c"># 获取镜像摘要信息</span>
+curl <span class="nt">--header</span> <span class="s2">"Accept:application/vnd.docker.distribution.manifest.v2+json"</span> <span class="nt">-I</span> <span class="nt">-XGET</span> http://镜像地址/v2/镜像名称/manifests/镜像版本 
+
+<span class="o">[</span>root@alibaba tomcat]# curl <span class="nt">--header</span> <span class="s2">"Accept:application/vnd.docker.distribution.manifest.v2+json"</span> <span class="nt">-I</span> <span class="nt">-XGET</span> http://localhost:5000/v2/codingtomcat/manifests/latest
+HTTP/1.1 200 OK
+Content-Length: 1373
+Content-Type: application/vnd.docker.distribution.manifest.v2+json
+Docker-Content-Digest: sha256:d1f34ec22fe18c640a4e5af347f7b1e8e68914a6fd41a7fc7f56c80c154fe86b
+Docker-Distribution-Api-Version: registry/2.0
+Etag: <span class="s2">"sha256:d1f34ec22fe18c640a4e5af347f7b1e8e68914a6fd41a7fc7f56c80c154fe86b"</span>
+X-Content-Type-Options: nosniff
+Date: Tue, 16 Jun 2020 15:01:30 GMT
+
+<span class="c"># 删除私有仓库上的镜像</span>
+curl <span class="nt">-I</span> <span class="nt">-XDELETE</span> 私有仓库地址/v2/镜像名称/manifests/镜像对应sha256值
+
+<span class="o">[</span>root@alibaba tomcat]# curl <span class="nt">-I</span> <span class="nt">-XDELETE</span> http://localhost:5000/v2/codingtomcat/manifests/sha256:d1f34ec22fe18c640a4e5af347f7b1e8e68914a6fd41a7fc7f56c80c154fe86b
+HTTP/1.1 202 Accepted  
+Docker-Distribution-Api-Version: registry/2.0
+X-Content-Type-Options: nosniff
+Date: Tue, 16 Jun 2020 15:05:38 GMT
+Content-Length: 0
+</code></pre></div></div>
+
+<p>发现其实还是删除不了的，自己的服务器做镜像仓库用起来有点费劲。</p>
+
+<h3 id="发布镜像到阿里云建议">发布镜像到阿里云（建议）</h3>
+
+<p>1、登录阿里云，找到容器镜像服务</p>
+
+<p>首先要自己开通容器镜像服务</p>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-open.jpg" alt="" /></p>
+
+<p>2、创建命名空间，唯一确定你！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-open2.jpg" alt="" /></p>
+
+<p>3、创建镜像仓库！选择私有或者公开，选择<mark>本地仓库</mark></p>
+
+<p><img src="/assets/images/2020/icoding/docker/create-image-repo-on-aliyun.png" alt="" /></p>
+
+<p>4、上传镜像</p>
+
+<p>点进仓库，看操作指南写得很清楚，包括如何上传镜像和拉取镜像</p>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-info.jpg" alt="" /></p>
+
+<ul>
+  <li>
+    <p>登录 docker login 阿里云仓库</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker login <span class="nt">--username</span><span class="o">=</span>xxxx registry.cn-shenzhen.aliyuncs.com
+</code></pre></div>    </div>
+
+    <p><img src="/assets/images/2020/icoding/docker/ali-registries.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>镜像打标签</p>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker tag <span class="o">[</span>ImageId] registry.cn-shenzhen.aliyuncs.com/icoding-jude/icoding-study:redis-1.0
+</code></pre></div></div>
+
+<ul>
+  <li>推送镜像到阿里云仓库</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker push registry.cn-shenzhen.aliyuncs.com/icoding-jude/icoding-study:redis-1.0
+</code></pre></div></div>
+
+<p>5、推送完后就可以在我们的官方仓库查看了</p>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-open3.jpg" alt="" /></p>
+
+<p>仓库类型是私有的，需要登录docker才能pull，公有的直接pull。</p>
+
+<p>在另外一台服务器上拉取刚上传的镜像</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull registry.cn-shenzhen.aliyuncs.com/icoding-jude/icoding-study:redis-1.0
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-open4.jpg" alt="" /></p>
+
+<p>把仓库类型改为私有，再尝试拉取失败，需要docker login登录</p>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-open5.jpg" alt="" /></p>
+
+<p>docker login登录仓库后，拉取成功</p>
+
+<p><img src="/assets/images/2020/icoding/docker/ali-registry-open6.jpg" alt="" /></p>
+
+<p>6、登出docker  阿里云仓库</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba ~]# docker <span class="nb">logout </span>registry.cn-shenzhen.aliyuncs.com
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<p>记住这幅图，到目前为止，Docker使用没有任何问题了！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-commands-diagram.png" alt="" /></p>
+
+<h2 id="2idea整合docker">2、IDEA整合Docker</h2>
+
+<p>自己写一个项目，使用docker来发布！交付，就是一个镜像而已！（应用 + 环境）</p>
+
+<p>1、项目打包本地运行通过</p>
+
+<p>web层接口定义HelloController</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
+
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/hello"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">hello</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="s">"hello,coding"</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>package打jar包</p>
+
+<p><img src="/assets/images/2020/icoding/docker/idea-docker-package.jpg" alt="" /></p>
+
+<p>2、编写Dockerfile,</p>
+
+<p>先安装docker的插件(有提示功能)，安装完后重启idea，让插件生效</p>
+
+<p><img src="/assets/images/2020/icoding/docker/idea-docker-plugin.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/docker/idea-dockerfile.png" alt="" /></p>
+
+<p>3、构建镜像</p>
+
+<p>把jar包和Dockerfile上传到服务器</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba idea-app]# <span class="nb">ls
+</span>Dockerfile  hello-0.0.1-SNAPSHOT.jar
+<span class="c"># .代表当前目录</span>
+<span class="o">[</span>root@alibaba idea-app]# docker build <span class="nt">-t</span> helloapp <span class="nb">.</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/idea-docker-build.jpg" alt="" /></p>
+
+<p>4、运行镜像通过</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -d 后台运行 -P随机暴露端口</span>
+<span class="o">[</span>root@alibaba idea-app]# docker run <span class="nt">-d</span> <span class="nt">-P</span> helloapp
+6572d2298ca013d679d8cc3753af17e93dd88aa4c827fafb2d6f569350367c27
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/idea-docker-run2.jpg" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 访问测试</span>
+<span class="o">[</span>root@alibaba idea-app]# curl localhost:32772/hello
+hello,coding
+<span class="o">[</span>root@alibaba idea-app]#
+</code></pre></div></div>
+
+<p>5、发布镜像！</p>
+
+<p>可以把镜像上传到阿里云镜像仓库了</p>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p>在使用了docker之后，以后的一切交付产品都使用docker来完成即可！</p>
+
+<h2 id="3docker网络">3、Docker网络</h2>
+
+<h3 id="理解docker0">理解docker0</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看本地ip</span>
+<span class="o">[</span>root@alibaba www]# ip addr
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-ip-addr.png" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># 分析3个网络</span>
+ lo 127.0.0.1 <span class="c"># 本地回环地址</span>
+ eth0 172.17.90.138 <span class="c"># 阿里云的私有ip </span>
+ docker0 172.18.0.1 <span class="c"># docker的网卡</span>
+ <span class="c"># docker怎么处理容器间的访问的?</span>
+</code></pre></div></div>
+
+<p><strong>实际场景：</strong></p>
+
+<p>开发了很多的微服务项目，都需要连接数据库， url 地址，容器重启==&gt; 每次url都会发生变化！（使用容器名连接 ！）</p>
+
+<p>如果可以直接指定ip就好了！</p>
+
+<p>容器之间是否可以ping通！不能直接ping通，需要把容器放到同一个网络</p>
+
+<h3 id="原理">原理</h3>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-contianer-eth.png" alt="" /></p>
+
+<p>发现启动一个容器，本地就会多一个网卡，418与419一对网卡（容器内与宿主机）对应</p>
+
+<p>宿主机与容器是可以ping通的</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># linux服务器是可以和容器内的应用ping通的！tomcat01的ip是172.18.0.2</span>
+ <span class="o">[</span>root@kuangshen idea-app]# ping 172.18.0.2
+ PING 172.18.0.2 <span class="o">(</span>172.18.0.2<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+ 64 bytes from 172.18.0.2: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.069 ms
+</code></pre></div></div>
+
+<p>再启动一个tomcat容器</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-container-eth2.png" alt="" /></p>
+
+<p>发现又多一对网卡420与421，420是容器内的网卡，421上宿主机上的网卡，它们是绑定的关系，从图中可以看出：420: eth0@if421，</p>
+
+<p>421: veth139bf0a@if420。同时从图中发现491,421分别代表tomcat01和tomcat02，都连接到docker0 网卡上</p>
+
+<p>得出结论：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># linux      &lt;=&gt;     容器</span>
+ 419：@if418        418:eth0@if419
+ 421：@if420        420:eth0@if421
+ 
+ <span class="c"># 每一次启动，容器都会产生一对网卡！</span>
+ <span class="c"># 序号依次递增！</span>
+ <span class="c"># linux 这样一对虚拟设备接口！ 这叫 veth-pair 技术 </span>
+</code></pre></div></div>
+
+<p>顾名思义，veth-pair 就是一对的虚拟设备接口，和 tap/tun 设备不同的是，它都是成对出现的。一端连着协议栈，一端彼此相连着。如下图所示：</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-veth-pair.png" alt="" /></p>
+
+<p>正因为有这个特性，它常常充当着一个桥梁，连接着各种虚拟网络设备，典型的例子像“两个 namespace 之间的连接”，“Bridge、OVS 之间的连接”，“Docker 容器之间的连接” 等等，以此构建出非常复杂的虚拟网络结构，比如 OpenStack Neutron。</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker0-tomcat-ping.png" alt="" /></p>
+
+<p>发现，容器是可以互相ping通的，但是要通过ip地址！使用容器名就不行</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 默认docker0网卡，容器间使用容器名是无法ping通的，要使用ip地址</span>
+<span class="o">[</span>root@kuangshen idea-app]# docker <span class="nb">exec</span> <span class="nt">-it</span> tomcat02 ping tomcat01
+ ping: tomcat01: Name or service not known
+</code></pre></div></div>
+
+<p>结论：tomcat1 和 tomcat2 实际上，共用了一个路由！ docker0，任何一个容器默认启动的时候都是docker0网络。docker0 就会给容器分配一个可用ip，自增！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker0-subnet-num.png" alt="" /></p>
+
+<p>16是后面两位可以改变的意思，8+8=16，范围是172.18.0.0 - 172.18.255.255，所以默认docker0 最多可以分配  65535</p>
+
+<p>如果是8，范围是172.18.0.0 - 172.18.0.255</p>
+
+<p>比如之后要自己创建一个网络，这些都是可以自己配置的！</p>
+
+<h3 id="link容器互联">–link容器互联</h3>
+
+<p>jdbc:mysql://172.18.0.2:3306 , 每次启动容器，ip都会变！</p>
+
+<p>jdbc:mysql://容器名:3306 , 每次启动容器，容器名不变即可！</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># 直接使用容器名是无法ping通过的，需要使用--link参数</span>
+ <span class="o">[</span>root@kuangshen idea-app]# docker <span class="nb">exec</span> <span class="nt">-it</span> tomcat02 ping tomcat01
+ ping: tomcat01: Name or service not known
+ 
+ <span class="c"># 使用--link,tomcat03在启动的时候连接到 tomcat02</span>
+ <span class="o">[</span>root@kuangshen idea-app]# docker run <span class="nt">-d</span> <span class="nt">-P</span> <span class="nt">--name</span> tomcat03 <span class="nt">--link</span> tomcat02 tomcat
+ 714c8b810584248a595f9e7d033038fa7ddc05c77110d96ee88abe78019755b0
+ <span class="o">[</span>root@kuangshen idea-app]# docker ps
+ CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS              PORTS                     NAMES
+ 714c8b810584        tomcat              <span class="s2">"catalina.sh run"</span>   3 seconds ago        Up 2 seconds        0.0.0.0:32773-&gt;8080/tcp   tomcat03
+ 10175c786309        tomcat              <span class="s2">"catalina.sh run"</span>   About a minute ago   Up About a minute   0.0.0.0:32772-&gt;8080/tcp   tomcat02
+ 2f39a5a6588d        tomcat              <span class="s2">"catalina.sh run"</span>   About a minute ago   Up About a minute   0.0.0.0:32771-&gt;8080/tcp   tomcat01
+
+<span class="c"># tomcat03 --link 连接到了一个容器之后，这时候才可以ping通容器名！</span>
+<span class="o">[</span>root@kuangshen idea-app]# docker <span class="nb">exec</span> <span class="nt">-it</span> tomcat03 ping tomcat02
+PING tomcat02 <span class="o">(</span>172.18.0.3<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+64 bytes from tomcat02 <span class="o">(</span>172.18.0.3<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.092 ms
+64 bytes from tomcat02 <span class="o">(</span>172.18.0.3<span class="o">)</span>: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.068 ms
+
+<span class="c"># 但是反过来tomcat02是无法连接tomcat03的，说明 --link 连接是单向的</span>
+<span class="o">[</span>root@kuangshen idea-app]# docker <span class="nb">exec</span> <span class="nt">-it</span> tomcat02 ping tomcat03
+ping: tomcat03: Name or service not known
+</code></pre></div></div>
+
+<p>如果在docker0情况下，我们可以使用–link 让容器之间可以使用容器名来ping通，连接成功！</p>
+
+<p>–link 是一个单向连接！</p>
+
+<p><strong>原理：</strong></p>
+
+<p>进入容器tomcat03，查看配置文件/etc/hosts ，发现–link本质是在/etc/hosts配置文件上配置了映射。tomcat02上的/etc/hosts没有配置tomcat03的ip地址映射，所以tocmat02无法通过容器名直接连接到tocmat03。</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-run-link.png" alt="" /></p>
+
+<font color="red">备注： --link 过时 了，它是单向连接的，不推荐大家使用！</font>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 强制删除全部的容器</span>
+docker <span class="nb">rm</span> <span class="nt">-f</span> <span class="si">$(</span>docker ps <span class="nt">-qa</span><span class="si">)</span> 
+</code></pre></div></div>
+
+<h3 id="自定义一个网卡">自定义一个网卡</h3>
+
+<p>我们可以把elasticsearch集群放在一个网络里，redis集群放在一个网络，mysql集群放在一个网络</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c"># 创建一个容器，就自动多一对网卡</span>
+ <span class="c"># 删除一个容器，自动减少，id还是自增！</span>
+ <span class="c"># docker run 不指定 网络，默认就是docker0</span>
+ docker0：
+ 1、默认的
+ 2、容器名访问，访问不了的！
+ 3、--link访问域名！麻烦，简陋，每个都配置！
+ 
+ 4、使用 docker network
+</code></pre></div></div>
+
+<p>查看所有网络</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-ls.png" alt="" /></p>
+
+<p><strong>网络模式</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Docker网络模式</th>
+      <th>配置</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>host模式</td>
+      <td>–net=host</td>
+      <td>容器和宿主机共享Network namespace。主机！</td>
+    </tr>
+    <tr>
+      <td>container模式</td>
+      <td>–net=container:NAME_or_ID</td>
+      <td>容器和另外一个容器共享Network namespace。 <font color="red">kubernetes中的pod就是多个容器共享一个Network namespace。</font></td>
+    </tr>
+    <tr>
+      <td>none模式</td>
+      <td>–net=none</td>
+      <td>容器有独立的Network namespace，但并没有对其进行任何网络设置，如分配veth pair 和网桥连接，配置IP等。自己设置</td>
+    </tr>
+    <tr>
+      <td>bridge模式</td>
+      <td>–net=bridge</td>
+      <td>（默认为该模式）路由器，自动划分ip！</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>1、自己创建网卡</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba ~]# docker network <span class="nt">--help</span>
+Usage:  docker network COMMAND
+Commands:
+  connect     Connect a container to a network
+  create      Create a network
+  disconnect  Disconnect a container from a network
+  inspect     Display detailed information on one or more networks
+  <span class="nb">ls          </span>List networks
+  prune       Remove all unused networks
+  <span class="nb">rm          </span>Remove one or more networks
+
+<span class="c"># 查看帮助命令 docker network create --help </span>
+<span class="c"># --subnet 是子网范围，--gateway 是网关</span>
+<span class="o">[</span>root@alibaba ~]# docker network create <span class="nt">--drive</span> bridge <span class="nt">--subnet</span> 192.167.0.0/16 <span class="nt">--gateway</span> 192.167.0.1 mynet2
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-create.png" alt="" /></p>
+
+<p>2、使用自己的网络 –net，启动容器</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建启动一个容器，并指定网络mynet2</span>
+<span class="o">[</span>root@alibaba ~]# docker run <span class="nt">-d</span> <span class="nt">-P</span> <span class="nt">--name</span> tomcat01 <span class="nt">--net</span> mynet tomcat:9.0
+<span class="o">[</span>root@alibaba ~]# docker run <span class="nt">-d</span> <span class="nt">-P</span> <span class="nt">--name</span> tomcat02 <span class="nt">--net</span> mynet tomcat:9.0
+<span class="c"># 查看网络mynet2的详细信息</span>
+docker network inspect mynet
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-inspect.jpg" alt="" /></p>
+
+<p>3、使用容器名相互ping通</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba ~]# docker <span class="nb">exec</span> <span class="nt">-it</span> tomcat01 ping tomcat02
+<span class="o">[</span>root@alibaba ~]# docker <span class="nb">exec</span> <span class="nt">-it</span> tomcat02 ping tomcat01
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-ping.jpg" alt="" /></p>
+
+<p>自定义网络的一个好处！我们没有配置任何东西，他自己就可以相互ping通，比docker0强大！</p>
+
+<p>使用自定义的网络，docker自身就帮我们维护了所有容器之间的连通，我们通常会这样来使用docker网络搭建项目环境！</p>
+
+<h3 id="网络连通">网络连通</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建启动容器tomcat03,tomcat04, 不指定网络，默认是docker0,容器间只能通过ip地址相互ping通，无法通过容器名ping通</span>
+<span class="o">[</span>root@alibaba ~]# docker run <span class="nt">-d</span> <span class="nt">-P</span> <span class="nt">--name</span> tomcat03 tomcat:9.0
+5c0a620ca3d83cf542551299aad1bf295be5287a5b7cad658f9e7e9f88c91a80
+<span class="o">[</span>root@alibaba ~]# docker run <span class="nt">-d</span> <span class="nt">-P</span> <span class="nt">--name</span> tomcat04 tomcat:9.0
+34668e99b2cf5bdf5992bc4a9ca074cdbcae501b398ee4e12c0f06aa10a75efa
+
+<span class="c"># tomcat01,tomcat02在网络mynet,tomcat03,tomcat04在网络docker0</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-mynet.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-docker0.jpg" alt="" /></p>
+
+<p>在不同网络中的tomcat可以通过ip地址相互ping通，但无法通过容器名相互ping通（自定义网络可以，docker0需要通过–link单向连接实现容器名ping通）</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-ping2.jpg" alt="" /></p>
+
+<p>将容器tomcat03也加入网络mynet！  一个容器多个IP ！</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看帮助命令</span>
+<span class="o">[</span>root@alibaba ~]# docker network connect <span class="nt">--help</span>
+Usage:  docker network connect <span class="o">[</span>OPTIONS] NETWORK CONTAINER
+Connect a container to a network
+Options:
+<span class="nt">--alias</span> strings           Add network-scoped <span class="nb">alias </span><span class="k">for </span>the container
+<span class="nt">--driver-opt</span> strings      driver options <span class="k">for </span>the network
+<span class="nt">--ip</span> string               IPv4 address <span class="o">(</span>e.g., 172.30.100.104<span class="o">)</span>
+<span class="nt">--ip6</span> string              IPv6 address <span class="o">(</span>e.g., 2001:db8::33<span class="o">)</span>
+<span class="nt">--link</span> list               Add <span class="nb">link </span>to another container
+<span class="nt">--link-local-ip</span> strings   Add a link-local address <span class="k">for </span>the container
+
+ <span class="c"># 通过 docker network connet 连通</span>
+<span class="o">[</span>root@alibaba ~]# docker network connect mynet tomcat03
+<span class="o">[</span>root@alibaba ~]# docker network inspect mynet
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-inspect-mynet.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-ping-mynet.jpg" alt="" /></p>
+
+<p>这样就可以实现容器跨网络访问！</p>
+
+<p><img src="/assets/images/2020/icoding/docker/docker-network-two-net-ping.jpg" alt="" /></p>
+
+<p>网络就是基础问题；计算机网络原理没有问题！</p>
+
+<h3 id="redis集群部署">Redis集群部署</h3>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-network.png" alt="" /></p>
+
+<p>上图3主3从</p>
+
+<p>下去测试即可！主要理解docker网络，可以配置集群隔离，保证我们集群的安全性，每个服务集群有自己的网络！</p>
+
+<p>1、自定义一个网络redis-net</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba ~]# docker network create <span class="nt">--subnet</span> 172.38.0.0/16 <span class="nt">--gateway</span> 172.38.0.1 redis-net
+c549a717573c11e698a0303657dc5502c0ec8da7940ed3d9099d9e67c94e5d2c
+</code></pre></div></div>
+
+<p>2、使用脚本启动6个redis容器</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 脚本注意不能有空格</span>
+<span class="k">for </span>port <span class="k">in</span> <span class="si">$(</span><span class="nb">seq </span>1 6<span class="si">)</span><span class="p">;</span> <span class="se">\</span>
+<span class="k">do</span> <span class="se">\</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> /mydata/redis/node-<span class="k">${</span><span class="nv">port</span><span class="k">}</span>/conf 
+<span class="nb">touch</span> /mydata/redis/node-<span class="k">${</span><span class="nv">port</span><span class="k">}</span>/conf/redis.conf 
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt;/mydata/redis/node-</span><span class="k">${</span><span class="nv">port</span><span class="k">}</span><span class="sh">/conf/redis.conf
+port 6379
+bind 0.0.0.0
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+cluster-announce-ip 172.38.0.1</span><span class="k">${</span><span class="nv">port</span><span class="k">}</span><span class="sh">
+cluster-announce-port 6379
+cluster-announce-bus-port 16379
+appendonly yes
+requirepass redisjude666 # master开启密码保护，默认是没有密码的
+masterauth redisjude666 # replica同master交互密码
+</span><span class="no">EOF
+
+</span>docker run <span class="nt">-p</span> 637<span class="k">${</span><span class="nv">port</span><span class="k">}</span>:6379 <span class="nt">-p</span> 1637<span class="k">${</span><span class="nv">port</span><span class="k">}</span>:16379 <span class="nt">--name</span> redis-<span class="k">${</span><span class="nv">port</span><span class="k">}</span> <span class="se">\</span>
+<span class="nt">-v</span> /mydata/redis/node-<span class="k">${</span><span class="nv">port</span><span class="k">}</span>/data:/data <span class="se">\</span>
+<span class="nt">-v</span> /mydata/redis/node-<span class="k">${</span><span class="nv">port</span><span class="k">}</span>/conf/redis.conf:/etc/redis/redis.conf <span class="se">\</span>
+<span class="nt">-d</span> <span class="nt">--net</span> redis-net <span class="nt">--ip</span> 172.38.0.1<span class="k">${</span><span class="nv">port</span><span class="k">}</span> redis:5.0.9-alpine3.11 redis-server /etc/redis/redis.conf<span class="p">;</span> <span class="se">\</span>
+
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>6个redis的配置文件和数据目录</p>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-nodes.jpg" alt="" /></p>
+
+<p>3、创建集群</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 进入一个redis，注意这里是 sh命令</span>
+<span class="o">[</span>root@alibaba ~]# docker <span class="nb">exec</span> <span class="nt">-it</span> redis-1 /bin/sh
+
+<span class="c"># 创建集群（创建成功！）</span>
+<span class="c"># -a 是redis的密码</span>
+redis-cli <span class="nt">-a</span> redisjude666  <span class="nt">--cluster</span> create 172.38.0.11:6379 172.38.0.12:6379 172.38.0.13:6379 172.38.0.14:6379 172.38.0.15:6379 172.38.0.16:6379 <span class="nt">--cluster-replicas</span> 1
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-build.jpg" alt="" /></p>
+
+<p>4、连接集群</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 进入一个redis,连接集群 （-c 连接集群！）</span>
+redis-cli <span class="nt">-c</span>
+
+<span class="c"># 查看集群信息</span>
+127.0.0.1:6379&gt; cluster info
+
+<span class="c"># 查看节点</span>
+127.0.0.1:6379&gt; cluster nodes
+
+
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-build2.jpg" alt="" /></p>
+
+<p>5、高可用测试</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># set a b  （选择一个容器进行set）</span>
+<span class="c"># 停止到存值的容器 （删除容器）</span>
+<span class="c"># 然后再次get a，发现依旧可以获取值 （自动转移到从机，依旧可以获得值）</span>
+<span class="c"># 查看节点，发现高可用完全没问题</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-set.jpg" alt="" /></p>
+
+<p>set 一个key ，该key存储到了172.38.0.13 （容器redis-3）, slot 槽点分片</p>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-get.jpg" alt="" /></p>
+
+<p>进入容器redis-2，get a 会自动跳到 172.38.0.13  获取值，现在尝试把redis-3容器停掉，</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba /]# docker stop redis-3
+redis-3
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-get2.jpg" alt="" /></p>
+
+<p>依旧可以获取值</p>
+
+<p><img src="/assets/images/2020/icoding/docker/redis-cluster-nodes2.jpg" alt="" /></p>
+
+<p>redis-3已失去连接，从节点redis-4 成为了 master 节点，实现了高可用。</p>
+
+<blockquote>
+  <p>redis集群的关闭与重启</p>
+</blockquote>
+
+<p><strong>集群的关闭</strong></p>
+
+<p>我这里使用docker安装，直接docker stop 容器关闭</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@alibaba ~]# docker stop redis-6 redis-5 redis-4 redis-2  redis-1
+</code></pre></div></div>
+
+<p>其他redis集群的搭建方式，可以kill id 关闭redis实例</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查找redis实例进程号</span>
+ps <span class="nt">-ef</span> | <span class="nb">grep </span>redis
+</code></pre></div></div>
+
+<p><img src="/Users/xjw/Documents/code/aikomj.github.io/assets/images/2020/redis/redis-stop-cluster.png" alt="" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 关闭redis进程,使用kill -9 ${进程号}，如果需要关闭多个进程，进程号之间空格隔开即可</span>
+<span class="nb">kill</span> <span class="nt">-9</span> 10252 10257 10262 10267 10272 10294
+
+<span class="c"># 也可以批量kill</span>
+pkill <span class="nt">-9</span> redis
+</code></pre></div></div>
+
+<p><strong>集群的重新启动</strong></p>
+
+<ul>
+  <li>
+    <p>保留原来的数据</p>
+
+    <p>逐个关闭redis实例，再逐个的启动即可。</p>
+  </li>
+  <li>
+    <p>丢弃原来的数据</p>
+  </li>
+</ul>
+
+<p>关闭实例，清空实例中数据存放目录的所有内容，然后逐个启动实例，在任意一个实例上执行集群的创建命令即可,本质上就是创建一个新的集群
+ 清空数据存储目录内容：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">rm</span> <span class="nt">-rf</span> /opt/redis/cluster/7001/data/<span class="k">*</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /opt/redis/cluster/7002/data/<span class="k">*</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /opt/redis/cluster/7003/data/<span class="k">*</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /opt/redis/cluster/7004/data/<span class="k">*</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /opt/redis/cluster/7005/data/<span class="k">*</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /opt/redis/cluster/7006/data/<span class="k">*</span>
+</code></pre></div></div>
+
+<p>启动实例</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>redis-server /opt/redis/cluster/7001/redis.conf
+redis-server /opt/redis/cluster/7002/redis.conf
+redis-server /opt/redis/cluster/7003/redis.conf
+redis-server /opt/redis/cluster/7004/redis.conf
+redis-server /opt/redis/cluster/7005/redis.conf
+redis-server /opt/redis/cluster/7006/redis.conf
+</code></pre></div></div>
+
+<p>创建实例</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -a cyclone 是redis的密码</span>
+redis-cli <span class="nt">-a</span> redisjude666 <span class="nt">--cluster</span> create <span class="nt">--cluster-replicas</span> 1 192.168.220.11:7001 192.168.220.11:7002 192.168.220.11:7003 192.168.220.11:7004 192.168.220.11:7005 192.168.220.11:7006
+</code></pre></div></div>
+
+<p>参考文章：<a href="https://www.cnblogs.com/paul8339/p/11987345.html">https://www.cnblogs.com/paul8339/p/11987345.html</a></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/06/07/icoding-note-045.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

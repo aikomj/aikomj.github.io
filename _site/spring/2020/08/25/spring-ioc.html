@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Spring IOC 理论推导 - 大伟的博客 </title>
+    <meta name="keywords" content="spring">
+    <meta name="description"
+          content="spring框架的7大模块了解，IOC的原型由我们自行控制对象的创建，控制反转的本质是获得对象的方式反转了，将对象的创建转移给第三方">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/spring/2020/08/25/spring-ioc.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Spring IOC 理论推导">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Spring IOC 理论推导</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/08/25
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p><mark>Spring是一个轻量级的控制反转(IoC)和面向切面(AOP)的容器（框架）</mark></p>
+
+<h2 id="1spring组成">1、Spring组成</h2>
+
+<p><img src="/assets/images/2020/spring/640.png" alt="img" /></p>
+
+<p>Spring 框架是一个分层架构，由 7 个定义良好的模块组成。Spring 模块构建在核心容器之上，核心容器定义了创建、配置和管理 bean 的方式 ，如下图</p>
+
+<p><img src="/assets/images/2020/spring/640-seven.png" alt="img" /></p>
+
+<p>组成 Spring 框架的每个模块（或组件）都可以单独存在，或者与其他一个或多个模块联合实现。每个模块的功能如下：</p>
+
+<ul>
+  <li><strong>核心容器</strong>：核心容器提供 Spring 框架的基本功能。核心容器的主要组件是 BeanFactory，它是工厂模式的实现。BeanFactory 使用<em>控制反转</em>（IOC） 模式将应用程序的配置和依赖性规范与实际的应用程序代码分开。</li>
+  <li><strong>Spring 上下文</strong>：Spring 上下文是一个配置文件，向 Spring 框架提供上下文信息。Spring 上下文包括企业服务，例如 JNDI、EJB、电子邮件、国际化、校验和调度功能。</li>
+  <li><strong>Spring AOP</strong>：通过配置管理特性，Spring AOP 模块直接将面向切面的编程功能 , 集成到了 Spring 框架中。所以，可以很容易地使 Spring 框架管理任何支持 AOP的对象。Spring AOP 模块为基于 Spring 的应用程序中的对象提供了事务管理服务。通过使用 Spring AOP，不用依赖组件，就可以将声明性事务管理集成到应用程序中。</li>
+  <li><strong>Spring DAO</strong>：JDBC DAO 抽象层提供了有意义的异常层次结构，可用该结构来管理异常处理和不同数据库供应商抛出的错误消息。异常层次结构简化了错误处理，并且极大地降低了需要编写的异常代码数量（例如打开和关闭连接）。Spring DAO 的面向 JDBC 的异常遵从通用的 DAO 异常层次结构。</li>
+  <li><strong>Spring ORM</strong>：Spring 框架插入了若干个 ORM 框架，从而提供了 ORM 的对象关系工具，其中包括 JDO、Hibernate 和 iBatis SQL Map。所有这些都遵从 Spring 的通用事务和 DAO 异常层次结构。</li>
+  <li><strong>Spring Web 模块</strong>：Web 上下文模块建立在应用程序上下文模块之上，为基于 Web 的应用程序提供了上下文。所以，Spring 框架支持与 Jakarta Struts 的集成。Web 模块还简化了处理多部分请求以及将请求参数绑定到域对象的工作。</li>
+  <li><strong>Spring MVC 框架</strong>：MVC 框架是一个全功能的构建 Web 应用程序的 MVC 实现。通过策略接口，MVC 框架变成为高度可配置的，MVC 容纳了大量视图技术，其中包括 JSP、Velocity、Tiles、iText 和 POI。</li>
+</ul>
+
+<h2 id="2springboot与springcloud">2、SpringBoot与SpringCloud</h2>
+
+<ul>
+  <li>Spring Boot 是 Spring 的一套快速配置脚手架，可以基于Spring Boot 快速开发单个微服务;</li>
+  <li>Spring Cloud是基于Spring Boot实现的；</li>
+  <li>Spring Boot专注于快速、方便集成的单个微服务个体，Spring Cloud关注全局的服务治理框架；</li>
+  <li>Spring Boot使用了约束优于配置的理念，很多集成方案已经帮你选择好了，能不配置就不配置 , Spring Cloud很大的一部分是基于Spring Boot来实现，Spring Boot可以离开Spring Cloud独立使用开发项目，但是Spring Cloud离不开Spring Boot，属于依赖的关系。</li>
+  <li>SpringBoot在SpringClound中起到了承上启下的作用，如果你要学习SpringCloud必须要学习SpringBoot。</li>
+</ul>
+
+<h2 id="3ioc理论推导">3、IOC理论推导</h2>
+
+<p>新建一个空白的maven项目</p>
+
+<h3 id="分析实现">分析实现</h3>
+
+<p>我们先用我们原来的方式写一段代码 .</p>
+
+<p>1、先写一个UserDao接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserDao</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、再去写Dao的实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoImpl</span> <span class="kd">implements</span> <span class="nc">UserDao</span> <span class="o">{</span>
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+       <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"获取用户数据"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、然后去写UserService的接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserService</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4、最后写Service的实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceImpl</span> <span class="kd">implements</span> <span class="nc">UserService</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="nc">UserDao</span> <span class="n">userDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDaoImpl</span><span class="o">();</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+       <span class="n">userDao</span><span class="o">.</span><span class="na">getUser</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>5、测试一下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">(){</span>
+   <span class="nc">UserService</span> <span class="n">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserServiceImpl</span><span class="o">();</span>
+   <span class="n">service</span><span class="o">.</span><span class="na">getUser</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>那我们现在修改一下 ,把Userdao的实现类增加一个 .</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoMySqlImpl</span> <span class="kd">implements</span> <span class="nc">UserDao</span> <span class="o">{</span>
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+       <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"MySql获取用户数据"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>紧接着我们要去使用MySql的话 , 我们就需要去service实现类里面修改对应的实现</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceImpl</span> <span class="kd">implements</span> <span class="nc">UserService</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="nc">UserDao</span> <span class="n">userDao</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDaoMySqlImpl</span><span class="o">();</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+       <span class="n">userDao</span><span class="o">.</span><span class="na">getUser</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>如果我们再增加一个UserDao的实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserDaoOracleImpl</span> <span class="kd">implements</span> <span class="nc">UserDao</span> <span class="o">{</span>
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+       <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Oracle获取用户数据"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>那么我们要使用Oracle , 又需要去service实现类里面修改对应的实现 . 假设我们的这种需求非常大 , 这种方式就根本不适用了, 甚至反人类对吧 , 每次变动 , 都需要修改大量代码 . 这种设计的耦合性太高了, 牵一发而动全身 .</p>
+
+<p><strong>那我们如何去解决呢 ?</strong></p>
+
+<p>我们可以在需要用到他的地方 , 不去实现它 , 而是留出一个接口 , 利用set , 我们去代码里修改下 service实现类.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceImpl</span> <span class="kd">implements</span> <span class="nc">UserService</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="nc">UserDao</span> <span class="n">userDao</span><span class="o">;</span>
+<span class="c1">// 利用set实现</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserDao</span><span class="o">(</span><span class="nc">UserDao</span> <span class="n">userDao</span><span class="o">)</span> <span class="o">{</span>
+       <span class="k">this</span><span class="o">.</span><span class="na">userDao</span> <span class="o">=</span> <span class="n">userDao</span><span class="o">;</span>
+  <span class="o">}</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getUser</span><span class="o">()</span> <span class="o">{</span>
+       <span class="n">userDao</span><span class="o">.</span><span class="na">getUser</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试一下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">(){</span>
+   <span class="nc">UserServiceImpl</span> <span class="n">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserServiceImpl</span><span class="o">();</span>
+   <span class="n">service</span><span class="o">.</span><span class="na">setUserDao</span><span class="o">(</span> <span class="k">new</span> <span class="nc">UserDaoMySqlImpl</span><span class="o">()</span> <span class="o">);</span>
+   <span class="n">service</span><span class="o">.</span><span class="na">getUser</span><span class="o">();</span>
+   <span class="c1">//那我们现在又想用Oracle去实现呢</span>
+   <span class="n">service</span><span class="o">.</span><span class="na">setUserDao</span><span class="o">(</span> <span class="k">new</span> <span class="nc">UserDaoOracleImpl</span><span class="o">()</span> <span class="o">);</span>
+   <span class="n">service</span><span class="o">.</span><span class="na">getUser</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>大家发现了区别没有 ? 可能很多人说没啥区别 . 但是同学们 , 他们已经发生了根本性的变化 , 很多地方都不一样了 . 仔细去思考一下 , 以前所有东西都是由程序去进行控制创建 , 而现在是由我们自行控制创建对象 , 把主动权交给了调用者 . 程序不用去管怎么创建,怎么实现了 . 它只负责提供一个接口 .这也是oop编程里多态的思想.</p>
+
+<p>这种思想 , 从本质上解决了问题 , 我们程序员不再去管理对象的创建了 , 更多的去关注业务的实现 . 耦合性大大降低 . 这也就是IOC的原型</p>
+
+<h3 id="ioc本质">IOC本质</h3>
+
+<p><strong>控制反转IoC(Inversion of Control)，是一种设计思想，DI(依赖注入)是实现IoC的一种方法</strong>，也有人认为DI只是IoC的另一种说法。没有IoC的程序中 , 我们使用面向对象编程 , 对象的创建与对象间的依赖关系完全硬编码在程序中，对象的创建由程序自己控制，控制反转后将对象的创建转移给第三方，<mark>个人认为所谓控制反转就是：获得依赖对象的方式反转了。</mark></p>
+
+<p><img src="/assets/images/2020/spring/640-ioc.png" alt="" /></p>
+
+<p><strong>IoC是Spring框架的核心内容</strong>，使用多种方式完美的实现了IoC，可以使用XML配置，也可以使用注解，新版本的Spring也可以零配置实现IoC（我个人理解是使用springboot自动配置）</p>
+
+<p>Spring容器在初始化时先读取配置文件，根据配置文件或元数据创建与组织对象存入容器中，程序使用时再从Ioc容器中取出需要的对象。</p>
+
+<p><img src="/assets/images/2020/spring/640-ioc-2.png" alt="" /></p>
+
+<p>采用XML方式配置Bean的时候，Bean的定义信息是和实现分离的，而采用注解的方式可以把两者合为一体，Bean的定义信息直接以注解的形式定义在实现类中，从而达到了零配置的目的。</p>
+
+<p><strong>控制反转是一种通过描述（XML或注解）并通过第三方去生产或获取特定对象的方式。在Spring中实现控制反转的是IoC容器，其实现方法是依赖注入（Dependency Injection,DI）。</strong></p>
+
+<p>IOC中文就是控制反转，依赖注入的意思，调用类对某个接口实现类的依赖调用由spring容器来实现，不再是调用类自己去实现，从而减少代码的耦合度。在没有引入ioc容器前，对象A依赖对象B，那么A对象在实例化运行到某一个点的时候，自己就必须主动创建对象B或者引用已经创建的对象B，控制权在我们自己手上。引入了IOC容器后，对象A实例化运行时，IOC容器会主动创建一个对象B注入到对象A所需要的地方。这时侯对象的生命周期交给了IOC容器处理，控制权颠倒了过来，这就是控制反转的由来。</p>
+
+<h2 id="4ioc的主流程">4、IOC的主流程</h2>
+
+<h3 id="applicationcontext接口">applicationContext接口</h3>
+
+<p>spring容器的顶层接口是：<code class="highlighter-rouge">BeanFactory</code>，但我们使用更多的是它的子接口：<code class="highlighter-rouge">ApplicationContext</code>。</p>
+
+<p>通常情况下，如果我们想要手动初始化通过<code class="highlighter-rouge">xml文件</code>配置的spring容器时，代码是这样的：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ClassPathXmlApplicationContext</span> <span class="n">applicationContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClassPathXmlApplicationContext</span><span class="o">(</span><span class="s">"applicationContext.xml"</span><span class="o">);</span>
+<span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="o">(</span><span class="nc">User</span><span class="o">)</span><span class="n">applicationContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"name"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>手动初始化通过<code class="highlighter-rouge">配置类</code>配置的spring容器时，</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">AnnotationConfigApplicationContext</span> <span class="n">applicationContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AnnotationConfigApplicationContext</span><span class="o">(</span><span class="nc">Config</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="o">(</span><span class="nc">User</span><span class="o">)</span><span class="n">applicationContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"name"</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>这两个类应该是最常见的入口了，它们却殊途同归，最终都会调用<code class="highlighter-rouge">refresh</code>方法，该方法才是spring容器初始化的真正入口。如下图</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh.png" alt="" /></p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-2.png" alt="" /></p>
+
+<p>其实调用<code class="highlighter-rouge">refresh</code>方法的类并非只有这两个，我们用一张图整体认识一下：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-3.png" alt="" /></p>
+
+<p>虽说调用<code class="highlighter-rouge">refresh</code>方法的类有这么多，但我决定用<code class="highlighter-rouge">ClassPathXmlApplicationContext</code>类作为列子给大家讲解，因为它足够经典，而且难度相对来说要小一些。</p>
+
+<h3 id="refresh方法">refresh方法</h3>
+
+<p><code class="highlighter-rouge">refresh</code>方法是<code class="highlighter-rouge">spring ioc</code>的真正入口，它负责初始化spring容器。既然这个方法的作用是初始化spring容器，那方法名为啥不叫<code class="highlighter-rouge">init</code>？答案很简单，因为它不只被调用一次。</p>
+
+<p>在<code class="highlighter-rouge">springboot</code>的<code class="highlighter-rouge">SpringAppication</code>类中的<code class="highlighter-rouge">run</code>方法会调用<code class="highlighter-rouge">refreshContext</code>方法，该方法会调用一次<code class="highlighter-rouge">refresh</code>方法。</p>
+
+<p>在<code class="highlighter-rouge">springcloud</code>的<code class="highlighter-rouge">BootstrapApplicationListener</code>类中的<code class="highlighter-rouge">onApplicationEvent</code>方法会调用<code class="highlighter-rouge">SpringAppication</code>类中的<code class="highlighter-rouge">run</code>方法。也会调用一次<code class="highlighter-rouge">refresh</code>方法。</p>
+
+<blockquote>
+  <p>这是springboot项目中如果引入了springcloud，则refresh方法会被调用两次的原因。</p>
+</blockquote>
+
+<p>在<code class="highlighter-rouge">springmvc</code>的<code class="highlighter-rouge">FrameworkServlet</code>类中的<code class="highlighter-rouge">initWebApplicationContext</code>方法会调用<code class="highlighter-rouge">configureAndRefreshWebApplicationContext</code>方法，该方法会调用一次<code class="highlighter-rouge">refresh</code>方法，不过会提前判断容器是否激活。</p>
+
+<p>所以这里的<code class="highlighter-rouge">refresh</code>表示重新构建的意思。</p>
+
+<p>下面重点看看<code class="highlighter-rouge">refresh</code>的关键步骤：</p>
+
+<p><img src="\assets\images\2021\spring\refresh-steps.png" alt="" /></p>
+
+<p>其实上图中一眼看过去好像有很多方法，但是真正的核心的方法不多，我主要讲其中最重要的：</p>
+
+<ul>
+  <li>obtainFreshBeanFactory</li>
+  <li>invokeBeanFactoryPostProcessors</li>
+  <li>registerBeanPostProcessors</li>
+  <li>finishBeanFactoryInitialization</li>
+</ul>
+
+<h3 id="解析xml配置文件">解析xml配置文件</h3>
+
+<p><code class="highlighter-rouge">obtainFreshBeanFactory</code>方法会解析xml的bean配置，生成<code class="highlighter-rouge">BeanDefinition</code>对象，并且注册到spring容器中（说白了就是很多map集合中）。</p>
+
+<p>经过几层调用（细节不说，很简单），会调到<code class="highlighter-rouge">AbstractBeanDefinitionReader</code>类的<code class="highlighter-rouge">loadBeanDefinitions</code>方法：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-4.png" alt="" /></p>
+
+<p>该方法会循环<code class="highlighter-rouge">locations</code>（applicationContext.xml文件路径）,调用另外一个<code class="highlighter-rouge">loadBeanDefinitions</code>方法，一个文件一个文件解析。</p>
+
+<p>经过一些列的骚操作，会将location转换成inputSource和resource，然后再转换成Document对象，方面解析。</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-5.png" alt="" /></p>
+
+<p>在解析xml文件时，需要判断是默认标签，还是自定义标签，处理逻辑不一样：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-6.png" alt="" /></p>
+
+<p>spring的默认标签只有4种：</p>
+
+<ul>
+  <li><code class="highlighter-rouge">&lt;import/&gt;</code></li>
+  <li><code class="highlighter-rouge">&lt;alias/&gt;</code></li>
+  <li><code class="highlighter-rouge">&lt;bean/&gt;</code></li>
+  <li><code class="highlighter-rouge">&lt;beans/&gt;</code></li>
+</ul>
+
+<p>对应的处理方法是：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-7.png" alt="" /></p>
+
+<p>注意常见的：<code class="highlighter-rouge">&lt;aop/&gt;</code>、<code class="highlighter-rouge">&lt;context/&gt;</code>、<code class="highlighter-rouge">&lt;mvc/&gt;</code>等都是自定义标签。</p>
+
+<p>从上图中处理<code class="highlighter-rouge">&lt;bean/&gt;</code>标签的<code class="highlighter-rouge">processBeanDefinition</code>方法开始，经过一系列调用，最终会调到<code class="highlighter-rouge">DefaultBeanDefinitionDocumentReader</code>类的<code class="highlighter-rouge">processBeanDefinition</code>方法。</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-8.png" alt="" /></p>
+
+<p>这个方法包含了关键步骤：解析元素生成BeanDefinition 和 注册BeanDefinition。</p>
+
+<h3 id="生成beandefinition">生成BeanDefinition</h3>
+
+<p>下面重点看看BeanDefinition是如何生成的。</p>
+
+<p>上面的方法会调用<code class="highlighter-rouge">BeanDefinitionParserDelegate</code>类的<code class="highlighter-rouge">parseBeanDefinitionElement</code>方法：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-9.png" alt="" /></p>
+
+<p>一个<code class="highlighter-rouge">&lt;bean/&gt;</code>标签会对应一个<code class="highlighter-rouge">BeanDefinition</code>对象。</p>
+
+<p>该方法又会调用同名的重载方法：<code class="highlighter-rouge">processBeanDefinition</code>，真正创建<code class="highlighter-rouge">BeanDefinition</code>对象，并且解析一系列参数填充到对象中：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-10.png" alt="" /></p>
+
+<p>其实真正创建BeanDefinition的逻辑是非常简单的，直接new了一个对象：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-11.png" alt="" /></p>
+
+<p>真正复杂的地方是在前面的各种属性的解析和赋值上。</p>
+
+<h3 id="注册beandefinition">注册BeanDefinition</h3>
+
+<p>上面通过解析xml文件生成了很多<code class="highlighter-rouge">BeanDefinition</code>对象，下面就需要把<code class="highlighter-rouge">BeanDefinition</code>对象注册到spring容器中，这样spring容器才能初始化bean。</p>
+
+<p>在<code class="highlighter-rouge">BeanDefinitionReaderUtils</code>类的<code class="highlighter-rouge">registerBeanDefinition</code>方法很简单，只有两个流程：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-12.png" alt="" /></p>
+
+<p>先看看<code class="highlighter-rouge">DefaultListableBeanFactory</code>类的<code class="highlighter-rouge">registerBeanDefinition</code>方法是如何注册<code class="highlighter-rouge">beanName</code>的</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-13.png" alt="" /></p>
+
+<p>接下来看看<code class="highlighter-rouge">SimpleAliasRegistry</code>类的<code class="highlighter-rouge">registerAlias</code>方法是如何注册<code class="highlighter-rouge">alias</code>别名的：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-14.png" alt="" /></p>
+
+<p>这样就能通过多个不同的<code class="highlighter-rouge">alias</code>找到同一个<code class="highlighter-rouge">name</code>，再通过<code class="highlighter-rouge">name</code>就能找到<code class="highlighter-rouge">BeanDefinition</code>。</p>
+
+<h3 id="修改beandefinition">修改BeanDefinition</h3>
+
+<p>上面<code class="highlighter-rouge">BeanDefinition</code>对象已经注册到spring容器当中了，接下来，如果想要修改已经注册的<code class="highlighter-rouge">BeanDefinition</code>对象该怎么办呢？</p>
+
+<p><code class="highlighter-rouge">refresh</code>方法中通过<code class="highlighter-rouge">invokeBeanFactoryPostProcessors</code>方法修改<code class="highlighter-rouge">BeanDefinition</code>对象。</p>
+
+<p>经过一系列的调用，最终会到<code class="highlighter-rouge">PostProcessorRegistrationDelegate</code>类的<code class="highlighter-rouge">invokeBeanFactoryPostProcessors</code>方法：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-15.png" alt="" /></p>
+
+<p>流程看起来很长，其实逻辑比较简单，主要是在处理<code class="highlighter-rouge">BeanDefinitionRegistryPostProcessor</code>和<code class="highlighter-rouge">BeanFactoryPostProcessor</code>。</p>
+
+<p>而<code class="highlighter-rouge">BeanDefinitionRegistryPostProcessor</code>本身是一种特殊的<code class="highlighter-rouge">BeanFactoryPostProcessor</code>，它也会执行<code class="highlighter-rouge">BeanFactoryPostProcessor</code>的逻辑，只是加了一个额外的方法。</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-16.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">ConfigurationClassPostProcessor</code>可能是最重要的<code class="highlighter-rouge">BeanDefinitionRegistryPostProcessor</code>，它负责处理<code class="highlighter-rouge">@Configuration</code>注解。</p>
+
+<h3 id="注册beanpostprocessor">注册BeanPostProcessor</h3>
+
+<p>处理完前面的逻辑，<code class="highlighter-rouge">refresh</code>方法接着会调用<code class="highlighter-rouge">registerBeanPostProcessors</code>注册<code class="highlighter-rouge">BeanPostProcessor</code>，它的功能非常强大，后面的文章会详细讲解。经过一系列的调用，最终会到<code class="highlighter-rouge">PostProcessorRegistrationDelegate</code>类的<code class="highlighter-rouge">registerBeanPostProcessors</code>方法：</p>
+
+<p><img src="\assets\images\2021\spring\application-context-refresh-17.png" alt="" /></p>
+
+<p>注意，这一步只是注册<code class="highlighter-rouge">BeanPostProcessor</code>，真正的使用在后面。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/spring/2020/08/25/spring-ioc.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

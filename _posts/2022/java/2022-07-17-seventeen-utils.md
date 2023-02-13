@@ -8,7 +8,7 @@ excerpt: Collections,CollectionUtils,Objects,StringUtils,IOUtils,MDC,ClassUtils,
 lock: noneed
 ---
 
-本文会分享17个我们日常工作中一定会用得到的小工具，来源苏三说技术
+转载自苏三说技术
 
 ## 1、Collections
 

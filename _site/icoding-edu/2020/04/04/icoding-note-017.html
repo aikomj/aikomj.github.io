@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第17节：企业项目研发（一）MyBatisPlus使用 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="主键策略雪花算法，自动填充，乐观锁版本处理，分页插件，逻辑删除，性能分析插件，条件构造器QueryWrapper\UpdateWrapper，basemapper方法sql是如何注入mapper xml 的源码分析">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/04/04/icoding-note-017.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第17节：企业项目研发（一）MyBatisPlus使用">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第17节：企业项目研发（一）MyBatisPlus使用</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/04/04
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1mybatis-plus-简介">1、Mybatis-plus 简介</h2>
+
+<p>官网地址：<a href="https://mp.baomidou.com/guide/">https://mp.baomidou.com/guide/</a></p>
+
+<p><a href="https://github.com/baomidou/mybatis-plus">MyBatis-Plus</a><a href="https://github.com/baomidou/mybatis-plus"> </a>（简称 MP）是一个 <a href="http://www.mybatis.org/mybatis-3/">MyBatis</a><a href="http://www.mybatis.org/mybatis-3/"> </a> 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。</p>
+
+<blockquote>
+  <p>精髓-魂斗罗-搭档</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/icoding/mybatis-plus/to-be-the-best-partner.gif" alt="" /></p>
+
+<blockquote>
+  <p>特性</p>
+</blockquote>
+
+<ul>
+  <li><strong>无侵入</strong>：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑</li>
+  <li><strong>损耗小</strong>：启动即会<b style="color:red">自动注入基本 CURD，性能基本无损耗</b>，直接面向对象操作</li>
+  <li><strong>强大的 CRUD 操作</strong>：内置通用 Mapper、通用 Service，仅仅通过少量配置即可实现单表大部分 CRUD 操作，更有强大的条件构造器，满足各类使用需求</li>
+  <li><strong>支持 Lambda 形式调用</strong>：<b style="color:red">通过 Lambda 表达式</b>，方便的编写各类查询条件，无需再担心字段写错</li>
+  <li><strong>支持主键自动生成</strong>：支持多达 4 种主键策略（内含分布式唯一 ID 生成器 - Sequence），可自由配置，完美解决主键问题</li>
+  <li><strong>支持 ActiveRecord 模式</strong>：支持 ActiveRecord 形式调用，实体类只需继承 Model 类即可进行强大的 CRUD 操作</li>
+  <li><strong>支持自定义全局通用操作</strong>：支持全局通用方法注入（ Write once, use anywhere ）</li>
+  <li><strong>内置代码生成器</strong>：采用代码或者 Maven 插件可<b style="color:red">快速生成 Mapper 、 Model 、 Service 、 Controller 层代码</b>，支持模板引擎，更有超多自定义配置等您来使用</li>
+  <li><strong>内置分页插件</strong>：基于 MyBatis 物理分页，开发者无需关心具体操作，配置好插件之后，写分页等同于普通 List 查询</li>
+  <li><strong>分页插件支持多种数据库</strong>：支持 MySQL、MariaDB、Oracle、DB2、H2、HSQL、SQLite、Postgre、SQLServer 等多种数据库</li>
+  <li><b style="color:red">内置性能分析插件</b>：可输出 Sql 语句以及其执行时间，建议开发测试时启用该功能，能快速揪出慢查询</li>
+  <li><strong>内置全局拦截插件</strong>：提供全表 delete 、 update 操作智能分析阻断，也可自定义拦截规则，预防误操作</li>
+</ul>
+
+<blockquote>
+  <p>支持数据库</p>
+</blockquote>
+
+<ul>
+  <li>mysql 、 mariadb  、  oracle  、  db2  、  h2  、  hsql  、  sqlite  、  postgresql  、  sqlserver</li>
+  <li>达梦数据库  、 虚谷数据库  、  人大金仓数据库</li>
+</ul>
+
+<p>导入依赖中mysql5和mysq8的jdbc驱动区别需要注意</p>
+
+<p>mysql5</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">spring.datasource.driver-class-name</span><span class="p">=</span><span class="s">com.mysql.sql.jdbc.Driver</span>
+<span class="py">spring.datasource.url</span><span class="p">=</span><span class="s">jdbc:mysql://localhost:3306/mpdata?useSSL=false</span>
+<span class="py">spring.datasource.username</span><span class="p">=</span><span class="s">root</span>
+<span class="py">spring.datasource.password</span><span class="p">=</span><span class="s">123456</span>
+</code></pre></div></div>
+
+<p>mysql8(Spring Boot2.1开始默认)</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">spring.datasource.driver-class-name</span><span class="p">=</span><span class="s">com.mysql.cj.jdbc.Driver</span>
+<span class="py">spring.datasource.url</span><span class="p">=</span><span class="s">jdbc:mysql://localhost:3306/mpdata?serverTimezone=GMT%2B8</span>
+<span class="py">spring.datasource.username</span><span class="p">=</span><span class="s">root</span>
+<span class="py">spring.datasource.password</span><span class="p">=</span><span class="s">123456</span>
+</code></pre></div></div>
+
+<h2 id="2主键策略">2、主键策略</h2>
+
+<p>MP有自己的默认对应规则，例如实体类名为：OwnUser，会给你对应到数据库中的own_user表。这是MP源代码中实现的实体与表的对应关系。如果你不想用默认的对应规则，可以使用@TableName()注解，进行表名指定。</p>
+
+<p>关于id的一些生成策略，参考：<a href="https://www.cnblogs.com/haoxinyue/p/5208136.html">https://www.cnblogs.com/haoxinyue/p/5208136.html</a></p>
+
+<p>1、ID_WORKER</p>
+
+<p>Mybatis-plus默认的主键策略是ID_WORKER (雪花算法)</p>
+
+<blockquote>
+  <p>snowflake（雪花算法）是Twitter开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0。具体实现的代码可以参看https://github.com/twitter/snowflake。</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 实体类 ID字段不加注解就是默认的ID_WORKER</span>
+<span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">age</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>
+
+    <span class="nd">@TableField</span><span class="o">(</span><span class="n">fill</span> <span class="o">=</span> <span class="nc">FieldFill</span><span class="o">.</span><span class="na">INSERT</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Date</span> <span class="n">createTime</span><span class="o">;</span>
+    <span class="nd">@TableField</span><span class="o">(</span><span class="n">fill</span> <span class="o">=</span> <span class="nc">FieldFill</span><span class="o">.</span><span class="na">INSERT_UPDATE</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Date</span> <span class="n">updateTime</span><span class="o">;</span>
+
+    <span class="c1">// 引入乐观锁插件</span>
+    <span class="nd">@Version</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">version</span><span class="o">;</span>
+    <span class="nd">@TableLogic</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">delFlag</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>通过设置@TableId可以让Mybatis-plus自动为我们生成雪花算法的ID号，该ID号是一个长整型数据，非常方便。但是雪花算法的ID号是在Insert执行的时候生成的，我们在Insert执行前是不知道Entity会获得一个什么ID号。如果想提前获取一个雪花id，可以调用IdWorker 类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">baomidou</span><span class="o">.</span><span class="na">mybatisplus</span><span class="o">.</span><span class="na">core</span><span class="o">.</span><span class="na">toolkit</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.baomidou.mybatisplus.core.config.GlobalConfig</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.time.LocalDateTime</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.time.format.DateTimeFormatter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.UUID</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.ThreadLocalRandom</span><span class="o">;</span>
+
+<span class="cm">/**
+ * id 获取器
+ *
+ * @author hubin
+ * @since 2016-08-01
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IdWorker</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 主机和进程的机器码
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">IdentifierGenerator</span> <span class="no">IDENTIFIER_GENERATOR</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultIdentifierGenerator</span><span class="o">();</span>
+
+    <span class="cm">/**
+     * 毫秒格式化时间
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">DateTimeFormatter</span> <span class="no">MILLISECOND</span> <span class="o">=</span> <span class="nc">DateTimeFormatter</span><span class="o">.</span><span class="na">ofPattern</span><span class="o">(</span><span class="s">"yyyyMMddHHmmssSSS"</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 获取唯一ID
+     *
+     * @return id
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">getId</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取唯一ID
+     *
+     * @return id
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">getId</span><span class="o">(</span><span class="nc">Object</span> <span class="n">entity</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="no">IDENTIFIER_GENERATOR</span><span class="o">.</span><span class="na">nextId</span><span class="o">(</span><span class="n">entity</span><span class="o">).</span><span class="na">longValue</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取唯一ID
+     *
+     * @return id
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getIdStr</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">getIdStr</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取唯一ID
+     *
+     * @return id
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getIdStr</span><span class="o">(</span><span class="nc">Object</span> <span class="n">entity</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="no">IDENTIFIER_GENERATOR</span><span class="o">.</span><span class="na">nextId</span><span class="o">(</span><span class="n">entity</span><span class="o">).</span><span class="na">toString</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 格式化的毫秒时间
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getMillisecond</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">format</span><span class="o">(</span><span class="no">MILLISECOND</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 时间 ID = Time + ID
+     * &lt;p&gt;例如：可用于商品订单 ID&lt;/p&gt;
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getTimeId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">getMillisecond</span><span class="o">()</span> <span class="o">+</span> <span class="n">getIdStr</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 有参构造器
+     *
+     * @param workerId     工作机器 ID
+     * @param dataCenterId 序列号
+     * @see #setIdentifierGenerator(IdentifierGenerator)
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">initSequence</span><span class="o">(</span><span class="kt">long</span> <span class="n">workerId</span><span class="o">,</span> <span class="kt">long</span> <span class="n">dataCenterId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">IDENTIFIER_GENERATOR</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultIdentifierGenerator</span><span class="o">(</span><span class="n">workerId</span><span class="o">,</span> <span class="n">dataCenterId</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 自定义id 生成方式
+     * @param identifierGenerator id 生成器
+     * @see GlobalConfig#setIdentifierGenerator(IdentifierGenerator)
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setIdentifierGenerator</span><span class="o">(</span><span class="nc">IdentifierGenerator</span> <span class="n">identifierGenerator</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">IDENTIFIER_GENERATOR</span> <span class="o">=</span> <span class="n">identifierGenerator</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 使用ThreadLocalRandom获取UUID获取更优的效果 去掉"-"
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">get32UUID</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">ThreadLocalRandom</span> <span class="n">random</span> <span class="o">=</span> <span class="nc">ThreadLocalRandom</span><span class="o">.</span><span class="na">current</span><span class="o">();</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">UUID</span><span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">(),</span> <span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">()).</span><span class="na">toString</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="nc">StringPool</span><span class="o">.</span><span class="na">DASH</span><span class="o">,</span> <span class="nc">StringPool</span><span class="o">.</span><span class="na">EMPTY</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、自增策略</p>
+
+<ul>
+  <li>
+    <p>需要在创建数据表的时候设置主键自增</p>
+  </li>
+  <li>
+    <p>实体类ID字段配置@TableId(type = IdType.AUTO)</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">//@TableId(type = IdType.AUTO)</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">age</span><span class="o">;</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>要想影响所有实体类的配置，可以在application.properties中设置全局主键配置</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">mybatis-plus.global-config.db-config.id-type</span><span class="p">=</span><span class="s">auto</span>
+</code></pre></div></div>
+
+<p>3、其他主键策略，点击IdType源码得知</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="nc">IdType</span> <span class="o">{</span>
+    <span class="no">AUTO</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span>	<span class="c1">// 数据库id自增</span>
+    <span class="no">NONE</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>	<span class="c1">// 未设置主键类型</span>
+    <span class="no">INPUT</span><span class="o">(</span><span class="mi">2</span><span class="o">),</span>	<span class="c1">// 用户手动setID，可以通过自己注册自动填充插件进行填充</span>
+  <span class="c1">// 以下3种只有ID为空，才自动填充</span>
+    <span class="no">ID_WORKER</span><span class="o">(</span><span class="mi">3</span><span class="o">),</span>	
+    <span class="no">UUID</span><span class="o">(</span><span class="mi">4</span><span class="o">),</span>
+    <span class="no">ID_WORKER_STR</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>	<span class="c1">// id_worker的字符串表示</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nf">IdType</span><span class="o">(</span><span class="kt">int</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getKey</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">key</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3自动填充">3、自动填充</h2>
+
+<p>阿里的规范中说了，数据库表表必须有三个字段：ID、创建时间、更新时间，自动填充时间有两种方式实现。</p>
+
+<p><img src="/assets/images/2020/icoding/mybatis-plus/java-alibaba-table-field.gif" alt="" /></p>
+
+<ol>
+  <li>
+    <p>实体类上添加注解</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@TableField</span><span class="o">(</span><span class="n">fill</span> <span class="o">=</span> <span class="nc">FieldFill</span><span class="o">.</span><span class="na">INSERT</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Date</span> <span class="n">createTime</span><span class="o">;</span>
+   
+<span class="nd">@TableField</span><span class="o">(</span><span class="n">fill</span> <span class="o">=</span> <span class="nc">FieldFill</span><span class="o">.</span><span class="na">INSERT_UPDATE</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Date</span> <span class="n">updateTime</span><span class="o">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>新建一个handler包，实现元对象处理接口</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 处理元数据
+ * 1.实现 MetaObjectHandler
+ * 2.添加到IOC容器中
+ */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MybatisObjectHandler</span>  <span class="kd">implements</span> <span class="nc">MetaObjectHandler</span> <span class="o">{</span>
+   
+	<span class="cm">/**
+	 * 插入时候自动填充
+	 * @param metaObject
+	 */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">insertFill</span><span class="o">(</span><span class="nc">MetaObject</span> <span class="n">metaObject</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"start insert fill"</span><span class="o">);</span>
+		<span class="c1">//三个参数：</span>
+		<span class="c1">//实体类属性名</span>
+		<span class="c1">//要填充的内容,必须和实体类中字段类型相同</span>
+		<span class="c1">//metaObject</span>
+		<span class="c1">//System.out.println("MybatisObjectHandler =&gt;" +metaObject);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">setFieldValByName</span><span class="o">(</span><span class="s">"createTime"</span><span class="o">,</span><span class="k">new</span> <span class="nc">Date</span><span class="o">(),</span><span class="n">metaObject</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">setFieldValByName</span><span class="o">(</span><span class="s">"updateTime"</span><span class="o">,</span><span class="k">new</span> <span class="nc">Date</span><span class="o">(),</span><span class="n">metaObject</span><span class="o">);</span>
+   
+	<span class="o">}</span>
+   
+	<span class="c1">// 更新时自动填充</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateFill</span><span class="o">(</span><span class="nc">MetaObject</span> <span class="n">metaObject</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"start update fill"</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">setFieldValByName</span><span class="o">(</span><span class="s">"updateTime"</span><span class="o">,</span><span class="k">new</span> <span class="nc">Date</span><span class="o">(),</span><span class="n">metaObject</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>测试</p>
+
+    <p><img src="/assets/images/2020/icoding/mybatis-plus/test-autofill.gif" alt="" /></p>
+  </li>
+</ol>
+
+<h2 id="4乐观锁">4、乐观锁</h2>
+
+<p>面试中经常会问乐观锁</p>
+
+<blockquote>
+  <p>悲观锁：无论干啥，都先给你锁上，再做操作，比如传统的synchronized，juc的ReentrantLock就是悲观锁。</p>
+
+  <p>乐观锁：非常乐观，无论什么操作都不加锁，当出现问题时再找解决方案</p>
+</blockquote>
+
+<p>当更新一条记录，希望没有被别人更新，通常的方式就增加一个乐观锁字段(version)即可，更新的时候把version带上，如果version不对就更新失败。</p>
+
+<ol>
+  <li>
+    <p>添加@version注解到字段上</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+	<span class="o">...</span>
+    <span class="nd">@Version</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">version</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>创建配置类MybatisPlusConfig ，注入bean乐观锁插件</p>
+  </li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 千万不要忘记开启事务管理</span>
+<span class="nd">@EnableTransactionManagement</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MybatisPlusConfig</span> <span class="o">{</span>
+	<span class="c1">// 乐观锁插件</span>
+	<span class="nd">@Bean</span>
+	<span class="kd">public</span> <span class="nc">OptimisticLockerInterceptor</span> <span class="nf">optimisticLockerInterceptor</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">OptimisticLockerInterceptor</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>测试乐观锁</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 测试乐观锁，模拟多线程抢占的情况下是什么样子的</span>
+<span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testOptimisticLokerFail</span><span class="o">(){</span>
+  <span class="c1">// 查询一个数据，返回当前的一个version</span>
+  <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">userMapper</span><span class="o">.</span><span class="na">selectById</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
+   
+  <span class="c1">// 修改数据</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"Jude1111"</span><span class="o">);</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">30</span><span class="o">);</span>
+   
+  <span class="c1">// 插入第三者</span>
+  <span class="nc">User</span> <span class="n">user2</span> <span class="o">=</span> <span class="n">userMapper</span><span class="o">.</span><span class="na">selectById</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
+  <span class="n">user2</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"Jude2222"</span><span class="o">);</span>
+  <span class="n">user2</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">32</span><span class="o">);</span>
+   
+  <span class="c1">// 第三者抢先执行</span>
+  <span class="n">userMapper</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">user2</span><span class="o">);</span>
+   
+  <span class="c1">// 自己再慢慢更新</span>
+  <span class="k">if</span><span class="o">(</span><span class="n">userMapper</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="o">){</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"update successfully"</span><span class="o">);</span>
+  <span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"update fail due to modified by others"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+
+    <p><img src="/assets/images/2020/icoding/mybatis-plus/update-by-version.gif" alt="" /></p>
+  </li>
+</ol>
+
+<blockquote>
+  <p>特别说明:</p>
+
+  <ul>
+    <li><strong>支持的数据类型只有:int,Integer,long,Long,Date,Timestamp,LocalDateTime</strong></li>
+    <li>整数类型下 <code class="highlighter-rouge">newVersion = oldVersion + 1</code></li>
+    <li><code class="highlighter-rouge">newVersion</code> 会回写到 <code class="highlighter-rouge">entity</code> 中</li>
+    <li>仅支持 <code class="highlighter-rouge">updateById(id)</code> 与 <code class="highlighter-rouge">update(entity, wrapper)</code> 方法</li>
+    <li><strong>在 <code class="highlighter-rouge">update(entity, wrapper)</code> 方法下, <code class="highlighter-rouge">wrapper</code> 不能复用!!!</strong></li>
+  </ul>
+</blockquote>
+
+<h2 id="5逻辑删除">5、逻辑删除</h2>
+
+<p>逻辑删除：并不是真的从数据库中删除，只是加了一个删除状态标记。</p>
+
+<p>物理删除：直接从数据库中删除</p>
+
+<p>使用MP实现逻辑删除：</p>
+
+<p>1.添加@TableLogic注解到deleted字段上</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="nd">@TableLogic</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">deleted</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2.application.properties加入配置，如果配置值与mp默认的一样，可以不用配</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">mybatis-plus.global-config.db-config.logic-delete-value</span><span class="p">=</span><span class="s">1</span>
+<span class="py">mybatis-plus.global-config.db-config.logic-not-delete-value</span><span class="p">=</span><span class="s">0</span>
+</code></pre></div></div>
+
+<p>3.MybatisPlusConfig 中注册逻辑删除插件</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 千万不要忘记开启事务管理</span>
+<span class="nd">@EnableTransactionManagement</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MybatisPlusConfig</span> <span class="o">{</span>
+	<span class="c1">// 乐观锁插件</span>
+  <span class="c1">// 本质是一个拦截器 Interceptor</span>
+	<span class="nd">@Bean</span>
+	<span class="kd">public</span> <span class="nc">OptimisticLockerInterceptor</span> <span class="nf">optimisticLockerInterceptor</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">OptimisticLockerInterceptor</span><span class="o">();</span>
+	<span class="o">}</span>
+  
+  <span class="c1">// 逻辑删除插件！</span>
+  <span class="nd">@Bean</span>
+  <span class="kd">public</span> <span class="nc">ISqlInjector</span> <span class="nf">sqlInjector</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">LogicSqlInjector</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>4.测试逻辑删除</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 逻辑删除</span>
+<span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testDelete</span><span class="o">(){</span>
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="n">userMapper</span><span class="o">.</span><span class="na">deleteById</span><span class="o">(</span><span class="mi">2L</span><span class="o">);</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试后发现deleted字段的值由0变成了1，且MP中的查询操作都会自动添加deleted字段的判断</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testselect</span><span class="o">(){</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="n">userList</span> <span class="o">=</span> <span class="n">userMapper</span><span class="o">.</span><span class="na">selectList</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="n">slelect</span> <span class="n">id</span><span class="o">,</span><span class="n">name</span><span class="o">,</span><span class="n">age</span><span class="o">....</span><span class="na">from</span> <span class="n">user</span> <span class="n">where</span> <span class="n">deleted</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>小结， 按照自动填充、逻辑删除，乐观锁的规范，以后业务表至少包含5个字段：id,create_time,update_time,deleted,version</p>
+</blockquote>
+
+<h2 id="6分页查询">6、分页查询</h2>
+
+<p>MP自带分页插件，只要简单的配置即可实现分页功能，支持多种数据库：Mysql,MariaDB,Oracle,DB2,H2,SQLServer等。</p>
+
+<ol>
+  <li>
+    <p>MybatisPlusConfig 中注册分页插件</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 千万不要忘记开启事务管理</span>
+<span class="nd">@EnableTransactionManagement</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MybatisPlusConfig</span> <span class="o">{</span>
+	<span class="c1">// 乐观锁插件</span>
+  <span class="c1">// 本质是一个拦截器 Interceptor</span>
+	<span class="nd">@Bean</span>
+	<span class="kd">public</span> <span class="nc">OptimisticLockerInterceptor</span> <span class="nf">optimisticLockerInterceptor</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">OptimisticLockerInterceptor</span><span class="o">();</span>
+	<span class="o">}</span>
+     
+  <span class="c1">// 逻辑删除插件！</span>
+  <span class="nd">@Bean</span>
+  <span class="kd">public</span> <span class="nc">ISqlInjector</span> <span class="nf">sqlInjector</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">LogicSqlInjector</span><span class="o">();</span>
+  <span class="o">}</span>
+   
+  <span class="c1">// 分页插件</span>
+	<span class="nd">@Bean</span>
+	<span class="kd">public</span> <span class="nc">PaginationInterceptor</span> <span class="nf">paginationInterceptor</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">PaginationInterceptor</span> <span class="n">paginationInterceptor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PaginationInterceptor</span><span class="o">();</span>
+		<span class="c1">// 设置请求的页面大于最大页后操作， true调回到首页，false 继续请求  默认false</span>
+		<span class="c1">// paginationInterceptor.setOverflow(false);</span>
+		<span class="c1">// 设置最大单页限制数量，默认 500 条，-1 不受限制</span>
+		<span class="c1">// paginationInterceptor.setLimit(500);</span>
+		<span class="k">return</span> <span class="n">paginationInterceptor</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>测试分页</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 分页实现  limit(sql)  PageHelper  Mp内置分页插件（导入即可！）</span>
+<span class="nd">@Test</span>
+<span class="kt">void</span> <span class="nf">testPage</span><span class="o">(){</span> <span class="c1">// 当前页、总页数</span>
+  <span class="c1">//1、先查询总数</span>
+  <span class="c1">//2、本质还是 LIMIT 0,10 (默认的)</span>
+  <span class="c1">// 参数 （当前页，每个页面的大小！）</span>
+  <span class="c1">// 以后做分页就使用Page对象即可！</span>
+  <span class="nc">Page</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="n">page</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Page</span><span class="o">&lt;&gt;(</span><span class="mi">2</span><span class="o">,</span><span class="mi">5</span><span class="o">);</span>
+  <span class="n">userMapper</span><span class="o">.</span><span class="na">selectPage</span><span class="o">(</span><span class="n">page</span><span class="o">,</span><span class="kc">null</span><span class="o">);</span>
+   
+  <span class="n">page</span><span class="o">.</span><span class="na">getRecords</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>	<span class="c1">// 列表数据</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">page</span><span class="o">.</span><span class="na">getSize</span><span class="o">());</span>	<span class="c1">// 每页记录数</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">page</span><span class="o">.</span><span class="na">getTotal</span><span class="o">());</span>	<span class="c1">// 总记录数</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">page</span><span class="o">.</span><span class="na">getCurrent</span><span class="o">());</span>	<span class="c1">// 当前页</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">page</span><span class="o">.</span><span class="na">hasNext</span><span class="o">());</span>		<span class="c1">// 是否有下一页</span>
+  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">page</span><span class="o">.</span><span class="na">hasPrevious</span><span class="o">());</span>	<span class="c1">// 是否有上一页</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="7性能分析插件">7、性能分析插件</h2>
+
+<p>在开发时候排查慢SQL，MybatisPlusConfig注册性能分析插件即可</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+	 * SQL执行效率插件
+	 * 3.2.0以上版本已移除，推荐使用执行sql分析打印功能
+	 */</span>
+<span class="nd">@Bean</span>
+<span class="nd">@Profile</span><span class="o">({</span><span class="s">"dev"</span><span class="o">,</span><span class="s">"test"</span><span class="o">})</span><span class="c1">// 设置 dev test 环境开启</span>
+<span class="kd">public</span> <span class="nc">PerformanceInterceptor</span> <span class="nf">performanceInterceptor</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">PerformanceInterceptor</span> <span class="n">per</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PerformanceInterceptor</span><span class="o">();</span>
+  <span class="n">per</span><span class="o">.</span><span class="na">setMaxTime</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span> <span class="c1">// 毫秒，超过此处设置的毫秒则sql不执行</span>
+  <span class="n">per</span><span class="o">.</span><span class="na">setFormat</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>    <span class="c1">// 格式化sql</span>
+  <span class="k">return</span> <span class="n">per</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3.2.0以上版本已移除，推荐使用执行sql分析打印功能，可以参考官网教程使用</p>
+
+<p><img src="/assets/images/2020/icoding/mybatis-plus/p6spy.gif" alt="" /></p>
+
+<p>测试：</p>
+
+<p>将最长时间设置为1ms</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 测试性能分析插件</span>
+<span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testPerformance</span><span class="o">(){</span>
+  <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">User</span><span class="o">();</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"coding"</span><span class="o">);</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setEmail</span><span class="o">(</span><span class="s">"24736743@qq.com"</span><span class="o">);</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">18</span><span class="o">);</span>
+  <span class="n">userMapper</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">user</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>sql执行时间</p>
+
+<p><img src="/assets/images/2020/icoding/mybatis-plus/performance-interceptor-test.gif" alt="" /></p>
+
+<p>抛出异常：The SQL execution time is too large</p>
+
+<h2 id="8条件构造器">8、条件构造器</h2>
+
+<p>参考官方文档多使用就可以了</p>
+
+<p><a href="https://mp.baomidou.com/guide/wrapper.html#abstractwrapper">https://mp.baomidou.com/guide/wrapper.html#abstractwrapper</a></p>
+
+<blockquote>
+  <p>QueryWrapper</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductServiceImpl</span> <span class="kd">extends</span> <span class="nc">ServiceImpl</span><span class="o">&lt;</span><span class="nc">ProductMapper</span><span class="o">,</span> <span class="nc">Product</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">ProductService</span> <span class="o">{</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nc">ProductMapper</span> <span class="n">productMapper</span><span class="o">;</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">queryPage</span><span class="o">(</span><span class="nc">Page</span><span class="o">&lt;</span><span class="nc">Product</span><span class="o">&gt;</span> <span class="n">pageParam</span><span class="o">,</span><span class="nc">ProductQuery</span> <span class="n">productQuery</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">productQuery</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">page</span><span class="o">(</span><span class="n">pageParam</span><span class="o">,</span><span class="kc">null</span><span class="o">);</span>
+			<span class="k">return</span><span class="o">;</span>
+		<span class="o">}</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="na">page</span><span class="o">(</span><span class="n">pageParam</span><span class="o">,</span><span class="k">new</span> <span class="nc">QueryWrapper</span><span class="o">&lt;</span><span class="nc">Product</span><span class="o">&gt;()</span>				<span class="o">.</span><span class="na">like</span><span class="o">(!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">productQuery</span><span class="o">.</span><span class="na">getTitle</span><span class="o">()),</span><span class="s">"product_title"</span><span class="o">,</span><span class="n">productQuery</span><span class="o">.</span><span class="na">getTitle</span><span class="o">())</span>				<span class="o">.</span><span class="na">eq</span><span class="o">(!</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">productQuery</span><span class="o">.</span><span class="na">getStatus</span><span class="o">()),</span><span class="s">"status"</span><span class="o">,</span><span class="n">productQuery</span><span class="o">.</span><span class="na">getStatus</span><span class="o">())</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>UpdateWrapper</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/updateStatus"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="no">R</span> <span class="nf">updateStatus</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Object</span> <span class="n">id</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"id"</span><span class="o">);</span>
+  <span class="nc">String</span> <span class="n">status</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"status"</span><span class="o">);</span>
+  <span class="nc">GoodsEntity</span> <span class="n">goods</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">GoodsEntity</span><span class="o">();</span>
+  <span class="n">goods</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">status</span><span class="o">));</span>
+
+  <span class="n">goodsService</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">goods</span><span class="o">,</span><span class="k">new</span> <span class="nc">UpdateWrapper</span><span class="o">&lt;</span><span class="nc">GoodsEntity</span><span class="o">&gt;().</span><span class="na">eq</span><span class="o">(</span><span class="s">"id"</span><span class="o">,</span><span class="n">id</span><span class="o">));</span>
+  <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>嵌套or，and</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">testUpdate</span><span class="o">(){</span>
+  <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">User</span><span class="o">();</span>
+  <span class="n">user</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">22</span><span class="o">);</span>
+
+  <span class="nc">UpdateWrapper</span><span class="o">&lt;</span><span class="nc">User</span><span class="o">&gt;</span> <span class="n">updateWrapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UpdateWrapper</span><span class="o">&lt;&gt;();</span>
+  <span class="n">updateWrapper</span><span class="o">.</span><span class="na">ge</span><span class="o">(</span><span class="s">"age"</span><span class="o">,</span><span class="mi">20</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">wrapper</span> <span class="o">-&gt;</span> <span class="n">wrapper</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"jude"</span><span class="o">).</span><span class="na">or</span><span class="o">().</span><span class="na">eq</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"jack"</span><span class="o">));</span>
+  <span class="n">userMapper</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">user</span><span class="o">,</span><span class="n">updateWrapper</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>控制台打印SQL：</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Time</span><span class="err">：</span><span class="mi">79</span> <span class="n">ms</span> <span class="o">-</span> <span class="n">ID</span><span class="err">：</span><span class="n">com</span><span class="p">.</span><span class="n">icoding</span><span class="p">.</span><span class="n">mapper</span><span class="p">.</span><span class="n">UserMapper</span><span class="p">.</span><span class="k">update</span>
+<span class="k">Execute</span> <span class="k">SQL</span><span class="err">：</span>
+    <span class="k">UPDATE</span>
+        <span class="k">user</span> 
+    <span class="k">SET</span>
+        <span class="n">age</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
+        <span class="n">update_time</span><span class="o">=</span><span class="s1">'2020-04-07 13:22:03.861'</span> 
+    <span class="k">WHERE</span>
+        <span class="n">del_flag</span><span class="o">=</span><span class="mi">0</span> 
+        <span class="k">AND</span> <span class="n">age</span> <span class="o">&gt;=</span> <span class="mi">20</span> 
+        <span class="k">AND</span> <span class="p">(</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">'jude'</span> 
+            <span class="k">OR</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'jack'</span> 
+        <span class="p">)</span>
+</code></pre></div></div>
+
+<p><mark>注意：</mark></p>
+
+<p>插入或更新的字段有 空字符串 或者 null需求时的解决方法，都在官方文档<a href="https://mp.baomidou.com/guide/faq.html">https://mp.baomidou.com/guide/faq.html</a></p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\mybatis-plus-update-null.jpg" alt="" /></p>
+
+<h2 id="9basemapper的方法注入">9、baseMapper的方法注入</h2>
+
+<p>我们在用的时候经常就是生产自定义的<strong>Mapper</strong>继承自<strong>BaseMapper</strong>，然后我们就可以使用了，但是有没想过<strong>BaseMapper</strong>里的方法是怎么被注入到<strong>mybatis</strong>里的，怎样注入到mapper.xml文件的</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\basemapper.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">MybatisPlusAutoConfiguration</code>的SqlSessionFactory，创建bean</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\mybatis-sqlsession-factory.jpg" alt="" /></p>
+
+<p>看<code class="highlighter-rouge">applyConfiguration</code>方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\mybatis-configuration.jpg" alt="" /></p>
+
+<p><strong>MybatisConfiguration</strong>是继承自<strong>Configuration</strong>的，自定义了一个<strong>MybatisMapperRegistry</strong>注册器，后面会用到</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\mybatis-mapper-registry.jpg" alt="" /></p>
+
+<p><strong>MybatisSqlSessionFactoryBean</strong>的初始化后方法<strong>afterPropertiesSet</strong>调用<strong>buildSqlSessionFactory</strong>创建<strong>SqlSessionFactory</strong>：</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\after-properties-set.jpg" alt="" /></p>
+
+<p>点击<code class="highlighter-rouge">buildSqlSessionFactory</code>方法，里面有一段代码是会循环解析自定义mapper的xml文件的</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse.jpg" alt="" /></p>
+
+<p>点击<code class="highlighter-rouge">parse</code>方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-2.jpg" alt="" /></p>
+
+<p>点击<code class="highlighter-rouge">bindMapperForNamespace</code>方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-3.jpg" alt="" /></p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-5.jpg" alt="" /></p>
+
+<p>其中有个<strong>addMapper</strong>的方法，是前面<strong>MybatisConfiguration</strong>调用的，点击它的<code class="highlighter-rouge">addMapper</code>方法，内部是调用<strong>MybatisMapperRegistry</strong>的方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+     * 使用自己的 MybatisMapperRegistry
+     */</span>
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">addMapper</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">mybatisMapperRegistry</span><span class="o">.</span><span class="na">addMapper</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>点击<code class="highlighter-rouge"> mybatisMapperRegistry.addMapper(type)</code>方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-4.jpg" alt="" /></p>
+
+<p>里面会进行基本的sql方法注入</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-6.jpg" alt="" /></p>
+
+<p>完成每个方法的注入：</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-7.jpg" alt="" /></p>
+
+<p>注入的实现：</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-8.jpg" alt="" /></p>
+
+<p>其实每一个<strong>AbstractMethod</strong>的子类都会实现自己的<strong>injectMappedStatement</strong>：</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-9.jpg" alt="" /></p>
+
+<p>如BaseMapper的Insert方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-10.jpg" alt="" /></p>
+
+<p>DeleteByMap方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-11.jpg" alt="" /></p>
+
+<p>最后会去枚举类<strong>SqlMethod</strong>中获取对应的枚举，里面就是类似定义在<strong>xml</strong>中的信息，最后转换为<strong>sqlSource</strong>再进行封装：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">sqlMethod</span><span class="o">.</span><span class="na">getSql</span><span class="o">(),</span> <span class="n">tableInfo</span><span class="o">.</span><span class="na">getTableName</span><span class="o">(),</span> <span class="n">columnScript</span><span class="o">,</span> <span class="n">valuesScript</span><span class="o">);</span>
+<span class="nc">SqlSource</span> <span class="n">sqlSource</span> <span class="o">=</span> <span class="n">languageDriver</span><span class="o">.</span><span class="na">createSqlSource</span><span class="o">(</span><span class="n">configuration</span><span class="o">,</span> <span class="n">sql</span><span class="o">,</span> <span class="n">modelClass</span><span class="o">);</span>
+<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">addInsertMappedStatement</span><span class="o">(</span><span class="n">mapperClass</span><span class="o">,</span> <span class="n">modelClass</span><span class="o">,</span> <span class="n">getMethod</span><span class="o">(</span><span class="n">sqlMethod</span><span class="o">),</span> <span class="n">sqlSource</span><span class="o">,</span> <span class="n">keyGenerator</span><span class="o">,</span> <span class="n">keyProperty</span><span class="o">,</span> <span class="n">keyColumn</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p><strong>SqlMethod</strong> 枚举值：</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-12.jpg" alt="" /></p>
+
+<p>最终还是调用了<strong>MapperBuilderAssistant</strong>的<strong>addMappedStatement</strong>进行注册：</p>
+
+<p>如上面的DeleteByMap，注入完sql语句后的返回</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="n">addUpdateMappedStatement</span><span class="o">(</span><span class="n">mapperClass</span><span class="o">,</span> <span class="n">modelClass</span><span class="o">,</span> <span class="n">getMethod</span><span class="o">(</span><span class="n">sqlMethod</span><span class="o">),</span> <span class="n">sqlSource</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>或者</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">addDeleteMappedStatement</span><span class="o">(</span><span class="n">mapperClass</span><span class="o">,</span> <span class="n">getMethod</span><span class="o">(</span><span class="n">sqlMethod</span><span class="o">),</span> <span class="n">sqlSource</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>会看抽象类<code class="highlighter-rouge">AbstractMethod</code>的源码</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-abstract-method.jpg" alt="" /></p>
+
+<p>都调用了<code class="highlighter-rouge">addMappedStatement</code>方法</p>
+
+<p><img src="\assets\images\2020\icoding\mybatis-plus\xml-mapper-parse-13.jpg" alt="" /></p>
+
+<p>总结</p>
+
+<ul>
+  <li>初始化注入自定义的MybatisConfiguration和MybatisMapperRegistry。</li>
+  <li>解析Mapper类，获取方法对应的AbstractMethod。</li>
+  <li>调用各自的实现进行去SqlMethod获取对应的枚举，获取到信息后进行注册。</li>
+</ul>
+
+<p>其实就相当于代码里面定义了原本需要再xx.xml定义的数据，直接在代码中获取注入常用的CRUD操作即可</p>
+
+<p>参考：<a href="https://blog.csdn.net/wangwei19871103/article/details/109771510">https://blog.csdn.net/wangwei19871103/article/details/109771510</a></p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/04/04/icoding-note-017.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Nginx 反向代理，负载均衡 - 大伟的博客 </title>
+    <meta name="keywords" content="nginx">
+    <meta name="description"
+          content="linux、windows、mac安装nginx，nginx常用命令，nginx的location配置，负载均衡策略，nginx开启gzip解压缩，nginx的五大应用场景http服务器，静态服务器，反向代理，动静分离">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/tool/2020/07/02/nginx.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Nginx 反向代理，负载均衡">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Nginx 反向代理，负载均衡</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/07/02
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1安装nginx">1、安装nginx</h2>
+
+<h3 id="linux-下yum-方式安装">linux 下yum 方式安装</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@helloworld ~]# vim /etc/yum.repos.d/nginx.repo
+<span class="c"># 添加以下内容保存</span>
+<span class="o">[</span>nginx]
+<span class="nv">name</span><span class="o">=</span>nginx repo
+<span class="nv">baseurl</span><span class="o">=</span>http://nginx.org/packages/centos/7/<span class="nv">$basearch</span>/
+<span class="nv">gpgcheck</span><span class="o">=</span>0
+<span class="nv">enabled</span><span class="o">=</span>1
+<span class="c"># 安装nginx</span>
+<span class="o">[</span>root@helloworld ~]# yum <span class="nb">install </span>nginx
+<span class="c"># 使用yum安装nginx比较简单，并且相关的 SysV 脚本都已经写好，直接用即可</span>
+<span class="c"># 配置文件在 /etc/nginx目录下</span>
+<span class="nb">cd</span> /etc/nginx/
+<span class="c"># 日志文件在 /var/log/nginx 目录下</span>
+<span class="nb">cd</span> /var/log/nginx/
+<span class="c"># pid 位于 /var/run 目录下</span>
+<span class="nb">cd</span> /var/run
+<span class="c"># 使用 SysV 脚本控制 nginx</span>
+service nginx stop
+service nginx start
+service nginx restart
+service nginx reload
+service nginx status
+</code></pre></div></div>
+
+<h3 id="linux下-直接下载解压安装">linux下 直接下载解压安装</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 0、nginx 依赖环境准备，已安装忽略</span>
+<span class="c"># 安装nginx 需要先将官网下载的源码进行编译，编译依赖 gcc 环境</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> gcc gcc-c++ 
+<span class="c"># PCRE(Perl Compatible Regular Expressions) 是一个Perl库，包括 perl 兼容的正则表达式库。nginx 的 http 模块使用 pcre 来解析正则表达式，所以需要在 linux 上安装 pcre 库，pcre-devel 是使用 pcre 开发的一个二次开发库。nginx也需要此库</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> pcre pcre-devel 
+<span class="c"># zlib 库提供了很多种压缩和解压缩的方式， nginx 使用 zlib 对 http 包的内容进行 gzip ，所以需要在 Centos 上安装 zlib 库。</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> zlib zlib-devel
+<span class="c"># openssl是一个强大的安全套接字层密码库，囊括主要的密码算法(md5和sha1等)、常用的密钥和证书封装管理功能及 SSL 协议，并提供丰富的应用程序供测试或其它目的使用。nginx 不仅支持 http 协议，还支持 https（即在ssl协议上传输http），所以需要在 Centos 安装 OpenSSL 库。</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> openssl openssl-devel
+
+<span class="c"># 下载，也可以手动下载后上传到服务器上</span>
+wget http://nginx.org/download/nginx-1.18.0.tar.gz
+<span class="c"># 1、解压</span>
+<span class="o">[</span>root@helloworld opt]# <span class="nb">tar</span> <span class="nt">-zxvf</span> nginx-1.18.0.tar.gz
+<span class="c"># 2、配置</span>
+<span class="o">[</span>root@helloworld opt] <span class="nb">cd </span>nginx-1.18.0
+<span class="o">[</span>root@helloworld nginx-1.18.0]# ./configure 
+...
+  nginx path prefix: <span class="s2">"/usr/local/nginx"</span>
+  nginx binary file: <span class="s2">"/usr/local/nginx/sbin/nginx"</span>
+  nginx modules path: <span class="s2">"/usr/local/nginx/modules"</span>
+  nginx configuration prefix: <span class="s2">"/usr/local/nginx/conf"</span>
+  nginx configuration file: <span class="s2">"/usr/local/nginx/conf/nginx.conf"</span>
+  nginx pid file: <span class="s2">"/usr/local/nginx/logs/nginx.pid"</span>
+  nginx error log file: <span class="s2">"/usr/local/nginx/logs/error.log"</span>
+  nginx http access log file: <span class="s2">"/usr/local/nginx/logs/access.log"</span>
+  nginx http client request body temporary files: <span class="s2">"client_body_temp"</span>
+  nginx http proxy temporary files: <span class="s2">"proxy_temp"</span>
+  nginx http fastcgi temporary files: <span class="s2">"fastcgi_temp"</span>
+  nginx http uwsgi temporary files: <span class="s2">"uwsgi_temp"</span>
+  nginx http scgi temporary files: <span class="s2">"scgi_temp"</span>
+
+<span class="c"># 如果报错了是不是上面的gcc环境是不是没安装好</span>
+<span class="c"># 3、安装</span>
+<span class="o">[</span>root@helloworld nginx-1.18.0]# make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+<span class="c"># 查找安装路径</span>
+<span class="o">[</span>root@helloworld ~] whereis nginx
+<span class="c"># 4、安装成功，到nginx的目录 /usr/local/nginx</span>
+<span class="nb">cd</span> /usr/local/nginx
+<span class="o">[</span>root@helloworld nginx]# <span class="nb">ls
+</span>conf  html  logs  sbin
+<span class="c"># 启动</span>
+<span class="o">[</span>root@helloworld nginx]# ./sbin/nginx
+<span class="c"># 查看nginx是否启动</span>
+ps <span class="nt">-ef</span> | <span class="nb">grep </span>nginx
+<span class="c"># 设置全局的nginx命令</span>
+<span class="nb">cp</span> /usr/local/nginx/sbin/nginx /bin/
+<span class="c"># 5、设置开机启动</span>
+<span class="nb">cd</span> /lib/systemd/system/
+vi nginx.service
+<span class="c"># 编辑nginx.service内容如下</span>
+<span class="o">[</span>Unit]
+<span class="nv">Description</span><span class="o">=</span>nginx service
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service]
+<span class="nv">Type</span><span class="o">=</span>forking
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/nginx/sbin/nginx
+<span class="nv">ExecReload</span><span class="o">=</span>/usr/local/nginx/sbin/nginx <span class="nt">-s</span> reload
+<span class="nv">ExecStop</span><span class="o">=</span>/usr/local/nginx/sbin/nginx <span class="nt">-s</span> quit
+<span class="nv">PrivateTmp</span><span class="o">=</span><span class="nb">true</span>
+
+<span class="o">[</span>Install]
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+
+<span class="c"># 开启nginx开机启动</span>
+systemctl <span class="nb">enable </span>nginx
+<span class="c"># 关闭nginx开机启动</span>
+systemctl disable nginx
+<span class="c"># 查看所有服务,enable表示开机启动，disabled表示不开机启动</span>
+systemctl list-unit-files
+<span class="c"># 查看所有开机启动的服务，centos7已不使用chkconfig --list查看</span>
+systemctl list-unit-files |grep <span class="nb">enable</span>
+<span class="c"># 查看nginx是否已开机启动</span>
+systemctl list-unit-files |grep nginx
+
+<span class="c"># 配置了全局nginx命令后,不需要cd 切换到ngin的安装目录了</span>
+<span class="nb">cd</span> /usr/local/nginx/sbin/
+./nginx  启动
+./nginx <span class="nt">-s</span> stop  停止
+./nginx <span class="nt">-s</span> quit  安全退出
+./nginx <span class="nt">-s</span> reload  重新加载配置文件
+ps aux|grep nginx  查看nginx进程
+</code></pre></div></div>
+
+<h3 id="mac-通过brew的方式安装">mac 通过brew的方式安装</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看brew版本</span>
+brew <span class="nt">--version</span>
+<span class="c"># 查看nginx是否存在</span>
+brew search nginx
+<span class="c"># 安装nginx</span>
+brew <span class="nb">install </span>nginx
+<span class="c"># 卸载</span>
+brew uninstall nginx
+<span class="c"># 查看nginx的安装目录</span>
+xjwdeMacBook:~ xjw<span class="nv">$ </span>which nginx
+/usr/local/bin/nginx
+<span class="c"># 配置目录</span>
+/usr/local/etc/nginx
+<span class="c"># 启动nginx</span>
+xjwdeMacBook:~ xjw<span class="nv">$ </span>nginx
+</code></pre></div></div>
+
+<h3 id="windows下安装">windows下安装</h3>
+
+<p>1、下载nginx</p>
+
+<p>http://nginx.org/en/download.html 下载稳定版本。以nginx/Windows-1.16.1为例，直接下载 nginx-1.16.1.zip。下载后解压，解压后如下：</p>
+
+<p><img src="\assets\images\2021\springcloud\nginx-window-install-1.jpg" alt="" /></p>
+
+<p>2、启动nginx</p>
+
+<p>有很多种方法启动nginx</p>
+
+<p>(1)直接双击nginx.exe，双击后一个黑色的弹窗一闪而过</p>
+
+<p>(2)打开cmd命令窗口，切换到nginx解压目录下，输入命令 <code class="highlighter-rouge">nginx.exe</code> ，回车即可</p>
+
+<p>3、检查nginx是否启动成功</p>
+
+<p>直接在浏览器地址栏输入网址 <a href="http://localhost/">http://localhost:80</a> 回车，出现以下页面说明启动成功！</p>
+
+<p><img src="\assets\images\2021\springcloud\nginx-install-success.jpg" alt="" /></p>
+
+<p>4、配置监听</p>
+
+<p>nginx的配置文件是conf目录下的nginx.conf，默认配置的nginx监听的端口为80，如果80端口被占用可以修改为未被占用的端口即可（要放开可被访问）。</p>
+
+<p><img src="\assets\images\2021\springcloud\nginx-window-install-2.jpg" alt="" /></p>
+
+<p>当我们修改了nginx的配置文件nginx.conf 时，不需要关闭nginx后重新启动nginx，只需要执行命令 <code class="highlighter-rouge">nginx -s reload</code> 即可让改动生效，如果nginx没有被平滑关闭，需要手动关闭重启</p>
+
+<p>5、关闭nginx</p>
+
+<p>如果使用cmd命令窗口启动nginx， 关闭cmd窗口是不能结束nginx进程的，可使用两种方法关闭nginx</p>
+
+<p>(1)输入nginx命令 <code class="highlighter-rouge">nginx -s stop</code>(快速停止nginx) 或 <code class="highlighter-rouge">nginx -s quit</code>(完整有序的停止nginx)</p>
+
+<p>(2)使用taskkill <code class="highlighter-rouge">taskkill /f /t /im nginx.exe</code></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>taskkill是用来终止进程的，
+/f是强制终止 <span class="nb">.</span>
+/t终止指定的进程和任何由此启动的子进程。
+/im示指定的进程名称 <span class="nb">.</span>
+</code></pre></div></div>
+
+<h2 id="2nginx-常用命令">2、nginx 常用命令</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -h 打印命令行参数的帮助信息</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-h</span>
+
+<span class="c"># -c 启动时指定配置文件的位置，如果不指定则使用默认的配置文件 /etc/nginx/nginx.conf</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-c</span> file
+
+<span class="c"># -t 检查nginx的配置文件是否有语法错误，通常在修改配置文件后先检查配置文件，然后在重新加载配置文件</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-t</span>
+
+<span class="c"># -s signal : 给nginx主进程发信号: stop, quit, reopen, reload</span>
+<span class="c"># 快速关闭nginx</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-s</span> stop
+
+<span class="c"># 平滑关闭nginx，如果没关闭请用kill</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-s</span> quit
+
+<span class="c"># reload 重新加载配置文件，使用新配置文件开启一个新的工作进程（worker progress），然后平滑的关闭原来的工作进程。</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-s</span> reload
+
+<span class="c"># reopen 重新打开日志文件，如果你发现你的nginx日志文件不再记录日志了，可以使用该指令重新打开日志文件。</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-s</span> reopen
+
+<span class="c"># -q 在 nginx 进行配置文件测试时只打印错误信息。和 -t 参数配合使用。</span>
+<span class="o">[</span>root@VM_0_3_centos nginx]# nginx <span class="nt">-qt</span>
+
+<span class="c"># 修改配置文件后，优雅重启nginx</span>
+<span class="c"># 获取ningx进程id</span>
+ps <span class="nt">-ef</span>|grep nginx
+<span class="nb">kill</span> <span class="nt">-HUP</span> 进程id
+
+nginx默认只开启一个工作进程，可以通过配置workprocess 启动多个工作进程
+</code></pre></div></div>
+
+<h2 id="3nginx的配置">3、nginx的配置</h2>
+
+<h3 id="location">location</h3>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 格式
+</span><span class="k">location</span> <span class="s">[=|~|~*|^~]</span> <span class="n">/uri/</span> <span class="p">{</span> <span class="kn">…</span> <span class="err">}</span>
+<span class="c1"># 例子：区分大小写匹配,以.txt结尾的请求将访问/usr/local/nginx/html/ 路径下的txt文件
+</span><span class="s">location</span> <span class="p">~</span> <span class="sr">^.+\.txt$</span> <span class="p">{</span>
+  <span class="kn">root</span> <span class="n">/usr/local/nginx/html/</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>模式</th>
+      <th>含义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>location = /uri</td>
+      <td>= 表示精确匹配，只有完全匹配上才能生效</td>
+    </tr>
+    <tr>
+      <td>location ^~ /uri</td>
+      <td>^~ 开头对URL路径进行前缀匹配，并且在正则之前。</td>
+    </tr>
+    <tr>
+      <td>location ~ pattern</td>
+      <td>开头表示区分大小写的正则匹配</td>
+    </tr>
+    <tr>
+      <td>location ~* pattern</td>
+      <td>开头表示不区分大小写的正则匹配</td>
+    </tr>
+    <tr>
+      <td>location /uri</td>
+      <td>不带任何修饰符，也表示前缀匹配，但是在正则匹配之后</td>
+    </tr>
+    <tr>
+      <td>location /</td>
+      <td>通用匹配，任何未匹配到其它location的请求都会匹配到，相当于switch中的default</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>匹配顺序：</p>
+
+<ul>
+  <li>首先精确匹配 <code class="highlighter-rouge">=</code></li>
+  <li>其次前缀匹配 <code class="highlighter-rouge">^~</code></li>
+  <li>其次是按文件中顺序的正则匹配</li>
+  <li>然后匹配不带任何修饰的前缀匹配。</li>
+  <li>最后是交给 <code class="highlighter-rouge">/</code> 通用匹配</li>
+</ul>
+
+<p>注意：</p>
+
+<ul>
+  <li>
+    <p>当有匹配成功时候，停止匹配，按当前匹配规则处理请求</p>
+  </li>
+  <li>
+    <p>前缀匹配，如果有包含关系时，按最大匹配原则进行匹配</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>比如在前缀匹配：<span class="sb">`</span>location /dir01<span class="sb">`</span> 与 <span class="sb">`</span>location /dir01/dir02<span class="sb">`</span>，如有请求 <span class="sb">`</span>http://localhost/dir01/dir02/file<span class="sb">`</span> 将最终匹配到 <span class="sb">`</span>location /dir01/dir02<span class="sb">`</span><span class="k">*</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<blockquote>
+  <p><strong>alias与root的区别</strong></p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>alias,不拼接url中的路径</p>
+
+    <div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="s">^~</span> <span class="n">/sta/</span> <span class="p">{</span>  
+   <span class="kn">alias</span> <span class="n">/usr/local/nginx/html/static/</span><span class="p">;</span>  
+<span class="p">}</span>
+<span class="k">请求：http://test.com/sta/sta1.html</span>
+<span class="s">实际访问：/usr/local/nginx/html/static/sta1.html</span> <span class="s">文件</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>root,拼接url中的路径</p>
+
+    <div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">location</span> <span class="s">^~</span> <span class="n">/sta/</span> <span class="p">{</span>  
+  <span class="kn">root</span> <span class="n">/usr/local/nginx/html/static/</span><span class="p">;</span>  
+<span class="p">}</span>
+<span class="k">请求：http://test.com/sta/sta1.html</span>
+<span class="s">实际访问：/usr/local/nginx/html/static/sta/sta1.html</span> <span class="s">文件</span>
+</code></pre></div>    </div>
+
+    <p>你会发现一样的配置，一样的请求，root多了一层sta。</p>
+  </li>
+</ul>
+
+<p><strong>permanent &amp; redirect:</strong></p>
+
+<ul>
+  <li>rewrite … permanent  永久性重定向，请求日志中的状态码为301</li>
+  <li>rewrite … redirect     临时重定向，请求日志中的状态码为302</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location ^~ /sta/ <span class="o">{</span>  
+  rewrite /static/1  <span class="p">;</span>  
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>从实现功能的角度上去看，permanent 和 redirect 是一样的，不存在性能上的问题，但是对seo会有影响，permanent不会影响网站排名，redirect会使用网站排名降低</p>
+
+<blockquote>
+  <p>其它指令</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p><strong>return</strong> : 返回http状态码 和 可选的第二个参数可以是重定向的URL</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location /permanently/moved/url <span class="o">{</span>
+    <span class="k">return </span>301 http://www.example.com/moved/here<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>rewrite</strong>: 重写URI请求 rewrite，通过使用rewrite指令在请求处理期间多次修改请求URI</p>
+
+    <p>第一个参数（必需）是请求URI必须匹配的正则表达式；</p>
+
+    <p>第二个参数（必需）是用于替换匹配URI的URI。</p>
+
+    <p>第三个参数（可选）可以停止进一步重写指令的处理或发送重定向(代码301或302)的标志</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location /users/ <span class="o">{</span>
+    rewrite ^/users/<span class="o">(</span>.<span class="k">*</span><span class="o">)</span><span class="nv">$ </span>/show?user<span class="o">=</span><span class="nv">$1</span> <span class="nb">break</span><span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>error_page</strong></p>
+
+    <p>使用error_page指令，您可以配置NGINX返回自定义页面以及错误代码，替换响应中的其他错误代码，或将浏览器重定向到其他URI。在以下示例中，error_page指令指定要返回404页面错误代码的页面(/404.html)。</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>error_page 404 /404.html<span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>日志</strong></p>
+
+    <p>需要开启压缩 gzip on; 否则不生成日志文件，打开log_format、access_log注释</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">log_format</span>  <span class="n">main</span>  <span class="err">'</span><span class="n">$remote_addr</span> <span class="o">-</span> <span class="n">$remote_user</span> <span class="o">[</span><span class="n">$time_local</span><span class="o">]</span> <span class="s">"$request"</span> <span class="err">'</span>
+                      <span class="err">'</span><span class="n">$status</span> <span class="n">$body_bytes_sent</span> <span class="s">"$http_referer"</span> <span class="err">'</span>
+                      <span class="err">'</span><span class="s">"$http_user_agent"</span> <span class="s">"$http_x_forwarded_for"</span><span class="err">'</span><span class="o">;</span>
+  
+<span class="n">access_log</span>  <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">host</span><span class="o">.</span><span class="na">access</span><span class="o">.</span><span class="na">log</span>  <span class="n">main</span><span class="o">;</span>
+  
+<span class="n">gzip</span>  <span class="n">on</span><span class="o">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>deny</strong>  禁止访问某个目录</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">location</span> <span class="o">~*</span> <span class="err">\</span><span class="o">.(</span><span class="n">txt</span><span class="o">|</span><span class="n">doc</span><span class="o">)</span><span class="err">$</span><span class="o">{</span>
+    <span class="n">root</span> <span class="n">$doc_root</span><span class="o">;</span>
+    <span class="n">deny</span> <span class="n">all</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>内置变量</strong></p>
+
+    <p>nginx的配置文件中可以使用的内置变量以美元符$开始，也有人叫全局变量。其中，部分预定义的变量的值是可以改变的。</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$args</span> ：#这个变量等于请求行中的参数，同<span class="nv">$query_string</span>
+<span class="nv">$content_length</span> ：请求头中的Content-length字段。
+<span class="nv">$content_type</span> ：请求头中的Content-Type字段。
+<span class="nv">$document_root</span> ：当前请求在root指令中指定的值。
+<span class="nv">$host</span> ：请求主机头字段，否则为服务器名称。
+<span class="nv">$http_user_agent</span> ：客户端agent信息
+<span class="nv">$http_cookie</span> ：客户端cookie信息
+<span class="nv">$limit_rate</span> ：这个变量可以限制连接速率。
+<span class="nv">$request_method</span> ：客户端请求的动作，通常为GET或POST。
+<span class="nv">$remote_addr</span> ：客户端的IP地址。
+<span class="nv">$remote_port</span> ：客户端的端口。
+<span class="nv">$remote_user</span> ：已经经过Auth Basic Module验证的用户名。
+<span class="nv">$request_filename</span> ：当前请求的文件路径，由root或alias指令与URI请求生成。
+<span class="nv">$scheme</span> ：HTTP方法（如http，https）。
+<span class="nv">$server_protocol</span> ：请求使用的协议，通常是HTTP/1.0或HTTP/1.1。
+<span class="nv">$server_addr</span> ：服务器地址，在完成一次系统调用后可以确定这个值。
+<span class="nv">$server_name</span> ：服务器名称。
+<span class="nv">$server_port</span> ：请求到达服务器的端口号。
+<span class="nv">$request_uri</span> ：包含请求参数的原始URI，不包含主机名，如：”/foo/bar.php?arg<span class="o">=</span>baz”。
+<span class="nv">$uri</span> ：不带请求参数的当前URI，<span class="nv">$uri</span>不包含主机名，如”/foo/bar.html”。
+<span class="nv">$document_uri</span> ：与<span class="nv">$uri</span>相同
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="4种负载均衡策略">4种负载均衡策略</h3>
+
+<p>主要是对proxy_pass和upstream的配置。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">http</span> <span class="p">{</span>
+    <span class="kn">upstream</span> <span class="s">upstream_name</span><span class="p">{</span>
+        <span class="kn">server</span> <span class="nf">192.168.0.28</span><span class="p">:</span><span class="mi">8001</span><span class="p">;</span>  <span class="c1"># 具体的服务
+</span>        <span class="kn">server</span> <span class="nf">192.168.0.28</span><span class="p">:</span><span class="mi">8002</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kn">server</span> <span class="p">{</span>
+        <span class="kn">listen</span>       <span class="mi">8080</span><span class="p">;</span>
+        <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
+
+        <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+            <span class="kn">proxy_pass</span> <span class="s">http://upstream_name</span><span class="p">;</span>
+            <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+            <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+            <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>负载策略(有4种)</p>
+</blockquote>
+
+<p><strong>1、轮询（默认）</strong></p>
+
+<p>它是upstream的默认策略，每个请求会按时间顺序逐一分配到不同的后端服务器。</p>
+
+<p>参数：</p>
+
+<ul>
+  <li>max_fails： 最大失败次数，如果超过，那么该服务器会被认为是停机了</li>
+  <li>fail_timeout：连接失败超时，与max_fails结合使用</li>
+  <li>fail_time：服务器会被认为停机的时间长度,默认为10s。</li>
+  <li>backup：标记该服务器为备用服务器。当主服务器的服务停止时，请求会被发送到它这里。备胎</li>
+  <li>down：标记服务器永久停机了，请求不会访问这里。</li>
+</ul>
+
+<p>在轮询中，如果服务器down掉了，会自动剔除该服务器。</p>
+
+<p>此策略适合服务器配置相当，无状态且短平快的服务使用。</p>
+
+<p><strong>2、权重</strong></p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># weight参数用于制定轮询的几率，weight默认值为1；weight的数值和被访问的几率成正比。
+</span><span class="k">upstream</span> <span class="s">foo</span> <span class="p">{</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8001</span> <span class="s">weight=2</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8002</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8003</span> <span class="s">backup</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8004</span> <span class="s">max_fails=3</span> <span class="s">fail_timeout=20s</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">注意：</span>
+<span class="s">-</span> <span class="s">权重越高分配到需要处理的请求越多。</span>
+<span class="s">-</span> <span class="s">此策略可以与least_conn和ip_hash结合使用。</span>
+<span class="s">-</span> <span class="s">此策略比较适合服务器的硬件配置差别比较大的情况</span>
+</code></pre></div></div>
+
+<p><img src="\assets\images\2021\springcloud\nginx-location-2.jpg" alt="" /></p>
+
+<p><strong>3、ip_hash</strong></p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 按照客户端IP地址的分配方式，可以确保相同客户端的请求一直发送到相同的服务器。这样每个访客都固定访问一个后端服务器。
+</span><span class="k">upstream</span> <span class="s">foo</span> <span class="p">{</span>
+    <span class="kn">ip_hash</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8001</span> <span class="s">weight=2</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8002</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8003</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8004</span> <span class="s">max_fails=3</span> <span class="s">fail_timeout=20s</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">注意：</span>
+<span class="s">-</span> <span class="s">在nginx版本1.3.1之前，不能在ip_hash中使用权重（weight）。</span>
+<span class="s">-</span> <span class="s">ip_hash不能与backup同时使用。</span>
+<span class="s">-</span> <span class="s">此策略适合有状态服务，比如session。</span>
+<span class="s">-</span> <span class="s">当有服务器需要剔除，必须手动down掉。</span>
+</code></pre></div></div>
+
+<p><strong>4、least_conn 最小连接</strong></p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 把请求转发给连接数较少的后端服务器。轮询算法是把请求平均的转发给各个后端，使它们的负载大致相同；但是，有些请求占用的时间很长，会导致其所在的后端负载较高。这种情况下，least_conn这种方式就可以达到更好的负载均衡效果
+</span><span class="k">upstream</span> <span class="s">foo</span> <span class="p">{</span>
+    <span class="kn">least_conn</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8001</span> <span class="s">weight=2</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8002</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8003</span> <span class="s">backup</span><span class="p">;</span>
+    <span class="kn">server</span> <span class="nf">localhost</span><span class="p">:</span><span class="mi">8004</span> <span class="s">max_fails=3</span> <span class="s">fail_timeout=20s</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">注意：</span>
+<span class="s">-</span> <span class="s">此负载均衡策略适合请求处理时间长短不一造成服务器过载的情况。</span>
+</code></pre></div></div>
+
+<p>在实际运用中，需要根据不同的场景选择不同的策略，大多是多种策略结合使用以达到实际需求的性能。</p>
+
+<h3 id="配置参考">配置参考</h3>
+
+<p>nginx.conf</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user  nginx<span class="p">;</span>
+worker_processes  1<span class="p">;</span>	<span class="c"># 开启的nginx的进程数，并发高的时候可以增加</span>
+
+error_log  /var/log/nginx/error.log warn<span class="p">;</span>
+pid        /var/run/nginx.pid<span class="p">;</span>
+
+events <span class="o">{</span>
+    worker_connections  1024<span class="p">;</span> <span class="c"># 连接限制</span>
+<span class="o">}</span>
+
+http <span class="o">{</span>
+    include       /etc/nginx/mime.types<span class="p">;</span>
+    default_type  application/octet-stream<span class="p">;</span>
+
+    log_format  main  <span class="s1">'$remote_addr - $remote_user [$time_local] "$request" '</span>
+                      <span class="s1">'$status $body_bytes_sent "$http_referer" '</span>
+                      <span class="s1">'"$http_user_agent" "$http_x_forwarded_for"'</span><span class="p">;</span>
+
+    access_log  /var/log/nginx/access.log  main<span class="p">;</span>
+
+    sendfile        on<span class="p">;</span>
+    keepalive_timeout  65<span class="p">;</span> <span class="c"># 超时</span>
+    include /etc/nginx/conf.d/<span class="k">*</span>.conf<span class="p">;</span> <span class="c"># 包含的配置文件</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>/etc/nginx/conf.d/default.conf</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream nacos <span class="o">{</span>
+    server 127.0.0.1:8848<span class="p">;</span>
+    server 127.0.0.1:8858<span class="p">;</span>
+    server 127.0.0.1:8868<span class="p">;</span>
+<span class="o">}</span>
+
+server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+    server_name  139.199.13.139<span class="p">;</span>
+
+    location /nacos <span class="o">{</span>
+         proxy_pass http://nacos<span class="p">;</span>
+    <span class="o">}</span>
+        
+    <span class="c"># 前缀匹配</span>
+    location ^~ /blog <span class="o">{</span>
+        <span class="nb">alias</span>  /usr/share/nginx/html/<span class="p">;</span>
+        index  index.html index.htm<span class="p">;</span>
+    <span class="o">}</span>
+    <span class="c"># 精确匹配，代理跳转</span>
+    location <span class="o">=</span> /deploy <span class="o">{</span>
+       proxy_pass http://127.0.0.1:3001/deploy<span class="p">;</span>
+    <span class="o">}</span>
+    <span class="c"># 通用匹配</span>
+    location / <span class="o">{</span>
+        root   /usr/share/nginx/html<span class="p">;</span>
+        index  index.html index.htm<span class="p">;</span>
+    <span class="o">}</span>
+    <span class="c"># 错误页面</span>
+    error_page  404              /404.html<span class="p">;</span>
+    error_page   500 502 503 504  /50x.html<span class="p">;</span>
+    location <span class="o">=</span> /50x.html <span class="o">{</span>
+        root   /usr/share/nginx/html<span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="开启gzip解压缩">开启gzip解压缩</h3>
+
+<p>修改nginx.conf文件</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream backend <span class="o">{</span>
+    server 192.168.10.21:8000<span class="p">;</span>
+<span class="o">}</span>
+ 
+server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+ 
+    <span class="nb">gzip </span>on<span class="p">;</span> <span class="c">#开启gzip</span>
+    gzip_disable <span class="s2">"MSIE [1-6]."</span><span class="p">;</span> <span class="c">#ie1-6浏览器时禁用gzip</span>
+    gzip_vary on<span class="p">;</span> <span class="c">#是否在响应头添加Content-Encoding</span>
+    gzip_proxied any<span class="p">;</span> <span class="c">#Nginx作为反向代理的时候启用，开启或者关闭后端服务器返回的结果，匹配的前提是后端服务器必须要返回包含"Via"的 header头。</span>
+    gzip_comp_level 6<span class="p">;</span> <span class="c">#压缩级别【1-9】，越大压缩率越高，同时消耗cpu资源也越多，建议设置在6左右。 </span>
+    gzip_http_version 1.0<span class="p">;</span> <span class="c">#识别http的协议版本</span>
+    gzip_min_length 256<span class="p">;</span> <span class="c">#低于256kb的资源不压缩</span>
+    <span class="c">#需要压缩哪些响应类型的资源，多个空格隔开。不建议压缩图片</span>
+    gzip_types application/atom+xml application/geo+json application/javascript application/x-javascript application/json application/ld+json application/manifest+json application/rdf+xml application/rss+xml application/xhtml+xml application/xml font/eot font/otf font/ttf image/svg+xml text/css text/javascript text/plain text/xml<span class="p">;</span> 
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>如何gzip配置不生效，gzip_http_version由1.1改为1.0就好了，默认是1.1，</p>
+
+<blockquote>
+  <p>验证生效</p>
+</blockquote>
+
+<p>Chrome浏览器F12控制台，查看响应头Response-Header的Content-Encoding:gzip证明已开启gzip：</p>
+
+<p><img src="\assets\images\2020\icoding\keepalived\nginx-gzip.jpg" alt="" /></p>
+
+<p>查看压缩的前后效果</p>
+
+<p><img src="\assets\images\2020\icoding\keepalived\nginx-gzip2.png" alt="" /></p>
+
+<p>可以看到，网页压缩前是331K，压缩后是86.9K</p>
+
+<p>使用了gzip响应返回数据后，<mark>如果是浏览器它根据Content-Encoding:gzip 进行数据解压</mark>，如果是客户端或APP端接受数据，要注意进行数据解压，否则显示的是压缩数据，是乱码的</p>
+
+<p><img src="\assets\images\2022\tool\reponse-gzip-data.png" alt="" /></p>
+
+<p>从图中可以看到，对于返回的数据，以gzip格式的进行返回，而客户端进行解析的时候，是使用普通的流进行解析，所以会出现问题。</p>
+
+<p>前端gzip压缩的数据不经过nginx，那么后端接受数据需要解压&gt;</p>
+
+<blockquote>
+  <p>前后端请求数据gzip压缩方案</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>前端Vue项目，<code class="highlighter-rouge">package.json</code>下添加<code class="highlighter-rouge">pako</code>依赖</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"pako"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.0.11"</span><span class="w">
+ </span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>采用<code class="highlighter-rouge">axios</code>发送请求，所以在需要请求的接口下进行请求参数的处理</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">save</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s2">`/save/</span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">post</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">headers</span><span class="p">:</span> <span class="p">{</span><span class="dl">'</span><span class="s1">Content-Encoding</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">gzip</span><span class="dl">'</span><span class="p">},</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">data</span><span class="p">,</span>
+    <span class="na">transformRequest</span><span class="p">:</span> <span class="p">[</span><span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">headers</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 将数据压缩</span>
+      <span class="kd">const</span> <span class="nx">gzip</span> <span class="o">=</span> <span class="nx">pako</span><span class="p">.</span><span class="nx">gzip</span><span class="p">(</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">data</span><span class="p">)),</span> <span class="p">{</span><span class="na">to</span><span class="p">:</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span><span class="p">});</span>
+      <span class="kd">const</span> <span class="nx">base64</span> <span class="o">=</span> <span class="nx">btoa</span><span class="p">(</span><span class="nx">gzip</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">base64</span><span class="p">;</span>
+    <span class="p">}],</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+
+    <p>在请求头内添加<code class="highlighter-rouge">'Content-Encoding': 'gzip'</code>，同时在请求转换器<code class="highlighter-rouge">transformRequest</code>内实现数据压缩，首先使用<code class="highlighter-rouge">pako</code>将数据进行<code class="highlighter-rouge">gzip</code>压缩，然后转为<code class="highlighter-rouge">base64</code>提交到后台保存</p>
+  </li>
+  <li>
+    <p>前端获取数据解压</p>
+
+    <p>浏览器会根据响应头的Content-Encoding:gzip 进行数据解压，对应前端来说是无感的，但请求头没有加这个参数，前端需要自己手动解压</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="kd">get</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s2">`/get/</span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">get</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">transformResponse</span><span class="p">:</span> <span class="p">[</span><span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">res</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">strData</span> <span class="o">=</span> <span class="nx">atob</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+        <span class="kd">let</span> <span class="nx">charData</span> <span class="o">=</span> <span class="nx">strData</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="dl">''</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">x</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="p">})</span>
+        <span class="kd">let</span> <span class="nx">binData</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Uint8Array</span><span class="p">(</span><span class="nx">charData</span><span class="p">)</span>
+        <span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">pako</span><span class="p">.</span><span class="nx">inflate</span><span class="p">(</span><span class="nx">binData</span><span class="p">)</span>
+   
+        <span class="nx">strData</span> <span class="o">=</span> <span class="dl">''</span>
+        <span class="kd">let</span> <span class="nx">chunk</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">;</span>
+        <span class="kd">let</span> <span class="nx">i</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span> <span class="o">/</span> <span class="nx">chunk</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">strData</span> <span class="o">+=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">chunk</span><span class="p">,</span> <span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nx">chunk</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="nx">strData</span> <span class="o">+=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="nx">chunk</span><span class="p">));</span>
+   
+        <span class="c1">// 解压后数据</span>
+        <span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nb">decodeURIComponent</span><span class="p">(</span><span class="nx">strData</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
+    <span class="p">}],</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>后端获取数据解压</p>
+
+    <p>后端接口经过nginx，nginx开启了gzip解压缩，那么数据会被自动解压后给到后端，但如果需要手动解压可使用hutool工具，引入hutool工具maven依赖</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>cn.hutool<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>hutool-all<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>5.7.21<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>    </div>
+
+    <p>解压代码示例：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">base64</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+<span class="c1">// base64解码</span>
+<span class="kt">byte</span><span class="o">[]</span> <span class="n">gzip</span> <span class="o">=</span> <span class="nc">Base64</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">base64</span><span class="o">);</span>
+<span class="c1">// gzip解压</span>
+<span class="nc">String</span> <span class="n">unGzip</span> <span class="o">=</span> <span class="nc">ZipUtil</span><span class="o">.</span><span class="na">unGzip</span><span class="o">(</span><span class="n">gzip</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+<span class="c1">// uri解码</span>
+<span class="nc">String</span> <span class="n">data</span> <span class="o">=</span> <span class="nc">URLUtil</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="n">unGzip</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="4五大应用场景">4、五大应用场景</h2>
+
+<h3 id="http服务器">http服务器</h3>
+
+<p>Nginx本身也是一个静态资源的服务器，当只有静态资源的时候，就可以使用Nginx来做服务器，如果一个网站只是静态页面的话，那么就可以通过这种方式来实现部署，这个jekyll 博客就是静态的html，也是通过这种方式部署的。</p>
+
+<p>1) 首先在文档根目录Docroot(/usr/local/var/www)下创建html目录, 然后在html中放一个test.html;</p>
+
+<p><img src="/assets/images/tools/nginx-http-1.jpg" alt="" /></p>
+
+<p>2) 配置nginx.conf中的server</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user mengday staff<span class="p">;</span>
+
+http <span class="o">{</span>
+    server <span class="o">{</span>
+        listen       80<span class="p">;</span>
+        server_name  localhost<span class="p">;</span>
+        client_max_body_size 1024M<span class="p">;</span>
+
+        <span class="c"># 默认location</span>
+        location / <span class="o">{</span>
+            root   /usr/local/var/www/html<span class="p">;</span>
+            index  index.html index.htm<span class="p">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3) 访问测试</p>
+
+<ul>
+  <li>http://localhost/ 指向/usr/local/var/www/index.html, index.html是安装nginx自带的html</li>
+  <li>http://localhost/test.html 指向/usr/local/var/www/html/test.html</li>
+</ul>
+
+<p>注意：如果访问图片出现403 Forbidden错误，可能是因为nginx.conf 的第一行user配置不对，默认是#user nobody;是注释的，linux下改成user root; macos下改成user 用户名 所在组; 然后重新加载配置文件或者重启，再试一下就可以了， 用户名可以通过who am i 命令来查看。</p>
+
+<p><strong>配置说明：</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server : 用于定义服务，http中可以有多个server块
+listen : 指定服务器侦听请求的IP地址和端口，如果省略地址，服务器将侦听所有地址，如果省略端口，则使用标准端口
+server_name : 服务名称，用于配置域名
+location : 用于配置映射路径uri对应的配置，一个server中可以有多个location, location后面跟一个uri,可以是一个正则表达式, / 表		示匹配任意路径, 当客户端访问的路径满足这个uri时就会执行location块里面的代码
+root : 根路径，当访问http://localhost/test.html，“/test.html”会匹配到”/”uri, 找到root为/usr/local/var/www/html，用			户访问的资源物理地址<span class="o">=</span>root + uri <span class="o">=</span> /usr/local/var/www/html + /test.html<span class="o">=</span>/usr/local/var/www/html/test.html
+index : 设置首页，当只访问server_name时后面不跟任何路径是不走root直接走index指令的；如果访问路径中没有指定具体的文件，则返回		index设置的资源，如果访问http://localhost/html/ 则默认返回index.html
+
+</code></pre></div></div>
+
+<p><strong>location uri正则表达式</strong></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">.</span> ：匹配除换行符以外的任意字符
+? ：重复0次或1次
++ ：重复1次或更多次
+<span class="k">*</span> ：重复0次或更多次
+<span class="se">\d</span> ：匹配数字
+^ ：匹配字符串的开始
+<span class="nv">$ </span>：匹配字符串的结束
+<span class="o">{</span>n<span class="o">}</span> ：重复n次
+<span class="o">{</span>n,<span class="o">}</span> ：重复n次或更多次
+<span class="o">[</span>c] ：匹配单个字符c
+<span class="o">[</span>a-z] ：匹配a-z小写字母的任意一个
+<span class="o">(</span>a|b|c<span class="o">)</span> : 属线表示匹配任意一种情况，每种情况使用竖线分隔，一般使用小括号括括住，匹配符合a字符 或是b字符 或是c字符的字符串
+<span class="se">\ </span>反斜杠：用于转义特殊字符
+</code></pre></div></div>
+
+<h3 id="静态服务器">静态服务器</h3>
+
+<p>在公司中经常会遇到静态服务器，通常会提供一个上传的功能，其他应用如果需要静态资源就从该静态服务器中获取。</p>
+
+<p>1）在/usr/local/var/www 下分别创建images和img目录，分别在每个目录下放一张test.jpg</p>
+
+<p><img src="/assets/images/tools/idea-static-resource.jpg" alt="" /></p>
+
+<p>2) 配置nginx.conf中的server</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http <span class="o">{</span>
+    server <span class="o">{</span>
+        listen       80<span class="p">;</span>
+        server_name  localhost<span class="p">;</span>
+
+
+        <span class="nb">set</span> <span class="nv">$doc_root</span> /usr/local/var/www<span class="p">;</span>
+
+        <span class="c"># 默认location</span>
+        location / <span class="o">{</span>
+            root   /usr/local/var/www/html<span class="p">;</span>
+            index  index.html index.htm<span class="p">;</span>
+        <span class="o">}</span>
+
+        location ^~ /images/ <span class="o">{</span>
+            root <span class="nv">$doc_root</span><span class="p">;</span>
+       <span class="o">}</span>
+
+       location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg|png|bmp|ico|swf|css|js<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
+           root <span class="nv">$doc_root</span>/img<span class="p">;</span>
+       <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>自定义变量使用set指令，语法 set 变量名值;引用使用变量名值;引用使用变量名; 这里自定义了doc_root变量。</p>
+
+<p>静态服务器location的映射一般有两种方式：</p>
+
+<ul>
+  <li>使用路径，如 /images/ 一般图片都会放在某个图片目录下，</li>
+  <li>使用后缀，如 .jpg、.png 等后缀匹配模式</li>
+</ul>
+
+<p>访问http://localhost/test.jpg 会映射到 $doc_root/img</p>
+
+<p>访问http://localhost/images/test.jpg 当同一个路径满足多个location时，优先匹配优先级高的location，由于^~ 的优先级大于 ~, 所以会走/images/对应的location</p>
+
+<p>常见的location路径映射路径有以下几种：</p>
+
+<ul>
+  <li>=    进行普通字符精确匹配。也就是完全匹配。</li>
+  <li>^~     前缀匹配。如果匹配成功，则不再匹配其他location。</li>
+  <li>~    表示执行一个正则匹配，区分大小写</li>
+  <li>~*     表示执行一个正则匹配，不区分大小写</li>
+  <li>/xxx/  常规字符串路径匹配</li>
+  <li>/    通用匹配，任何请求都会匹配到</li>
+</ul>
+
+<blockquote>
+  <p>优先级</p>
+</blockquote>
+
+<ul>
+  <li>等号类型（=）的优先级最高。一旦匹配成功，则不再查找其他匹配项，停止搜索。</li>
+  <li>^~类型表达式，不属于正则表达式。一旦匹配成功，则不再查找其他匹配项，停止搜索。</li>
+  <li>正则表达式类型（~ ~*）的优先级次之。如果有多个location的正则能匹配的话，则使用正则表达式最长的那个。</li>
+  <li>常规字符串匹配类型。按前缀匹配。</li>
+  <li>/ 通用匹配，如果没有匹配到，就匹配通用的</li>
+</ul>
+
+<p>从高到低：</p>
+
+<p>(location =) &gt; (location 完整路径) &gt; (location ^~ 路径) &gt; (location ~,~* 正则顺序) &gt; (location 部分起始路径) &gt; (/)</p>
+
+<p>示例：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>location <span class="o">=</span> / <span class="o">{</span>
+    <span class="c"># 精确匹配/，主机名后面不能带任何字符串 /</span>
+    <span class="o">[</span> configuration A <span class="o">]</span>
+<span class="o">}</span>
+location / <span class="o">{</span>
+    <span class="c"># 匹配所有以 / 开头的请求。</span>
+    <span class="c"># 但是如果有更长的同类型的表达式，则选择更长的表达式。</span>
+    <span class="c"># 如果有正则表达式可以匹配，则优先匹配正则表达式。</span>
+    <span class="o">[</span> configuration B <span class="o">]</span>
+<span class="o">}</span>
+location /documents/ <span class="o">{</span>
+    <span class="c"># 匹配所有以 /documents/ 开头的请求，匹配符合以后，还要继续往下搜索。</span>
+    <span class="c"># 但是如果有更长的同类型的表达式，则选择更长的表达式。</span>
+    <span class="c"># 如果有正则表达式可以匹配，则优先匹配正则表达式。</span>
+    <span class="o">[</span> configuration C <span class="o">]</span>
+<span class="o">}</span>
+location ^~ /images/ <span class="o">{</span>
+    <span class="c"># 匹配所有以 /images/ 开头的表达式，如果匹配成功，则停止匹配查找，停止搜索。</span>
+    <span class="c"># 所以，即便有符合的正则表达式location，也不会被使用</span>
+    <span class="o">[</span> configuration D <span class="o">]</span>
+<span class="o">}</span>
+
+location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
+    <span class="c"># 匹配所有以 gif jpg jpeg结尾的请求。</span>
+    <span class="c"># 但是 以 /images/开头的请求，将使用 Configuration D，D具有更高的优先级</span>
+    <span class="o">[</span> configuration E <span class="o">]</span>
+<span class="o">}</span>
+
+location /images/ <span class="o">{</span>
+    <span class="c"># 字符匹配到 /images/，还会继续往下搜索</span>
+    <span class="o">[</span> configuration F <span class="o">]</span>
+<span class="o">}</span>
+
+location <span class="o">=</span> /test.htm <span class="o">{</span>
+    root   /usr/local/var/www/htm<span class="p">;</span>
+    index  index.htm<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="反向代理">反向代理</h3>
+
+<p>反向代理应该是Nginx使用最多的功能了。</p>
+
+<p>反向代理(Reverse Proxy)方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。</p>
+
+<p><mark>这时Nginx就是一个中间层了，请求和返回结果都会经由Nginx代理</mark></p>
+
+<p>反向代理通过proxy_pass指令来实现。</p>
+
+<p>示例：启动一个Java Web项目，端口号为8081</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">server</span> <span class="o">{</span>
+    <span class="n">listen</span>       <span class="mi">80</span><span class="o">;</span>
+    <span class="n">server_name</span>  <span class="n">localhost</span><span class="o">;</span>
+
+    <span class="n">location</span> <span class="o">/</span> <span class="o">{</span>
+        <span class="n">proxy_pass</span> <span class="nl">http:</span><span class="c1">//localhost:8081;</span>
+        <span class="n">proxy_set_header</span> <span class="nc">Host</span> <span class="n">$host</span><span class="o">:</span><span class="n">$server_port</span><span class="o">;</span>
+        <span class="err">#</span> <span class="err">设置用户</span><span class="n">ip</span><span class="err">地址</span>
+         <span class="n">proxy_set_header</span> <span class="no">X</span><span class="o">-</span><span class="nc">Forwarded</span><span class="o">-</span><span class="nc">For</span> <span class="n">$remote_addr</span><span class="o">;</span>
+         <span class="err">#</span> <span class="err">当请求服务器出错去寻找其他服务器</span>
+         <span class="n">proxy_next_upstream</span> <span class="n">error</span> <span class="n">timeout</span> <span class="n">invalid_header</span> <span class="n">http_500</span> <span class="n">http_502</span> <span class="n">http_503</span><span class="o">;</span> 
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>当我们访问localhost的时候，就相当于访问 localhost:8081了</p>
+
+<h3 id="负载均衡">负载均衡</h3>
+
+<p>负载均衡也是Nginx常用的一个功能，负载均衡其意思就是分摊到多个操作单元上进行执行，例如Web服务器、FTP服务器、企业关键应用服务器和其它关键任务服务器等，从而共同完成工作任务。</p>
+
+<p>负载均衡配置一般都需要同时配置反向代理，通过反向代理跳转到负载均衡。而Nginx目前支持自带3种负载均衡策略，还有2种常用的第三方策略。</p>
+
+<p>负载均衡通过upstream指令来实现</p>
+
+<p><strong>1、RR(round robin :轮询 默认)</strong></p>
+
+<p>同一个项目分别使用8081和8082端口启动项目，配置nginx.conf</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream web_servers <span class="o">{</span>  
+   server localhost:8081<span class="p">;</span>  
+   server localhost:8082<span class="p">;</span>  
+<span class="o">}</span>
+
+server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+    server_name  localhost<span class="p">;</span>
+    <span class="c">#access_log  logs/host.access.log  main;</span>
+
+
+    location / <span class="o">{</span>
+        proxy_pass http://web_servers<span class="p">;</span>
+        <span class="c"># 必须指定Header Host</span>
+        proxy_set_header Host <span class="nv">$host</span>:<span class="nv">$server_port</span><span class="p">;</span>
+    <span class="o">}</span>
+ <span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>2、权重</strong></p>
+
+<p>指定轮询几率，weight和访问比率成正比, 也就是服务器接收请求的比例就是各自配置的weight的比例，用于后端服务器性能不均的情况,比如服务器性能差点就少接收点请求，服务器性能好点就多处理点请求。配置ngin.conf</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream <span class="nb">test</span> <span class="o">{</span>
+    server localhost:8081 <span class="nv">weight</span><span class="o">=</span>1<span class="p">;</span>
+    server localhost:8082 <span class="nv">weight</span><span class="o">=</span>3<span class="p">;</span>
+    server localhost:8083 <span class="nv">weight</span><span class="o">=</span>4 backup<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>示例是4次请求只有一次被分配到8081上，其他3次分配到8082上。backup是指热备，只有当8081和8082都宕机的情况下才走8083</p>
+
+<p><strong>3、ip hash</strong></p>
+
+<p><strong>4、fair (第三方)</strong></p>
+
+<p>按后端服务器的响应时间来分配请求，响应时间短的优先分配。这个配置是为了更快的给用户响应</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream backend <span class="o">{</span>
+    fair<span class="p">;</span>
+    server localhost:8080<span class="p">;</span>
+    server localhost:8081<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>5、url_hash(第三方)</strong></p>
+
+<p>按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存时比较有效。在upstream中加入hash语句，server语句中不能写入weight等其他的参数，hash_method是使用的hash算法</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream backend <span class="o">{</span>
+    <span class="nb">hash</span> <span class="nv">$request_uri</span><span class="p">;</span>
+    hash_method crc32<span class="p">;</span>
+    server localhost:8080<span class="p">;</span>
+    server localhost:8081<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="动静分离">动静分离</h3>
+
+<p>动静分离是让动态网站里的动态网页根据一定规则把不变的资源和经常变的资源区分开来，动静资源做好了拆分以后，我们就可以根据静态资源的特点将其做缓存操作，这就是网站静态化处理的核心思路。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upstream web_servers <span class="o">{</span>  
+       server localhost:8081<span class="p">;</span>  
+       server localhost:8082<span class="p">;</span>  
+<span class="o">}</span>
+
+server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+    server_name  localhost<span class="p">;</span>
+
+    <span class="nb">set</span> <span class="nv">$doc_root</span> /usr/local/var/www<span class="p">;</span>
+
+    location ~<span class="k">*</span> <span class="se">\.</span><span class="o">(</span>gif|jpg|jpeg|png|bmp|ico|swf|css|js<span class="o">)</span><span class="nv">$ </span><span class="o">{</span>
+       root <span class="nv">$doc_root</span>/img<span class="p">;</span>
+    <span class="o">}</span>
+
+    location / <span class="o">{</span>
+        proxy_pass http://web_servers<span class="p">;</span>
+        <span class="c"># 必须指定Header Host</span>
+        proxy_set_header Host <span class="nv">$host</span>:<span class="nv">$server_port</span><span class="p">;</span>
+    <span class="o">}</span>
+
+    error_page 500 502 503 504  /50x.html<span class="p">;</span>  
+    location <span class="o">=</span> /50x.html <span class="o">{</span>  
+        root <span class="nv">$doc_root</span><span class="p">;</span>
+    <span class="o">}</span>
+
+ <span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="5kuangstudy">5、KuangStudy</h2>
+
+<p>以下内容来自于狂神的分享。</p>
+
+<h3 id="单体应用的并发局限">单体应用的并发局限</h3>
+
+<p>一个jar包启动应用，适合项目初期，并发量小，用户量小，用户访问tomcat内应用，tomcat响应应用的内容给用户，如下图：</p>
+
+<p><img src="\assets\images\2021\springcloud\one-jar-app.png" alt="" /></p>
+
+<p>但是慢慢的，使用平台的用户越来越多了，并发量慢慢增大了，这时候一台服务器满足不了需求了。</p>
+
+<p><img src="\assets\images\2021\springcloud\one-jar-app-2.jpg" alt="" /></p>
+
+<p>这时候需要横向扩展，增加服务器，几个项目启动在不同的服务器上，用户要访问，就需要增加一个代理服务器了，通过代理服务器来帮我们转发和处理请求。多个项目应用需要解决用户session的共享问题，一种解决方案是将用户session放入redis，一种解决方案是使用nginx的iphash进行负载代理请求，还有其他解决方案，这里不细说。</p>
+
+<p><img src="\assets\images\2021\springcloud\one-jar-app-3.jpg" alt="" /></p>
+
+<p>我们希望这个代理服务器可以帮助我们接收用户的请求，然后将用户的请求按照规则帮我们转发到不同的服务器节点之上。这个过程用户是无感知的，用户并不知道是哪个服务器返回的结果，我们还希望他可以按照服务器的性能提供不同的权重选择。保证最佳体验！所以我们使用了Nginx。</p>
+
+<h3 id="什么是nginx">什么是nginx</h3>
+
+<p>Nginx (engine x) 是一个高性能的HTTP和反向代理web服务器，同时也提供了IMAP/POP3/SMTP服务。Nginx是由伊戈尔·赛索耶夫为俄罗斯访问量第二的Rambler.ru站点（俄文：Рамблер）开发的，第一个公开版本0.1.0发布于2004年10月4日。2011年6月1日，nginx 1.0.4发布。</p>
+
+<p>其特点是占有内存少，并发能力强，事实上nginx的并发能力在同类型的网页服务器中表现较好，中国大陆使用nginx网站用户有：百度、京东、新浪、网易、腾讯、淘宝等。在全球活跃的网站中有12.18%的使用比率，大约为2220万个网站。</p>
+
+<p>Nginx 是一个安装非常的简单、配置文件非常简洁（还能够支持perl语法）、Bug非常少的服务。Nginx 启动特别容易，并且几乎可以做到7*24不间断运行，即使运行数个月也不需要重新启动。你还能够不间断服务的情况下进行软件版本的升级。</p>
+
+<p>Nginx代码完全用C语言从头写成。官方数据测试表明能够支持高达 50,000 个并发连接数的响应。</p>
+
+<h3 id="nginx的作用">nginx的作用</h3>
+
+<blockquote>
+  <p>Http代理，反向代理：作为web服务器最常用的功能之一，尤其是反向代理。</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>正向代理</p>
+
+    <p><img src="\assets\images\2021\springcloud\nginx-works.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>反向代理</p>
+  </li>
+</ul>
+
+<p><img src="\assets\images\2021\springcloud\nginx-works-2.jpg" alt="" /></p>
+
+<blockquote>
+  <p>Nginx提供的负载均衡策略有2种：内置策略和扩展策略。内置策略为轮询，加权轮询，Ip hash。扩展策略，就天马行空，只有你想不到的没有他做不到的。</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>轮询</p>
+
+    <p><img src="\assets\images\2021\springcloud\nginx-location-1.jpg" alt="" /></p>
+
+    <p>具体配置内容参考上面</p>
+  </li>
+  <li>
+    <p>加权轮询</p>
+
+    <p><img src="\assets\images\2021\springcloud\nginx-location-2.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>iphash</p>
+
+    <p>iphash对客户端请求的ip进行hash操作，然后根据hash结果将同一个客户端ip的请求分发给同一台服务器进行处理，可以解决session不共享的问题。</p>
+
+    <p><img src="\assets\images\2021\springcloud\nginx-location-3.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>动静分离</p>
+</blockquote>
+
+<p>动静分离，在我们的软件开发中，有些请求是需要后台处理的，有些请求是不需要经过后台处理的（如：css、html、jpg、js等等文件），这些不需要经过后台处理的文件称为静态文件。动态网站里的动态网页根据一定规则把不变的资源和经常变的资源区分开来，动静资源做好了拆分以后，我们就可以根据静态资源的特点将其做缓存操作。<mark>提高资源响应的速度。</mark></p>
+
+<p><img src="\assets\images\2021\springcloud\nginx-works-3.jpg" alt="" /></p>
+
+<p>目前，通过使用Nginx大大提高了我们网站的响应速度，优化了用户体验，让网站的健壮性更上一层楼！</p>
+
+<h3 id="nginx的安装">nginx的安装</h3>
+
+<p>看上面第一个标题。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/tool/2020/07/02/nginx.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

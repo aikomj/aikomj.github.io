@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 七种方案！Redis分布式锁的正确使用姿势
+title: Redis分布式锁的正确使用姿势,七种方案
 category: redis
 tags: [redis]
 keywords: redis

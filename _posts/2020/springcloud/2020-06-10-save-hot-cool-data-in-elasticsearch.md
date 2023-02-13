@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ElasticSearch怎样保存我们的冷热数据？
+title: ElasticSearch冷热数据分离，滚动索引的使用
 category: springcloud
 tags: [elasticSearch]
 keywords: elasticSearch

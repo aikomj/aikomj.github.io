@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 一个事务必须满足ACID，事务隔离级别都懂了吗
+title: 一个事务必须满足ACID，事务的4种隔离级别
 category: mysql
 tags: [mysql]
 keywords: mysql
@@ -294,7 +294,7 @@ Mysql通过间隙锁来解决幻读的问题，把行锁和间隙锁合并在一
 
 如果 age 不是索引列，那么数据库会为整个表加上间隙锁，。所以，如果是没有索引的话，不管 age 是否大于等于30，都要等待事务A提交才可以成功插入。
 
-上面的update语句where条件是age，如果是id=1，会怎样？不会有间隙锁，只要行锁了。
+上面的update语句where条件是age，如果是id=1，会怎样？不会有间隙锁，只有行锁。
 
 ![](\assets\images\2021\mysql\transaction-phantom-read-4.jpg)
 

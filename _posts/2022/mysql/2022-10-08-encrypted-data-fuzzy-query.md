@@ -1,9 +1,9 @@
 ---
 layout: post
 title: 加密后的数据如何进行模糊查询
-category: mysql
-tags: [mysql]
-keywords: mysql
+category: architect
+tags: [architect]
+keywords: architect
 excerpt: 使用常规做法就好
 lock: noneed
 ---

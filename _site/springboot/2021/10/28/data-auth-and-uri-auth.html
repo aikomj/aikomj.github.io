@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 部门数据权限与请求方法访问权限 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="看renren和ruoyi开源框架是如何实现部门数据权限访问和请求方法的权限控制">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2021/10/28/data-auth-and-uri-auth.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="部门数据权限与请求方法访问权限">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>部门数据权限与请求方法访问权限</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/10/28
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1部门数据动态过滤">1、部门数据动态过滤</h2>
+
+<p>来源renren的动态数据过滤权限实现</p>
+
+<p>1、自定义注解DataFilter</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 数据过滤
+ *
+ * @author Mark sunlightcs@gmail.com
+ */</span>
+<span class="nd">@Target</span><span class="o">(</span><span class="nc">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
+<span class="nd">@Retention</span><span class="o">(</span><span class="nc">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+<span class="nd">@Documented</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">DataFilter</span> <span class="o">{</span>
+    <span class="cm">/**  表的别名 */</span>
+    <span class="nc">String</span> <span class="nf">tableAlias</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+
+    <span class="cm">/**  true：没有本部门数据权限，也能查询本人数据 */</span>
+    <span class="kt">boolean</span> <span class="nf">user</span><span class="o">()</span> <span class="k">default</span> <span class="kc">true</span><span class="o">;</span>
+
+    <span class="cm">/**  true：拥有子部门数据权限 */</span>
+    <span class="kt">boolean</span> <span class="nf">subDept</span><span class="o">()</span> <span class="k">default</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="cm">/**  部门ID */</span>
+    <span class="nc">String</span> <span class="nf">deptId</span><span class="o">()</span> <span class="k">default</span> <span class="s">"dept_id"</span><span class="o">;</span>
+
+    <span class="cm">/**  用户ID */</span>
+    <span class="nc">String</span> <span class="nf">userId</span><span class="o">()</span> <span class="k">default</span> <span class="s">"user_id"</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2、AOP切面处理类DataFilterAspect</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 数据过滤，切面处理类
+ *
+ * @author Mark sunlightcs@gmail.com
+ */</span>
+<span class="nd">@Aspect</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataFilterAspect</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SysDeptService</span> <span class="n">sysDeptService</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SysUserRoleService</span> <span class="n">sysUserRoleService</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SysRoleDeptService</span> <span class="n">sysRoleDeptService</span><span class="o">;</span>
+
+    <span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"@annotation(io.renren.common.annotation.DataFilter)"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dataFilterCut</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+
+    <span class="nd">@Before</span><span class="o">(</span><span class="s">"dataFilterCut()"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dataFilter</span><span class="o">(</span><span class="nc">JoinPoint</span> <span class="n">point</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+        <span class="nc">Object</span> <span class="n">params</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="na">getArgs</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">params</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">params</span> <span class="k">instanceof</span> <span class="nc">Map</span><span class="o">){</span>
+            <span class="nc">SysUserEntity</span> <span class="n">user</span> <span class="o">=</span> <span class="nc">ShiroUtils</span><span class="o">.</span><span class="na">getUserEntity</span><span class="o">();</span>
+
+            <span class="c1">//如果不是超级管理员，则进行数据过滤</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getUserId</span><span class="o">()</span> <span class="o">!=</span> <span class="nc">Constant</span><span class="o">.</span><span class="na">SUPER_ADMIN</span><span class="o">){</span>
+                <span class="nc">Map</span> <span class="n">map</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Map</span><span class="o">)</span><span class="n">params</span><span class="o">;</span>
+                <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">SQL_FILTER</span><span class="o">,</span> <span class="n">getSQLFilter</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">point</span><span class="o">));</span>
+            <span class="o">}</span>
+
+            <span class="k">return</span> <span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RRException</span><span class="o">(</span><span class="s">"数据权限接口，只能是Map类型参数，且不能为NULL"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取数据过滤的SQL
+     */</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="nf">getSQLFilter</span><span class="o">(</span><span class="nc">SysUserEntity</span> <span class="n">user</span><span class="o">,</span> <span class="nc">JoinPoint</span> <span class="n">point</span><span class="o">){</span>
+        <span class="nc">MethodSignature</span> <span class="n">signature</span> <span class="o">=</span> <span class="o">(</span><span class="nc">MethodSignature</span><span class="o">)</span> <span class="n">point</span><span class="o">.</span><span class="na">getSignature</span><span class="o">();</span>
+        <span class="nc">DataFilter</span> <span class="n">dataFilter</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="na">getMethod</span><span class="o">().</span><span class="na">getAnnotation</span><span class="o">(</span><span class="nc">DataFilter</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="c1">//获取表的别名</span>
+        <span class="nc">String</span> <span class="n">tableAlias</span> <span class="o">=</span> <span class="n">dataFilter</span><span class="o">.</span><span class="na">tableAlias</span><span class="o">();</span>
+        <span class="k">if</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNotBlank</span><span class="o">(</span><span class="n">tableAlias</span><span class="o">)){</span>
+            <span class="n">tableAlias</span> <span class="o">+=</span>  <span class="s">"."</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">//部门ID列表</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">deptIdList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
+
+        <span class="c1">//用户角色对应的部门ID列表</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">roleIdList</span> <span class="o">=</span> <span class="n">sysUserRoleService</span><span class="o">.</span><span class="na">queryRoleIdList</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getUserId</span><span class="o">());</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">roleIdList</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">){</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">userDeptIdList</span> <span class="o">=</span> <span class="n">sysRoleDeptService</span><span class="o">.</span><span class="na">queryDeptIdList</span><span class="o">(</span><span class="n">roleIdList</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="nc">Long</span><span class="o">[</span><span class="n">roleIdList</span><span class="o">.</span><span class="na">size</span><span class="o">()]));</span>
+            <span class="n">deptIdList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">userDeptIdList</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">//用户子部门ID列表</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">dataFilter</span><span class="o">.</span><span class="na">subDept</span><span class="o">()){</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">&gt;</span> <span class="n">subDeptIdList</span> <span class="o">=</span> <span class="n">sysDeptService</span><span class="o">.</span><span class="na">getSubDeptIdList</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getDeptId</span><span class="o">());</span>
+            <span class="n">deptIdList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">subDeptIdList</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nc">StringBuilder</span> <span class="n">sqlFilter</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+        <span class="n">sqlFilter</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">" ("</span><span class="o">);</span>
+
+        <span class="k">if</span><span class="o">(</span><span class="n">deptIdList</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">){</span>
+            <span class="n">sqlFilter</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">tableAlias</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">dataFilter</span><span class="o">.</span><span class="na">deptId</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">" in("</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">deptIdList</span><span class="o">,</span> <span class="s">","</span><span class="o">)).</span><span class="na">append</span><span class="o">(</span><span class="s">")"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">//没有本部门数据权限，也能查询本人数据</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">dataFilter</span><span class="o">.</span><span class="na">user</span><span class="o">()){</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">deptIdList</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">){</span>
+                <span class="n">sqlFilter</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">" or "</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">sqlFilter</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">tableAlias</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">dataFilter</span><span class="o">.</span><span class="na">userId</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"="</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getUserId</span><span class="o">());</span>
+        <span class="o">}</span>
+
+        <span class="n">sqlFilter</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">")"</span><span class="o">);</span>
+
+        <span class="k">if</span><span class="o">(</span><span class="n">sqlFilter</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">"()"</span><span class="o">)){</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">sqlFilter</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>原理是返回sqlFilter sql的过滤条件</p>
+
+<p>3、业务类方法添加注解DataFilter使用</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 系统用户
+ *
+ * @author Mark sunlightcs@gmail.com
+ */</span>
+<span class="nd">@Service</span><span class="o">(</span><span class="s">"sysUserService"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SysUserServiceImpl</span> <span class="kd">extends</span> <span class="nc">ServiceImpl</span><span class="o">&lt;</span><span class="nc">SysUserDao</span><span class="o">,</span> <span class="nc">SysUserEntity</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">SysUserService</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+	<span class="nd">@DataFilter</span><span class="o">(</span><span class="n">subDept</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span> <span class="n">user</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">PageUtils</span> <span class="nf">queryPage</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">String</span> <span class="n">username</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"username"</span><span class="o">);</span>
+
+		<span class="nc">IPage</span><span class="o">&lt;</span><span class="nc">SysUserEntity</span><span class="o">&gt;</span> <span class="n">page</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">page</span><span class="o">(</span>
+			<span class="k">new</span> <span class="nc">Query</span><span class="o">&lt;</span><span class="nc">SysUserEntity</span><span class="o">&gt;().</span><span class="na">getPage</span><span class="o">(</span><span class="n">params</span><span class="o">),</span>
+			<span class="k">new</span> <span class="nc">QueryWrapper</span><span class="o">&lt;</span><span class="nc">SysUserEntity</span><span class="o">&gt;()</span>
+				<span class="o">.</span><span class="na">like</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNotBlank</span><span class="o">(</span><span class="n">username</span><span class="o">),</span><span class="s">"username"</span><span class="o">,</span> <span class="n">username</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">SQL_FILTER</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">,</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span><span class="n">params</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">Constant</span><span class="o">.</span><span class="na">SQL_FILTER</span><span class="o">))</span>
+		<span class="o">);</span>
+
+		<span class="k">for</span><span class="o">(</span><span class="nc">SysUserEntity</span> <span class="n">sysUserEntity</span> <span class="o">:</span> <span class="n">page</span><span class="o">.</span><span class="na">getRecords</span><span class="o">()){</span>
+			<span class="nc">SysDeptEntity</span> <span class="n">sysDeptEntity</span> <span class="o">=</span> <span class="n">sysDeptService</span><span class="o">.</span><span class="na">getById</span><span class="o">(</span><span class="n">sysUserEntity</span><span class="o">.</span><span class="na">getDeptId</span><span class="o">());</span>
+			<span class="n">sysUserEntity</span><span class="o">.</span><span class="na">setDeptName</span><span class="o">(</span><span class="n">sysDeptEntity</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+		<span class="o">}</span>
+
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">PageUtils</span><span class="o">(</span><span class="n">page</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="2uri访问请求权限控制">2、URI访问请求权限控制</h2>
+
+<p>看了renren的权限认证使用了shiro的@RequiresPermissions注解，必须具有指定权限才能进入cntroller控制器的请求方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 数据字典
+ *
+ * @author Mark sunlightcs@gmail.com
+ */</span>
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"sys/dict"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SysDictController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SysDictService</span> <span class="n">sysDictService</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 列表
+     */</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/list"</span><span class="o">)</span>
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"sys:dict:list"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="no">R</span> <span class="nf">list</span><span class="o">(</span><span class="nd">@RequestParam</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">params</span><span class="o">){</span>
+        <span class="nc">PageUtils</span> <span class="n">page</span> <span class="o">=</span> <span class="n">sysDictService</span><span class="o">.</span><span class="na">queryPage</span><span class="o">(</span><span class="n">params</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">"page"</span><span class="o">,</span> <span class="n">page</span><span class="o">);</span>
+    <span class="o">}</span>
+
+
+    <span class="cm">/**
+     * 信息
+     */</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/info/{id}"</span><span class="o">)</span>
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"sys:dict:info"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="no">R</span> <span class="nf">info</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">"id"</span><span class="o">)</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">){</span>
+        <span class="nc">SysDictEntity</span> <span class="n">dict</span> <span class="o">=</span> <span class="n">sysDictService</span><span class="o">.</span><span class="na">getById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">"dict"</span><span class="o">,</span> <span class="n">dict</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 保存
+     */</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/save"</span><span class="o">)</span>
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"sys:dict:save"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="no">R</span> <span class="nf">save</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">SysDictEntity</span> <span class="n">dict</span><span class="o">){</span>
+        <span class="c1">//校验类型</span>
+        <span class="nc">ValidatorUtils</span><span class="o">.</span><span class="na">validateEntity</span><span class="o">(</span><span class="n">dict</span><span class="o">);</span>
+
+        <span class="n">sysDictService</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">dict</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 修改
+     */</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/update"</span><span class="o">)</span>
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"sys:dict:update"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="no">R</span> <span class="nf">update</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">SysDictEntity</span> <span class="n">dict</span><span class="o">){</span>
+        <span class="c1">//校验类型</span>
+        <span class="nc">ValidatorUtils</span><span class="o">.</span><span class="na">validateEntity</span><span class="o">(</span><span class="n">dict</span><span class="o">);</span>
+
+        <span class="n">sysDictService</span><span class="o">.</span><span class="na">updateById</span><span class="o">(</span><span class="n">dict</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 删除
+     */</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/delete"</span><span class="o">)</span>
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"sys:dict:delete"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="no">R</span> <span class="nf">delete</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nc">Long</span><span class="o">[]</span> <span class="n">ids</span><span class="o">){</span>
+        <span class="n">sysDictService</span><span class="o">.</span><span class="na">removeByIds</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">ids</span><span class="o">));</span>
+
+        <span class="k">return</span> <span class="no">R</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>权限标识字符串<code class="highlighter-rouge">sys:dict:delete</code> 是我们可以通过前端界面配置到菜单表sys_menu</p>
+
+<p><img src="/assets/images/2021/mysql/sys-menu.png" alt="" /></p>
+
+<p>org.apache.shiro.authz.aop.PermissionAnnotationHandler类对@RequiresPermissions注解进行了权限拦截处理，主要有两个方法getAnnotationValue()和assertAuthorized()</p>
+
+<p><img src="/assets/images/2021/mysql/permissionAnnotationHandler.png" alt="" /></p>
+
+<p>renren做ShiroConfig配置类时，指定了权限认证实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ShiroConfig</span> <span class="o">{</span>
+  
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"securityManager"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">SecurityManager</span> <span class="nf">securityManager</span><span class="o">(</span><span class="nc">UserRealm</span> <span class="n">userRealm</span><span class="o">,</span> <span class="nc">SessionManager</span> <span class="n">sessionManager</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">DefaultWebSecurityManager</span> <span class="n">securityManager</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultWebSecurityManager</span><span class="o">();</span>
+        <span class="n">securityManager</span><span class="o">.</span><span class="na">setRealm</span><span class="o">(</span><span class="n">userRealm</span><span class="o">);</span>
+        <span class="n">securityManager</span><span class="o">.</span><span class="na">setSessionManager</span><span class="o">(</span><span class="n">sessionManager</span><span class="o">);</span>
+        <span class="n">securityManager</span><span class="o">.</span><span class="na">setRememberMeManager</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="n">securityManager</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>UserRealm就是权限认证的实现类，它继承了org.apache.shiro.realm.AuthorizingRealm;</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.baomidou.mybatisplus.core.conditions.query.QueryWrapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.renren.common.utils.Constant</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.renren.modules.sys.dao.SysMenuDao</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.renren.modules.sys.dao.SysUserDao</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.renren.modules.sys.entity.SysMenuEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.renren.modules.sys.entity.SysUserEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.commons.lang.StringUtils</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.authc.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.authc.credential.CredentialsMatcher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.authc.credential.HashedCredentialsMatcher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.authz.AuthorizationInfo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.authz.SimpleAuthorizationInfo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.realm.AuthorizingRealm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.subject.PrincipalCollection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.shiro.util.ByteSource</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="cm">/**
+ * 认证
+ *
+ * @author Mark sunlightcs@gmail.com
+ */</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserRealm</span> <span class="kd">extends</span> <span class="nc">AuthorizingRealm</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SysUserDao</span> <span class="n">sysUserDao</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">SysMenuDao</span> <span class="n">sysMenuDao</span><span class="o">;</span>
+    
+    <span class="cm">/**
+     * 授权(验证权限时调用)
+     */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">protected</span> <span class="nc">AuthorizationInfo</span> <span class="nf">doGetAuthorizationInfo</span><span class="o">(</span><span class="nc">PrincipalCollection</span> <span class="n">principals</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SysUserEntity</span> <span class="n">user</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SysUserEntity</span><span class="o">)</span><span class="n">principals</span><span class="o">.</span><span class="na">getPrimaryPrincipal</span><span class="o">();</span>
+		<span class="nc">Long</span> <span class="n">userId</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="na">getUserId</span><span class="o">();</span>
+		
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">permsList</span><span class="o">;</span>
+		
+		<span class="c1">//系统管理员，拥有最高权限</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">userId</span> <span class="o">==</span> <span class="nc">Constant</span><span class="o">.</span><span class="na">SUPER_ADMIN</span><span class="o">){</span>
+			<span class="nc">List</span><span class="o">&lt;</span><span class="nc">SysMenuEntity</span><span class="o">&gt;</span> <span class="n">menuList</span> <span class="o">=</span> <span class="n">sysMenuDao</span><span class="o">.</span><span class="na">selectList</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+			<span class="n">permsList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">menuList</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+			<span class="k">for</span><span class="o">(</span><span class="nc">SysMenuEntity</span> <span class="n">menu</span> <span class="o">:</span> <span class="n">menuList</span><span class="o">){</span>
+				<span class="n">permsList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">menu</span><span class="o">.</span><span class="na">getPerms</span><span class="o">());</span>
+			<span class="o">}</span>
+		<span class="o">}</span><span class="k">else</span><span class="o">{</span>
+			<span class="n">permsList</span> <span class="o">=</span> <span class="n">sysUserDao</span><span class="o">.</span><span class="na">queryAllPerms</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">//用户权限列表</span>
+		<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">permsSet</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
+		<span class="k">for</span><span class="o">(</span><span class="nc">String</span> <span class="n">perms</span> <span class="o">:</span> <span class="n">permsList</span><span class="o">){</span>
+			<span class="k">if</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isBlank</span><span class="o">(</span><span class="n">perms</span><span class="o">)){</span>
+				<span class="k">continue</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="n">permsSet</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">perms</span><span class="o">.</span><span class="na">trim</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">","</span><span class="o">)));</span>
+		<span class="o">}</span>
+		
+    <span class="c1">// 权限列表放入到认证对象</span>
+		<span class="nc">SimpleAuthorizationInfo</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SimpleAuthorizationInfo</span><span class="o">();</span>
+		<span class="n">info</span><span class="o">.</span><span class="na">setStringPermissions</span><span class="o">(</span><span class="n">permsSet</span><span class="o">);</span>
+		<span class="k">return</span> <span class="n">info</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**
+	 * 认证(登录时调用)
+	 */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">protected</span> <span class="nc">AuthenticationInfo</span> <span class="nf">doGetAuthenticationInfo</span><span class="o">(</span>
+			<span class="nc">AuthenticationToken</span> <span class="n">authcToken</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">AuthenticationException</span> <span class="o">{</span>
+		<span class="nc">UsernamePasswordToken</span> <span class="n">token</span> <span class="o">=</span> <span class="o">(</span><span class="nc">UsernamePasswordToken</span><span class="o">)</span><span class="n">authcToken</span><span class="o">;</span>
+
+		<span class="c1">//查询用户信息</span>
+		<span class="nc">SysUserEntity</span> <span class="n">user</span> <span class="o">=</span> <span class="n">sysUserDao</span><span class="o">.</span><span class="na">selectOne</span><span class="o">(</span><span class="k">new</span> <span class="nc">QueryWrapper</span><span class="o">&lt;</span><span class="nc">SysUserEntity</span><span class="o">&gt;().</span><span class="na">eq</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="n">token</span><span class="o">.</span><span class="na">getUsername</span><span class="o">()));</span>
+		<span class="c1">//账号不存在</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">UnknownAccountException</span><span class="o">(</span><span class="s">"账号或密码不正确"</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">//账号锁定</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getStatus</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">){</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">LockedAccountException</span><span class="o">(</span><span class="s">"账号已被锁定,请联系管理员"</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="nc">SimpleAuthenticationInfo</span> <span class="n">info</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SimpleAuthenticationInfo</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">user</span><span class="o">.</span><span class="na">getPassword</span><span class="o">(),</span> <span class="nc">ByteSource</span><span class="o">.</span><span class="na">Util</span><span class="o">.</span><span class="na">bytes</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getSalt</span><span class="o">()),</span> <span class="n">getName</span><span class="o">());</span>
+		<span class="k">return</span> <span class="n">info</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCredentialsMatcher</span><span class="o">(</span><span class="nc">CredentialsMatcher</span> <span class="n">credentialsMatcher</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">HashedCredentialsMatcher</span> <span class="n">shaCredentialsMatcher</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashedCredentialsMatcher</span><span class="o">();</span>
+		<span class="n">shaCredentialsMatcher</span><span class="o">.</span><span class="na">setHashAlgorithmName</span><span class="o">(</span><span class="nc">ShiroUtils</span><span class="o">.</span><span class="na">hashAlgorithmName</span><span class="o">);</span>
+		<span class="n">shaCredentialsMatcher</span><span class="o">.</span><span class="na">setHashIterations</span><span class="o">(</span><span class="nc">ShiroUtils</span><span class="o">.</span><span class="na">hashIterations</span><span class="o">);</span>
+		<span class="kd">super</span><span class="o">.</span><span class="na">setCredentialsMatcher</span><span class="o">(</span><span class="n">shaCredentialsMatcher</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>两个核心接口AuthorizationInfo管理授权和AuthenticationInfo管理认证</p>
+
+<blockquote>
+  <p>ruoyi的请求方法权限管理</p>
+</blockquote>
+
+<p>看了ruoyi-cloud的@RequiresPermissions注解，它自定义的注解，是怎么实现请求方法的权限控制的</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">ruoyi</span><span class="o">.</span><span class="na">common</span><span class="o">.</span><span class="na">security</span><span class="o">.</span><span class="na">annotation</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.lang.annotation.ElementType</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.annotation.Retention</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.annotation.RetentionPolicy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.lang.annotation.Target</span><span class="o">;</span>
+
+<span class="cm">/**
+ * 权限认证：必须具有指定权限才能进入该方法
+ * 
+ * @author ruoyi
+ *
+ */</span>
+<span class="nd">@Retention</span><span class="o">(</span><span class="nc">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+<span class="nd">@Target</span><span class="o">({</span> <span class="nc">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">,</span> <span class="nc">ElementType</span><span class="o">.</span><span class="na">TYPE</span> <span class="o">})</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">RequiresPermissions</span>
+<span class="o">{</span>
+    <span class="cm">/**
+     * 需要校验的权限码
+     */</span>
+    <span class="nc">String</span><span class="o">[]</span> <span class="nf">value</span><span class="o">()</span> <span class="k">default</span> <span class="o">{};</span>
+
+    <span class="cm">/**
+     * 验证模式：AND | OR，默认AND
+     */</span>
+    <span class="nc">Logical</span> <span class="nf">logical</span><span class="o">()</span> <span class="k">default</span> <span class="nc">Logical</span><span class="o">.</span><span class="na">AND</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>请求方法添加@RequiresPermissons注解</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 数据字典信息
+ * 
+ * @author ruoyi
+ */</span>
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/dict/data"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SysDictDataController</span> <span class="kd">extends</span> <span class="nc">BaseController</span>
+<span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">ISysDictDataService</span> <span class="n">dictDataService</span><span class="o">;</span>
+    
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">ISysDictTypeService</span> <span class="n">dictTypeService</span><span class="o">;</span>
+
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"system:dict:list"</span><span class="o">)</span>
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/list"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">TableDataInfo</span> <span class="nf">list</span><span class="o">(</span><span class="nc">SysDictData</span> <span class="n">dictData</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="n">startPage</span><span class="o">();</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">SysDictData</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">dictDataService</span><span class="o">.</span><span class="na">selectDictDataList</span><span class="o">(</span><span class="n">dictData</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nf">getDataTable</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Log</span><span class="o">(</span><span class="n">title</span> <span class="o">=</span> <span class="s">"字典数据"</span><span class="o">,</span> <span class="n">businessType</span> <span class="o">=</span> <span class="nc">BusinessType</span><span class="o">.</span><span class="na">EXPORT</span><span class="o">)</span>
+    <span class="nd">@RequiresPermissions</span><span class="o">(</span><span class="s">"system:dict:export"</span><span class="o">)</span>
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/export"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">export</span><span class="o">(</span><span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">SysDictData</span> <span class="n">dictData</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span>
+    <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">SysDictData</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">dictDataService</span><span class="o">.</span><span class="na">selectDictDataList</span><span class="o">(</span><span class="n">dictData</span><span class="o">);</span>
+        <span class="nc">ExcelUtil</span><span class="o">&lt;</span><span class="nc">SysDictData</span><span class="o">&gt;</span> <span class="n">util</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ExcelUtil</span><span class="o">&lt;</span><span class="nc">SysDictData</span><span class="o">&gt;(</span><span class="nc">SysDictData</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">util</span><span class="o">.</span><span class="na">exportExcel</span><span class="o">(</span><span class="n">response</span><span class="o">,</span> <span class="n">list</span><span class="o">,</span> <span class="s">"字典数据"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>它大概的实现流程是怎样的</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2021/10/28/data-auth-and-uri-auth.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

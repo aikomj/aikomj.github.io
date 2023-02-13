@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Redis分布式锁的正确使用姿势,七种方案 - 大伟的博客 </title>
+    <meta name="keywords" content="redis">
+    <meta name="description"
+          content="Redis分布式锁的解决方案，你会用哪种，redis单实例使用redisson实现分布式锁，redis集群部署使用Redlock+Redisson实现分布式锁">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/redis/2021/06/03/seven-solve-distribute-lock.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Redis分布式锁的正确使用姿势,七种方案">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Redis分布式锁的正确使用姿势,七种方案</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/06/03
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>以下文章来源于捡田螺的小男孩</p>
+
+<h2 id="1前言">1、前言</h2>
+
+<p>日常开发中，秒杀下单、抢红包等等业务场景，都需要用到分布式锁。而Redis非常适合作为分布式锁使用。本文将分七个方案展开，跟大家探讨Redis分布式锁的正确使用方式</p>
+
+<h3 id="什么是分布式锁">什么是分布式锁</h3>
+
+<p>分布式锁其实就是，控制分布式系统不同进程共同访问共享资源的一种锁的实现。如果不同的系统或同一个系统的不同主机之间共享了某个临界资源，往往需要互斥来防止彼此干扰，<mark>以保证一致性。</mark></p>
+
+<p>分布式锁的特征：</p>
+
+<p><img src="/assets/images/2021/springcloud/distribute-lock-feature.png" alt="" /></p>
+
+<h2 id="2redis分布式锁方案">2、Redis分布式锁方案</h2>
+
+<h3 id="一setnxexpire">一：SETNX+EXPIRE</h3>
+
+<p>提到Redis的分布式锁，很多小伙伴马上就会想到<code class="highlighter-rouge">setnx</code>+ <code class="highlighter-rouge">expire</code>命令。即先用<code class="highlighter-rouge">setnx</code>来抢锁，如果抢到之后，再用<code class="highlighter-rouge">expire</code>给锁设置一个过期时间，防止锁忘记了释放。</p>
+
+<blockquote>
+  <p>SETNX 是SET IF NOT EXISTS的简写.日常命令格式是SETNX key value，如果 key不存在，则SETNX成功返回1，如果这个key已经存在了，则返回0。</p>
+</blockquote>
+
+<p>假设某电商网站的某商品做秒杀活动，key可以设置为key_resource_id,value设置任意值，伪代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="err">（</span><span class="n">jedis</span><span class="o">.</span><span class="na">setnx</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">,</span><span class="n">lock_value</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="err">）</span><span class="o">{</span> <span class="c1">//加锁</span>
+    <span class="n">expire</span><span class="err">（</span><span class="n">key_resource_id</span><span class="err">，</span><span class="mi">100</span><span class="err">）</span><span class="o">;</span> <span class="c1">//设置过期时间</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="n">something</span>  <span class="c1">//业务请求</span>
+    <span class="o">}</span><span class="k">catch</span><span class="o">(){</span>
+  <span class="o">}</span>
+  <span class="k">finally</span> <span class="o">{</span>
+       <span class="n">jedis</span><span class="o">.</span><span class="na">del</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">);</span> <span class="c1">//释放锁</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><mark>缺点：</mark></p>
+
+<p>但是这个方案中，<code class="highlighter-rouge">setnx</code>和<code class="highlighter-rouge">expire</code>两个命令分开了，<strong>「不是原子操作」</strong>。如果执行完<code class="highlighter-rouge">setnx</code>加锁，正要执行<code class="highlighter-rouge">expire</code>设置过期时间时，进程crash或者要重启维护了，那么这个锁就“长生不老”了，<strong>「别的线程永远获取不到锁啦」</strong>。</p>
+
+<h3 id="二setnx--value值是系统时间过期时间">二：SETNX + value值是(系统时间+过期时间)</h3>
+
+<p>为了解决方案一，<strong>「发生异常锁得不到释放的场景」</strong>，有小伙伴认为，可以把过期时间放到<code class="highlighter-rouge">setnx</code>的value值里面。如果加锁失败，再拿出value值校验一下即可。加锁代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">long</span> <span class="n">expires</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">+</span> <span class="n">expireTime</span><span class="o">;</span> <span class="c1">//系统时间+设置的过期时间</span>
+<span class="nc">String</span> <span class="n">expiresStr</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">expires</span><span class="o">);</span>
+
+<span class="c1">// 如果当前锁不存在，返回加锁成功</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">jedis</span><span class="o">.</span><span class="na">setnx</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">,</span> <span class="n">expiresStr</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span> 
+<span class="c1">// 如果锁已经存在，获取锁的过期时间</span>
+<span class="nc">String</span> <span class="n">currentValueStr</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">);</span>
+
+<span class="c1">// 如果获取到的过期时间，小于系统当前时间，表示已经过期</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">currentValueStr</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">currentValueStr</span><span class="o">)</span> <span class="o">&lt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">())</span> <span class="o">{</span>
+
+     <span class="c1">// 锁已过期，获取上一个锁的过期时间，并设置现在锁的过期时间（不了解redis的getSet命令的小伙伴，可以去官网看下哈）</span>
+    <span class="nc">String</span> <span class="n">oldValueStr</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">getSet</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">,</span> <span class="n">expiresStr</span><span class="o">);</span>
+    
+    <span class="k">if</span> <span class="o">(</span><span class="n">oldValueStr</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">oldValueStr</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">currentValueStr</span><span class="o">))</span> <span class="o">{</span>
+         <span class="c1">// 考虑多线程并发的情况，只有一个线程的设置值和当前值相同，它才可以加锁</span>
+         <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+        
+<span class="c1">//其他情况，均返回加锁失败</span>
+<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><mark>优点：</mark></p>
+
+<p>这个方案的优点是，巧妙移除<code class="highlighter-rouge">expire</code>单独设置过期时间的操作，把<strong>「过期时间放到setnx的value值」</strong>里面来。解决了方案一发生异常，锁得不到释放的问题。</p>
+
+<p><mark>缺点：</mark></p>
+
+<ul>
+  <li>过期时间是客户端自己生成的（System.currentTimeMillis()是当前系统的时间），必须要求分布式环境下，每个客户端的时间必须同步。</li>
+  <li>如果锁过期的时候，并发多个客户端同时请求过来，都执行jedis.getSet()，最终只能有一个客户端加锁成功，但是该客户端锁的过期时间，可能被别的客户端覆盖</li>
+  <li>该锁没有保存持有者的唯一标识，可能被别的客户端释放/解锁。</li>
+</ul>
+
+<h3 id="三使用lua脚本包含setnx--expire两条指令">三：使用Lua脚本(包含SETNX + EXPIRE两条指令)</h3>
+
+<p>实际上，我们还可以<mark>使用Lua脚本来保证原子性</mark>（包含setnx和expire两条指令），lua脚本如下：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if </span>redis.call<span class="o">(</span><span class="s1">'setnx'</span>,KEYS[1],ARGV[1]<span class="o">)</span> <span class="o">==</span> 1 <span class="k">then
+   </span>redis.call<span class="o">(</span><span class="s1">'expire'</span>,KEYS[1],ARGV[2]<span class="o">)</span>
+<span class="k">else
+   return </span>0
+end<span class="p">;</span>
+</code></pre></div></div>
+
+<p>加锁代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">lua_scripts</span> <span class="o">=</span> <span class="s">"if redis.call('setnx',KEYS[1],ARGV[1]) == 1 then"</span> <span class="o">+</span>
+            <span class="s">" redis.call('expire',KEYS[1],ARGV[2]) return 1 else return 0 end"</span><span class="o">;</span>   
+<span class="nc">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="n">lua_scripts</span><span class="o">,</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">),</span> <span class="nc">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">(</span><span class="n">values</span><span class="o">));</span>
+<span class="c1">//判断是否成功</span>
+<span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="mi">1L</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>redisson的底层源码就是使用lua脚步来加锁的。</p>
+
+<p>跟方案二对比，你觉得哪个更好呢？</p>
+
+<h3 id="四set的扩展命令set-ex-px-nx">四：SET的扩展命令（SET EX PX NX）</h3>
+
+<p>除了使用，使用Lua脚本，保证<code class="highlighter-rouge">SETNX + EXPIRE</code>两条指令的原子性，我们还可以巧用Redis的SET指令扩展参数！（<code class="highlighter-rouge">SET key value[EX seconds][PX milliseconds][NX|XX]</code>），它也是原子性的！</p>
+
+<blockquote>
+  <table>
+    <tbody>
+      <tr>
+        <td>SET key value[EX seconds][PX milliseconds][NX</td>
+        <td>XX]</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ul>
+    <li>NX :表示key不存在的时候，才能set成功，也即保证只有第一个客户端请求才能获得锁，而其他客户端请求只能等其释放锁，才能获取。</li>
+    <li>EX seconds :设定key的过期时间，时间单位是秒。</li>
+    <li>PX milliseconds: 设定key的过期时间，单位为毫秒</li>
+    <li>XX: 仅当key存在时设置值</li>
+  </ul>
+</blockquote>
+
+<p>伪代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="err">（</span><span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">,</span> <span class="n">lock_value</span><span class="o">,</span> <span class="s">"NX"</span><span class="o">,</span> <span class="s">"EX"</span><span class="o">,</span> <span class="mi">100</span><span class="n">s</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="err">）</span><span class="o">{</span> <span class="c1">//加锁</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="n">something</span>  <span class="c1">//业务处理</span>
+    <span class="o">}</span><span class="k">catch</span><span class="o">(){</span>
+  <span class="o">}</span>
+  <span class="k">finally</span> <span class="o">{</span>
+       <span class="n">jedis</span><span class="o">.</span><span class="na">del</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">);</span> <span class="c1">//释放锁</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><mark>问题：</mark></p>
+
+<ul>
+  <li>问题一：<strong>「锁过期释放了，业务还没执行完」</strong>。假设线程a获取锁成功，一直在执行临界区的代码。但是100s过去后，它还没执行完。但是，这时候锁已经过期了，此时线程b又请求过来。显然线程b就可以获得锁成功，也开始执行临界区的代码。那么问题就来了，临界区的业务代码都不是严格串行执行的啦。</li>
+  <li>问题二：<strong>「锁被别的线程误删」</strong>。假设线程a执行完后，去释放锁。但是它不知道当前的锁可能是线程b持有的（线程a去释放锁时，有可能过期时间已经到了，此时线程b进来占有了锁）。那线程a就把线程b的锁释放掉了，但是线程b临界区业务代码可能都还没执行完呢。</li>
+</ul>
+
+<h3 id="五set-ex-px-nx---校验唯一随机值再删除">五：SET EX PX NX  + 校验唯一随机值,再删除</h3>
+
+<p>既然锁可能被别的线程误删，那我们给value值设置一个标记当前线程唯一的随机数，在删除的时候，校验一下，不就OK了嘛，就是标记我当前线程持有该锁才能删除，避免了删除不是我持有的锁。伪代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="err">（</span><span class="n">jedis</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">,</span> <span class="n">uni_request_id</span><span class="o">,</span> <span class="s">"NX"</span><span class="o">,</span> <span class="s">"EX"</span><span class="o">,</span> <span class="mi">100</span><span class="n">s</span><span class="o">)</span> <span class="o">==</span> <span class="mi">1</span><span class="err">）</span><span class="o">{</span> <span class="c1">//加锁</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="n">something</span>  <span class="c1">//业务处理</span>
+    <span class="o">}</span><span class="k">catch</span><span class="o">(){</span>
+  <span class="o">}</span>
+  <span class="k">finally</span> <span class="o">{</span>
+       <span class="c1">//判断是不是当前线程加的锁,是才释放</span>
+       <span class="k">if</span> <span class="o">(</span><span class="n">uni_request_id</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key_resource_id</span><span class="o">)))</span> <span class="o">{</span>
+        <span class="n">jedis</span><span class="o">.</span><span class="na">del</span><span class="o">(</span><span class="n">lockKey</span><span class="o">);</span> <span class="c1">//释放锁</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在这里，<strong>「判断是不是当前线程加的锁」</strong>和<strong>「释放锁」</strong>不是一个原子操作。如果调用jedis.del()释放锁的时候，可能这把锁已经不属于当前客户端(锁过期自动释放，别的线程就可以持有)，会解除他人加的锁。</p>
+
+<p><img src="/assets/images/2021/springcloud/distribute-lock-feature-2.png" alt="" /></p>
+
+<p>为了更严谨，一般也是用lua脚本代替。lua脚本如下：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if </span>redis.call<span class="o">(</span><span class="s1">'get'</span>,KEYS[1]<span class="o">)</span> <span class="o">==</span> ARGV[1] <span class="k">then 
+   return </span>redis.call<span class="o">(</span><span class="s1">'del'</span>,KEYS[1]<span class="o">)</span> 
+<span class="k">else
+   return </span>0
+end<span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="六redisson框架">六：Redisson框架</h3>
+
+<p>方案五还是可能存在<strong>「锁过期释放，业务没执行完」</strong>的问题。有些小伙伴认为，稍微把锁过期时间设置长一些就可以啦。其实我们设想一下，是否可以给获得锁的线程，<mark>开启一个定时守护线程</mark>，每隔一段时间检查锁是否还存在，存在则对锁的过期时间延长，防止锁过期提前释放。</p>
+
+<p>当前开源框架Redisson解决了这个问题。我们一起来看下Redisson底层原理图吧：</p>
+
+<p><img src="/assets/images/2021/springcloud/distribute-lock-redisson.png" alt="" /></p>
+
+<p>只要线程一加锁成功，就会启动一个<code class="highlighter-rouge">watch dog</code>看门狗，它是一个后台线程，会每隔10秒检查一下，如果线程1还持有锁，那么就会不断的延长锁key的生存时间。因此，Redisson就是使用watch dog解决了<strong>「锁过期释放，业务没执行完」</strong>问题。注意，这里有个坑，看Redisson的源码知道，持锁时间默认传-1，才会启动<code class="highlighter-rouge">watch dog</code>守护线程。</p>
+
+<h3 id="七多机实现的分布式锁redlockredisson">七：多机实现的分布式锁Redlock+Redisson</h3>
+
+<p>前面六种方案都只是基于单机版的讨论，还不是很完美。其实Redis一般都是集群部署的：</p>
+
+<p><img src="/assets/images/2021/springcloud/distribute-lock-redis-cluster.png" alt="" /></p>
+
+<p><mark>问题：</mark></p>
+
+<p>如果线程一在Redis的master节点上拿到了锁，但是加锁的key还没同步到slave节点。恰好这时，master节点发生故障，一个slave节点就会升级为master节点。线程二就可以获取同个key的锁啦，但线程一也已经拿到锁了，锁的安全性就没了。</p>
+
+<p>事实上这类琐最大的缺点就是它加锁时只作用在一个Redis节点上，即使Redis通过sentinel保证高可用，如果这个master节点由于某些原因发生了主从切换，那么就会出现锁丢失的情况：</p>
+
+<ol>
+  <li>在Redis的master节点上拿到了锁；</li>
+  <li>但是这个加锁的key还没有同步到slave节点；</li>
+  <li>master故障，发生故障转移，slave节点升级为master节点；</li>
+  <li>导致锁丢失。</li>
+</ol>
+
+<p><mark>解决方案：</mark></p>
+
+<p>为了解决这个问题，Redis作者 antirez提出一种高级的分布式锁算法：Redlock。</p>
+
+<p>Redlock核心思想是这样的：</p>
+
+<blockquote>
+  <p>搞多个Redis master部署，以保证它们不会同时宕掉。并且这些master节点是完全相互独立的，相互之间不存在数据同步。同时，需要确保在这多个master实例上，是与在Redis单实例，使用相同方法来获取和释放锁。</p>
+</blockquote>
+
+<p>我们假设当前有5个Redis master节点，在5台服务器上面运行这些Redis实例</p>
+
+<p><img src="/assets/images/2021/springcloud/distribute-lock-redis-cluster-2.png" alt="" /></p>
+
+<p>RedLock的实现步骤，如下：</p>
+
+<ol>
+  <li>
+    <p>获取当前时间，以毫秒为单位。</p>
+  </li>
+  <li>
+    <p>按顺序向5个master节点请求加锁。客户端设置网络连接和响应超时时间，并且超时时间要小于锁的失效时间。（假设锁自动失效时间为10秒，则超时时间一般在5-50毫秒之间,我们就假设超时时间是50ms吧）。如果超时，跳过该master节点，尽快去尝试下一个master节点。</p>
+  </li>
+  <li>
+    <p>客户端使用当前时间减去开始获取锁时间（即步骤1记录的时间），得到获取锁使用的时间。当且仅当超过一半（N/2+1，这里是5/2+1=3个节点）的Redis master节点都获得锁，并且使用的时间小于锁失效时间时，锁才算获取成功。（如上图，10s&gt; 30ms+40ms+50ms+4m0s+50ms）</p>
+  </li>
+  <li>
+    <p>如果取到了锁，key的真正有效时间就变啦，需要减去获取锁所使用的时间。</p>
+  </li>
+  <li>
+    <p>如果获取锁失败（没有在至少N/2+1个master实例取到锁，有或者获取锁时间已经超过了有效时间），客户端要在所有的master节点上解锁（即便有些master节点根本就没有加锁成功，也需要解锁，以防止有些漏网之鱼）。</p>
+  </li>
+</ol>
+
+<p>简化下步骤就是：</p>
+
+<ul>
+  <li>按顺序向5个master节点请求加锁</li>
+  <li>根据设置的超时时间来判断，是不是要跳过该master节点。</li>
+  <li>如果大于等于3个节点加锁成功，并且使用的时间小于锁的有效期，即可认定加锁成功啦。</li>
+  <li>如果获取锁失败，解锁！</li>
+</ul>
+
+<p>Redisson实现了redLock版本的锁，有兴趣的小伙伴，可以去了解一下哈~</p>
+
+<p>redisson已经有对redlock算法封装，接下来对其用法进行简单介绍，并对核心源码进行分析（假设5个redis实例）。</p>
+
+<p>redisson的pom依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.redisson<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>redisson<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>3.3.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>首先，我们来看一下redission封装的redlock算法实现的分布式锁用法，非常简单，跟重入锁（ReentrantLock）有点类似：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Config</span> <span class="n">config</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Config</span><span class="o">();</span>
+<span class="n">config</span><span class="o">.</span><span class="na">useSentinelServers</span><span class="o">().</span><span class="na">addSentinelAddress</span><span class="o">(</span><span class="s">"127.0.0.1:6369"</span><span class="o">,</span><span class="s">"127.0.0.1:6379"</span><span class="o">,</span> <span class="s">"127.0.0.1:6389"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">setMasterName</span><span class="o">(</span><span class="s">"masterName"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="s">"password"</span><span class="o">).</span><span class="na">setDatabase</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="nc">RedissonClient</span> <span class="n">redissonClient</span> <span class="o">=</span> <span class="nc">Redisson</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">config</span><span class="o">);</span>
+<span class="c1">// 还可以getFairLock(), getReadWriteLock()</span>
+<span class="nc">RLock</span> <span class="n">redLock</span> <span class="o">=</span> <span class="n">redissonClient</span><span class="o">.</span><span class="na">getLock</span><span class="o">(</span><span class="s">"REDLOCK_KEY"</span><span class="o">);</span>
+<span class="kt">boolean</span> <span class="n">isLock</span><span class="o">;</span>
+<span class="k">try</span> <span class="o">{</span>
+    <span class="n">isLock</span> <span class="o">=</span> <span class="n">redLock</span><span class="o">.</span><span class="na">tryLock</span><span class="o">();</span>
+    <span class="c1">// 500ms拿不到锁, 就认为获取锁失败。10000ms即10s是锁失效时间。</span>
+    <span class="n">isLock</span> <span class="o">=</span> <span class="n">redLock</span><span class="o">.</span><span class="na">tryLock</span><span class="o">(</span><span class="mi">500</span><span class="o">,</span> <span class="mi">10000</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">isLock</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//TODO if get lock success, do something;</span>
+    <span class="o">}</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+<span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+    <span class="c1">// 无论如何, 最后都要解锁</span>
+    <span class="n">redLock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>唯一ID</strong></p>
+
+<p>实现分布式锁的一个非常重要的点就是set的value要具有唯一性，redisson的value是怎样保证value的唯一性呢？答案是<strong>UUID+threadId</strong>。入口在redissonClient.getLock(“REDLOCK_KEY”)，源码在Redisson.java和RedissonLock.java中：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kd">final</span> <span class="no">UUID</span> <span class="n">id</span> <span class="o">=</span> <span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">();</span>
+<span class="nc">String</span> <span class="nf">getLockName</span><span class="o">(</span><span class="kt">long</span> <span class="n">threadId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">id</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">threadId</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>获取锁</strong></p>
+
+<p>获取锁的代码为redLock.tryLock()或者redLock.tryLock(500, 10000, TimeUnit.MILLISECONDS)，两者的最终核心源码都是下面这段代码，只不过前者获取锁的默认租约时间（leaseTime）是LOCK_EXPIRATION_INTERVAL_SECONDS，即30s：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">RFuture</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">tryLockInnerAsync</span><span class="o">(</span><span class="kt">long</span> <span class="n">leaseTime</span><span class="o">,</span> <span class="nc">TimeUnit</span> <span class="n">unit</span><span class="o">,</span> <span class="kt">long</span> <span class="n">threadId</span><span class="o">,</span> <span class="nc">RedisStrictCommand</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">internalLockLeaseTime</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="na">toMillis</span><span class="o">(</span><span class="n">leaseTime</span><span class="o">);</span>
+    <span class="c1">// 获取锁时向5个redis实例发送的命令</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">evalWriteAsync</span><span class="o">(</span><span class="n">getName</span><span class="o">(),</span> <span class="nc">LongCodec</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">,</span> <span class="n">command</span><span class="o">,</span>
+              <span class="c1">// 首先分布式锁的KEY不能存在，如果确实不存在，那么执行hset命令（hset REDLOCK_KEY uuid+threadId 1），并通过pexpire设置失效时间（也是锁的租约时间）</span>
+              <span class="s">"if (redis.call('exists', KEYS[1]) == 0) then "</span> <span class="o">+</span>
+                  <span class="s">"redis.call('hset', KEYS[1], ARGV[2], 1); "</span> <span class="o">+</span>
+                  <span class="s">"redis.call('pexpire', KEYS[1], ARGV[1]); "</span> <span class="o">+</span>
+                  <span class="s">"return nil; "</span> <span class="o">+</span>
+              <span class="s">"end; "</span> <span class="o">+</span>
+              <span class="c1">// 如果分布式锁的KEY已经存在，并且value也匹配，表示是当前线程持有的锁，那么重入次数加1，并且设置失效时间</span>
+              <span class="s">"if (redis.call('hexists', KEYS[1], ARGV[2]) == 1) then "</span> <span class="o">+</span>
+                  <span class="s">"redis.call('hincrby', KEYS[1], ARGV[2], 1); "</span> <span class="o">+</span>
+                  <span class="s">"redis.call('pexpire', KEYS[1], ARGV[1]); "</span> <span class="o">+</span>
+                  <span class="s">"return nil; "</span> <span class="o">+</span>
+              <span class="s">"end; "</span> <span class="o">+</span>
+              <span class="c1">// 获取分布式锁的KEY的失效时间毫秒数</span>
+              <span class="s">"return redis.call('pttl', KEYS[1]);"</span><span class="o">,</span>
+              <span class="c1">// 这三个参数分别对应KEYS[1]，ARGV[1]和ARGV[2]</span>
+                <span class="nc">Collections</span><span class="o">.&lt;</span><span class="nc">Object</span><span class="o">&gt;</span><span class="n">singletonList</span><span class="o">(</span><span class="n">getName</span><span class="o">()),</span> <span class="n">internalLockLeaseTime</span><span class="o">,</span> <span class="n">getLockName</span><span class="o">(</span><span class="n">threadId</span><span class="o">));</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>获取锁的命令中，</p>
+
+<ul>
+  <li><strong>KEYS[1]</strong>就是Collections.singletonList(getName())，表示分布式锁的key，即REDLOCK_KEY；</li>
+  <li><strong>ARGV[1]</strong>就是internalLockLeaseTime，即锁的租约时间，默认30s；</li>
+  <li><strong>ARGV[2]</strong>就是getLockName(threadId)，是获取锁时set的唯一值，即UUID+threadId：</li>
+</ul>
+
+<p><strong>释放锁</strong></p>
+
+<p>释放锁的代码为redLock.unlock()，核心源码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="nc">RFuture</span><span class="o">&lt;</span><span class="nc">Boolean</span><span class="o">&gt;</span> <span class="nf">unlockInnerAsync</span><span class="o">(</span><span class="kt">long</span> <span class="n">threadId</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// 向5个redis实例都执行如下命令</span>
+    <span class="k">return</span> <span class="n">commandExecutor</span><span class="o">.</span><span class="na">evalWriteAsync</span><span class="o">(</span><span class="n">getName</span><span class="o">(),</span> <span class="nc">LongCodec</span><span class="o">.</span><span class="na">INSTANCE</span><span class="o">,</span> <span class="nc">RedisCommands</span><span class="o">.</span><span class="na">EVAL_BOOLEAN</span><span class="o">,</span>
+            <span class="c1">// 如果分布式锁KEY不存在，那么向channel发布一条消息</span>
+            <span class="s">"if (redis.call('exists', KEYS[1]) == 0) then "</span> <span class="o">+</span>
+                <span class="s">"redis.call('publish', KEYS[2], ARGV[1]); "</span> <span class="o">+</span>
+                <span class="s">"return 1; "</span> <span class="o">+</span>
+            <span class="s">"end;"</span> <span class="o">+</span>
+            <span class="c1">// 如果分布式锁存在，但是value不匹配，表示锁已经被占用，那么直接返回</span>
+            <span class="s">"if (redis.call('hexists', KEYS[1], ARGV[3]) == 0) then "</span> <span class="o">+</span>
+                <span class="s">"return nil;"</span> <span class="o">+</span>
+            <span class="s">"end; "</span> <span class="o">+</span>
+            <span class="c1">// 如果就是当前线程占有分布式锁，那么将重入次数减1</span>
+            <span class="s">"local counter = redis.call('hincrby', KEYS[1], ARGV[3], -1); "</span> <span class="o">+</span>
+            <span class="c1">// 重入次数减1后的值如果大于0，表示分布式锁有重入过，那么只设置失效时间，还不能删除</span>
+            <span class="s">"if (counter &gt; 0) then "</span> <span class="o">+</span>
+                <span class="s">"redis.call('pexpire', KEYS[1], ARGV[2]); "</span> <span class="o">+</span>
+                <span class="s">"return 0; "</span> <span class="o">+</span>
+            <span class="s">"else "</span> <span class="o">+</span>
+                <span class="c1">// 重入次数减1后的值如果为0，表示分布式锁只获取过1次，那么删除这个KEY，并发布解锁消息</span>
+                <span class="s">"redis.call('del', KEYS[1]); "</span> <span class="o">+</span>
+                <span class="s">"redis.call('publish', KEYS[2], ARGV[1]); "</span> <span class="o">+</span>
+                <span class="s">"return 1; "</span><span class="o">+</span>
+            <span class="s">"end; "</span> <span class="o">+</span>
+            <span class="s">"return nil;"</span><span class="o">,</span>
+            <span class="c1">// 这5个参数分别对应KEYS[1]，KEYS[2]，ARGV[1]，ARGV[2]和ARGV[3]</span>
+            <span class="nc">Arrays</span><span class="o">.&lt;</span><span class="nc">Object</span><span class="o">&gt;</span><span class="n">asList</span><span class="o">(</span><span class="n">getName</span><span class="o">(),</span> <span class="n">getChannelName</span><span class="o">()),</span> <span class="nc">LockPubSub</span><span class="o">.</span><span class="na">unlockMessage</span><span class="o">,</span> <span class="n">internalLockLeaseTime</span><span class="o">,</span> <span class="n">getLockName</span><span class="o">(</span><span class="n">threadId</span><span class="o">));</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>参考：</strong></p>
+
+<p>[1] <strong>redis系列：分布式锁:</strong> <a href="https://juejin.cn/post/6844903656911798285">https://juejin.cn/post/6844903656911798285</a></p>
+
+<p>[2] <strong>浅析 Redis 分布式锁解决方案:</strong> <a href="https://www.infoq.cn/article/dvaaj71f4fbqsxmgvdce">https://www.infoq.cn/article/dvaaj71f4fbqsxmgvdce</a></p>
+
+<p>[3] <strong>细说Redis分布式锁</strong> <a href="https://juejin.cn/post/6844904082860146695#heading-3">https://juejin.cn/post/6844904082860146695#heading-3</a></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/redis/2021/06/03/seven-solve-distribute-lock.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

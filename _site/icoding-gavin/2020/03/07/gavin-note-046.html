@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第46节：kafka消息队列应用实战-2 - 大伟的博客 </title>
+    <meta name="keywords" content="kafka">
+    <meta name="description"
+          content="Kafka生产者的ACK机制，如何保证分布式保存数据的一致性，保证消息的不丢失不重复,Kafka的Exactly Once实现消除幂等性，Kafka发送消息到topic的流程batch.size和linger.ms参数，Kafka的pull拉取的消费方式，消费者分区访问策略range、roundrobin、sticky">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/03/07/gavin-note-046.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第46节：kafka消息队列应用实战-2">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第46节：kafka消息队列应用实战-2</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/07
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1-kafka生产者的ack机制可靠性">1. Kafka生产者的ACK机制（可靠性）</h2>
+
+<p>ACK（在rabbitmq里面，我们producer和broker的一个反馈是什么？confirmCallback(识别到exchange层)，returnCallback(routingkey不正确才有返回)）</p>
+
+<p>对于Kafka不太重要的数据是不是就不需要可靠性很高了</p>
+
+<p>副本机制，Topic的主分区–副本分区</p>
+
+<p>Producer发送给Broker–&gt;Partition(leader)–&gt;Replication(2)</p>
+
+<p>这个时候，我们思考生产者的ACK机制，producer通过一个配置项ACKS查看kafka生效的是那个机制，有3个值：</p>
+
+<ul>
+  <li>acks = 0 : Producer只要给到Broker就返回ack，不用等待放入Partition，当Broker接收到数据后，有可能Broker故障导致数据丢失</li>
+  <li>acks =1 : Partition的Leader落盘成功后才返回ACK，不关心Follower，当我们的partition的leader挂掉后数据就无法同步到follower，<font color="red">注意数据是follower拉取leader的，不是leader主动推的</font>（leader挂了，要从ISR的分区中选举生成新的leader，有可能新leader 和 follower的数据刚好不一致）</li>
+  <li>acks = -1 : 所有ISR列表中的Follow分区都同步成功才会返回ACK给Producer</li>
+</ul>
+
+<p>Kafka的Producer在没有接收到ACK后会重试，这个重试是有次数的，这个次数是你配置的</p>
+
+<p>看官方文档的配置项：<a href="http://kafka.apache.org/23/documentation.html#producerconfigs">http://kafka.apache.org/23/documentation.html#producerconfigs</a></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/producer-config-ack.jpg" alt="" /></p>
+
+<p>可以看到默认值是1，只要Partiton的Leader收到数据就返回ACK</p>
+
+<h2 id="2-kafka分布式保存数据一致性问题">2. Kafka分布式保存数据一致性问题</h2>
+
+<p>producer有一个重试机制，如果数据没有接收到ACK的情况下，重新再次发送</p>
+
+<p>场景分析：如果有一个leader，两个follower，当leader宕机了</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/leader-follower.png" alt="" /></p>
+
+<p>LEO（Log End Offset）：每个副本最后一个offset</p>
+
+<p>HW（High Watermark）：所有副本中最小的那个LEO（7）</p>
+
+<p>数据一致性的执行细节：</p>
+
+<p>1、follower故障</p>
+
+<p>follower发生故障就会被剔除出ISR，待follower恢复后，follower会读取本次磁盘上上次记录的HW（7），将log文件中高于HW部分截取掉（不要了），从HW开始向leader进行同步，确保数据的完整性，正确性，待follower的LEO大于等于Partition副本的HW，当follower追上leader以后，就可以重入ISR</p>
+
+<p>2、leader故障</p>
+
+<p>leader故障之后，会从ISR中选一个follower成为leader，为保证多个副本间的数据一致，将所有的副本follower各自的高于HW的数据部分截取掉，从新的leader同步数据</p>
+
+<font color="red">注意：这个只能保证数据一致性，不能保证数据不丢失或者不重复</font>
+
+<h2 id="3-kafka的exactly-once实现">3. Kafka的Exactly Once实现</h2>
+
+<h3 id="保证数据不丢失">保证数据不丢失</h3>
+
+<ul>
+  <li>
+    <p>将Producer的ack设置为-1(同步到ISR列表的所有follower)，保证数据producer到partitons的数据不丢失，就是At Least Once</p>
+  </li>
+  <li>
+    <p>将Producer的ack设置为0（到broker），可以保证每条消息只会发送一次，即At Most Once</p>
+  </li>
+</ul>
+
+<p><strong>比较：</strong></p>
+
+<ul>
+  <li>At Least Once可以保证数据不丢失，但不能保证数据不重复，</li>
+  <li>At Most Once可以保证数据不重复，但不能保证数据不丢失</li>
+</ul>
+
+<p>每个 Partition 都至少得有 1 个 Follower 在 ISR 列表里，跟上了 Leader 的数据同步。</p>
+
+<p>每次写入数据的时候，都要求至少写入 Partition Leader 成功，同时还有至少一个 ISR 里的 Follower 也写入成功，才算这个写入是成功了。</p>
+
+<p>如果不满足上述两个条件，那就一直写入失败，让生产系统不停的尝试重试，直到满足上述两个条件，然后才能认为写入成功。</p>
+
+<p><img src="/assets/images/2021/mq/kafka-ack-1.jpg" alt="" /></p>
+
+<p>如上图所示，假如现在 Leader 没有 Follower 了，或者是刚写入 Leader，Leader 立马就宕机，还没来得及同步给  Follower。在这种情况下，写入就会失败，然后你就让生产者不停的重试，直到 Kafka 恢复正常满足上述条件，才能继续写入。这样就可以让写入 Kafka 的数据不丢失</p>
+
+<h3 id="保证数据不重复">保证数据不重复</h3>
+
+<p>Exactly Once = At Least Once + 幂等性</p>
+
+<p>At Least Once 可以通过Producer的ACKS设置为-1来解决，在kafka的v0.11(含)之后引入了一个新特性：producer端的幂等性，无论Producer发给broker多少次，只要数据重复，broker只会持久化一条给到topic (相当于队列)</p>
+
+<p>在Producer端通过参数<code class="highlighter-rouge">enable.idempotence</code>设置为true即可，相当于开起了producer端的幂等性：Producer在初始化的时候会被分配一个PID，发往同一个Partition的消息会附带Sequence Number 序列号。</p>
+
+<p>Broker端会对&lt;PID,Partition,Sequence Number&gt;做主键缓存，当有相同主键信息只会持久化一条了</p>
+
+<p>但是：系统只要重启就会更新PID，在不同的Partition上会有不同的主键，<strong>所以Producer的幂等无法保证跨分区跨会话的Exactly Once</strong></p>
+
+<p><mark>如何保证数据不丢失，有不重复，Exactly Once?</mark></p>
+
+<p>第1步将Produce端的ack设置为-1</p>
+
+<p>第2步将Produce端的enable.idempotence设置为true</p>
+
+<h2 id="4-kafka生产者的事务机制">4. Kafka生产者的事务机制</h2>
+
+<p>kafka的数据可以有很多的partition</p>
+
+<p>场景：当producer个p0，p1，p2写入数据，0分区10条，1分区15条，正要给2分区写数据broker挂了，如果acks=1，有主分区没有写入完成没有返回ack，重启后producer会重试发送，那么就会与0分区和1分区的数据重复。</p>
+
+<p>为了避免重复数据的问题，在kafka的v0.11版本之后引入了transactionID，将transactionID和PID（分区ID）绑定并保存事务状态到一个内部的topic中，当服务重启后该事务状态还能获取。<font color="red">前提要开启enable.idempotence</font></p>
+
+<h2 id="5-kafka发送消息的流程">5. Kafka发送消息的流程</h2>
+
+<p>kafka的producer发送消息采用的是<mark>异步发送模式</mark>，一个main一个sender还有一个线程共享变量(RecordAccumulator)</p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/producer-main-sender.png" alt="" /></p>
+
+<p>batch.size : 数据积累到多大以后，sender才会发送</p>
+
+<p>linger.ms :单位毫秒， 如果一直没有达到batch.size，sender会等待linger.ms时间后就发送</p>
+
+<p>查看官方文档<a href="http://kafka.apache.org/23/documentation.html">http://kafka.apache.org/23/documentation.html</a></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/batch-size.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/linger-ms.jpg" alt="" /></p>
+
+<h2 id="6-kafka消费方式分析">6. Kafka消费方式分析</h2>
+
+<p>kafka里consumer采用的是<mark>pull</mark>的方式从broker里取数据，topic的分区leader同步复制到follower也是拉取的方式</p>
+
+<ul>
+  <li>push推的方式很难适应消费速率不同的消费者，消息发送速率是有broker决定的，典型的问题表现是消费端拒绝访问和网络堵塞</li>
+  <li><mark>pull的方式的消费速率是由consumer来确定</mark>，如果kafka的topic里没有数据，consumer会长期获取空数据，kafka会在消费时传入一个timeout，如果拉取没有数据，就会等待timeout时长后再返回</li>
+</ul>
+
+<p><mark>息队列的消费者都是以拉取数据的方式消费的</mark></p>
+
+<h2 id="7-kafka消费分区访问策略">7. Kafka消费分区访问策略</h2>
+
+<p>一个consumer group中有多个consumer，一个topic里有多个partition，这就涉及了partition的分配问题，确定那个partition由哪个consumer来消费</p>
+
+<p>kafka有三种分配策略：<font color="red">range（范围模式，默认的），roundrobin（均衡），sticky（粘性方式v0.11新增）</font></p>
+
+<p>官方文档看Consumer 的配置<a href="http://kafka.apache.org/23/documentation.html">http://kafka.apache.org/23/documentation.html</a></p>
+
+<p><img src="/assets/images/2020/icoding/mq/kafka/partition-assignment-strategy.jpg" alt="" /></p>
+
+<p>可以看到默认的消费策略是范围分区</p>
+
+<h3 id="range默认的分区消费策略">range：默认的分区消费策略</h3>
+
+<p>无论多少个分区，只有一个消费者，那么所有分区都分配给这个消费者</p>
+
+<font color="red">每次新的消费者加入消费者组都会触发新的分配</font>
+
+<p>分配策略：</p>
+
+<ul>
+  <li>
+    <p>按照topic进行一组来分配给订阅了这个topic的consumer group中的consumer</p>
+  </li>
+  <li>
+    <p>n=分区数/消费者数量，m=分区数%消费者数量，第一个消费者分配n+m个分区，后面的分配n个分区</p>
+
+    <p><img src="/assets/images/2020/icoding/mq/kafka/range.png" alt="" /></p>
+
+    <p><img src="/assets/images/2020/icoding/mq/kafka/range2.jpg" alt="" /></p>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 0~6 7个分区 读写都是leader分区，	C0,C1,C2都是消费者（可动态加入，加入后重新分配消费者连接的分区），分配分区的算法：7/3 每人2个，多余的都给了C0 ,</span>
+<span class="c"># 例1，假设消费者组有两个消费者c0，c1，都订阅了t0和t1(topic)，每个topic都有4个分区</span>
+c0: t0p0,t0p1,t1p0,t1p1 
+c1: t0p2,t0p3,t1p2,t1p3
+<span class="c"># 例2，假设消费者组有两个消费者c0，c1，都订阅了t0和t1，每个topic都有3个分区</span>
+c0: t0p0,t0p1,t1p0,t1p1
+c1: t0p2,t1p2
+</code></pre></div></div>
+
+<h3 id="roundrobin负载均衡的方式">roundrobin：负载均衡的方式</h3>
+
+<p>按照消费者组里的消费者进行平均分配</p>
+
+<p>Consuemer端可以通过配置：partition.assignment.strategy 修改值为 class org.apache.kafka.clients.consumer.RoundRobinAssignor</p>
+
+<p><mark>负载均衡也要看是否订阅了这个topic</mark></p>
+
+<font color="red">每次新的消费者加入消费者组都会触发新的分配</font>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 例1: 假设消费者组有两个消费者c0，c1，都订阅了t0和t1，每个topic都有3个分区</span>
+c0: t0p0,t0p2,t1p1
+c1: t0p1,t1p0,t1p2
+<span class="c"># 例2: 3个消费者c0,c1,c2, 有三个topic，每个topic有3个分区，对于消费者而言，c0订阅的t0，c1订阅的t0和t1，c2订阅的t0，t1，t2</span>
+c0: t0p0
+c1: t0p1,t1p0,t1p2
+c2: t0p2,t1p1,t2p0,t2p1,t2p2
+</code></pre></div></div>
+
+<h3 id="sticky粘性策略">Sticky：粘性策略</h3>
+
+<p>kafka的v0.11版本引入的：class org.apache.kafka.clients.consumer.StickyAssignor</p>
+
+<p>Consuemer端可以通过配置：partition.assignment.strategy 修改值为 class org.apache.kafka.clients.consumer.StickyAssignor</p>
+
+<p>上面两个策略每次新的消费者加入消费者组都会触发新的分配，其实是浪费性能的和可能造成不均匀的</p>
+
+<p>主要实现的目的</p>
+
+<ul>
+  <li>分区的分配要尽可能的均匀</li>
+  <li><mark>分区的分配尽可能的和上次分配保持一致</mark></li>
+  <li>当两者冲突时，第一个目标优先第二个目标</li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 例1:三个消费者c0，c1，c2，都订阅了4个主题，t0，t1，t2，t3，每个topic有两个分区</span>
+c0: t0p0,t1p1,t3p0
+c1: t0p1,t2p0,t3p1
+c2: t1p0,t2p1
+<span class="c"># 这个分配很像负载均衡</span>
+</code></pre></div></div>
+
+<p>如果这时c1退出消费者组，会触发新的分配，但要尽量保持均匀</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># roundrobin策略下</span>
+c0: t0p0,t1p0,t2p0,t3p0
+c2: t0p1,t1p1,t2p1,t3p1
+<span class="c"># sticky策略下</span>
+c0: t0p0,t1p1,t3p0,t2p0
+c2: t1p0,t2p1,t0p1,t3p1
+</code></pre></div></div>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/03/07/gavin-note-046.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

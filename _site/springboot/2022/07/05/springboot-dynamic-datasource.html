@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> SpringBoot优雅动态切换多数据源 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="基于Spring的AbstractRoutingDataSource抽象类，使得能够在多数据源情况下任意切换，相当于动态路由的作用，根据传参指定数据源，没有则选择默认数据源">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2022/07/05/springboot-dynamic-datasource.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="SpringBoot优雅动态切换多数据源">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>SpringBoot优雅动态切换多数据源</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/07/05
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>此前写过一篇文章介绍springboot整合多数据源，依赖<code class="highlighter-rouge">dynamic-datasource-spring-boot-starter</code>在业务层类或方法上添加@DS注解切换数据源，<a href="/springboot/2021/02/25/one-app-two-datasource.html">/springboot/2021/02/25/one-app-two-datasource.html</a></p>
+
+<p>如果我的数据源是根据request传参appCode或租户参数动态切换数据源，怎么实现？</p>
+
+<p>最近看了一个项目，使用Spring的AbstractRoutingDataSource抽象类动态路由到物理数据源实现切换，我把它放到了自己的gitee仓库上了</p>
+
+<p>地址：https://gitee.com/jacobmj/study-demo/tree/master/bgy-auth</p>
+
+<p>通过下面文章，了解一下springboot 与mybatis整合多数据源动态切换的另外一种方式</p>
+
+<h2 id="1什么是多数据源">1、什么是多数据源</h2>
+
+<p>最常见的单一应用中最多涉及到一个数据库，即是一个数据源（<code class="highlighter-rouge">Datasource</code>）。那么顾名思义，多数据源就是在一个单一应用中涉及到了两个及以上的数据库了。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"dataSource"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">dataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">DruidDataSource</span> <span class="n">druidDataSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DruidDataSource</span><span class="o">();</span>
+        <span class="n">druidDataSource</span><span class="o">.</span><span class="na">setUrl</span><span class="o">(</span><span class="n">url</span><span class="o">);</span>
+        <span class="n">druidDataSource</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+        <span class="n">druidDataSource</span><span class="o">.</span><span class="na">setDriverClassName</span><span class="o">(</span><span class="n">driverClassName</span><span class="o">);</span>
+        <span class="n">druidDataSource</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">druidDataSource</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">url</code>、<code class="highlighter-rouge">username</code>、<code class="highlighter-rouge">password</code>这三个属性已经唯一确定了一个数据库了，<code class="highlighter-rouge">DataSource</code>则是依赖这三个创建出来的。则多数据源即是配置多个<code class="highlighter-rouge">DataSource</code>（暂且这么理解）。</p>
+
+<h2 id="2整合单一的数据源">2、整合单一的数据源</h2>
+
+<p>本文使用阿里的数据库连接池<code class="highlighter-rouge">druid</code>，添加依赖如下：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--druid连接池--&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+   <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>druid-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;version&gt;</span>1.1.9<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>阿里的数据库连接池非常强大，比如<code class="highlighter-rouge">数据监控</code>、<code class="highlighter-rouge">数据库加密</code>等等内容，本文仅仅演示与Spring Boot整合的过程，一些其他的功能后续可以自己研究添加。</p>
+
+<p>Druid连接池的<code class="highlighter-rouge">starter</code>的自动配置类是<code class="highlighter-rouge">DruidDataSourceAutoConfigure</code>，类上标注如下一行注解：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@EnableConfigurationProperties</span><span class="o">({</span><span class="nc">DruidStatProperties</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">DataSourceProperties</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@EnableConfigurationProperties</code>这个注解使得配置文件中的配置生效并且映射到指定类的属性。</p>
+
+<p><code class="highlighter-rouge">DruidStatProperties</code>中指定的前缀是<code class="highlighter-rouge">spring.datasource.druid</code>，这个配置主要是用来设置连接池的一些参数。</p>
+
+<p><code class="highlighter-rouge">DataSourceProperties</code>中指定的前缀是<code class="highlighter-rouge">spring.datasource</code>，这个主要是用来设置数据库的<code class="highlighter-rouge">url</code>、<code class="highlighter-rouge">username</code>、<code class="highlighter-rouge">password</code>等信息。</p>
+
+<p>因此我们只需要在全局配置文件中指定<strong>数据库的一些配置</strong>以及<strong>连接池的一些配置</strong>信息即可，前缀分别是<code class="highlighter-rouge">spring.datasource.druid</code>、<code class="highlighter-rouge">spring.datasource</code>，以下是个人随便配置的(<code class="highlighter-rouge">application.properties</code>)：</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">spring.datasource.url</span><span class="p">=</span><span class="s">jdbc</span><span class="se">\:</span><span class="s">mysql</span><span class="se">\:</span><span class="s">//120.26.101.xxx</span><span class="se">\:</span><span class="s">3306/xxx?useUnicode</span><span class="se">\=</span><span class="s">true&amp;characterEncoding</span><span class="se">\=</span><span class="s">UTF-8&amp;zeroDateTimeBehavior</span><span class="se">\=</span><span class="s">convertToNull&amp;useSSL</span><span class="se">\=</span><span class="s">false&amp;allowMultiQueries</span><span class="se">\=</span><span class="s">true&amp;serverTimezone=Asia/Shanghai</span>
+<span class="py">spring.datasource.username</span><span class="p">=</span><span class="s">root</span>
+<span class="py">spring.datasource.password</span><span class="p">=</span><span class="s">xxxx</span>
+<span class="py">spring.datasource.type</span><span class="p">=</span><span class="s">com.alibaba.druid.pool.DruidDataSource</span>
+<span class="py">spring.datasource.driver-class-name</span><span class="p">=</span><span class="s">com.mysql.jdbc.Driver</span>
+<span class="c">#初始化连接大小
+</span><span class="py">spring.datasource.druid.initial-size</span><span class="p">=</span><span class="s">0</span>
+<span class="c">#连接池最大使用连接数量
+</span><span class="py">spring.datasource.druid.max-active</span><span class="p">=</span><span class="s">20</span>
+<span class="c">#连接池最小空闲
+</span><span class="py">spring.datasource.druid.min-idle</span><span class="p">=</span><span class="s">0</span>
+<span class="c">#获取连接最大等待时间
+</span><span class="py">spring.datasource.druid.max-wait</span><span class="p">=</span><span class="s">6000</span>
+<span class="py">spring.datasource.druid.validation-query</span><span class="p">=</span><span class="s">SELECT 1</span>
+<span class="c">#spring.datasource.druid.validation-query-timeout=6000
+</span><span class="py">spring.datasource.druid.test-on-borrow</span><span class="p">=</span><span class="s">false</span>
+<span class="py">spring.datasource.druid.test-on-return</span><span class="p">=</span><span class="s">false</span>
+<span class="py">spring.datasource.druid.test-while-idle</span><span class="p">=</span><span class="s">true</span>
+<span class="c">#配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+</span><span class="py">spring.datasource.druid.time-between-eviction-runs-millis</span><span class="p">=</span><span class="s">60000</span>
+<span class="c">#置一个连接在池中最小生存的时间，单位是毫秒
+</span><span class="py">spring.datasource.druid.min-evictable-idle-time-millis</span><span class="p">=</span><span class="s">25200000</span>
+<span class="c">#spring.datasource.druid.max-evictable-idle-time-millis=
+#打开removeAbandoned功能,多少时间内必须关闭连接
+</span><span class="py">spring.datasource.druid.removeAbandoned</span><span class="p">=</span><span class="s">true</span>
+<span class="c">#1800秒，也就是30分钟
+</span><span class="py">spring.datasource.druid.remove-abandoned-timeout</span><span class="p">=</span><span class="s">1800</span>
+<span class="c">#&lt;!-- 1800秒，也就是30分钟 --&gt;
+</span><span class="py">spring.datasource.druid.log-abandoned</span><span class="p">=</span><span class="s">true</span>
+<span class="py">spring.datasource.druid.filters</span><span class="p">=</span><span class="s">mergeStat</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>另外一种方式</p>
+</blockquote>
+
+<p>在全局配置文件<code class="highlighter-rouge">application.properties</code>文件中配置以上的信息即可注入一个数据源到Spring Boot中。其实这仅仅是一种方式，下面介绍另外一种方式。</p>
+
+<p>在自动配置类中<code class="highlighter-rouge">DruidDataSourceAutoConfigure</code>中有如下一段代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nd">@Bean</span><span class="o">(</span><span class="n">initMethod</span> <span class="o">=</span> <span class="s">"init"</span><span class="o">)</span>
+    <span class="nd">@ConditionalOnMissingBean</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">dataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="no">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Init DruidDataSource"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DruidDataSourceWrapper</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@ConditionalOnMissingBean</code>和<code class="highlighter-rouge">@Bean</code>这两个注解的结合，意味着我们可以覆盖，只需要提前在<code class="highlighter-rouge">IOC</code>中注入一个<code class="highlighter-rouge">DataSource</code>类型的<code class="highlighter-rouge">Bean</code>即可</p>
+
+<p>因此我们在自定义的配置类中定义如下配置即可：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* @Bean：向IOC容器中注入一个Bean
+     * @ConfigurationProperties：使得配置文件中以spring.datasource为前缀的属性映射到Bean的属性中
+     * @return
+     */</span>
+    <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.datasource"</span><span class="o">)</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">dataSource</span><span class="o">(){</span>
+        <span class="c1">//做一些其他的自定义配置，比如密码加密等......</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DruidDataSource</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>以上介绍了两种数据源的配置方式，第一种比较简单，第二种适合扩展，按需选择。</p>
+
+<h2 id="3整合mybatis">3、整合Mybatis</h2>
+
+<p>Spring Boot 整合Mybatis其实很简单，简单的几步就搞定，首先添加依赖：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+     <span class="nt">&lt;groupId&gt;</span>org.mybatis.spring.boot<span class="nt">&lt;/groupId&gt;</span>
+     <span class="nt">&lt;artifactId&gt;</span>mybatis-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+     <span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>第二步找到自动配置类<code class="highlighter-rouge">MybatisAutoConfiguration</code>，有如下一行代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@EnableConfigurationProperties</span><span class="o">(</span><span class="nc">MybatisProperties</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>老套路了，全局配置文件中配置前缀为<code class="highlighter-rouge">mybatis</code>的配置将会映射到该类中的属性。</p>
+
+<p>可配置的东西很多，比如<code class="highlighter-rouge">XML文件的位置</code>、<code class="highlighter-rouge">类型处理器</code>等等，如下简单的配置：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mybatis</span><span class="o">.</span><span class="na">type</span><span class="o">-</span><span class="n">handlers</span><span class="o">-</span><span class="kn">package</span><span class="o">=</span><span class="n">com</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">typehandler</span>
+<span class="n">mybatis</span><span class="o">.</span><span class="na">configuration</span><span class="o">.</span><span class="na">map</span><span class="o">-</span><span class="n">underscore</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">camel</span><span class="o">-</span><span class="k">case</span><span class="o">=</span><span class="kc">true</span>
+</code></pre></div></div>
+
+<p>如果需要通过包扫描的方式注入Mapper，则需要在配置类上加入一个注解：<code class="highlighter-rouge">@MapperScan</code>，其中的value属性指定需要扫描的包。</p>
+
+<blockquote>
+  <p>直接在全局配置文件配置各种属性是一种比较简单的方式，其实的任何组件的整合都有不少于两种的配置方式，下面来介绍下配置类如何配置。</p>
+</blockquote>
+
+<p><code class="highlighter-rouge">MybatisAutoConfiguration</code>自动配置类有如下一断代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span>
+  <span class="nd">@ConditionalOnMissingBean</span>
+  <span class="kd">public</span> <span class="nc">SqlSessionFactory</span> <span class="nf">sqlSessionFactory</span><span class="o">(</span><span class="nc">DataSource</span> <span class="n">dataSource</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@ConditionalOnMissingBean</code>和<code class="highlighter-rouge">@Bean</code>真是老搭档了，意味着我们又可以覆盖，只需要在IOC容器中注入<code class="highlighter-rouge">SqlSessionFactory（Mybatis六剑客之一生产者）</code>。</p>
+
+<p>因此我们在自定义的配置类中定义如下配置即可：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cm">/**
+     * 注入SqlSessionFactory
+     */</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"sqlSessionFactory1"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">SqlSessionFactory</span> <span class="nf">sqlSessionFactory</span><span class="o">(</span><span class="nc">DataSource</span> <span class="n">dataSource</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">SqlSessionFactoryBean</span> <span class="n">sqlSessionFactoryBean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SqlSessionFactoryBean</span><span class="o">();</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setDataSource</span><span class="o">(</span><span class="n">dataSource</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setMapperLocations</span><span class="o">(</span><span class="k">new</span> <span class="nc">PathMatchingResourcePatternResolver</span><span class="o">().</span><span class="na">getResources</span><span class="o">(</span><span class="s">"classpath*:/mapper/**/*.xml"</span><span class="o">));</span>
+        <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">ibatis</span><span class="o">.</span><span class="na">session</span><span class="o">.</span><span class="na">Configuration</span> <span class="n">configuration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">ibatis</span><span class="o">.</span><span class="na">session</span><span class="o">.</span><span class="na">Configuration</span><span class="o">();</span>
+        <span class="c1">// 自动将数据库中的下划线转换为驼峰格式</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setMapUnderscoreToCamelCase</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setDefaultFetchSize</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setDefaultStatementTimeout</span><span class="o">(</span><span class="mi">30</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setConfiguration</span><span class="o">(</span><span class="n">configuration</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">getObject</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>以上介绍了配置Mybatis的两种方式，其实在大多数场景中使用第一种已经够用了，至于为什么介绍第二种呢？当然是为了多数据源的整合而做准备了。</p>
+
+<p>在<code class="highlighter-rouge">MybatisAutoConfiguration</code>中有一行很重要的代码，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ConditionalOnSingleCandidate</span><span class="o">(</span><span class="nc">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springboot/ConditionalOnSingleCandidate.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">@ConditionalOnSingleCandidate</code>这个注解的意思是当IOC容器中只有一个候选Bean的实例才会生效。</p>
+
+<h2 id="4整合多数据源">4、整合多数据源</h2>
+
+<p>可能大家会有一个误解，认为多数据源就是多个的<code class="highlighter-rouge">DataSource</code>并存的，当然这样说也不是不正确。</p>
+
+<blockquote>
+  <p>多数据源的情况下并不是多个数据源并存的，Spring提供了<code class="highlighter-rouge">AbstractRoutingDataSource</code>这样一个抽象类，使得能够在多数据源的情况下任意切换，相当于一个<strong>动态路由</strong>的作用，作者称之为<code class="highlighter-rouge">动态数据源</code>。因此Mybatis只需要配置这个动态数据源即可。</p>
+</blockquote>
+
+<h3 id="什么是动态数据源">什么是动态数据源</h3>
+
+<p>动态数据源简单的说就是能够自由切换的数据源，类似于一个动态路由的感觉，Spring 提供了一个抽象类<code class="highlighter-rouge">AbstractRoutingDataSource</code>，这个抽象类中的一个属性，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">targetDataSources</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">targetDataSources</code>是一个<code class="highlighter-rouge">Map</code>结构，所有需要切换的数据源都存放在其中，根据指定的<code class="highlighter-rouge">KEY</code>进行切换。当然还有一个默认的数据源。</p>
+
+<p><code class="highlighter-rouge">AbstractRoutingDataSource</code>这个抽象类中有一个抽象方法需要子类实现，如下:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kd">abstract</span> <span class="nc">Object</span> <span class="nf">determineCurrentLookupKey</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">determineCurrentLookupKey()</code>这个方法的返回值决定了需要切换的数据源的<code class="highlighter-rouge">KEY</code>，就是根据这个<code class="highlighter-rouge">KEY</code>从<code class="highlighter-rouge">targetDataSources</code>取值（数据源）。</p>
+
+<h3 id="数据源切换如何保证线程隔离">数据源切换如何保证线程隔离</h3>
+
+<p>数据源属于一个公共的资源，在多线程的情况下如何保证线程隔离呢？不能我这边切换了影响其他线程的执行</p>
+
+<blockquote>
+  <p>说到线程隔离，自然会想到<code class="highlighter-rouge">ThreadLocal</code>了，将切换数据源的<code class="highlighter-rouge">KEY</code>（用于从<code class="highlighter-rouge">targetDataSources</code>中取值）存储在<code class="highlighter-rouge">ThreadLocal</code>中，执行结束之后清除即可。</p>
+</blockquote>
+
+<p>单独封装了一个<code class="highlighter-rouge">DataSourceHolder</code>，内部使用<code class="highlighter-rouge">ThreadLocal</code>隔离线程，代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 使用ThreadLocal存储切换数据源后的KEY
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceHolder</span> <span class="o">{</span>
+
+    <span class="c1">//线程  本地环境</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">dataSources</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">InheritableThreadLocal</span><span class="o">();</span>
+
+    <span class="c1">//设置数据源</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setDataSource</span><span class="o">(</span><span class="nc">String</span> <span class="n">datasource</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">dataSources</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">datasource</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">//获取数据源</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getDataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dataSources</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">//清除数据源</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">clearDataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">dataSources</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>如何构造一个动态数据源？</strong></p>
+
+<p>上文说过只需继承一个抽象类<code class="highlighter-rouge">AbstractRoutingDataSource</code>，重写其中的一个方法<code class="highlighter-rouge">determineCurrentLookupKey()</code>即可。代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 动态数据源，继承AbstractRoutingDataSource
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicDataSource</span> <span class="kd">extends</span> <span class="nc">AbstractRoutingDataSource</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 返回需要使用的数据源的key，将会按照这个KEY从Map获取对应的数据源（切换）
+     * @return
+     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="nc">Object</span> <span class="nf">determineCurrentLookupKey</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">//从ThreadLocal中取出KEY</span>
+        <span class="k">return</span> <span class="nc">DataSourceHolder</span><span class="o">.</span><span class="na">getDataSource</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 构造方法填充Map，构建多数据源
+     */</span>
+    <span class="kd">public</span> <span class="nf">DynamicDataSource</span><span class="o">(</span><span class="nc">DataSource</span> <span class="n">defaultTargetDataSource</span><span class="o">,</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">targetDataSources</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//默认的数据源，可以作为主数据源</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">setDefaultTargetDataSource</span><span class="o">(</span><span class="n">defaultTargetDataSource</span><span class="o">);</span>
+        <span class="c1">//目标数据源</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">setTargetDataSources</span><span class="o">(</span><span class="n">targetDataSources</span><span class="o">);</span>
+        <span class="c1">//执行afterPropertiesSet方法，完成属性的设置</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">afterPropertiesSet</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>上述代码很简单，分析如下：</p>
+
+<ol>
+  <li>一个多参的构造方法，指定了默认的数据源和目标数据源。</li>
+  <li>重写<code class="highlighter-rouge">determineCurrentLookupKey()</code>方法，返回数据源对应的<code class="highlighter-rouge">KEY</code>，这里是直接从<code class="highlighter-rouge">ThreadLocal</code>中取值，就是上文封装的<code class="highlighter-rouge">DataSourceHolder</code>。</li>
+</ol>
+
+<h3 id="定义一个注解">定义一个注解</h3>
+
+<p>为了操作方便且低耦合，不能每次需要切换的数据源的时候都要手动调一下接口吧，可以定义一个切换数据源的注解，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 切换数据源的注解
+ */</span>
+<span class="nd">@Target</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="nc">ElementType</span><span class="o">.</span><span class="na">METHOD</span><span class="o">)</span>
+<span class="nd">@Retention</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="nc">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+<span class="nd">@Documented</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">SwitchSource</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 默认切换的数据源KEY
+     */</span>
+    <span class="nc">String</span> <span class="no">DEFAULT_NAME</span> <span class="o">=</span> <span class="s">"hisDataSource"</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 需要切换到数据的KEY
+     */</span>
+    <span class="nc">String</span> <span class="nf">value</span><span class="o">()</span> <span class="k">default</span> <span class="no">DEFAULT_NAME</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>注解中只有一个<code class="highlighter-rouge">value</code>属性，指定了需要切换数据源的<code class="highlighter-rouge">KEY</code>。</p>
+
+<p>有注解还不行，当然还要有切面，代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Aspect</span>
+<span class="c1">//优先级要设置在事务切面执行之前</span>
+<span class="nd">@Order</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+<span class="nd">@Component</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataSourceAspect</span> <span class="o">{</span>
+
+  <span class="c1">// 切入点</span>
+    <span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"@annotation(SwitchSource)"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">pointcut</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 在方法执行之前切换到指定的数据源
+     * @param joinPoint
+     */</span>
+    <span class="nd">@Before</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"pointcut()"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beforeOpt</span><span class="o">(</span><span class="nc">JoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/*因为是对注解进行切面，所以这边无需做过多判定，直接获取注解的值，进行环绕，将数据源设置成远方，然后结束后，清楚当前线程数据源*/</span>
+        <span class="nc">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="o">((</span><span class="nc">MethodSignature</span><span class="o">)</span> <span class="n">joinPoint</span><span class="o">.</span><span class="na">getSignature</span><span class="o">()).</span><span class="na">getMethod</span><span class="o">();</span>
+        <span class="nc">SwitchSource</span> <span class="n">switchSource</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">getAnnotation</span><span class="o">(</span><span class="nc">SwitchSource</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"[Switch DataSource]:"</span> <span class="o">+</span> <span class="n">switchSource</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+        <span class="nc">DataSourceHolder</span><span class="o">.</span><span class="na">setDataSource</span><span class="o">(</span><span class="n">switchSource</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 方法执行之后清除掉ThreadLocal中存储的KEY，这样动态数据源会使用默认的数据源
+     */</span>
+    <span class="nd">@After</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"pointcut()"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">afterOpt</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">DataSourceHolder</span><span class="o">.</span><span class="na">clearDataSource</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"[Switch Default DataSource]"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>这个<code class="highlighter-rouge">ASPECT</code>很容易理解，<code class="highlighter-rouge">beforeOpt()</code>在方法之前执行，取值<code class="highlighter-rouge">@SwitchSource</code>中value属性设置到<code class="highlighter-rouge">ThreadLocal</code>中;<code class="highlighter-rouge">afterOpt()</code>方法在方法执行之后执行，清除掉<code class="highlighter-rouge">ThreadLocal</code>中的<code class="highlighter-rouge">KEY</code>，保证了如果不切换数据源，则用默认的数据源。</p>
+
+<h3 id="如何与mybatis整合">如何与Mybatis整合？</h3>
+
+<p>单一数据源与Mybatis整合上文已经详细讲解了，数据源<code class="highlighter-rouge">DataSource</code>作为参数构建了<code class="highlighter-rouge">SqlSessionFactory</code>，同样的思想，只需要把这个数据源换成动态数据源即可。注入的代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+     * 创建动态数据源的SqlSessionFactory，传入的是动态数据源
+     * @Primary这个注解很重要，如果项目中存在多个SqlSessionFactory，这个注解一定要加上
+     */</span>
+    <span class="nd">@Primary</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"sqlSessionFactory2"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">SqlSessionFactory</span> <span class="nf">sqlSessionFactoryBean</span><span class="o">(</span><span class="nc">DynamicDataSource</span> <span class="n">dynamicDataSource</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">SqlSessionFactoryBean</span> <span class="n">sqlSessionFactoryBean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SqlSessionFactoryBean</span><span class="o">();</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setDataSource</span><span class="o">(</span><span class="n">dynamicDataSource</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setMapperLocations</span><span class="o">(</span><span class="k">new</span> <span class="nc">PathMatchingResourcePatternResolver</span><span class="o">().</span><span class="na">getResources</span><span class="o">(</span><span class="s">"classpath*:/mapper/**/*.xml"</span><span class="o">));</span>
+        <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">ibatis</span><span class="o">.</span><span class="na">session</span><span class="o">.</span><span class="na">Configuration</span> <span class="n">configuration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">ibatis</span><span class="o">.</span><span class="na">session</span><span class="o">.</span><span class="na">Configuration</span><span class="o">();</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setMapUnderscoreToCamelCase</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setDefaultFetchSize</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setDefaultStatementTimeout</span><span class="o">(</span><span class="mi">30</span><span class="o">);</span>
+        <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">setConfiguration</span><span class="o">(</span><span class="n">configuration</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">sqlSessionFactoryBean</span><span class="o">.</span><span class="na">getObject</span><span class="o">();</span>
+    <span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>与Mybatis整合很简单，只需要把数据源替换成自定义的动态数据源<code class="highlighter-rouge">DynamicDataSource</code>。</p>
+
+<p>那么动态数据源如何注入到IOC容器中呢？看上文自定义的<code class="highlighter-rouge">DynamicDataSource</code>构造方法，肯定需要两个数据源了，因此自定义配置类中必须先注入两个或者多个数据源到IOC容器中，如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cm">/**
+     * @Bean：向IOC容器中注入一个Bean
+     * @ConfigurationProperties：使得配置文件中以spring.datasource为前缀的属性映射到Bean的属性中
+     */</span>
+    <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.datasource"</span><span class="o">)</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="s">"dataSource"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">dataSource</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DruidDataSource</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 向IOC容器中注入另外一个数据源
+     * 全局配置文件中前缀是spring.datasource.his
+     */</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="nc">SwitchSource</span><span class="o">.</span><span class="na">DEFAULT_NAME</span><span class="o">)</span>
+    <span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.datasource.his"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">DataSource</span> <span class="nf">hisDataSource</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">DataSourceBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>以上构建的两个数据源，一个是<strong>默认的数据源</strong>，一个是需要<strong>切换到的数据源（<code class="highlighter-rouge">targetDataSources</code>）</strong>，这样就组成了动态数据源了。数据源的一些信息，比如<code class="highlighter-rouge">url</code>，<code class="highlighter-rouge">username</code>需要自己在全局配置文件中根据指定的前缀配置即可，代码不再贴出。</p>
+
+<p>这里还有一个问题：IOC中存在多个数据源了，那么事务管理器怎么办呢？它也懵逼了，到底选择哪个数据源呢？因此事务管理器肯定还是要重新配置的。</p>
+
+<p>事务管理器此时管理的数据源将是动态数据源<code class="highlighter-rouge">DynamicDataSource</code>，配置如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="cm">/**
+     * 重写事务管理器，管理动态数据源
+     */</span>
+    <span class="nd">@Primary</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">"transactionManager2"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">PlatformTransactionManager</span> <span class="nf">annotationDrivenTransactionManager</span><span class="o">(</span><span class="nc">DynamicDataSource</span> <span class="n">dataSource</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">DataSourceTransactionManager</span><span class="o">(</span><span class="n">dataSource</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>至此，Mybatis与多数据源的整合就完成了。</p>
+
+<h3 id="演示">演示</h3>
+
+<p>使用也是很简单，在需要切换数据源的方法上方标注<code class="highlighter-rouge">@SwitchSource</code>切换到指定的数据源即可，如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c1">//不开启事务</span>
+    <span class="nd">@Transactional</span><span class="o">(</span><span class="n">propagation</span> <span class="o">=</span> <span class="nc">Propagation</span><span class="o">.</span><span class="na">NOT_SUPPORTED</span><span class="o">)</span>
+    <span class="c1">//切换到HIS的数据源</span>
+    <span class="nd">@SwitchSource</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">DeptInfo</span><span class="o">&gt;</span> <span class="nf">list</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">hisDeptInfoMapper</span><span class="o">.</span><span class="na">listDept</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>这样只要执行到这方法将会切换到<code class="highlighter-rouge">HIS</code>的数据源，方法执行结束之后将会清除，执行默认的数据源就不加@SwitchSource注解</p>
+
+<h2 id="5实战项目">5、实战项目</h2>
+
+<p>gitee demo实践项目与上面的实现方式差不多，不同的是它使用了拦截器给线程变量set值的，下面是的数据源的配置与切换逻辑流程。</p>
+
+<p>gitee地址：https://gitee.com/jacobmj/study-demo/tree/master/bgy-auth</p>
+
+<p>1、application.yaml做好默认数据源master与切换数据源的配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 数据源配置</span>
+<span class="na">datasource</span><span class="pi">:</span>
+  <span class="na">master</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">master</span>
+    <span class="na">driverClassName</span><span class="pi">:</span> <span class="s">com.mysql.cj.jdbc.Driver</span>
+    <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:mysql:replication://${DRUID.HOST:localhost}:${DRUID.PORT:3306}/${DRUID.DATABASE:xxxx}?zeroDateTimeBehavior=convertToNull&amp;allowMultiQueries=true&amp;useSSL=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=true&amp;serverTimezone=GMT%2B8</span>
+    <span class="na">username</span><span class="pi">:</span> <span class="s">${DRUID.USERNAME:xxx}</span>
+    <span class="na">password</span><span class="pi">:</span> <span class="s">${DRUID.PASSWORD:xxx}</span>
+    <span class="na">initialSize</span><span class="pi">:</span> <span class="s">${DRUID.INITIAL_SIZE:4}</span>
+    <span class="na">maxActive</span><span class="pi">:</span> <span class="s">${DRUID.MAX_ACTIVE:20}</span>
+    <span class="na">minIdle</span><span class="pi">:</span> <span class="s">${DRUID.MIN_IDLE:4}</span>
+    <span class="na">maxWait</span><span class="pi">:</span> <span class="s">${DRUID.MAX_WAIT:30000}</span>
+    <span class="na">useUnfairLock</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">notFullTimeoutRetryCount</span><span class="pi">:</span> <span class="m">2</span>
+    <span class="na">validationQuery</span><span class="pi">:</span> <span class="s">SELECT 1 FROM DUAL</span>
+    <span class="na">validationQueryTimeout</span><span class="pi">:</span> <span class="m">1</span> <span class="c1">#单位(秒)</span>
+    <span class="na">testOnBorrow</span><span class="pi">:</span> <span class="no">false</span> <span class="c1">#申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。</span>
+    <span class="na">testOnReturn</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">testWhileIdle</span><span class="pi">:</span> <span class="no">true</span> <span class="c1">#不影响性能，并且保证安全性</span>
+    <span class="na">poolPreparedStatements</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">maxOpenPreparedStatements</span><span class="pi">:</span> <span class="m">100</span>
+    <span class="na">maxPoolPreparedStatementPerConnectionSize</span><span class="pi">:</span> <span class="m">10</span>
+    <span class="na">queryTimeout</span><span class="pi">:</span> <span class="m">180</span> <span class="c1">#执行查询超时时间(秒)，与MyBatis保持一致</span>
+    <span class="na">transactionQueryTimeout</span><span class="pi">:</span> <span class="m">60</span> <span class="c1">#执行事务超时时间</span>
+    <span class="na">timeBetweenEvictionRunsMillis</span><span class="pi">:</span> <span class="m">60000</span> <span class="c1">#有两个含义： 1) Destroy线程会检测连接的间隔时间2) testWhileIdle的判断依据</span>
+    <span class="na">maxEvictableIdleTimeMillis</span><span class="pi">:</span> <span class="m">1800000</span>
+    <span class="na">minEvictableIdleTimeMillis</span><span class="pi">:</span> <span class="m">600000</span>
+    <span class="na">removeAbandoned</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">removeAbandonedTimeoutMillis</span><span class="pi">:</span> <span class="m">300000</span>
+    <span class="na">filters</span><span class="pi">:</span> <span class="s">stat,mergeStat,slf4j</span>
+    <span class="na">extFilters</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">wallFilter</span>
+  <span class="c1"># 多租户多数据库</span>
+  <span class="na">multi-tenant</span><span class="pi">:</span>
+    <span class="na">enable</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">dbConfigList</span><span class="pi">:</span>
+    <span class="c1"># 测试时配置</span>
+    <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s2">"</span><span class="s">测试库01"</span>
+      <span class="na">appCodeList</span><span class="pi">:</span> <span class="s">YY_AuthMaintenance,YY_WFDesigner</span>
+      <span class="c1"># replication不能用于xa事务</span>
+      <span class="c1"># url: jdbc:mysql://${DRUID.HOST:localhost}:${DRUID.PORT:3306}/${DRUID.DATABASE:goods}?allowMultiQueries=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=true&amp;serverTimezone=GMT%2B8</span>
+      <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:mysql:replication://10.222.11.21:13306/bgy_auth?zeroDateTimeBehavior=CONVERT_TO_NULL&amp;allowMultiQueries=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=true&amp;serverTimezone=GMT%2B8</span>
+      <span class="na">username</span><span class="pi">:</span> <span class="s">${DRUID.USERNAME:root}</span>
+      <span class="na">password</span><span class="pi">:</span> <span class="s">${DRUID.PASSWORD:bpcUser@}</span>
+    <span class="pi">-</span> <span class="na">key</span><span class="pi">:</span> <span class="s2">"</span><span class="s">测试库02"</span>
+      <span class="na">appCodeList</span><span class="pi">:</span> <span class="s">YY_WF,YY_WWF-UNITTEST,YY_JAVA_DEMOYY_outapplication</span>
+      <span class="c1"># replication不能用于xa事务</span>
+      <span class="c1"># url: jdbc:mysql://${DRUID.HOST:localhost}:${DRUID.PORT:3306}/${DRUID.DATABASE:goods}?allowMultiQueries=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=true&amp;serverTimezone=GMT%2B8</span>
+      <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:mysql:replication://127.0.0.1:3306/wdauth?zeroDateTimeBehavior=CONVERT_TO_NULL&amp;allowMultiQueries=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=true&amp;serverTimezone=GMT%2B8</span>
+      <span class="na">username</span><span class="pi">:</span> <span class="s">${DRUID.USERNAME:root}</span>
+      <span class="na">password</span><span class="pi">:</span> <span class="s">${DRUID.PASSWORD:123456}</span>
+</code></pre></div></div>
+
+<p>2、自定义DatasourceConfig配置类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="nd">@MapperScan</span><span class="o">(</span><span class="n">basePackages</span> <span class="o">=</span> <span class="o">{</span><span class="s">"${mybatis.type-dao-package:com.bgy.auth.dao.adapter}"</span><span class="o">},</span> <span class="n">sqlSessionFactoryRef</span> <span class="o">=</span> <span class="s">"sqlSessionFactory"</span><span class="o">)</span>
+<span class="nd">@EnableTransactionManagement</span>
+<span class="nd">@AutoConfigureOrder</span><span class="o">(-</span><span class="mi">100</span><span class="o">)</span>
+<span class="nd">@AutoConfigureAfter</span><span class="o">({</span><span class="nc">MybatisPlusAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DatasourceConfig</span> <span class="kd">extends</span> <span class="nc">AbsDataSourceConfig</span> <span class="o">{</span>
+  <span class="o">...</span>
+    
+    
+    <span class="cm">/**
+     * +定义主数据源
+     *
+     * @return 主数据源（动态库）
+     */</span>
+    <span class="nd">@ConditionalOnExpression</span><span class="o">(</span><span class="s">"${datasource.multi-tenant.enable:false}==true"</span><span class="o">)</span>
+    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"dataSource"</span><span class="cm">/*, destroyMethod = "close"*/</span><span class="o">)</span>
+    <span class="nd">@Primary</span>
+    <span class="kd">public</span> <span class="nc">DynamicDataSource</span> <span class="nf">dynamicDataSource</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"dataSourcePropertiesMaster"</span><span class="o">)</span> <span class="nc">DataSourceProperties</span> <span class="n">properties</span><span class="o">,</span>
+                                               <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"dataSourceConfigInfoCollect"</span><span class="o">)</span> <span class="nc">DataSourceConfigInfoCollect</span> <span class="n">dataSourceConfigInfoCollect</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">CommonDataSource</span> <span class="n">commonDataSource</span> <span class="o">=</span> <span class="n">createDataSource</span><span class="o">(</span><span class="n">properties</span><span class="o">);</span>
+        <span class="nc">DataSource</span> <span class="n">dataSource</span> <span class="o">=</span> <span class="o">(</span><span class="nc">DataSource</span><span class="o">)</span> <span class="n">commonDataSource</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">dataSource</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="o">(</span><span class="s">"Init DataSource Error!"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nc">DynamicDataSource</span> <span class="n">dynamicDataSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DynamicDataSource</span><span class="o">();</span>
+    <span class="c1">// 默认数据库</span>
+        <span class="n">dynamicDataSource</span><span class="o">.</span><span class="na">setDefaultTargetDataSource</span><span class="o">(</span><span class="n">dataSource</span><span class="o">);</span>
+    <span class="c1">// 切换的目标数据库</span>
+        <span class="n">dynamicDataSource</span><span class="o">.</span><span class="na">setTargetDataSources</span><span class="o">(</span><span class="n">getDataSourceMap</span><span class="o">(</span><span class="n">properties</span><span class="o">,</span> <span class="n">dataSourceConfigInfoCollect</span><span class="o">));</span>
+
+        <span class="k">return</span> <span class="n">dynamicDataSource</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>其中<code class="highlighter-rouge">DynamicDataSource</code>继承<code class="highlighter-rouge">AbstractRoutingDataSource</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicDataSource</span> <span class="kd">extends</span> <span class="nc">AbstractRoutingDataSource</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="nc">Object</span> <span class="nf">determineCurrentLookupKey</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 获取当前动态数据源</span>
+        <span class="k">return</span> <span class="nc">DynamicDataSourceHolder</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">DynamicDataSourceHolder</code>定义了一个线程变量</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicDataSourceHolder</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="no">DATA_SOURCE_NAME</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocal</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">set</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">){</span>
+        <span class="no">DATA_SOURCE_NAME</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">clear</span><span class="o">(){</span>
+        <span class="no">DATA_SOURCE_NAME</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span>  <span class="nf">get</span><span class="o">(){</span>
+        <span class="k">return</span> <span class="no">DATA_SOURCE_NAME</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>自定义<code class="highlighter-rouge">SqlSessionFactory</code> 的Bean使用上面的dynamicDataSource</p>
+
+<p><img src="/assets/images/2022/springboot/sqlSessionFactory-1.png" alt="" /></p>
+
+<p>3、切换数据源拦截器</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicDataSourceInterceptor</span> <span class="kd">implements</span> <span class="nc">HandlerInterceptor</span> <span class="o">{</span>
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="nc">Log</span> <span class="n">logger</span> <span class="o">=</span> <span class="nc">LogFactory</span><span class="o">.</span><span class="na">getLog</span><span class="o">(</span><span class="s">"DAO.LOG"</span><span class="o">);</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">DataSourceConfigInfoCollect</span> <span class="n">dataSourceConfigInfoCollect</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">"${datasource.multi-tenant.enable:false}"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">Boolean</span> <span class="n">dataSourceEnableMultiTenant</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">preHandle</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">dataSourceEnableMultiTenant</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="nc">String</span> <span class="n">appCode</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"appCode"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isBlank</span><span class="o">(</span><span class="n">appCode</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"appCode can not be null!"</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedOperationException</span><span class="o">(</span><span class="s">"appCode can not be null!"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">dataSourceKey</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">DataSourceConfigInfo</span> <span class="n">configInfo</span> <span class="o">:</span> <span class="n">dataSourceConfigInfoCollect</span><span class="o">.</span><span class="na">getDbConfigList</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">configInfo</span><span class="o">.</span><span class="na">getAppCodeList</span><span class="o">().</span><span class="na">contains</span><span class="o">(</span><span class="n">appCode</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">dataSourceKey</span> <span class="o">=</span> <span class="n">configInfo</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 没该行代码就访问到了datasource.master的default数据源（datasource[master]）</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isBlank</span><span class="o">(</span><span class="n">dataSourceKey</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"There is no database mapped to the appCode("</span> <span class="o">+</span> <span class="n">appCode</span> <span class="o">+</span> <span class="s">")!"</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">UnsupportedOperationException</span><span class="o">(</span><span class="s">"There is no database mapped to the appCode("</span> <span class="o">+</span> <span class="n">appCode</span> <span class="o">+</span> <span class="s">")!"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nc">DynamicDataSourceHolder</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">dataSourceKey</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">afterCompletion</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="nc">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">DynamicDataSourceHolder</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">WebMvcConfigurer</code>注册该拦截器</p>
+
+<p><img src="/assets/images/2022/springboot/registry-interceptors.png" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2022/07/05/springboot-dynamic-datasource.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

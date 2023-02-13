@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Tomcat的架构分析，启动过程，生命周期
-category: java
-tags: [java]
-keywords: java
+category: tool
+tags: [tomcat]
+keywords: tomcat
 excerpt: 聊聊Tomcat的启动过程，生命周期
 lock: noneed
 ---

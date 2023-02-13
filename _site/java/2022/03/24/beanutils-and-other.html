@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Bean自动映射工具 - 大伟的博客 </title>
+    <meta name="keywords" content="java">
+    <meta name="description"
+          content="常用的get/set,spring的beanutils.copyProperties,详细介绍MapStruct的使用">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2022/03/24/beanutils-and-other.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Bean自动映射工具">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Bean自动映射工具</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/03/24
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <p>以下文章内容来源小傅哥</p>
+
+<p>dto到vo的属性拷贝工具，12种转换工具的性能比较</p>
+
+<p><img src="/assets/images/2022/java/copy-properties.jpg" alt="" /></p>
+
+<p>只要不使用Apache的BeanUtils.copyProperties，基本上没有多大性能问题，记住使用Spring的BeanUtils.copyPerties</p>
+
+<h2 id="112种案例">1、12种案例</h2>
+
+<p><img src="/assets/images/2022/java/copy-properties-2.jpg" alt="" /></p>
+
+<p>源码 :<a href="https://github.com/fuzhengwei/guide-vo2dto">https://github.com/fuzhengwei/guide-vo2dto</a></p>
+
+<p>在案例工程下创建 interfaces.assembler 包，定义 <code class="highlighter-rouge">IAssembler&lt;SOURCE, TARGET&gt;#sourceToTarget(SOURCE var)</code> 接口，提供不同方式的对象转换操作类实现，学习的过程中可以直接下载运行调试。</p>
+
+<h3 id="getset">get/set</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GetSetAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">UserDTO</span> <span class="n">userDTO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDTO</span><span class="o">();</span>
+        <span class="n">userDTO</span><span class="o">.</span><span class="na">setUserId</span><span class="o">(</span><span class="kt">var</span><span class="o">.</span><span class="na">getUserId</span><span class="o">());</span>
+        <span class="n">userDTO</span><span class="o">.</span><span class="na">setUserNickName</span><span class="o">(</span><span class="kt">var</span><span class="o">.</span><span class="na">getUserNickName</span><span class="o">());</span>
+        <span class="n">userDTO</span><span class="o">.</span><span class="na">setCreateTime</span><span class="o">(</span><span class="kt">var</span><span class="o">.</span><span class="na">getCreateTime</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">userDTO</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：★★★☆☆</li>
+  <li><strong>性能</strong>：★★★★★</li>
+  <li><strong>手段</strong>：手写</li>
+  <li><strong>点评</strong>：其实这种方式也是日常使用的最多的，性能肯定是杠杠的，就是操作起来有点麻烦。尤其是一大堆属性的 VO 对象转换为 DTO 对象时候。但其实也有一些快捷的操作方式，比如你可以通过 Shift+Alt 选中所有属性，Shift+Tab 归并到一列，接下来在使用 Alt 选中这一列，批量操作粘贴 <code class="highlighter-rouge">userDTO.set</code> 以及快捷键大写属性首字母，最后切换到结尾补充括号和分号，最终格式化一下就搞定了。</li>
+</ul>
+
+<h3 id="json2json">json2json</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Json2JsonAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">strJson</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="kt">var</span><span class="o">);</span>
+        <span class="k">return</span> <span class="no">JSON</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">strJson</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：☆☆☆☆☆</li>
+  <li><strong>性能</strong>：★☆☆☆☆</li>
+  <li><strong>手段</strong>：把对象转JSON串，再把JSON转另外一个对象</li>
+  <li><strong>点评</strong>：这么写多半有点烧！</li>
+</ul>
+
+<h3 id="apache-beanutils">Apache BeanUtils</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApacheCopyPropertiesAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">UserDTO</span> <span class="n">userDTO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDTO</span><span class="o">();</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">BeanUtils</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="n">userDTO</span><span class="o">,</span> <span class="kt">var</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IllegalAccessException</span> <span class="o">|</span> <span class="nc">InvocationTargetException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">userDTO</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：☆☆☆☆☆</li>
+  <li><strong>性能</strong>：★☆☆☆☆</li>
+  <li><strong>手段</strong>：Introspector 机制获取到类的属性来进行赋值操作</li>
+  <li><strong>点评</strong>：有坑，兼容性交差，不建议使用</li>
+</ul>
+
+<h3 id="spring-beanutils">Spring BeanUtils</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringCopyPropertiesAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">UserDTO</span> <span class="n">userDTO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDTO</span><span class="o">();</span>
+        <span class="nc">BeanUtils</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="n">userDTO</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">userDTO</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：★★★☆☆</li>
+  <li><strong>性能</strong>：★★★★☆</li>
+  <li><strong>手段</strong>：Introspector机制获取到类的属性来进行赋值操作</li>
+  <li><strong>点评</strong>：同样是反射的属性拷贝，Spring 提供的 copyProperties 要比 Apache 好用的多，只要你不用错，基本不会有啥问题。</li>
+</ul>
+
+<h3 id="bean-mapping">Bean Mapping</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.github.houbb.bean.mapping.core.util.BeanUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BeanMappingAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">UserDTO</span> <span class="n">userDTO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDTO</span><span class="o">();</span>
+        <span class="nc">BeanUtil</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="n">userDTO</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">userDTO</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：★★☆☆☆</li>
+  <li><strong>性能</strong>：★★★☆☆</li>
+  <li><strong>手段</strong>：属性拷贝</li>
+  <li><strong>点评</strong>：性能一般</li>
+</ul>
+
+<h3 id="bean-mapping-asm">Bean Mapping ASM</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.github.houbb.bean.mapping.asm.util.AsmBeanUtil</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BeanMappingASMAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">UserDTO</span> <span class="n">userDTO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDTO</span><span class="o">();</span>
+        <span class="nc">AsmBeanUtil</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="n">userDTO</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">userDTO</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：★★★☆☆</li>
+  <li><strong>性能</strong>：★★★★☆</li>
+  <li><strong>手段</strong>：基于ASM字节码框架实现</li>
+  <li><strong>点评</strong>：与普通的 Bean Mapping 相比，性能有所提升，可以使用。</li>
+</ul>
+
+<h3 id="beancopier">BeanCopier</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cglib.beans.BeanCopier</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BeanCopierAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">UserDTO</span> <span class="n">userDTO</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDTO</span><span class="o">();</span>
+        <span class="nc">BeanCopier</span> <span class="n">beanCopier</span> <span class="o">=</span> <span class="nc">BeanCopier</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="kt">var</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">userDTO</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="n">beanCopier</span><span class="o">.</span><span class="na">copy</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="n">userDTO</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">userDTO</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>推荐</strong>：★★★☆☆</li>
+  <li><strong>性能</strong>：★★★★☆</li>
+  <li><strong>手段</strong>：基于CGlib字节码操作生成get、set方法</li>
+  <li><strong>点评</strong>：整体性能很不错，使用也不复杂，可以使用</li>
+</ul>
+
+<h3 id="orika">Orika</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">ma.glasnost.orika.MapperFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">ma.glasnost.orika.impl.DefaultMapperFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrikaAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 构造一个MapperFactory
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">MapperFactory</span> <span class="n">mapperFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultMapperFactory</span><span class="o">.</span><span class="na">Builder</span><span class="o">().</span><span class="na">build</span><span class="o">();</span>
+
+    <span class="kd">static</span> <span class="o">{</span>
+        <span class="n">mapperFactory</span><span class="o">.</span><span class="na">classMap</span><span class="o">(</span><span class="nc">UserDTO</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="nc">UserVO</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">field</span><span class="o">(</span><span class="s">"userId"</span><span class="o">,</span> <span class="s">"userId"</span><span class="o">)</span>  <span class="c1">// 字段不一致时可以指定</span>
+                <span class="o">.</span><span class="na">byDefault</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">register</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">mapperFactory</span><span class="o">.</span><span class="na">getMapperFacade</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>官网</strong>：https://orika-mapper.github.io/orika-docs/</li>
+  <li><strong>推荐</strong>：★★☆☆☆</li>
+  <li><strong>性能</strong>：★★★☆☆</li>
+  <li><strong>手段</strong>：基于字节码生成映射对象</li>
+  <li><strong>点评</strong>：测试性能不是太突出，如果使用的话需要把 MapperFactory 的构建优化成 Bean 对象</li>
+</ul>
+
+<h3 id="dozer">Dozer</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">cn</span><span class="o">.</span><span class="na">itedus</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">interfaces</span><span class="o">.</span><span class="na">assembler</span><span class="o">.</span><span class="na">dozer</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.dozer.DozerBeanMapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DozerAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">DozerBeanMapper</span> <span class="n">mapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DozerBeanMapper</span><span class="o">();</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">mapper</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>官网</strong>：http://dozer.sourceforge.net/documentation/gettingstarted.html</li>
+  <li><strong>推荐</strong>：★☆☆☆☆</li>
+  <li><strong>性能</strong>：★★☆☆☆</li>
+  <li><strong>手段</strong>：属性映射框架，递归的方式复制对象</li>
+  <li><strong>点评</strong>：性能有点差，不建议使用</li>
+</ul>
+
+<h3 id="modelmapper">ModelMapper</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">cn</span><span class="o">.</span><span class="na">itedus</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">interfaces</span><span class="o">.</span><span class="na">assembler</span><span class="o">.</span><span class="na">model_mapper</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.modelmapper.ModelMapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.modelmapper.PropertyMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ModelMapperAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">ModelMapper</span> <span class="n">modelMapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ModelMapper</span><span class="o">();</span>
+
+    <span class="kd">static</span> <span class="o">{</span>
+        <span class="n">modelMapper</span><span class="o">.</span><span class="na">addMappings</span><span class="o">(</span><span class="k">new</span> <span class="nc">PropertyMap</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>
+                <span class="c1">// 属性值不一样可以自己操作</span>
+                <span class="n">map</span><span class="o">().</span><span class="na">setUserId</span><span class="o">(</span><span class="n">source</span><span class="o">.</span><span class="na">getUserId</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">modelMapper</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="kt">var</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>官网</strong>：http://modelmapper.org</li>
+  <li><strong>推荐</strong>：★★★☆☆</li>
+  <li><strong>性能</strong>：★★★☆☆</li>
+  <li><strong>手段</strong>：基于ASM字节码实现</li>
+  <li><strong>点评</strong>：转换对象数量较少时性能不错，如果同时大批量转换对象，性能有所下降</li>
+</ul>
+
+<h3 id="jmapper">JMapper</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">cn</span><span class="o">.</span><span class="na">itedus</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">interfaces</span><span class="o">.</span><span class="na">assembler</span><span class="o">.</span><span class="na">jmapper</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JMapperAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+       <span class="cm">/* JMapper&lt;UserDTO, UserVO&gt; jMapper = new JMapper&lt;&gt;(UserDTO.class, UserVO.class, new JMapperAPI()
+                .add(JMapperAPI.mappedClass(UserDTO.class)
+                        .add(JMapperAPI.attribute("userId")
+                                .value("userId"))
+                        .add(JMapperAPI.attribute("userNickName")
+                                .value("userNickName"))
+                        .add(JMapperAPI.attribute("createTime")
+                                .value("createTime"))
+                ));
+        return jMapper.getDestination(var);*/</span>
+       <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>官网</strong>：https://github.com/jmapper-framework/jmapper-core/wiki</li>
+  <li><strong>推荐</strong>：★★★★☆</li>
+  <li><strong>性能</strong>：★★★★★</li>
+  <li><strong>手段</strong>：Elegance, high performance and robustness all in one java bean mapper</li>
+  <li><strong>点评</strong>：速度真心可以，不过结合 SpringBoot 感觉有的一点点麻烦，可能姿势不对</li>
+</ul>
+
+<h3 id="mapstruct">MapStruct</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">cn</span><span class="o">.</span><span class="na">itedus</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">interfaces</span><span class="o">.</span><span class="na">assembler</span><span class="o">.</span><span class="na">map_struct</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.mapstruct.InheritConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.InheritInverseConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.MapperConfig</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.stream.Stream</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @description: 对象映射接口
+ * @author: 小傅哥，微信：fustack
+ * @date: 2021/9/14
+ * @github: https://github.com/fuzhengwei
+ * @Copyright: 公众号：bugstack虫洞栈 | 博客：https://bugstack.cn - 沉淀、分享、成长，让自己和他人都能有所收获！
+ */</span>
+<span class="nd">@MapperConfig</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IMapping</span><span class="o">&lt;</span><span class="no">SOURCE</span><span class="o">,</span> <span class="no">TARGET</span><span class="o">&gt;{</span>
+
+    <span class="cm">/**
+     * 映射同名属性
+     */</span>
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">target</span> <span class="o">=</span> <span class="s">"createTime"</span><span class="o">,</span> <span class="n">dateFormat</span> <span class="o">=</span> <span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">)</span>
+    <span class="no">TARGET</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="no">SOURCE</span> <span class="n">var1</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 反向，映射同名属性
+     */</span>
+    <span class="nd">@InheritInverseConfiguration</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"sourceToTarget"</span><span class="o">)</span>
+    <span class="no">SOURCE</span> <span class="nf">targetToSource</span><span class="o">(</span><span class="no">TARGET</span> <span class="n">var1</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 映射同名属性，集合形式
+     */</span>
+    <span class="nd">@InheritConfiguration</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"sourceToTarget"</span><span class="o">)</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="no">TARGET</span><span class="o">&gt;</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="no">SOURCE</span><span class="o">&gt;</span> <span class="n">var1</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 反向，映射同名属性，集合形式
+     */</span>
+    <span class="nd">@InheritConfiguration</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"targetToSource"</span><span class="o">)</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="no">SOURCE</span><span class="o">&gt;</span> <span class="nf">targetToSource</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="no">TARGET</span><span class="o">&gt;</span> <span class="n">var1</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 映射同名属性，集合流形式
+     */</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="no">TARGET</span><span class="o">&gt;</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">Stream</span><span class="o">&lt;</span><span class="no">SOURCE</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">);</span>
+
+    <span class="cm">/**
+     * 反向，映射同名属性，集合流形式
+     */</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="no">SOURCE</span><span class="o">&gt;</span> <span class="nf">targetToSource</span><span class="o">(</span><span class="nc">Stream</span><span class="o">&lt;</span><span class="no">TARGET</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>这个，我在美的工作时，国内销售微服务平台也是用MapStruct进行entity、dto之间的转换</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">cn</span><span class="o">.</span><span class="na">itedus</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">interfaces</span><span class="o">.</span><span class="na">assembler</span><span class="o">.</span><span class="na">map_struct</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.ReportingPolicy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.mapstruct.factory.Mappers</span><span class="o">;</span>
+
+<span class="nd">@Mapper</span><span class="o">(</span><span class="n">componentModel</span> <span class="o">=</span> <span class="s">"spring"</span><span class="o">,</span> <span class="n">unmappedTargetPolicy</span> <span class="o">=</span> <span class="nc">ReportingPolicy</span><span class="o">.</span><span class="na">IGNORE</span><span class="o">,</span> <span class="n">unmappedSourcePolicy</span> <span class="o">=</span> <span class="nc">ReportingPolicy</span><span class="o">.</span><span class="na">IGNORE</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserDTOMapping</span> <span class="kd">extends</span> <span class="nc">IMapping</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="cm">/** 用于测试的单例 */</span>
+    <span class="nc">IMapping</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="no">INSTANCE</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserDTOMapping</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">,</span> <span class="n">source</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">)</span>
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">target</span> <span class="o">=</span> <span class="s">"createTime"</span><span class="o">,</span> <span class="n">dateFormat</span> <span class="o">=</span> <span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">)</span>
+    <span class="nd">@Override</span>
+    <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="n">var1</span><span class="o">);</span>
+
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">,</span> <span class="n">source</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">)</span>
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">target</span> <span class="o">=</span> <span class="s">"createTime"</span><span class="o">,</span> <span class="n">dateFormat</span> <span class="o">=</span> <span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">)</span>
+    <span class="nd">@Override</span>
+    <span class="nc">UserVO</span> <span class="nf">targetToSource</span><span class="o">(</span><span class="nc">UserDTO</span> <span class="n">var1</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">cn</span><span class="o">.</span><span class="na">itedus</span><span class="o">.</span><span class="na">demo</span><span class="o">.</span><span class="na">interfaces</span><span class="o">.</span><span class="na">assembler</span><span class="o">.</span><span class="na">map_struct</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.domain.vo.UserVO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.assembler.IAssembler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">cn.itedus.demo.interfaces.dto.UserDTO</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.annotation.Resource</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MapStructAssembler</span> <span class="kd">implements</span> <span class="nc">IAssembler</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Resource</span>
+    <span class="kd">private</span> <span class="nc">IMapping</span><span class="o">&lt;</span><span class="nc">UserVO</span><span class="o">,</span> <span class="nc">UserDTO</span><span class="o">&gt;</span> <span class="n">userDTOMapping</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">UserDTO</span> <span class="nf">sourceToTarget</span><span class="o">(</span><span class="nc">UserVO</span> <span class="kt">var</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userDTOMapping</span><span class="o">.</span><span class="na">sourceToTarget</span><span class="o">(</span><span class="kt">var</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>官网</strong>：https://github.com/mapstruct/mapstruct</li>
+  <li><strong>推荐</strong>：★★★★★</li>
+  <li><strong>性能</strong>：★★★★★</li>
+  <li><strong>手段</strong>：直接在编译期生成对应的get、set，像手写的代码一样</li>
+  <li><strong>点评</strong>：速度很快，不需要到运行期处理，结合到框架中使用方便</li>
+</ul>
+
+<blockquote>
+  <p>例子2</p>
+</blockquote>
+
+<p>User.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@AllArgsConstructor</span>  
+<span class="nd">@Data</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">password</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">phoneNum</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">email</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">Role</span> <span class="n">role</span><span class="o">;</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>Role.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@AllArgsConstructor</span>  
+<span class="nd">@Data</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Role</span> <span class="o">{</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">roleName</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">description</span><span class="o">;</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>UserRoleDto.java</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserRoleDto</span> <span class="o">{</span>  
+    <span class="cm">/**  
+     * 用户id  
+     */</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">userId</span><span class="o">;</span>  
+    <span class="cm">/**  
+     * 用户名  
+     */</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>  
+    <span class="cm">/**  
+     * 角色名  
+     */</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">roleName</span><span class="o">;</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>新建一个UserRoleMapper.java，这个来用来定义User.java、Role.java和UserRoleDto.java之间属性对应规则：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.mapstruct.Mapper</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mappings</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.factory.Mappers</span><span class="o">;</span>  
+  
+<span class="cm">/**  
+ * @Mapper 定义这是一个MapStruct对象属性转换接口，在这个类里面规定转换规则  
+ *          在项目构建时，会自动生成改接口的实现类，这个实现类将实现对象属性值复制  
+ */</span>  
+<span class="nd">@Mapper</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRoleMapper</span> <span class="o">{</span>  
+  
+    <span class="cm">/**  
+     * 获取该类自动生成的实现类的实例  
+     * 接口中的属性都是 public static final 的 方法都是public abstract的  
+     */</span>  
+    <span class="nc">UserRoleMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 这个方法就是用于实现对象属性复制的方法  
+     *  
+     * @Mapping 用来定义属性复制规则 source 指定源对象属性 target指定目标对象属性  
+     *  
+     * @param user 这个参数就是源对象，也就是需要被复制的对象  
+     * @return 返回的是目标对象，就是最终的结果对象  
+     */</span>  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="nc">UserRoleDto</span> <span class="nf">toUserRoleDto</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><strong>2.添加默认方法</strong></p>
+
+<p>添加默认方法是为了这个类（接口）不只是为了做数据转换用的，也可以做一些其他的事。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.mapstruct.Mapper</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mappings</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.factory.Mappers</span><span class="o">;</span>  
+  
+<span class="cm">/**  
+ * @Mapper 定义这是一个MapStruct对象属性转换接口，在这个类里面规定转换规则  
+ *          在项目构建时，会自动生成改接口的实现类，这个实现类将实现对象属性值复制  
+ */</span>  
+<span class="nd">@Mapper</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRoleMapper</span> <span class="o">{</span>  
+  
+    <span class="cm">/**  
+     * 获取该类自动生成的实现类的实例  
+     * 接口中的属性都是 public static final 的 方法都是public abstract的  
+     */</span>  
+    <span class="nc">UserRoleMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 这个方法就是用于实现对象属性复制的方法  
+     *  
+     * @Mapping 用来定义属性复制规则 source 指定源对象属性 target指定目标对象属性  
+     *  
+     * @param user 这个参数就是源对象，也就是需要被复制的对象  
+     * @return 返回的是目标对象，就是最终的结果对象  
+     */</span>  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="nc">UserRoleDto</span> <span class="nf">toUserRoleDto</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 提供默认方法，方法自己定义，这个方法是我随便写的，不是要按照这个格式来的  
+     * @return  
+     */</span>  
+    <span class="k">default</span> <span class="nc">UserRoleDto</span> <span class="nf">defaultConvert</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserRoleDto</span><span class="o">();</span>  
+        <span class="n">userRoleDto</span><span class="o">.</span><span class="na">setUserId</span><span class="o">(</span><span class="mi">0L</span><span class="o">);</span>  
+        <span class="n">userRoleDto</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"None"</span><span class="o">);</span>  
+        <span class="n">userRoleDto</span><span class="o">.</span><span class="na">setRoleName</span><span class="o">(</span><span class="s">"None"</span><span class="o">);</span>  
+        <span class="k">return</span> <span class="n">userRoleDto</span><span class="o">;</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>测试代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>  
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test3</span><span class="o">()</span> <span class="o">{</span>  
+    <span class="nc">UserRoleMapper</span> <span class="n">userRoleMapperInstances</span> <span class="o">=</span> <span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">INSTANCES</span><span class="o">;</span>  
+    <span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span> <span class="o">=</span> <span class="n">userRoleMapperInstances</span><span class="o">.</span><span class="na">defaultConvert</span><span class="o">();</span>  
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">userRoleDto</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><strong>3.使用抽象类来代替接口</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.mapstruct.Mapper</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mappings</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.factory.Mappers</span><span class="o">;</span>  
+  
+<span class="cm">/**  
+ * @Mapper 定义这是一个MapStruct对象属性转换接口，在这个类里面规定转换规则  
+ *          在项目构建时，会自动生成改接口的实现类，这个实现类将实现对象属性值复制  
+ */</span>  
+<span class="nd">@Mapper</span>  
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">UserRoleMapper</span> <span class="o">{</span>  
+  
+    <span class="cm">/**  
+     * 获取该类自动生成的实现类的实例  
+     * 接口中的属性都是 public static final 的 方法都是public abstract的  
+     */</span>  
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">UserRoleMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 这个方法就是用于实现对象属性复制的方法  
+     *  
+     * @Mapping 用来定义属性复制规则 source 指定源对象属性 target指定目标对象属性  
+     *  
+     * @param user 这个参数就是源对象，也就是需要被复制的对象  
+     * @return 返回的是目标对象，就是最终的结果对象  
+     */</span>  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">UserRoleDto</span> <span class="nf">toUserRoleDto</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 提供默认方法，方法自己定义，这个方法是我随便写的，不是要按照这个格式来的  
+     * @return  
+     */</span>  
+    <span class="nc">UserRoleDto</span> <span class="nf">defaultConvert</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserRoleDto</span><span class="o">();</span>  
+        <span class="n">userRoleDto</span><span class="o">.</span><span class="na">setUserId</span><span class="o">(</span><span class="mi">0L</span><span class="o">);</span>  
+        <span class="n">userRoleDto</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"None"</span><span class="o">);</span>  
+        <span class="n">userRoleDto</span><span class="o">.</span><span class="na">setRoleName</span><span class="o">(</span><span class="s">"None"</span><span class="o">);</span>  
+        <span class="k">return</span> <span class="n">userRoleDto</span><span class="o">;</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><strong>4.使用多个参数</strong></p>
+
+<p>可以绑定多个对象的属性值到目标对象中：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mapstruct</span><span class="o">.</span><span class="na">demo</span><span class="o">;</span>  
+  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapper</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mappings</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.factory.Mappers</span><span class="o">;</span>  
+  
+<span class="cm">/**  
+ * @Mapper 定义这是一个MapStruct对象属性转换接口，在这个类里面规定转换规则  
+ *          在项目构建时，会自动生成改接口的实现类，这个实现类将实现对象属性值复制  
+ */</span>  
+<span class="nd">@Mapper</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRoleMapper</span> <span class="o">{</span>  
+  
+    <span class="cm">/**  
+     * 获取该类自动生成的实现类的实例  
+     * 接口中的属性都是 public static final 的 方法都是public abstract的  
+     */</span>  
+    <span class="nc">UserRoleMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 这个方法就是用于实现对象属性复制的方法  
+     *  
+     * @Mapping 用来定义属性复制规则 source 指定源对象属性 target指定目标对象属性  
+     *  
+     * @param user 这个参数就是源对象，也就是需要被复制的对象  
+     * @return 返回的是目标对象，就是最终的结果对象  
+     */</span>  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="nc">UserRoleDto</span> <span class="nf">toUserRoleDto</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 多个参数中的值绑定   
+     * @param user 源1  
+     * @param role 源2  
+     * @return 从源1、2中提取出的结果  
+     */</span>  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"user.id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span> <span class="c1">// 把user中的id绑定到目标对象的userId属性中  </span>
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"user.username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span> <span class="c1">// 把user中的username绑定到目标对象的name属性中  </span>
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span> <span class="c1">// 把role对象的roleName属性值绑定到目标对象的roleName中  </span>
+    <span class="o">})</span>  
+    <span class="nc">UserRoleDto</span> <span class="nf">toUserRoleDto</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nc">Role</span> <span class="n">role</span><span class="o">);</span>  
+</code></pre></div></div>
+
+<p><strong>5.直接使用参数作为属性值</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.mapstruct.Mapper</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mapping</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.Mappings</span><span class="o">;</span>  
+<span class="kn">import</span> <span class="nn">org.mapstruct.factory.Mappers</span><span class="o">;</span>  
+  
+<span class="cm">/**  
+ * @Mapper 定义这是一个MapStruct对象属性转换接口，在这个类里面规定转换规则  
+ *          在项目构建时，会自动生成改接口的实现类，这个实现类将实现对象属性值复制  
+ */</span>  
+<span class="nd">@Mapper</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRoleMapper</span> <span class="o">{</span>  
+  
+    <span class="cm">/**  
+     * 获取该类自动生成的实现类的实例  
+     * 接口中的属性都是 public static final 的 方法都是public abstract的  
+     */</span>  
+    <span class="nc">UserRoleMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="cm">/**  
+     * 直接使用参数作为值  
+     * @param user  
+     * @param myRoleName  
+     * @return  
+     */</span>  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"user.id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span> <span class="c1">// 把user中的id绑定到目标对象的userId属性中  </span>
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"user.username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span> <span class="c1">// 把user中的username绑定到目标对象的name属性中  </span>
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"myRoleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span> <span class="c1">// 把role对象的roleName属性值绑定到目标对象的roleName中  </span>
+    <span class="o">})</span>  
+    <span class="nc">UserRoleDto</span> <span class="nf">useParameter</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nc">String</span> <span class="n">myRoleName</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>测试类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test1</span> <span class="o">{</span>  
+    <span class="nc">Role</span> <span class="n">role</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>  
+    <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>  
+  
+    <span class="nd">@Before</span>  
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">before</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="n">role</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Role</span><span class="o">(</span><span class="mi">2L</span><span class="o">,</span> <span class="s">"administrator"</span><span class="o">,</span> <span class="s">"超级管理员"</span><span class="o">);</span>  
+        <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">User</span><span class="o">(</span><span class="mi">1L</span><span class="o">,</span> <span class="s">"zhangsan"</span><span class="o">,</span> <span class="s">"12345"</span><span class="o">,</span> <span class="s">"17677778888"</span><span class="o">,</span> <span class="s">"123@qq.com"</span><span class="o">,</span> <span class="n">role</span><span class="o">);</span>  
+    <span class="o">}</span>  
+    <span class="nd">@Test</span>  
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test1</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="nc">UserRoleMapper</span> <span class="n">instances</span> <span class="o">=</span> <span class="nc">UserRoleMapper</span><span class="o">.</span><span class="na">INSTANCES</span><span class="o">;</span>  
+        <span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="na">useParameter</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="s">"myUserRole"</span><span class="o">);</span>  
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">userRoleDto</span><span class="o">);</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><strong>6.更新对象属性</strong></p>
+
+<p>在之前的例子中<code class="highlighter-rouge">UserRoleDto useParameter(User user, String myRoleName);</code>都是通过类似上面的方法来生成一个对象。而MapStruct提供了另外一种方式来更新一个对象中的属性，@MappingTarget</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRoleMapper1</span> <span class="o">{</span>  
+    <span class="nc">UserRoleMapper1</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">UserRoleMapper1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="kt">void</span> <span class="nf">updateDto</span><span class="o">(</span><span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span><span class="o">,</span> <span class="nd">@MappingTarget</span> <span class="nc">User</span> <span class="n">user</span><span class="o">);</span>  
+  
+  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@MappingTarget</span> <span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span><span class="o">);</span>  
+ 
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>通过@MappingTarget来指定目标类是谁（谁的属性需要被更新）。@Mapping还是用来定义属性对应规则。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"id"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"userId"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"role.roleName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"roleName"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="nc">User</span> <span class="n">user</span><span class="o">,</span> <span class="nd">@MappingTarget</span> <span class="nc">UserRoleDto</span> <span class="n">userRoleDto</span><span class="o">);</span>  
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@MappingTarget</code>标注的类UserRoleDto 为目标类，user类为源类，调用此方法，会把源类中的属性更新到目标类中。更新规则还是由<code class="highlighter-rouge">@Mapping</code>指定。</p>
+
+<p><strong>7.没有getter/setter也能赋值</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Customer</span> <span class="o">{</span>  
+  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>  
+  
+    <span class="c1">//getters and setter omitted for brevity  </span>
+<span class="o">}</span>  
+  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDto</span> <span class="o">{</span>  
+  
+    <span class="kd">public</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">public</span> <span class="nc">String</span> <span class="n">customerName</span><span class="o">;</span>  
+<span class="o">}</span>  
+
+<span class="nd">@Mapper</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+    <span class="nc">CustomerMapper</span> <span class="no">INSTANCE</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span> <span class="nc">CustomerMapper</span><span class="o">.</span><span class="na">class</span> <span class="o">);</span>  
+  
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"customerName"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">)</span>  
+    <span class="nc">Customer</span> <span class="nf">toCustomer</span><span class="o">(</span><span class="nc">CustomerDto</span> <span class="n">customerDto</span><span class="o">);</span>  
+  
+    <span class="nd">@InheritInverseConfiguration</span>  
+    <span class="nc">CustomerDto</span> <span class="nf">fromCustomer</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@Mapping(source = “customerName”, target = “name”)</code>不是用来指定属性映射的，如果两个对象的属性名相同是可以省略@Mapping的。</p>
+
+<p>上面MapStruct生成的实现类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Generated</span><span class="o">(</span>  
+    <span class="n">value</span> <span class="o">=</span> <span class="s">"org.mapstruct.ap.MappingProcessor"</span><span class="o">,</span>  
+    <span class="n">date</span> <span class="o">=</span> <span class="s">"2019-02-14T15:41:21+0800"</span><span class="o">,</span>  
+    <span class="n">comments</span> <span class="o">=</span> <span class="s">"version: 1.3.0.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"</span>  
+<span class="o">)</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerMapperImpl</span> <span class="kd">implements</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+    <span class="nd">@Override</span>  
+    <span class="kd">public</span> <span class="nc">Customer</span> <span class="nf">toCustomer</span><span class="o">(</span><span class="nc">CustomerDto</span> <span class="n">customerDto</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span> <span class="n">customerDto</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  
+        <span class="o">}</span>  
+  
+        <span class="nc">Customer</span> <span class="n">customer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Customer</span><span class="o">();</span>  
+  
+        <span class="n">customer</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span> <span class="n">customerDto</span><span class="o">.</span><span class="na">customerName</span> <span class="o">);</span>  
+        <span class="n">customer</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span> <span class="n">customerDto</span><span class="o">.</span><span class="na">id</span> <span class="o">);</span>  
+  
+        <span class="k">return</span> <span class="n">customer</span><span class="o">;</span>  
+    <span class="o">}</span>  
+  
+    <span class="nd">@Override</span>  
+    <span class="kd">public</span> <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span> <span class="n">customer</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  
+        <span class="o">}</span>  
+  
+        <span class="nc">CustomerDto</span> <span class="n">customerDto</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerDto</span><span class="o">();</span>  
+  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">customerName</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">customer</span><span class="o">.</span><span class="na">getId</span><span class="o">();</span>  
+  
+        <span class="k">return</span> <span class="n">customerDto</span><span class="o">;</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@InheritInverseConfiguration</code>在这里的作用就是实现<code class="highlighter-rouge">customerDto.customerName = customer.getName();</code>功能的。如果没有这个注解，toCustomerDto这个方法则不会有customerName 和name两个属性的对应关系的。</p>
+
+<p><strong>8.使用Spring依赖注入</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>  
+<span class="nd">@NoArgsConstructor</span>  
+<span class="nd">@AllArgsConstructor</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Customer</span> <span class="o">{</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>  
+<span class="o">}</span>  
+  
+<span class="nd">@Data</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDto</span> <span class="o">{</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">customerName</span><span class="o">;</span>  
+<span class="o">}</span>  
+  
+<span class="c1">// 这里主要是这个componentModel 属性，它的值就是当前要使用的依赖注入的环境  </span>
+<span class="nd">@Mapper</span><span class="o">(</span><span class="n">componentModel</span> <span class="o">=</span> <span class="s">"spring"</span><span class="o">)</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+    <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"customerName"</span><span class="o">)</span>  
+    <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">@Mapper(componentModel = “spring”)</code>，表示把当前Mapper类纳入spring容器。可以在其它类中直接注入了：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>  
+<span class="nd">@RestController</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoMapstructApplication</span> <span class="o">{</span>  
+  
+ <span class="c1">// 注入Mapper  </span>
+    <span class="nd">@Autowired</span>  
+    <span class="kd">private</span> <span class="nc">CustomerMapper</span> <span class="n">mapper</span><span class="o">;</span>  
+  
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">DemoMapstructApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>  
+    <span class="o">}</span>  
+  
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/test"</span><span class="o">)</span>  
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>  
+        <span class="nc">Customer</span> <span class="n">customer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Customer</span><span class="o">(</span><span class="mi">1L</span><span class="o">,</span> <span class="s">"zhangsan"</span><span class="o">);</span>  
+        <span class="nc">CustomerDto</span> <span class="n">customerDto</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="na">toCustomerDto</span><span class="o">(</span><span class="n">customer</span><span class="o">);</span>  
+        <span class="k">return</span> <span class="n">customerDto</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>看一下MapStruct生成的实现类，会发现标记了<code class="highlighter-rouge">@Component</code>注解。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Generated</span><span class="o">(</span>  
+    <span class="n">value</span> <span class="o">=</span> <span class="s">"org.mapstruct.ap.MappingProcessor"</span><span class="o">,</span>  
+    <span class="n">date</span> <span class="o">=</span> <span class="s">"2019-02-14T15:54:17+0800"</span><span class="o">,</span>  
+    <span class="n">comments</span> <span class="o">=</span> <span class="s">"version: 1.3.0.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"</span>  
+<span class="o">)</span>  
+<span class="nd">@Component</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerMapperImpl</span> <span class="kd">implements</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+    <span class="nd">@Override</span>  
+    <span class="kd">public</span> <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span> <span class="n">customer</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  
+        <span class="o">}</span>  
+  
+        <span class="nc">CustomerDto</span> <span class="n">customerDto</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerDto</span><span class="o">();</span>  
+  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setCustomerName</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span>  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getId</span><span class="o">()</span> <span class="o">);</span>  
+  
+        <span class="k">return</span> <span class="n">customerDto</span><span class="o">;</span>  
+    <span class="o">}</span>  
+<span class="o">}</span> 
+</code></pre></div></div>
+
+<p><strong>9.自定义类型转换</strong></p>
+
+<p>这个赞，有时候，在对象转换的时候可能会出现这样一个问题，就是源对象中的类型是Boolean类型，而目标对象类型是String类型，这种情况可以通过<code class="highlighter-rouge">@Mapper</code>的uses属性来实现：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Data</span>  
+<span class="nd">@NoArgsConstructor</span>  
+<span class="nd">@AllArgsConstructor</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Customer</span> <span class="o">{</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">Boolean</span> <span class="n">isDisable</span><span class="o">;</span>  
+<span class="o">}</span>  
+  
+<span class="nd">@Data</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDto</span> <span class="o">{</span>  
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">id</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">customerName</span><span class="o">;</span>  
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">disable</span><span class="o">;</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>定义转换规则的类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BooleanStrFormat</span> <span class="o">{</span>  
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toStr</span><span class="o">(</span><span class="nc">Boolean</span> <span class="n">isDisable</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span><span class="n">isDisable</span><span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="s">"Y"</span><span class="o">;</span>  
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="s">"N"</span><span class="o">;</span>  
+        <span class="o">}</span>  
+    <span class="o">}</span>  
+    <span class="kd">public</span> <span class="nc">Boolean</span> <span class="nf">toBoolean</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"Y"</span><span class="o">))</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>  
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>  
+        <span class="o">}</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>定义Mapper，<code class="highlighter-rouge">@Mapper( uses = { BooleanStrFormat.class})</code>，注意，这里的users属性用于引用之前定义的转换规则的类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Mapper</span><span class="o">(</span> <span class="n">uses</span> <span class="o">=</span> <span class="o">{</span> <span class="nc">BooleanStrFormat</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+    <span class="nc">CustomerMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">CustomerMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"customerName"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"isDisable"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"disable"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>这样子，Customer类中的isDisable属性的true就会转变成CustomerDto中的disable属性的yes。</p>
+
+<p>MapStruct自动生成的实现类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Generated</span><span class="o">(</span>  
+    <span class="n">value</span> <span class="o">=</span> <span class="s">"org.mapstruct.ap.MappingProcessor"</span><span class="o">,</span>  
+    <span class="n">date</span> <span class="o">=</span> <span class="s">"2019-02-14T16:49:18+0800"</span><span class="o">,</span>  
+    <span class="n">comments</span> <span class="o">=</span> <span class="s">"version: 1.3.0.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"</span>  
+<span class="o">)</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerMapperImpl</span> <span class="kd">implements</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+ <span class="c1">// 引用 uses 中指定的类  </span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">BooleanStrFormat</span> <span class="n">booleanStrFormat</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BooleanStrFormat</span><span class="o">();</span>  
+  
+    <span class="nd">@Override</span>  
+    <span class="kd">public</span> <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span> <span class="n">customer</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  
+        <span class="o">}</span>  
+  
+        <span class="nc">CustomerDto</span> <span class="n">customerDto</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerDto</span><span class="o">();</span>  
+  <span class="c1">// 转换方式的使用  </span>
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setDisable</span><span class="o">(</span> <span class="n">booleanStrFormat</span><span class="o">.</span><span class="na">toStr</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getIsDisable</span><span class="o">()</span> <span class="o">)</span> <span class="o">);</span>  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setCustomerName</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span>  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getId</span><span class="o">()</span> <span class="o">);</span>  
+  
+        <span class="k">return</span> <span class="n">customerDto</span><span class="o">;</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>我们看到它是创建了一个BooleanStrFormat对象，,要注意的是，<mark>如果使用了例如像spring这样的环境，Mapper引入uses类实例的方式将是自动注入，那么这个类也应该纳入Spring容器：</mark></p>
+
+<p>CustomerMapper.java指定使用spring</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Mapper</span><span class="o">(</span><span class="n">componentModel</span> <span class="o">=</span> <span class="s">"spring"</span><span class="o">,</span> <span class="n">uses</span> <span class="o">=</span> <span class="o">{</span> <span class="nc">BooleanStrFormat</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>  
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+    <span class="nc">CustomerMapper</span> <span class="no">INSTANCES</span> <span class="o">=</span> <span class="nc">Mappers</span><span class="o">.</span><span class="na">getMapper</span><span class="o">(</span><span class="nc">CustomerMapper</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  
+  
+    <span class="nd">@Mappings</span><span class="o">({</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"customerName"</span><span class="o">),</span>  
+            <span class="nd">@Mapping</span><span class="o">(</span><span class="n">source</span> <span class="o">=</span> <span class="s">"isDisable"</span><span class="o">,</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"disable"</span><span class="o">)</span>  
+    <span class="o">})</span>  
+    <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">);</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>转换类加上@Component注解，加入Spring容器：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BooleanStrFormat</span> <span class="o">{</span>  
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toStr</span><span class="o">(</span><span class="nc">Boolean</span> <span class="n">isDisable</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span><span class="n">isDisable</span><span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="s">"Y"</span><span class="o">;</span>  
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="s">"N"</span><span class="o">;</span>  
+        <span class="o">}</span>  
+    <span class="o">}</span>  
+    <span class="kd">public</span> <span class="nc">Boolean</span> <span class="nf">toBoolean</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"Y"</span><span class="o">))</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>  
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>  
+        <span class="o">}</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>  
+</code></pre></div></div>
+
+<p>MapStruct自动生成的实现类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Generated</span><span class="o">(</span>  
+    <span class="n">value</span> <span class="o">=</span> <span class="s">"org.mapstruct.ap.MappingProcessor"</span><span class="o">,</span>  
+    <span class="n">date</span> <span class="o">=</span> <span class="s">"2019-02-14T16:55:35+0800"</span><span class="o">,</span>  
+    <span class="n">comments</span> <span class="o">=</span> <span class="s">"version: 1.3.0.Final, compiler: javac, environment: Java 1.8.0_181 (Oracle Corporation)"</span>  
+<span class="o">)</span>  
+<span class="nd">@Component</span>  
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerMapperImpl</span> <span class="kd">implements</span> <span class="nc">CustomerMapper</span> <span class="o">{</span>  
+  
+ <span class="c1">// 使用自动注入的方式引入  </span>
+    <span class="nd">@Autowired</span>  
+    <span class="kd">private</span> <span class="nc">BooleanStrFormat</span> <span class="n">booleanStrFormat</span><span class="o">;</span>  
+  
+    <span class="nd">@Override</span>  
+    <span class="kd">public</span> <span class="nc">CustomerDto</span> <span class="nf">toCustomerDto</span><span class="o">(</span><span class="nc">Customer</span> <span class="n">customer</span><span class="o">)</span> <span class="o">{</span>  
+        <span class="k">if</span> <span class="o">(</span> <span class="n">customer</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>  
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  
+        <span class="o">}</span>  
+  
+        <span class="nc">CustomerDto</span> <span class="n">customerDto</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerDto</span><span class="o">();</span>  
+  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setDisable</span><span class="o">(</span> <span class="n">booleanStrFormat</span><span class="o">.</span><span class="na">toStr</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getIsDisable</span><span class="o">()</span> <span class="o">)</span> <span class="o">);</span>  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setCustomerName</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">);</span>  
+        <span class="n">customerDto</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span> <span class="n">customer</span><span class="o">.</span><span class="na">getId</span><span class="o">()</span> <span class="o">);</span>  
+  
+        <span class="k">return</span> <span class="n">customerDto</span><span class="o">;</span>  
+    <span class="o">}</span>  
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<ul>
+  <li>其实对象属性转换的操作无非是基于反射、AOP、CGlib、ASM、Javassist 在编译时和运行期进行处理，再有好的思路就是在编译前生成出对应的get、set，就像手写出来的一样。</li>
+  <li>所以我更推荐我喜欢的 MapStruct，这货用起来还是比较舒服的，一种是来自于功能上的拓展性，易用性和兼容性</li>
+</ul>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2022/03/24/beanutils-and-other.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

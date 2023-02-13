@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> ThreadLocal使用与内存泄漏 - 大伟的博客 </title>
+    <meta name="keywords" content="juc">
+    <meta name="description"
+          content="threadLocal线程局部变量为我们解决了多线程访问变量的安全问题,key是弱引用，只能生存到下次GC前，如果很多线程使用Threadlocal可能会引起内存泄露，不同的请求获取相同的ThreadLocal值如何解决，InheritableThreadLocal可继承线程变量在线程池中执行被获取相同值的原因，因为线程变量没有被重新set值">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/java/2020/09/17/java-threadlocal.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="ThreadLocal使用与内存泄漏">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>ThreadLocal使用与内存泄漏</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/09/17
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1threadlocal解决了什么问题">1、ThreadLocal解决了什么问题</h2>
+
+<p>被threadlocal声明的变量只能在线程内访问，解决了对象在被共享访问时带来的线程安全问题，原理就是每个线程都有一个threadlocal变量的副本，每个线程只能访问自己的副本。</p>
+
+<p>我们平时是使用加锁的方式，如synchronized 和 ReentrantLock，保证线程安全（原子性操作），生活中的例子：现在公司所有人都要填写一个表格，但是只有一支笔，这个时候就只能上个人用完了之后，下个人才可以使用，为了保证”笔”这个资源的可用性，只需要保证在接下来每个人的获取顺序就可以了，这就是 lock 的作用，当这支笔被别人用的时候，我就加 lock ，你来了那就进入队列排队等待获取资源（非公平方式那就另外说了），这支笔用完之后就释放 lock ，然后按照顺序给下个人使用。</p>
+
+<p>但是完全可以一个人一支笔对不对，这样的话，你填写你的表格，我填写我的表格，咱俩谁都不耽搁谁。这就是 ThreadLocal 在做的事情，因为每个 Thread 都有一个副本，就不存在资源竞争，所以也就不需要加锁，这不就是拿空间去换了时间嘛。数据结构如下图：</p>
+
+<p><img src="\assets\images\2020\juc\threadlocal.jpg" alt="" /></p>
+
+<p>可以看到，在 Thread 中持有一个 ThreadLocalMap ， ThreadLocalMap 是由 Entry 来组成的，在 Entry 里面有 ThreadLocal 和 value，</p>
+
+<p>,ThreadLocalMap 是Thread的静态内部类，它通过调用creatMap()方法懒加载创建，这里也要说要一下ThreadLocal的子类InheritableThreadLocal，源码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">InheritableThreadLocal</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="cm">/**
+     * Computes the child's initial value for this inheritable thread-local
+     * variable as a function of the parent's value at the time the child
+     * thread is created.  This method is called from within the parent
+     * thread before the child is started.
+     * &lt;p&gt;
+     * This method merely returns its input argument, and should be overridden
+     * if a different behavior is desired.
+     *
+     * @param parentValue the parent thread's value
+     * @return the child thread's initial value
+     */</span>
+    <span class="kd">protected</span> <span class="no">T</span> <span class="nf">childValue</span><span class="o">(</span><span class="no">T</span> <span class="n">parentValue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">parentValue</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * Get the map associated with a ThreadLocal.
+     *
+     * @param t the current thread
+     */</span>
+    <span class="nc">ThreadLocalMap</span> <span class="nf">getMap</span><span class="o">(</span><span class="nc">Thread</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+       <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="na">inheritableThreadLocals</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * Create the map associated with a ThreadLocal.
+     *
+     * @param t the current thread
+     * @param firstValue value for the initial entry of the table.
+     */</span>
+    <span class="kt">void</span> <span class="nf">createMap</span><span class="o">(</span><span class="nc">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="no">T</span> <span class="n">firstValue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">inheritableThreadLocals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocalMap</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">firstValue</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>ThreadLocal调用set方法设置局部变量value，懒加载创建当前线程的ThreadLocalMap对象</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+     * Sets the current thread's copy of this thread-local variable
+     * to the specified value.  Most subclasses will have no need to
+     * override this method, relying solely on the {@link #initialValue}
+     * method to set the values of thread-locals.
+     *
+     * @param value the value to be stored in the current thread's copy of
+     *        this thread-local.
+     */</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">set</span><span class="o">(</span><span class="no">T</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">();</span>
+  <span class="nc">ThreadLocalMap</span> <span class="n">map</span> <span class="o">=</span> <span class="n">getMap</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">map</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+    <span class="n">map</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+  <span class="k">else</span>
+    <span class="nf">createMap</span><span class="o">(</span><span class="n">t</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>如果是InheritableThreadLocal则调用自己的createMap()方法，如果是ThreadLoca则调用它自己的createMap()方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kt">void</span> <span class="nf">createMap</span><span class="o">(</span><span class="nc">Thread</span> <span class="n">t</span><span class="o">,</span> <span class="no">T</span> <span class="n">firstValue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">t</span><span class="o">.</span><span class="na">threadLocals</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocalMap</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">firstValue</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>都是给当前线程Thread的成员变量创建ThreadLocalMap对象，并把线程变量值放入ThreadLocalMap对象中，当线程结束，它里面的成员变量就会被回收</p>
+
+<p><img src="\assets\images\2021\javabase\Thread-threadLocals-threadLocalMap.jpg" alt="" /></p>
+
+<p>看ThreadLocalMap的构造方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">ThreadLocalMap</span><span class="o">(</span><span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;</span> <span class="n">firstKey</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">firstValue</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">table</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Entry</span><span class="o">[</span><span class="no">INITIAL_CAPACITY</span><span class="o">];</span>
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">firstKey</span><span class="o">.</span><span class="na">threadLocalHashCode</span> <span class="o">&amp;</span> <span class="o">(</span><span class="no">INITIAL_CAPACITY</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+  <span class="n">table</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Entry</span><span class="o">(</span><span class="n">firstKey</span><span class="o">,</span> <span class="n">firstValue</span><span class="o">);</span>
+  <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+  <span class="n">setThreshold</span><span class="o">(</span><span class="no">INITIAL_CAPACITY</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Entry 数组初始容量是16，ThreadLocal线程变量本身就是个key，Entry是ThreadLocalMap的静态内部类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">static</span> <span class="kd">class</span> <span class="nc">Entry</span> <span class="kd">extends</span> <span class="nc">WeakReference</span><span class="o">&lt;</span><span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;&gt;</span> <span class="o">{</span>
+  <span class="cm">/** The value associated with this ThreadLocal. */</span>
+  <span class="nc">Object</span> <span class="n">value</span><span class="o">;</span>
+
+  <span class="nc">Entry</span><span class="o">(</span><span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;</span> <span class="n">k</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">k</span><span class="o">);</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>调用super</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WeakReference</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="nc">Reference</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * Creates a new weak reference that refers to the given object.  The new
+     * reference is not registered with any queue.
+     *
+     * @param referent object the new weak reference will refer to
+     */</span>
+    <span class="kd">public</span> <span class="nf">WeakReference</span><span class="o">(</span><span class="no">T</span> <span class="n">referent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">referent</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * Creates a new weak reference that refers to the given object and is
+     * registered with the given queue.
+     *
+     * @param referent object the new weak reference will refer to
+     * @param q the queue with which the reference is to be registered,
+     *          or &lt;tt&gt;null&lt;/tt&gt; if registration is not required
+     */</span>
+    <span class="kd">public</span> <span class="nf">WeakReference</span><span class="o">(</span><span class="no">T</span> <span class="n">referent</span><span class="o">,</span> <span class="nc">ReferenceQueue</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">q</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">referent</span><span class="o">,</span> <span class="n">q</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Entry的key就是ThreadLocal的弱引用，发送GC时就被回收，导致ThreadLocal的value值无法访问，但是value不会被回收。</p>
+
+<p>当前线程的另ThreadLocal变量调用set方法，当前线程的ThreadLocalMap已创建就直接调用它的set方法，把ThreadLocal变量值放进Entry数组</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">set</span><span class="o">(</span><span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;</span> <span class="n">key</span><span class="o">,</span> <span class="nc">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="c1">// We don't use a fast path as with get() because it is at</span>
+  <span class="c1">// least as common to use set() to create new entries as</span>
+  <span class="c1">// it is to replace existing ones, in which case, a fast</span>
+  <span class="c1">// path would fail more often than not.</span>
+
+  <span class="nc">Entry</span><span class="o">[]</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">table</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">threadLocalHashCode</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">len</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="nc">Entry</span> <span class="n">e</span> <span class="o">=</span> <span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+       <span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span>
+       <span class="n">e</span> <span class="o">=</span> <span class="n">tab</span><span class="o">[</span><span class="n">i</span> <span class="o">=</span> <span class="n">nextIndex</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">len</span><span class="o">)])</span> <span class="o">{</span>
+    <span class="nc">ThreadLocal</span><span class="o">&lt;?&gt;</span> <span class="n">k</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+      <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">k</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">replaceStaleEntry</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+      <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Entry</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">sz</span> <span class="o">=</span> <span class="o">++</span><span class="n">size</span><span class="o">;</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="n">cleanSomeSlots</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">sz</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">sz</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="o">)</span>
+    <span class="n">rehash</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="2threadlocalmap">2、ThreadLocalMap</h2>
+
+<p>点进ThreadLocal的源码，里面维护一个ThreadLocalMap</p>
+
+<p><img src="\assets\images\2020\juc\threadlocal3.jpg" alt="" /></p>
+
+<p>点进WeakReference</p>
+
+<p><img src="\assets\images\2020\juc\threadlocal4.jpg" alt="" /></p>
+
+<p>在调用 super(k) 时就将 ThreadLocal 实例包装成了一个 WeakReference</p>
+
+<p>Java的4大引用，在我JUC的笔记中，coding老师也讲过</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">引用类型</th>
+      <th style="text-align: center">功能特点</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">强引用 ( Strong Reference )</td>
+      <td style="text-align: center">被强引用关联的对象永远不会被垃圾回收器回收掉</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">软引用( Soft Reference )</td>
+      <td style="text-align: center">软引用关联的对象，只有当系统将要发生内存溢出时，才会去回收软引用引用的对象</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">弱引用 ( Weak Reference )</td>
+      <td style="text-align: center">只被弱引用关联的对象，只要发生垃圾收集事件，就会被回收</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">虚引用 ( Phantom Reference )</td>
+      <td style="text-align: center">被虚引用关联的对象的唯一作用是能在这个对象被回收器回收时收到一个系统通知</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>为什么key不使用强引用，如果使用强引用，没有对threadlocal对象设置为null，ThreadLocalMap 没有对remove，在 GC 时进行可达性分析， ThreadLocal 依然可达，这样就不会对 ThreadLocal 进行回收</p>
+
+<p>使用弱引用的话，虽然会出现内存泄漏的问题，但是在 ThreadLocal 生命周期里面，都有对 key 值为 null 时进行回收的处理操作</p>
+
+<h2 id="3内存泄漏">3、内存泄漏</h2>
+
+<p>Entry 继承了 WeakReference ，而 Entry 对象中的 key 使用了 WeakReference 封装，key是一个弱引用，只能生存到下次GC前。</p>
+
+<p>如果一个线程调用了 ThreadLocalMap 的 set 设置变量，当前的 ThreadLocalMap 就会新增一条记录，但由于发生了一次垃圾回收， key 值被回收掉了，但是 value 值还在内存中，而且如果线程一直存在的话，那么它的 value 值就会一直存在。就会存在一条引用链：thread -&gt; ThreadLocalMap -&gt; Entry -&gt; Value</p>
+
+<p><img src="\assets\images\2020\juc\threadlocal2.jpg" alt="" /></p>
+
+<p>就是因为这条引用链的存在，就会导致如果Thread 还在运行，那么 Entry 不会被回收，进而 value 也不会被回收掉，但是 Entry 里面的 key 值已经被回收掉了。如果很多个线程就会造成内存泄漏，因为value值没有被回收掉。</p>
+
+<p><strong>解决办法</strong>：使用完 key 值之后，将 value 值通过 remove 方法 remove 掉</p>
+
+<h2 id="4相同threadlocal值">4、相同ThreadLocal值</h2>
+
+<p>两个不同的请求，在获取ThreadLocal里保存的值时，获取到了相同的值。</p>
+
+<p>原因：这两个请求共用了一个线程</p>
+
+<ul>
+  <li>http1.1协议中的keep-alive是默认开启的，同一个会话中，有限的请求是共用一个长连接的。</li>
+  <li>tomcat默认使用线程池，所以一个线程的生命周期不能对等于一个请求的生命周期，线程池中的线程是可以被复用的。每一个浏览器的请求其实是被tomcat监听到，然后调用线程进行处理，线程是被复用的处理多个请求，当tomcat线程池满了，没有线程资源处理请求，请求就会被挂起，无响应。</li>
+</ul>
+
+<p><mark>解决方案</mark></p>
+
+<p>1）保证每次请求都用新的值覆盖线程变量，调用ThreadLocal的set方法</p>
+
+<p>2）保证在每个请求结束后清空线程变量，调用ThreadLocal的remove方法</p>
+
+<h2 id="5可继承的线程变量">5、可继承的线程变量</h2>
+
+<p>InheritableThreadLocal 是指当子线程被创建时，父线程会把自己的InheritableThreadLocal 变量全部复制到子线程的ThreadLoaLMap中，具体怎么实现，从子线程被创建开始，点击Thread源码，找到构造方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nf">Thread</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">init</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="s">"Thread-"</span> <span class="o">+</span> <span class="n">nextThreadNum</span><span class="o">(),</span> <span class="mi">0</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="nf">Thread</span><span class="o">(</span><span class="nc">Runnable</span> <span class="n">target</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">init</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="s">"Thread-"</span> <span class="o">+</span> <span class="n">nextThreadNum</span><span class="o">(),</span> <span class="mi">0</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>init方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="nc">ThreadGroup</span> <span class="n">g</span><span class="o">,</span> <span class="nc">Runnable</span> <span class="n">target</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span>
+                  <span class="kt">long</span> <span class="n">stackSize</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">init</span><span class="o">(</span><span class="n">g</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">stackSize</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="nc">ThreadGroup</span> <span class="n">g</span><span class="o">,</span> <span class="nc">Runnable</span> <span class="n">target</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">,</span>
+                      <span class="kt">long</span> <span class="n">stackSize</span><span class="o">,</span> <span class="nc">AccessControlContext</span> <span class="n">acc</span><span class="o">,</span>
+                      <span class="kt">boolean</span> <span class="n">inheritThreadLocals</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">name</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">NullPointerException</span><span class="o">(</span><span class="s">"name cannot be null"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+
+        <span class="nc">Thread</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">currentThread</span><span class="o">();</span>
+        <span class="nc">SecurityManager</span> <span class="n">security</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">getSecurityManager</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">g</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="cm">/* Determine if it's an applet or not */</span>
+
+            <span class="cm">/* If there is a security manager, ask the security manager
+               what to do. */</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">security</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">security</span><span class="o">.</span><span class="na">getThreadGroup</span><span class="o">();</span>
+            <span class="o">}</span>
+
+            <span class="cm">/* If the security doesn't have a strong opinion of the matter
+               use the parent thread group. */</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">g</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="na">getThreadGroup</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="cm">/* checkAccess regardless of whether or not threadgroup is
+           explicitly passed in. */</span>
+        <span class="n">g</span><span class="o">.</span><span class="na">checkAccess</span><span class="o">();</span>
+
+        <span class="cm">/*
+         * Do we have the required permissions?
+         */</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">security</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">isCCLOverridden</span><span class="o">(</span><span class="n">getClass</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="n">security</span><span class="o">.</span><span class="na">checkPermission</span><span class="o">(</span><span class="no">SUBCLASS_IMPLEMENTATION_PERMISSION</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">g</span><span class="o">.</span><span class="na">addUnstarted</span><span class="o">();</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="na">group</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">daemon</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="na">isDaemon</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">priority</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="na">getPriority</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">security</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">isCCLOverridden</span><span class="o">(</span><span class="n">parent</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">contextClassLoader</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+        <span class="k">else</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">contextClassLoader</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="na">contextClassLoader</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">inheritedAccessControlContext</span> <span class="o">=</span>
+                <span class="n">acc</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">acc</span> <span class="o">:</span> <span class="nc">AccessController</span><span class="o">.</span><span class="na">getContext</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">;</span>
+        <span class="n">setPriority</span><span class="o">(</span><span class="n">priority</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">inheritThreadLocals</span> <span class="o">&amp;&amp;</span> <span class="n">parent</span><span class="o">.</span><span class="na">inheritableThreadLocals</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">inheritableThreadLocals</span> <span class="o">=</span>
+                <span class="nc">ThreadLocal</span><span class="o">.</span><span class="na">createInheritedMap</span><span class="o">(</span><span class="n">parent</span><span class="o">.</span><span class="na">inheritableThreadLocals</span><span class="o">);</span>
+        <span class="cm">/* Stash the specified stack size in case the VM cares */</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">stackSize</span> <span class="o">=</span> <span class="n">stackSize</span><span class="o">;</span>
+
+        <span class="cm">/* Set thread ID */</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">nextThreadID</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>里面有一段代码，创建子线程的inheritThreadLocals对象，入参是父线程的inheritThreadLocals对象</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">if</span> <span class="o">(</span><span class="n">inheritThreadLocals</span> <span class="o">&amp;&amp;</span> <span class="n">parent</span><span class="o">.</span><span class="na">inheritableThreadLocals</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">inheritableThreadLocals</span> <span class="o">=</span>
+                <span class="nc">ThreadLocal</span><span class="o">.</span><span class="na">createInheritedMap</span><span class="o">(</span><span class="n">parent</span><span class="o">.</span><span class="na">inheritableThreadLocals</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>跳到ThreadLocal的createInheritedMap方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">static</span> <span class="nc">ThreadLocalMap</span> <span class="nf">createInheritedMap</span><span class="o">(</span><span class="nc">ThreadLocalMap</span> <span class="n">parentMap</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">ThreadLocalMap</span><span class="o">(</span><span class="n">parentMap</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>构造方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="nf">ThreadLocalMap</span><span class="o">(</span><span class="nc">ThreadLocalMap</span> <span class="n">parentMap</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Entry</span><span class="o">[]</span> <span class="n">parentTable</span> <span class="o">=</span> <span class="n">parentMap</span><span class="o">.</span><span class="na">table</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">parentTable</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+  <span class="n">setThreshold</span><span class="o">(</span><span class="n">len</span><span class="o">);</span>
+  <span class="n">table</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Entry</span><span class="o">[</span><span class="n">len</span><span class="o">];</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">len</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="nc">Entry</span> <span class="n">e</span> <span class="o">=</span> <span class="n">parentTable</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">"unchecked"</span><span class="o">)</span>
+      <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">key</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;)</span> <span class="n">e</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">childValue</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+        <span class="nc">Entry</span> <span class="n">c</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Entry</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="na">threadLocalHashCode</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">table</span><span class="o">[</span><span class="n">h</span><span class="o">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+          <span class="n">h</span> <span class="o">=</span> <span class="n">nextIndex</span><span class="o">(</span><span class="n">h</span><span class="o">,</span> <span class="n">len</span><span class="o">);</span>
+        <span class="n">table</span><span class="o">[</span><span class="n">h</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+        <span class="n">size</span><span class="o">++;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>这是线程被创建的整个流程。</p>
+
+<p>总结，使用InheritableThreadLocal 线程变量时，要注意在线程池中执行的任务获取的InheritableThreadLocal 的变量值大概率都是相同的，因为线程是被任务复用的。</p>
+
+<p>参考:</p>
+
+<ul>
+  <li><a href="https://blog.csdn.net/weixin_36210111/article/details/115780843">https://blog.csdn.net/weixin_36210111/article/details/115780843</a></li>
+  <li><a href="https://www.jianshu.com/p/09ceb962894d">https://www.jianshu.com/p/09ceb962894d</a></li>
+  <li>https://blog.csdn.net/v123411739/article/details/79117430</li>
+</ul>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/java/2020/09/17/java-threadlocal.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

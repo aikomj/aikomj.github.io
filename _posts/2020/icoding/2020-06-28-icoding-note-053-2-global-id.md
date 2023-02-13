@@ -3,7 +3,7 @@ layout: post
 title: 飞天班第53节：全局分布式id的设计
 category: icoding-edu
 tags: [icoding-edu]
-keywords: mysql
+keywords: mysql,springboot,springcloud
 excerpt: Mycat和Sharding jdbc如何通过UUID和雪花算法实现全局id
 lock: noneed
 ---

@@ -2,7 +2,7 @@
 layout: post
 title: Spring源码分析实战1
 category: icoding-allen
-tags: [icoding-allen]
+tags: [spring]
 keywords: spring
 excerpt: 源码学习方法论，spring的核心注解，核心接口，
 lock: noneed

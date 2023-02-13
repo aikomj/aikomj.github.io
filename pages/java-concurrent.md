@@ -14,7 +14,7 @@ permalink: /java-concurrent
 
         <ul id="posts-list">
             {% for post in site.posts %}
-                {% if post.keywords contains 'juc' %}
+                {% if post.tags contains 'juc' or post.keywords contains 'juc' %}
                 <li class="posts-list-item">
                     <div class="posts-content">
                         <span class="posts-list-meta">{{ post.date | date: "%Y-%m-%d" }}</span>

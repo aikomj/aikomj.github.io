@@ -1,9 +1,9 @@
 ---
 layout: post
-title: Idea 开发后端利器的使用技巧
+title: Idea后端开发利器的使用技巧
 category: tool
 tags: [tool]
-keywords: life
+keywords: idea
 excerpt: 使用idea这么久了，你怎能不熟悉这些技巧
 lock: noneed
 ---

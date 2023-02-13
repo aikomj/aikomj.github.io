@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> Pagehelper的分页原理 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="为啥PageHelper.startPage后执行mybatis的数据库查询就能分页了，底层使用了ThreadLocal变量">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2020/11/07/pagehelper.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="Pagehelper的分页原理">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>Pagehelper的分页原理</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/11/07
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="分页">分页</h2>
+
+<p>直接上代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">PageHelper</span><span class="o">.</span><span class="na">startPage</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">5</span> <span class="o">,</span><span class="s">"CREATION_DATE DESC"</span><span class="o">);</span> <span class="c1">// 分页参数</span>
+<span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">param1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;();</span>
+<span class="n">param1</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"setsOfBooksId"</span><span class="o">,</span> <span class="n">request</span><span class="o">.</span><span class="na">getSetsOfBooksId</span><span class="o">());</span>	
+<span class="c1">// 执行查询</span>
+<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;&gt;</span> <span class="n">wareList</span> <span class="o">=</span> <span class="n">mobileWarehouseMapper</span><span class="o">.</span><span class="na">selectAll</span><span class="o">(</span><span class="n">param1</span><span class="o">);</span> <span class="c1">//需要分页</span>
+</code></pre></div></div>
+
+<p>点击PageHelper.startPage的源码，跳过一系列的方法重载，进入真正调用分页的地方</p>
+
+<p><img src="\assets\images\2020\java\pagehelper.jpg" alt="" /></p>
+
+<p>这个线程变量提供4个方法，主要是getLocalPage() 和setLocalPage()两个方法，看他们的源码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 初始（创建）</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Page</span><span class="o">&gt;</span> <span class="no">LOCAL_PAGE</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocal</span><span class="o">();</span>
+
+<span class="c1">// 获取</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nc">Page</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="nf">getLocalPage</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="nc">Page</span><span class="o">)</span><span class="no">LOCAL_PAGE</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="c1">// 设置</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setLocalPage</span><span class="o">(</span><span class="nc">Page</span> <span class="n">page</span><span class="o">)</span> <span class="o">{</span>
+        <span class="no">LOCAL_PAGE</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">page</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="c1">// 清除</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">clearLocalPage</span><span class="o">()</span> <span class="o">{</span>
+        <span class="no">LOCAL_PAGE</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<p>LOCAL_PAGE 是一个ThreadLocal 线程变量，每个被调用的查询SQL语句线程都会保存一个该变量的副本，查询的参数互不影响，与他相对的就是共享变量，</p>
+
+<p>上面的startPage方法就是保存了当前线程的Page参数的变量，有赋值就有取值，那么在下面的分页过程中，肯定在哪边取到了这个threadLocal的page参数。执行的SQL语句：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">select</span> <span class="n">id</span><span class="o">=</span><span class="s">"selectAll"</span> <span class="n">resultMap</span><span class="o">=</span><span class="s">"BaseResultMap"</span><span class="o">&gt;</span>
+  <span class="n">select</span> <span class="no">SEQ_ID</span><span class="o">,</span> <span class="no">PRODUCT_ID</span><span class="o">,</span> <span class="no">PRODUCT_NAME</span><span class="o">,</span> <span class="no">PRODUCT_DESC</span><span class="o">,</span> <span class="no">CREATE_TIME</span><span class="o">,</span> <span class="no">EFFECT_TIME</span><span class="o">,</span> 
+  <span class="no">EXPIRE_TIME</span><span class="o">,</span> <span class="no">PRODUCT_STATUS</span><span class="o">,</span> <span class="no">PROVINCE_CODE</span><span class="o">,</span> <span class="no">REGION_CODE</span><span class="o">,</span> <span class="no">CHANGE_TIME</span><span class="o">,</span> <span class="no">OP_OPERATOR_ID</span><span class="o">,</span> 
+  <span class="no">PRODUCT_SYSTEM</span><span class="o">,</span> <span class="no">PRODUCT_CODE</span>
+  <span class="n">from</span> <span class="no">PM_PRODUCT</span>
+<span class="o">&lt;/</span><span class="n">select</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>，那到底是哪里做了拦截吗？带着这个疑问，我跟进了代码，发现进入了mybatis的MapperPoxy这个代理类，每一个mybatis的xxxMapper接口都是通过JDK的动态代理创建代理对象实现数据库操作的</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="nc">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="nc">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="nc">Object</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">()))</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="nc">ExceptionUtil</span><span class="o">.</span><span class="na">unwrapThrowable</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">final</span> <span class="nc">MapperMethod</span> <span class="n">mapperMethod</span> <span class="o">=</span> <span class="n">cachedMapperMethod</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">mapperMethod</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>最后执行execute方法，点进源码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Object</span> <span class="nf">execute</span><span class="o">(</span><span class="nc">SqlSession</span> <span class="n">sqlSession</span><span class="o">,</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">Object</span> <span class="n">result</span><span class="o">;</span>
+  <span class="k">if</span> <span class="o">(</span><span class="nc">SqlCommandType</span><span class="o">.</span><span class="na">INSERT</span> <span class="o">==</span> <span class="n">command</span><span class="o">.</span><span class="na">getType</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nc">Object</span> <span class="n">param</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">convertArgsToSqlCommandParam</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">rowCountResult</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">command</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">param</span><span class="o">));</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">SqlCommandType</span><span class="o">.</span><span class="na">UPDATE</span> <span class="o">==</span> <span class="n">command</span><span class="o">.</span><span class="na">getType</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nc">Object</span> <span class="n">param</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">convertArgsToSqlCommandParam</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">rowCountResult</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">command</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">param</span><span class="o">));</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">SqlCommandType</span><span class="o">.</span><span class="na">DELETE</span> <span class="o">==</span> <span class="n">command</span><span class="o">.</span><span class="na">getType</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nc">Object</span> <span class="n">param</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">convertArgsToSqlCommandParam</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">rowCountResult</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">command</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">param</span><span class="o">));</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">SqlCommandType</span><span class="o">.</span><span class="na">SELECT</span> <span class="o">==</span> <span class="n">command</span><span class="o">.</span><span class="na">getType</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">returnsVoid</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">method</span><span class="o">.</span><span class="na">hasResultHandler</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">executeWithResultHandler</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">returnsMany</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">executeForMany</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">returnsMap</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">executeForMap</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">returnsCursor</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">executeForCursor</span><span class="o">(</span><span class="n">sqlSession</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="nc">Object</span> <span class="n">param</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="na">convertArgsToSqlCommandParam</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">sqlSession</span><span class="o">.</span><span class="na">selectOne</span><span class="o">(</span><span class="n">command</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">param</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nc">SqlCommandType</span><span class="o">.</span><span class="na">FLUSH</span> <span class="o">==</span> <span class="n">command</span><span class="o">.</span><span class="na">getType</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">sqlSession</span><span class="o">.</span><span class="na">flushStatements</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">BindingException</span><span class="o">(</span><span class="s">"Unknown execution method for: "</span> <span class="o">+</span> <span class="n">command</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+  <span class="o">}</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">method</span><span class="o">.</span><span class="na">getReturnType</span><span class="o">().</span><span class="na">isPrimitive</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">method</span><span class="o">.</span><span class="na">returnsVoid</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nf">BindingException</span><span class="o">(</span><span class="s">"Mapper method '"</span> <span class="o">+</span> <span class="n">command</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span>
+        <span class="o">+</span> <span class="s">" attempted to return null from a method with a primitive return type ("</span> <span class="o">+</span> <span class="n">method</span><span class="o">.</span><span class="na">getReturnType</span><span class="o">()</span> <span class="o">+</span> <span class="s">")."</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>由于执行的是select操作，并且查询出多条，所以就到了<code class="highlighter-rouge">executeForMany</code>方法，后面继续跟进代码SqlSessionTemplate,DefaultSqlSession，最后可以看到代码进入了Plugin这个类的invoke方法中</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="nc">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="nc">Method</span> <span class="n">method</span><span class="o">,</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+  <span class="k">try</span> <span class="o">{</span>
+    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Method</span><span class="o">&gt;</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">signatureMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">methods</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">methods</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">interceptor</span><span class="o">.</span><span class="na">intercept</span><span class="o">(</span><span class="k">new</span> <span class="nc">Invocation</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">args</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">throw</span> <span class="nc">ExceptionUtil</span><span class="o">.</span><span class="na">unwrapThrowable</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>interceptor是mybatis的拦截器，而PageHelper这个类就实现了interceptor接口，进入<code class="highlighter-rouge">intercept</code>方法。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Mybatis拦截器方法
+ *
+ * @param invocation 拦截器入参
+ * @return 返回执行结果
+ * @throws Throwable 抛出异常
+ */</span>
+<span class="kd">public</span> <span class="nc">Object</span> <span class="nf">intercept</span><span class="o">(</span><span class="nc">Invocation</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">autoRuntimeDialect</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">SqlUtil</span> <span class="n">sqlUtil</span> <span class="o">=</span> <span class="n">getSqlUtil</span><span class="o">(</span><span class="n">invocation</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">sqlUtil</span><span class="o">.</span><span class="na">processPage</span><span class="o">(</span><span class="n">invocation</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">autoDialect</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">initSqlUtil</span><span class="o">(</span><span class="n">invocation</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">sqlUtil</span><span class="o">.</span><span class="na">processPage</span><span class="o">(</span><span class="n">invocation</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="cm">/**
+ * Mybatis拦截器方法
+ *
+ * @param invocation 拦截器入参
+ * @return 返回执行结果
+ * @throws Throwable 抛出异常
+ */</span>
+<span class="kd">private</span> <span class="nc">Object</span> <span class="nf">_processPage</span><span class="o">(</span><span class="nc">Invocation</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Throwable</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="nc">Object</span><span class="o">[]</span> <span class="n">args</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getArgs</span><span class="o">();</span>
+    <span class="nc">Page</span> <span class="n">page</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="c1">//支持方法参数时，会先尝试获取Page</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">supportMethodsArguments</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">getPage</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">//分页信息</span>
+    <span class="nc">RowBounds</span> <span class="n">rowBounds</span> <span class="o">=</span> <span class="o">(</span><span class="nc">RowBounds</span><span class="o">)</span> <span class="n">args</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+    <span class="c1">//支持方法参数时，如果page == null就说明没有分页条件，不需要分页查询</span>
+    <span class="k">if</span> <span class="o">((</span><span class="n">supportMethodsArguments</span> <span class="o">&amp;&amp;</span> <span class="n">page</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="c1">//当不支持分页参数时，判断LocalPage和RowBounds判断是否需要分页</span>
+            <span class="o">||</span> <span class="o">(!</span><span class="n">supportMethodsArguments</span> <span class="o">&amp;&amp;</span> <span class="nc">SqlUtil</span><span class="o">.</span><span class="na">getLocalPage</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">rowBounds</span> <span class="o">==</span> <span class="nc">RowBounds</span><span class="o">.</span><span class="na">DEFAULT</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="c1">//不支持分页参数时，page==null，这里需要获取</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">supportMethodsArguments</span> <span class="o">&amp;&amp;</span> <span class="n">page</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">getPage</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="nf">doProcessPage</span><span class="o">(</span><span class="n">invocation</span><span class="o">,</span> <span class="n">page</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>最终我在SqlUtil中的_processPage方法中找到了getPage方法，调用getLocalPage将保存在ThreadLocal中的Page变量取了出来</p>
+
+<p><img src="/assets/images/2020/java/pagehelper-getpage.png" alt="" /></p>
+
+<p>跟进代码，发现进入了doProcessPage方法，通过反射机制，首先查询出数据总数量，然后进行分页SQL的拼装，MappedStatement的getBoundSql</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">BoundSql</span> <span class="nf">getBoundSql</span><span class="o">(</span><span class="nc">Object</span> <span class="n">parameterObject</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">BoundSql</span> <span class="n">boundSql</span> <span class="o">=</span> <span class="n">sqlSource</span><span class="o">.</span><span class="na">getBoundSql</span><span class="o">(</span><span class="n">parameterObject</span><span class="o">);</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ParameterMapping</span><span class="o">&gt;</span> <span class="n">parameterMappings</span> <span class="o">=</span> <span class="n">boundSql</span><span class="o">.</span><span class="na">getParameterMappings</span><span class="o">();</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">parameterMappings</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">parameterMappings</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">boundSql</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BoundSql</span><span class="o">(</span><span class="n">configuration</span><span class="o">,</span> <span class="n">boundSql</span><span class="o">.</span><span class="na">getSql</span><span class="o">(),</span> <span class="n">parameterMap</span><span class="o">.</span><span class="na">getParameterMappings</span><span class="o">(),</span> <span class="n">parameterObject</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="c1">// check for nested result maps in parameter mappings (issue #30)</span>
+  <span class="k">for</span> <span class="o">(</span><span class="nc">ParameterMapping</span> <span class="n">pm</span> <span class="o">:</span> <span class="n">boundSql</span><span class="o">.</span><span class="na">getParameterMappings</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">rmId</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="na">getResultMapId</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">rmId</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">ResultMap</span> <span class="n">rm</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="na">getResultMap</span><span class="o">(</span><span class="n">rmId</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">rm</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">hasNestedResultMaps</span> <span class="o">|=</span> <span class="n">rm</span><span class="o">.</span><span class="na">hasNestedResultMaps</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">return</span> <span class="n">boundSql</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>跟进代码，发现，最终分页的查询，调到了PageStaticSqlSource类的getPageBoundSql中</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="nc">BoundSql</span> <span class="nf">getPageBoundSql</span><span class="o">(</span><span class="nc">Object</span> <span class="n">parameterObject</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="n">tempSql</span> <span class="o">=</span> <span class="n">sql</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">orderBy</span> <span class="o">=</span> <span class="nc">PageHelper</span><span class="o">.</span><span class="na">getOrderBy</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">orderBy</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">tempSql</span> <span class="o">=</span> <span class="nc">OrderByParser</span><span class="o">.</span><span class="na">converToOrderBySql</span><span class="o">(</span><span class="n">sql</span><span class="o">,</span> <span class="n">orderBy</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">tempSql</span> <span class="o">=</span> <span class="n">localParser</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getPageSql</span><span class="o">(</span><span class="n">tempSql</span><span class="o">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">BoundSql</span><span class="o">(</span><span class="n">configuration</span><span class="o">,</span> <span class="n">tempSql</span><span class="o">,</span> <span class="n">localParser</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">getPageParameterMapping</span><span class="o">(</span><span class="n">configuration</span><span class="o">,</span> <span class="n">original</span><span class="o">.</span><span class="na">getBoundSql</span><span class="o">(</span><span class="n">parameterObject</span><span class="o">)),</span> <span class="n">parameterObject</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>进入getPageSql这个方法，拼装sql</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">String</span> <span class="nf">getPageSql</span><span class="o">(</span><span class="nc">String</span> <span class="n">sql</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">StringBuilder</span> <span class="n">sqlBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">(</span><span class="n">sql</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">+</span> <span class="mi">120</span><span class="o">);</span>
+    <span class="n">sqlBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"select * from ( select tmp_page.*, rownum row_id from ( "</span><span class="o">);</span>
+    <span class="n">sqlBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
+    <span class="n">sqlBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">" ) tmp_page where rownum &lt;= ? ) where row_id &gt; ?"</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">sqlBuilder</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>总结：</strong></p>
+
+<p>PageHelper首先将前端传递的参数保存到page这个对象中，接着将page的副本存放入ThreadLoacl中，这样可以保证分页的时候，参数互不影响，接着利用了mybatis提供的拦截器，取得ThreadLocal的值，重新拼装分页SQL，完成分页。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2020/11/07/pagehelper.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

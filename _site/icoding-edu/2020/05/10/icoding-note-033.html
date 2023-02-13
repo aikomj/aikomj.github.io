@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第33节：Linux快速上手（下） - 大伟的博客 </title>
+    <meta name="keywords" content="linux">
+    <meta name="description"
+          content="用户和用户组的管理，进程相关的命令，RPM安装JDK,防火墙配置，yum安装docker,宝塔面板的安装和使用">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/05/10/icoding-note-033.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第33节：Linux快速上手（下）">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第33节：Linux快速上手（下）</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/05/10
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1用户管理">1、用户管理</h2>
+
+<p>Linux系统是多用户多任务的</p>
+
+<blockquote>
+  <p>添加用户</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># man ueradd 查看useradd命令的详细信息</span>
+<span class="c"># useradd --help 查看useradd命令的帮助信息</span>
+<span class="c"># 创建一个用户coding，并生成用户的主目录</span>
+<span class="c"># -m 创建用户主目录，默认有登录权限</span>
+<span class="o">[</span>root@kuangshen ~]# useradd <span class="nt">-m</span> coding
+<span class="c"># 设置密码，</span>
+<span class="o">[</span>root@kuangshen ~]# passwd coding
+<span class="o">[</span>root@kuangshen ~]# <span class="nb">cd</span> /home
+<span class="o">[</span>root@kuangshen ~]# <span class="nb">ls
+</span>coding
+</code></pre></div></div>
+
+<p>查看用户文件/etc/passwd</p>
+
+<p><img src="/assets/images/2020/linux/etc-passwd.gif" alt="" /></p>
+
+<blockquote>
+  <p>修改用户</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># man usermod 查看详细信息</span>
+<span class="c"># 修改用户的登录shell 、用户主目录、组</span>
+<span class="c"># 修改它的组为 root,也就拥有了root权限</span>
+<span class="o">[</span>root@kuangshen ~]# usermod <span class="nt">-s</span> /bin/ksh <span class="nt">-d</span> /home/coding222 <span class="nt">-g</span> root coding
+</code></pre></div></div>
+
+<blockquote>
+  <p>用户设置密码</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># man passwd</span>
+<span class="c"># 如果是超级用户，可以给任何一个账户指定它的密码</span>
+<span class="o">[</span>root@kuangshen ~]# passwd coding
+
+<span class="c"># 如果是当前用户，则直接输入passwd来修改密码</span>
+<span class="o">[</span>coding@kuangshen ~]# passwd
+Changing password <span class="k">for </span>user coding
+New password:		<span class="c"># 输入密码是不显示的</span>
+Retype new password
+
+<span class="c"># 密码设置为空</span>
+passwd <span class="nt">-d</span> 用户名
+<span class="c"># 锁定用户</span>
+passwd <span class="nt">-l</span> 用户名
+</code></pre></div></div>
+
+<blockquote>
+  <p>删除用户</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># man userdel</span>
+<span class="c"># userdel -r 删除用户所有的目录文件</span>
+<span class="o">[</span>root@kuangshen ~]# userdel <span class="nt">-r</span> coding
+<span class="o">[</span>root@kuangshen ~]# <span class="nb">cat</span> /etc/passwd
+</code></pre></div></div>
+
+<h2 id="2用户组管理">2、用户组管理</h2>
+
+<blockquote>
+  <p>/etc/group</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>man groupadd  <span class="c"># 添加组</span>
+man groupmod	<span class="c"># 修改组</span>
+man groupdel	<span class="c"># 删除组</span>
+对于组的操作本质是修改文件/etc/group
+
+<span class="c"># 切换用户组</span>
+<span class="o">[</span>root@kuangshen ~]# man newgp
+<span class="o">[</span>root@kuangshen ~]# newgp root
+</code></pre></div></div>
+
+<blockquote>
+  <p>/etc/passwd</p>
+</blockquote>
+
+<p>所有用户信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 取出一条记录</span>
+coding:x:1001:1001::/home/coding:/bin/bash
+
+<span class="c"># 用户名:口令:用户组:组的标识:注释:用户的主目录:登录的shell</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>/etc/shadow</p>
+</blockquote>
+
+<p>用户密码的管理</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 取出一条记录</span>
+coding:!!:18395:7:99999:7:::
+<span class="c"># 登录名:加密密码:最后一次修改时间:最小时间间隔:最大时间间隔:警告时间:不活动时间:失效时间:</span>
+</code></pre></div></div>
+
+<h2 id="3进程管理">3、进程管理</h2>
+
+<p>进程存在两种方式：前台进程，后台进程，一般我们会将一些服务使用后台进程方式启动</p>
+
+<p><strong>ps命令</strong></p>
+
+<p>查看当前系统正在执行的进程信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-a</span> 显示当前终端的所有进程信息
+<span class="nt">-u</span> 以用户的形式显示进程信息
+<span class="nt">-x</span> 显示后台进程运行的参数
+
+<span class="o">[</span>root@kuangshen ~]# ps <span class="nt">-a</span>
+<span class="o">[</span>root@kuangshen ~]# ps <span class="nt">-aux</span>|grep mysql <span class="c"># 查看某个服务的进程</span>
+<span class="c"># grep命令用于查找文件中符合条件的字符</span>
+</code></pre></div></div>
+
+<p><strong>ps -ef 可以查看父进程</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-e</span> 显示所有的进程
+<span class="nt">-f</span> 格式化
+UID: 用户id
+PID: 进程的id
+
+<span class="c"># 查看特定进程信息</span>
+<span class="o">[</span>root@kuangshen ~]# ps <span class="nt">-ef</span>|grep docker
+</code></pre></div></div>
+
+<p><strong>kill 杀进程</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>相当于windows的结束任务
+<span class="nb">kill </span>进程号
+<span class="nb">kill </span>进程名称
+<span class="c"># 强制结束进程</span>
+<span class="nb">kill</span> <span class="nt">-9</span> PID
+</code></pre></div></div>
+
+<p><strong>pstree 进程树查看</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-p</span> 显示进程PID
+<span class="nt">-u</span> 显示这个进程所属的用户
+<span class="o">[</span>root@kuangshen ~]# pstree <span class="nt">-pu</span>
+</code></pre></div></div>
+
+<p>使用pstree方便我们查看进程间的关系</p>
+
+<blockquote>
+  <p>小结</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/linux/summary.gif" alt="" /></p>
+
+<h2 id="4jdk安装">4、JDK安装</h2>
+
+<p>安装的三种方式</p>
+
+<ul>
+  <li>rpm安装</li>
+  <li>解压缩包安装</li>
+  <li>在线安装</li>
+</ul>
+
+<p><img src="/assets/images/2020/linux/jdk-tar.gif" alt="" /></p>
+
+<blockquote>
+  <p>rpm安装jdk</p>
+</blockquote>
+
+<p>安装包通过ssh22端口或者ftp21端口上传到服务器，</p>
+
+<p>1、线检查本地是否有安装JDK</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@kuangshen ~]# rpm <span class="nt">-qa</span>|grep jdk
+jdk1.8-1.8.0_221-fcs.x86_64
+<span class="c"># 卸载</span>
+<span class="o">[</span>root@kuangshen ~]# rpm <span class="nt">-e</span> <span class="nt">--nodeps</span> jdk1.8-1.8.0_221-fcs.x86_64
+<span class="c"># 确认卸载完成</span>
+<span class="o">[</span>root@kuangshen ~]# java <span class="nt">-version</span>
+</code></pre></div></div>
+
+<p>2、安装jdk</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@kuangshen ~]# rpm <span class="nt">-ivh</span> jdk-8u251-linux-i586.rpm
+</code></pre></div></div>
+
+<p>3、配置环境</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@kuangshen ~]# vi /etc/profile
+<span class="c"># 添加下面的内容,路径自行修改</span>
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12
+<span class="nv">CLASSPATH</span><span class="o">=</span>%JAVA_HOME%/lib:%<span class="nv">$JAVA_HOME</span>%/jre/bin
+<span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$JAVA_HOME</span>/jre/bin
+<span class="nb">export </span>JAVA_HOME CLASSPATH PATH
+
+<span class="c"># 让配置生效</span>
+<span class="o">[</span>root@kuangshen ~]# <span class="nb">source</span> /etc/profile
+<span class="o">[</span>root@kuangshen ~]# java <span class="nt">-version</span>
+java version <span class="s2">"1.8.0_221"</span>
+
+<span class="c"># java默认安装目录</span>
+<span class="o">[</span>root@kuangshen ~]# <span class="nb">cd</span> /usr/java
+</code></pre></div></div>
+
+<h2 id="5tomcat安装">5、Tomcat安装</h2>
+
+<h3 id="解压缩包安装">解压缩包安装</h3>
+
+<p>到官网下载tomcat的压缩包，后缀tar.gz，上传到服务器</p>
+
+<p>1、解压缩</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@kuangshen usr]# <span class="nb">tar</span> <span class="nt">-zxvf</span> apache-tomcat-9.0.22.tar.gz  
+</code></pre></div></div>
+
+<p>2、启动测试</p>
+
+<p><img src="/assets/images/2020/linux/tomcat-start.gif" alt="" /></p>
+
+<p>使用 <mark>curl命令</mark>模拟浏览器访问测试</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># curl命令 -X请求方式（GET/POST/PUT/DELETE） 请求地址 -d 参数</span>
+curl <span class="nt">-XPUT</span> <span class="s1">'localhost:9200/customer/car/1'</span> <span class="nt">-d</span> <span class="s1">'{"name":"jude"}'</span>
+
+curl <span class="nt">-XDELETE</span> <span class="s1">'localost:9200/customer/external/1?name=pretty'</span>
+</code></pre></div></div>
+
+<p>在Linux测试中，可以使用纯命令curl测试请求，如果你不使用Postman等工具的话</p>
+
+<h3 id="公网访问">公网访问</h3>
+
+<ul>
+  <li>
+    <p>防火墙</p>
+
+    <p>云服务器默认防火墙是关闭的，手动开启</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看防火墙状态</span>
+<span class="o">[</span>root@kuangshen bin]# systemctl status firewalld 
+<span class="c"># 启动防火墙</span>
+systemctl start firewalld
+<span class="c"># 关闭防火墙</span>
+systemctl stop firewalld
+<span class="c"># 重启防火墙</span>
+systemctl restart firewalld
+  
+<span class="c"># 查看防火墙开启的端口</span>
+firewall-cmd <span class="nt">--list-ports</span>
+<span class="c"># 开启防火墙端口</span>
+firewall-cmd <span class="nt">--zone</span><span class="o">=</span>public <span class="nt">--add-port</span><span class="o">=</span>9200/tcp <span class="nt">--permanent</span>
+<span class="c">#命令含义：</span>
+<span class="c">#　　–zone #作用域</span>
+<span class="c">#　　–add-port=9200/tcp #添加端口，格式为：端口/通讯协议</span>
+<span class="c">#　　–permanent #永久生效，没有此参数重启后失效</span>
+<span class="c">#　　_注意：添加端口后，必须重新加载防火墙一遍才会生效</span>
+firewall-cmd <span class="nt">--reload</span>
+<span class="c">#关闭防火墙端口：</span>
+firewall-cmd <span class="nt">--zone</span><span class="o">=</span>public <span class="nt">--remove-port</span><span class="o">=</span>9200/tcp <span class="nt">--permanent</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安全组策略</p>
+
+    <p>如果是云服务器，还需要配置安全组，否则外网链接不上</p>
+
+    <p><img src="/assets/images/2020/linux/ali-80.gif" alt="" /></p>
+  </li>
+</ul>
+
+<h2 id="6docker安装">6、Docker安装</h2>
+
+<blockquote>
+  <p>Yum在线安装</p>
+</blockquote>
+
+<p>Docker 官网： <a href="https://docs.docker.com/">https://docs.docker.com/</a></p>
+
+<p>Linux安装docker官方文档：<a href="https://docs.docker.com/engine/install/centos/">https://docs.docker.com/engine/install/centos/</a></p>
+
+<p>docker仓库：<a href="https://hub.docker.com/">https://hub.docker.com/</a></p>
+
+<p>1、查看docker 版本，确认是否已安装</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">[</span>root@VM_0_3_centos ~]# docker version
+Client: Docker Engine - Community
+ Version:           19.03.5
+ API version:       1.40
+ Go version:        go1.12.12
+ Git commit:        633a0ea
+ Built:             Wed Nov 13 07:25:41 2019
+ OS/Arch:           linux/amd64
+ Experimental:      <span class="nb">false
+</span>Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+</code></pre></div></div>
+
+<p>2、安装前先卸载旧版本</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>yum remove docker <span class="se">\</span>
+                  docker-client <span class="se">\</span>
+                  docker-client-latest <span class="se">\</span>
+                  docker-common <span class="se">\</span>
+                  docker-latest <span class="se">\</span>
+                  docker-latest-logrotate <span class="se">\</span>
+                  docker-logrotate <span class="se">\</span>
+                  docker-engine
+</code></pre></div></div>
+
+<p><strong>确认centos的版本</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@VM_0_3_centos ~]# <span class="nb">cat</span> /etc/redhat-release 
+CentOS Linux release 7.2.1511 <span class="o">(</span>Core<span class="o">)</span>
+
+<span class="o">[</span>root@iZwz996g0zi82g3p8a5i9mZ ~]# <span class="nb">cat</span> /etc/redhat-release 
+CentOS Linux release 7.6.1810 <span class="o">(</span>Core<span class="o">)</span> 
+</code></pre></div></div>
+
+<p>如果不想在线安装，也可以选择rpm手动安装docker</p>
+
+<p><img src="/assets/images/2020/linux/rpm-docker.gif" alt="" /></p>
+
+<p>3、环境安装</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 确认安装c和c++环境</span>
+<span class="o">[</span>root@iZwz996g0zi82g3p8a5i9mZ ~]# yum <span class="nt">-y</span> <span class="nb">install </span>gcc
+Package gcc-4.8.5-39.el7.x86_64 already installed and latest version
+Nothing to <span class="k">do</span>
+<span class="o">[</span>root@iZwz996g0zi82g3p8a5i9mZ ~]# yum <span class="nt">-y</span> <span class="nb">install </span>gcc-c++
+Package gcc-c++-4.8.5-39.el7.x86_64 already installed and latest version
+Nothing to <span class="k">do</span>
+</code></pre></div></div>
+
+<p>4、设置镜像仓库</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 工具包</span>
+yum <span class="nb">install</span> <span class="nt">-y</span> yum-utils
+
+<span class="c"># 安装阿里的镜像</span>
+yum-config-manager <span class="nt">--add-repo</span> http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+</code></pre></div></div>
+
+<p>5、安装docker engine</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 可以更新yum的缓存软件索引包，保证下载最新的</span>
+yum makecache fast 或者yum update
+<span class="c"># docker-ce（社区版） docker-ee（企业版）</span>
+yum <span class="nb">install </span>docker-ce docker-ce-cli containerd.io <span class="nt">-y</span>
+
+<span class="c"># 安装完毕启动docker</span>
+systemctl start docker
+<span class="c"># 关闭docker</span>
+systemctl stop docker
+<span class="c"># 运行一个hello world镜像image，确认docker正确安装</span>
+docker run hello-world
+Unable to find image <span class="s1">'hello-world:latest'</span> locally
+latest: Pulling from library/hello-world
+0e03bdcc26d7: Pull <span class="nb">complete</span> 
+</code></pre></div></div>
+
+<blockquote>
+  <p>卸载docker-ce(社区版)</p>
+</blockquote>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#1 卸载docker 引擎，客户端，包含的安装包</span>
+<span class="nv">$ </span><span class="nb">sudo </span>yum remove docker-ce docker-ce-cli containerd.io
+
+<span class="c">#2 删除所有的镜像文件</span>
+<span class="nb">sudo rm</span> <span class="nt">-rf</span> /var/lib/docker
+</code></pre></div></div>
+
+<blockquote>
+  <p>使用docker安装镜像</p>
+</blockquote>
+
+<p>比如安装tomcat，两步：search搜索tomcat-&gt;pull 安装tomcat</p>
+
+<p><strong>docker解决的问题场景</strong></p>
+
+<p>我们原来发布项目，是打jar包，war包，使用docker之后，我们环境一起打包成一个镜像发布服务器上，使用命令docker run启动镜像，环境都不用配置，大大节省开发时间和部署时间</p>
+
+<h2 id="7宝塔安装">7、宝塔安装</h2>
+
+<p>宝塔是简单好用的服务器运维面板</p>
+
+<p>搜索bt.cn，官网：<a href="https://bt.cn/">https://bt.cn/</a></p>
+
+<p><img src="/assets/images/2020/linux/btcn.gif" alt="" /></p>
+
+<p>我们选择Linux面板，安装免费版</p>
+
+<p><img src="/assets/images/2020/linux/btcn-version.gif" alt="" /></p>
+
+<blockquote>
+  <p>安装</p>
+</blockquote>
+
+<p>宝塔面板其实是安装在我们服务器上的一个程序应用，我们通过浏览器访问管理，需要开发一些端口，</p>
+
+<p>帮助文档：<a href="https://www.bt.cn/bbs/thread-19376-1-1.html">https://www.bt.cn/bbs/thread-19376-1-1.html</a></p>
+
+<p>1、云服务器安全组开放端口</p>
+
+<p><img src="/assets/images/2020/linux/btcn-port.gif" alt="" /></p>
+
+<p>2、安装命令</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum <span class="nb">install</span> <span class="nt">-y</span> wget <span class="o">&amp;&amp;</span> wget <span class="nt">-O</span> install.sh http://download.bt.cn/install/install_6.0.sh <span class="o">&amp;&amp;</span> sh install.sh
+</code></pre></div></div>
+
+<p>安装完成，会显示面板地址和登录用户名/密码</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Bt-Panel: http://119.109.0.119:8888/jude
+username: xxxxx
+password: xxxxx
+Warning:
+If you cannot access the panel, 
+release the following port <span class="o">(</span>8888|888|80|443|20|21<span class="o">)</span> <span class="k">in </span>the security group
+</code></pre></div></div>
+
+<blockquote>
+  <p>宝塔Linux面板命令大全</p>
+</blockquote>
+
+<p>官方文档：<a href="https://www.bt.cn/btcode.html">https://www.bt.cn/btcode.html</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 宝塔工具箱</span>
+bt
+
+<span class="c"># 停止</span>
+/etc/init.d/bt stop
+
+<span class="c"># 启动</span>
+/etc/init.d/bt start
+
+<span class="c"># 卸载面板</span>
+/etc/init.d/bt stop <span class="o">&amp;&amp;</span> chkconfig <span class="nt">--del</span> bt <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-f</span> /etc/init.d/bt <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /www/server/panel
+
+<span class="c"># 修改面板密码，如改成123456</span>
+<span class="nb">cd</span> /www/server/panel <span class="o">&amp;&amp;</span> python tools.py panel 123456
+</code></pre></div></div>
+
+<blockquote>
+  <p>安全</p>
+</blockquote>
+
+<p>防火墙端口开放关闭，可以在这里配置</p>
+
+<p><img src="/assets/images/2020/linux/btcn-security.gif" alt="" /></p>
+
+<blockquote>
+  <p>文件可视化管理</p>
+</blockquote>
+
+<p>可以上传下载文件，在线修改文件，如修改nginx的配置</p>
+
+<p><img src="/assets/images/2020/linux/btcn-file.gif" alt="" /></p>
+
+<blockquote>
+  <p>一键安装环境</p>
+</blockquote>
+
+<p><img src="/assets/images/2020/linux/btcn-sofeware.gif" alt="" /></p>
+
+<blockquote>
+  <p>一键部署应用</p>
+</blockquote>
+
+<p>部署网站，需要域名备案</p>
+
+<p><img src="/assets/images/2020/linux/btcn-www.gif" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/05/10/icoding-note-033.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

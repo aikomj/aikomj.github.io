@@ -8,8 +8,6 @@ excerpt: 策略模式Strategy,责任链模式chain of responsiblity,模版方法
 lock: noneed
 ---
 
-以下文章来源于捡田螺的小男孩。
-
 平时我们写代码，多数情况都是流水线式的写代码，基本就可以实现业务逻辑了。**如何在写代码中找乐趣？**我觉得最好的方式是：**使用设计模式优化自己的业务代码**，今天来聊聊，我工作中，都用过哪些设计模式：
 
 ![](/assets/images/2022/design-mode/design-mode-used-on-work.jpg)

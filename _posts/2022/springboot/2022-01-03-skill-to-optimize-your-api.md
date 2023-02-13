@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 接口性能优化的11个小技巧
+title: 接口性能优化的11个技巧
 category: springboot
 tags: [springboot]
 keywords: springboot
@@ -8,7 +8,7 @@ excerpt: 添加索引，让索引生效，sql优化，远程调用使用并行�
 lock: noneed
 ---
 
-以下文章来源于苏三说技术
+转载自苏三说技术
 
 导致接口性能问题的原因千奇百怪，不同项目的不同接口，原因可能也不一样，本文我总结了一些行之有效的优化接口性能的办法。
 

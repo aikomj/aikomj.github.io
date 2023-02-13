@@ -84,6 +84,8 @@ lock: noneed
 
 ![](\assets\images\2020\springcloud\open-api-1.jpg)
 
-问题点：服务端怎么认证你的签名是正确的，作者没有说明，这不白搭吗
+![](../../..\assets\images\2020\springcloud\open-api-1.jpg)
+
+问题：服务端怎么认证你的签名是正确的，作者没有说明，这不白搭吗
 
 看上面的图，请求是有携带token的，作者的意图是用token关联出uid，accesskey，SecretKey ，后端结合参数重新生成签名，比对携带的sign参数是否一致，这样子验证的。那前提是他要首次请求携带accesskey,SecretKey 获取token啊，那不网络传输啦。

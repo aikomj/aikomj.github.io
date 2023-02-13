@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 飞天班第10节：SpringBoot开发单体应用（上） - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="静态资源映射原理，什么是web jars，首页和网站图标，Thymeleaf模版引擎在Springboot项目中的使用，MVC自动配置原理，内容协商视图解析器，格式转化器Formatter，实现WebMvcConfigurer,如何让MVC自动配置失效,定义添加视图控制，添加资源处理">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-edu/2020/03/18/icoding-note-010.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="飞天班第10节：SpringBoot开发单体应用（上）">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>飞天班第10节：SpringBoot开发单体应用（上）</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/03/18
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1静态资源处理">1、静态资源处理</h2>
+
+<p>SpringMVC中，我们把静态资源放到webapp目录下。</p>
+
+<p>SpringBoot项目中，所有的配置文件都是xxx.properties，核心的配置文件是application.yaml，我们把静态资源css,js文件放在resource/static目录下，就可以访问了，为什么？我们需要明白它的规则。怎么做？</p>
+
+<ul>
+  <li>从源码分析，得出结论</li>
+  <li>测试是否可用</li>
+</ul>
+
+<h3 id="关于mvc的自动配置">关于MVC的自动配置</h3>
+
+<p>1、所有MVC相关的配置都在WebMvcAutoConfiguration(视图解析器、静态资源过滤)，idea全局搜索它</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/web-mvc-auto-configuration.png" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/springboot/web-mvc-auto-configuration.jpg" alt="" /></p>
+
+<p>在WebMvcAutoConfiguration，我们找到addResourceHandlers()方法，它就是添加静态资源的方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">addResourceHandlers</span><span class="o">(</span><span class="nc">ResourceHandlerRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+  <span class="c1">// 默认规则的配置被禁用，如果你手动添加了资源映射路径的配置，那么这些自动配置就会直接失效</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">resourceProperties</span><span class="o">.</span><span class="na">isAddMappings</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Default resource handling disabled"</span><span class="o">);</span>
+    <span class="k">return</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="c1">// 下面是自动配置</span>
+  <span class="c1">// 缓存控制</span>
+  <span class="nc">Duration</span> <span class="n">cachePeriod</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceProperties</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getPeriod</span><span class="o">();</span>
+  <span class="nc">CacheControl</span> <span class="n">cacheControl</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceProperties</span><span class="o">.</span><span class="na">getCache</span><span class="o">().</span><span class="na">getCachecontrol</span><span class="o">().</span><span class="na">toHttpCacheControl</span><span class="o">();</span>
+  <span class="c1">// 分析源代码，需要掌握看对象的方法调用，上面两行代码只是获取对象，我们要看对象怎么用</span>
+  
+  <span class="c1">// 第一种策略 /webjars/**</span>
+  <span class="c1">// 判断注册器是否存在一个映射路径 /webjars/**，有的话就绑定资源路径，并配置到缓存中</span>
+  <span class="c1">// addResourceHandler 处理逻辑，如 /webjars/a.js</span>
+  <span class="c1">// addResourceLocations 处理资源的地址，如 /classpath:/META-INF/resources/webjars/a.js</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="n">registry</span><span class="o">.</span><span class="na">hasMappingForPattern</span><span class="o">(</span><span class="s">"/webjars/**"</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">customizeResourceHandlerRegistration</span><span class="o">(</span><span class="n">registry</span><span class="o">.</span><span class="na">addResourceHandler</span><span class="o">(</span><span class="s">"/webjars/**"</span><span class="o">)</span>
+                                         <span class="o">.</span><span class="na">addResourceLocations</span><span class="o">(</span><span class="s">"classpath:/META-INF/resources/webjars/"</span><span class="o">)</span>
+                                         <span class="o">.</span><span class="na">setCachePeriod</span><span class="o">(</span><span class="n">getSeconds</span><span class="o">(</span><span class="n">cachePeriod</span><span class="o">)).</span><span class="na">setCacheControl</span><span class="o">(</span><span class="n">cacheControl</span><span class="o">));</span>
+  <span class="o">}</span>
+  <span class="c1">// 第二种策略 /**</span>
+  <span class="c1">// 获取静态资源路径，进行映射并放入缓存中</span>
+  <span class="nc">String</span> <span class="n">staticPathPattern</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mvcProperties</span><span class="o">.</span><span class="na">getStaticPathPattern</span><span class="o">();</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="n">registry</span><span class="o">.</span><span class="na">hasMappingForPattern</span><span class="o">(</span><span class="n">staticPathPattern</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">customizeResourceHandlerRegistration</span><span class="o">(</span><span class="n">registry</span><span class="o">.</span><span class="na">addResourceHandler</span><span class="o">(</span><span class="n">staticPathPattern</span><span class="o">)</span>
+                                         <span class="o">.</span><span class="na">addResourceLocations</span><span class="o">(</span><span class="n">getResourceLocations</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">resourceProperties</span><span class="o">.</span><span class="na">getStaticLocations</span><span class="o">()))</span>
+                                         <span class="o">.</span><span class="na">setCachePeriod</span><span class="o">(</span><span class="n">getSeconds</span><span class="o">(</span><span class="n">cachePeriod</span><span class="o">)).</span><span class="na">setCacheControl</span><span class="o">(</span><span class="n">cacheControl</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>点进this.mvcProperties.getStaticPathPattern()的方法，</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/static-path-pattern.jpg" alt="" /></p>
+
+<p>继续看上面的源码，如果访问的路径是/** ,就会映射到this.resourceProperties.getStaticLocations()，点它的方法源码，最终跳转到多个静态资源目录，如下</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/classpath-resource-locations.jpg" alt="" /></p>
+
+<p>/**会映射到上面的4个目录，而不是单纯的一个目录。classpath是项目内路径</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/classpath-resource-locations-2.jpg" alt="" /></p>
+
+<p>启动项目，分别访问各个目录下的js文件：</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/classpath-resource-locations-3.jpg" alt="" /></p>
+
+<p><img src="/assets/images/2020/icoding/springboot/classpath-resource-locations-4.jpg" alt="" /></p>
+
+<p><strong>优先级比较</strong></p>
+
+<p>4个目录下都是1.js文件，访问/localhost:8080/1.js，看浏览器映射到那个目录下的1.js</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/classpath-resource-locations-3.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="no">CLASSPATH_RESOURCE_LOCATIONS</span> <span class="o">=</span> 
+<span class="o">{</span> 
+  <span class="s">"classpath:/META-INF/resources/"</span><span class="o">,</span> <span class="c1">// 优先级最高,在starter 中使用，如swagger-ui，spirng.factories文件</span>
+   <span class="s">"classpath:/resources/"</span><span class="o">,</span>   <span class="c1">// 文件资源 </span>
+  <span class="s">"classpath:/static/"</span><span class="o">,</span>  <span class="c1">// 静态资源</span>
+  <span class="s">"classpath:/public/"</span>  <span class="c1">// 公共的，如图标等</span>
+<span class="o">};</span>
+
+<span class="o">/</span><span class="no">META</span><span class="o">-</span><span class="no">INF</span><span class="o">/</span><span class="n">resources</span> <span class="err">优先级最高，依次是</span> <span class="n">resources</span><span class="o">,</span><span class="kd">static</span><span class="o">,</span><span class="kd">public</span>
+</code></pre></div></div>
+
+<p>这回明白了引入swagger-bootstrap-ui,浏览器直接访问/doc了会映射到/META-INF/resources目录下的doc.html，看下面分析。</p>
+
+<blockquote>
+  <p>第三种策略：自定义配置映射路径，但是这样配置之后，默认的就会失效</p>
+</blockquote>
+
+<p>在WebMvcAutoConfiguration，我们找到addResourceHandlers()方法，有这么一个判断，当你配置了资源映射路径，那么上面的自动配置都会失效</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 默认规则的配置被禁用，如果你手动添加了资源映射路径的配置，那么这些自动配置就会直接失效</span>
+  <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">resourceProperties</span><span class="o">.</span><span class="na">isAddMappings</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Default resource handling disabled"</span><span class="o">);</span>
+    <span class="k">return</span><span class="o">;</span>
+  <span class="o">}</span>
+</code></pre></div></div>
+
+<p>application.properties配置文件</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 自定义映射路径
+</span><span class="py">spring.resources.static-locaions</span><span class="p">=</span><span class="s">classpath:/coding,classpath:/jacob</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/springboot/spring-resources-static-locations.jpg" alt="" /></p>
+
+<p>当我们再次访问1.js，发现已无法访问了。但在自定义的目录/coding下新建一个1.js，启动项目，重新访问1.js</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/common-static-location.jpg" alt="" /></p>
+
+<h3 id="什么是webjars">什么是webjars</h3>
+
+<p>这个时候我们可以百度啦，其实它就是一些前端静态资源如jQuery、Bootstrap、Vue.js等，以jar包的方式引入项目中，是一个很神奇的东西。</p>
+
+<ul>
+  <li>
+    <p>我们在进行web开发时，一般上都是将静态资源文件放置在webapp目录下，</p>
+  </li>
+  <li>
+    <p>在SpringBoot里面，一般是将资源文件放置在src/main/resources/static目录下。</p>
+  </li>
+  <li>
+    <p>在Servlet3中，允许我们直接访问WEB-INF/lib下的jar包中的/META-INF/resources目录资源，即WEB-INF/lib/{*.jar}/META-INF/resources下的资源可以直接访问，WebJars也正是利用此功能，将所有前端的静态文件打包成一个jar包，里面包含了/META-INF/resources目录资源。</p>
+  </li>
+</ul>
+
+<p><strong>为什么要用webjars</strong></p>
+
+<p>为了对资源进行统一依赖管理，就像我们开发web项目时，使用Maven\Gradle等构建工具对jar包版本进行依赖管理，同理前端资源文件我们使用webjars的方式引入项目，就可以统一的版本依赖管理，无论是前端还是后端资源包。</p>
+
+<p>webjars的官网：<a href="https://www.webjars.org/">https://www.webjars.org/</a></p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webjars-1.jpg" alt="" /></p>
+
+<p>在官网上找到自己需要的前端资源的maven依赖，添加到项目中使用</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webjars-2.jpg" alt="" /></p>
+
+<p>我们常用的swagger2的前端UI的静态资源文件，就是使用webjars的方式引入的，来看一下源码发现doc.html是直接放在/META-INF/resources 目录下的</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webjars-3.jpg" alt="" /></p>
+
+<p><strong>如何使用webjars</strong></p>
+
+<p>1、pom.xml 导入maven依赖，如jquery.js</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.webjars<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>jquery<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>3.4.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>发现导入了一个jar包</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webjars-jquery-1.jpg" alt="" /></p>
+
+<p>2、页面直接引入就可以了，下面使用了thymeleaf模版，参考上面swagger-bootstrap-ui的webjars使用</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">th:src=</span><span class="s">"@{/webjars/jquery/3.4.1/jquery.js}"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>测试访问一下</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webjars-jquery-2.jpg" alt="" /></p>
+
+<p>注意，maven在打包时要引入</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- 构建工具，打包时引入 --&gt;</span>
+<span class="nt">&lt;build&gt;</span>
+  <span class="nt">&lt;resources&gt;</span>
+    <span class="nt">&lt;resource&gt;</span>
+      <span class="nt">&lt;directory&gt;</span>${project.basedir}/src/main/resources<span class="nt">&lt;/directory&gt;</span>
+      <span class="nt">&lt;targetPath&gt;</span>META-INF/resources/<span class="nt">&lt;/targetPath&gt;</span>
+    <span class="nt">&lt;/resource&gt;</span>
+  <span class="nt">&lt;/resources&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</code></pre></div></div>
+
+<p>swagger-bootstrap-ui 的pom.xml在构建时就引入了META-INF/resources 资源路径</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webjars-4.jpg" alt="" /></p>
+
+<h2 id="2首页和图标处理">2、首页和图标处理</h2>
+
+<h3 id="首页">首页</h3>
+
+<p>继续分析源码，在WebMvcAutoConfiguration.java，搜索index，就会找到首页的相关映射方法welcomePageHandlerMapping</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/getwelcome-page.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 首页会被映射到这个处理器下</span>
+<span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="nc">WelcomePageHandlerMapping</span> <span class="nf">welcomePageHandlerMapping</span><span class="o">(</span><span class="nc">ApplicationContext</span> <span class="n">applicationContext</span><span class="o">,</span>
+                                                           <span class="nc">FormattingConversionService</span> <span class="n">mvcConversionService</span><span class="o">,</span> <span class="nc">ResourceUrlProvider</span> <span class="n">mvcResourceUrlProvider</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">WelcomePageHandlerMapping</span> <span class="n">welcomePageHandlerMapping</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WelcomePageHandlerMapping</span><span class="o">(</span>
+    <span class="k">new</span> <span class="nf">TemplateAvailabilityProviders</span><span class="o">(</span><span class="n">applicationContext</span><span class="o">),</span> <span class="n">applicationContext</span><span class="o">,</span> <span class="n">getWelcomePage</span><span class="o">(),</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">mvcProperties</span><span class="o">.</span><span class="na">getStaticPathPattern</span><span class="o">());</span>
+  <span class="n">welcomePageHandlerMapping</span><span class="o">.</span><span class="na">setInterceptors</span><span class="o">(</span><span class="n">getInterceptors</span><span class="o">(</span><span class="n">mvcConversionService</span><span class="o">,</span> <span class="n">mvcResourceUrlProvider</span><span class="o">));</span>
+  <span class="k">return</span> <span class="n">welcomePageHandlerMapping</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="c1">// 获得欢迎页</span>
+<span class="kd">private</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Resource</span><span class="o">&gt;</span> <span class="nf">getWelcomePage</span><span class="o">()</span> <span class="o">{</span>
+  <span class="c1">// 4个静态路径目录</span>
+  <span class="nc">String</span><span class="o">[]</span> <span class="n">locations</span> <span class="o">=</span> <span class="n">getResourceLocations</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">resourceProperties</span><span class="o">.</span><span class="na">getStaticLocations</span><span class="o">());</span>
+  <span class="c1">// stream流</span>
+  <span class="c1">// map 映射</span>
+  <span class="c1">// filter 过滤</span>
+  <span class="c1">// findFirst 找到第一个符号条件的</span>
+  <span class="c1">// 调用对象方法的语法糖, this 对象:: getIndexHtml 方法名字</span>
+  <span class="k">return</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">locations</span><span class="o">).</span><span class="na">map</span><span class="o">(</span><span class="k">this</span><span class="o">::</span><span class="n">getIndexHtml</span><span class="o">).</span><span class="na">filter</span><span class="o">(</span><span class="k">this</span><span class="o">::</span><span class="n">isReadable</span><span class="o">).</span><span class="na">findFirst</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="nc">Resource</span> <span class="nf">getIndexHtml</span><span class="o">(</span><span class="nc">String</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">resourceLoader</span><span class="o">.</span><span class="na">getResource</span><span class="o">(</span><span class="n">location</span> <span class="o">+</span> <span class="s">"index.html"</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>点击WelcomePageHandleMapping 的构造方法，</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">WelcomePageHandlerMapping</span><span class="o">(</span><span class="nc">TemplateAvailabilityProviders</span> <span class="n">templateAvailabilityProviders</span><span class="o">,</span>
+                          <span class="nc">ApplicationContext</span> <span class="n">applicationContext</span><span class="o">,</span> <span class="nc">Optional</span><span class="o">&lt;</span><span class="nc">Resource</span><span class="o">&gt;</span> <span class="n">welcomePage</span><span class="o">,</span> <span class="nc">String</span> <span class="n">staticPathPattern</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">welcomePage</span><span class="o">.</span><span class="na">isPresent</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="s">"/**"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">staticPathPattern</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Adding welcome page: "</span> <span class="o">+</span> <span class="n">welcomePage</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+    <span class="n">setRootViewName</span><span class="o">(</span><span class="s">"forward:index.html"</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">welcomeTemplateExists</span><span class="o">(</span><span class="n">templateAvailabilityProviders</span><span class="o">,</span> <span class="n">applicationContext</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Adding welcome page template: index"</span><span class="o">);</span>
+    <span class="n">setRootViewName</span><span class="o">(</span><span class="s">"index"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从源码可以看出，当静态映射路径是/**，就会在当前静态资源目录下找index.html，如果没有自定义映射路径，/**会映射到上面说到的4个静态目录</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="no">CLASSPATH_RESOURCE_LOCATIONS</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"classpath:/META-INF/resources/"</span><span class="o">,</span><span class="s">"classpath:/resources/"</span><span class="o">,</span> <span class="s">"classpath:/static/"</span><span class="o">,</span> <span class="s">"classpath:/public/"</span> <span class="o">};</span>
+</code></pre></div></div>
+
+<p><strong>测试</strong></p>
+
+<p>1、在public目录下添加一个首页index.html</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/public-index.jpg" alt="" /></p>
+
+<p>启动项目，访问localhost:8080/</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/public-index-2.jpg" alt="" /></p>
+
+<p>2、首页index.html放到resources目录下</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/public-index-3.jpg" alt="" /></p>
+
+<p>启动项目，访问localhost:8080/</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/public-index-4.jpg" alt="" /></p>
+
+<p>3、首页index.html放到static目录下</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/public-index-5.jpg" alt="" /></p>
+
+<h3 id="网站图标">网站图标</h3>
+
+<p>全局搜索favicon发现</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/favicon.jpg" alt="" /></p>
+
+<p>点击StaticResourceLocation，是一个枚举类</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/favicon-2.jpg" alt="" /></p>
+
+<p>这是一个静态资源的映射，要设置网站的图标，我们只需要将一个favicon.ico放入静态资源目录即可（/** 会映射到静态资源目录）</p>
+
+<p>我们把favicon.ico放到public目录下，</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/favicon-3.jpg" alt="" /></p>
+
+<p>浏览器我们清理一下缓存，在springboot 2.1.x的版本，application.properties配置文件还需要关闭默认图标</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 关闭默认图标
+</span><span class="py">spring.mvc.favicon.enabled</span><span class="p">=</span><span class="s">false</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/springboot/favicon-4.jpg" alt="" /></p>
+
+<p>Springboot 2.2.x版本已经不需要配置了</p>
+
+<p>启动项目访问localhost:8080/，发现有网站图标了</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/favicon-5.jpg" alt="" /></p>
+
+<p><mark>我们学习的时候，尽量使用最新版，然后找到问题，分析源码</mark></p>
+
+<p>有道无术，术尚可求！（道：方法，思想）</p>
+
+<p>有术无道，止于术！</p>
+
+<p>如果配置了上下文路径</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">server.servlet.context-path</span><span class="p">=</span><span class="s">/kuangstudy</span>
+</code></pre></div></div>
+
+<p>网站图标访问路径没有加上context-path导致404</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/favicon-6.jpg" alt="" /></p>
+
+<p>也就是说springboot 访问网站图标的路径不会因为加了context-path而改变，解决办法是在每个html页面添加</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"shortcut icon"</span> <span class="na">href=</span><span class="s">"/favicon.ico"</span> <span class="na">type=</span><span class="s">"image/x-icon"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<h2 id="3thymeleaf模板引擎">3、Thymeleaf模板引擎</h2>
+
+<p>thymleaf[ taɪm lif]</p>
+
+<p>什么是模板引擎？就是前端给你的页面一般是一些静态资源，如html页面等</p>
+
+<p>传统的话，我们需要将它们转换为jsp页面，嵌入java变量或者代码，来实现一些功能</p>
+
+<p>jsp无疑很强大！servlet的底层，跟php类似，可以在页面上写业务逻辑</p>
+
+<p>但是使用SpringBoot后，是没有办法写jsp页面的，jsp是通过war包的方式发布到tomcat中的。</p>
+
+<p>SpringBoot项目都是以jar包方法运行，如下：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> xxxx.jar
+</code></pre></div></div>
+
+<p>那么我们的页面如何处理，和后端交互？这里不说前后端分离式的项目</p>
+
+<p>我们画图说明一下页面是如何处理的，如下图：</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/template.jpg" alt="" /></p>
+
+<p>知名的模板引擎: jap、freemarker、Thymeleaf</p>
+
+<p>SpringBoot推荐我们使用Thymeleaf模版引擎，他使用的就是html页面！十分简单</p>
+
+<p><strong>小结</strong></p>
+
+<p>所有的模板引擎都是一个原理，如上图，每个模板语法有点不同而已！</p>
+
+<p>Thymeleaf 是我们现在必须要会的！</p>
+
+<h3 id="使用thymeleaf">使用Thymeleaf</h3>
+
+<p>官网：<a href="https://www.thymeleaf.org/documentation.html">https://www.thymeleaf.org/documentation.html</a></p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf.jpg" alt="" /></p>
+
+<p>它是开源的，GitHub:<a href="https://github.com/thymeleaf">https://github.com/thymeleaf</a></p>
+
+<p>新建一个Springboot工程，整合Thymeleaf</p>
+
+<p>1、导入依赖，可以到maven仓库中查询依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-thymeleaf<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+不指定版本，跟随spring-boot-starter-parent的版本管控
+</code></pre></div></div>
+
+<p>2、配置xxxProperties</p>
+
+<p>Spring-boot-starter-xxx都是官方命名的，在项目中全局搜索ThymeleafProperties,</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/ThymeleafProperties.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">"spring.thymeleaf"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ThymeleafProperties</span> <span class="o">{</span>
+
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Charset</span> <span class="no">DEFAULT_ENCODING</span> <span class="o">=</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">;</span>
+
+  <span class="c1">// 默认前缀</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">DEFAULT_PREFIX</span> <span class="o">=</span> <span class="s">"classpath:/templates/"</span><span class="o">;</span>
+<span class="c1">// 默认后缀</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">DEFAULT_SUFFIX</span> <span class="o">=</span> <span class="s">".html"</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * Whether to check that the template exists before rendering it.
+	 */</span>
+	<span class="kd">private</span> <span class="kt">boolean</span> <span class="n">checkTemplate</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * Whether to check that the templates location exists.
+	 */</span>
+	<span class="kd">private</span> <span class="kt">boolean</span> <span class="n">checkTemplateLocation</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+  <span class="o">...</span>
+</code></pre></div></div>
+
+<p>3、怎么使用，我们打开官方文档usingthymeleaf.pdf，里面说明了th的一些语法和使用例子</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-1.jpg" alt="" /></p>
+
+<p>在resources/templates目录下，新建home.html</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="c">&lt;!--xmlns xml namespace 命名空间，加上了才可以支持 thymeleaf --&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span> <span class="na">xmlns:th=</span><span class="s">"http://www.thymeleaf.org"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Title<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;h1&gt;</span>测试页面<span class="nt">&lt;/h1&gt;</span>
+    <span class="c">&lt;!-- 十分像vue, v-xx= --&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">th:text=</span><span class="s">"${msg}"</span><span class="nt">&gt;&lt;/p&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>  
+</code></pre></div></div>
+
+<p>什么是模板引擎，后端可以进行跳转，并给出相应的数据，前端可以接受一些数据</p>
+
+<p>在controller层，写一个跳转接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IndexController</span> <span class="o">{</span>
+  <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"test"</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="nf">test</span><span class="o">(</span><span class="nc">Model</span> <span class="n">model</span><span class="o">){</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"msg"</span><span class="o">,</span><span class="s">"hello,Thymeleaf"</span><span class="o">);</span>
+    <span class="k">return</span> <span class="s">"home"</span><span class="o">;</span> <span class="c1">// 看上面的ThymeleafProperties,不修改前缀后缀的话，跳转到</span>
+    <span class="c1">// classpath:/templates/test.html页面</span>
+  <span class="o">}</span>
+  
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>访问测试，页面跳转成功</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-access.jpg" alt="" /></p>
+
+<p>官方文档一定要熟悉，不会的时候拿出来看一看，常用的9种语法th标签如下：</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-th.jpg" alt="" /></p>
+
+<h3 id="转义html字符串">转义html字符串</h3>
+
+<p>controller</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IndexController</span> <span class="o">{</span>
+  <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"test"</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="nf">test</span><span class="o">(</span><span class="nc">Model</span> <span class="n">model</span><span class="o">){</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"msg"</span><span class="o">,</span><span class="s">"hello,Thymeleaf"</span><span class="o">);</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"msg2"</span><span class="o">,</span><span class="s">"&lt;h1&gt;hello,Thymeleaf&lt;/h1&gt;"</span><span class="o">);</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"users"</span><span class="o">,</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"coding,qinjiang"</span><span class="o">));</span>
+    <span class="k">return</span> <span class="s">"home"</span><span class="o">;</span> <span class="c1">// 看上面的ThymeleafProperties,不修改前缀后缀的话，跳转到</span>
+    <span class="c1">// classpath:/templates/test.html页面</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>html</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="c">&lt;!--xmlns xml namespace 命名空间，加上了才可以支持 thymeleaf --&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"en"</span> <span class="na">xmlns:th=</span><span class="s">"http://www.thymeleaf.org"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Title<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;h1&gt;</span>测试页面<span class="nt">&lt;/h1&gt;</span>
+    <span class="c">&lt;!-- 十分像vue, v-xx= --&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">th:text=</span><span class="s">"${msg}"</span><span class="nt">&gt;&lt;/p&gt;</span>
+    <span class="c">&lt;!-- 不转义 --&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">th:text=</span><span class="s">"${msg2}"</span><span class="nt">&gt;&lt;/p&gt;</span>
+    <span class="c">&lt;!-- 转义 --&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">th:utext=</span><span class="s">"${msg2}"</span><span class="nt">&gt;&lt;/p&gt;</span>
+    <span class="nt">&lt;h3</span> <span class="na">th:each=</span><span class="s">"user:${users}"</span> <span class="na">th:text=</span><span class="s">"${user}"</span><span class="nt">&gt;&lt;/h3&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>  
+</code></pre></div></div>
+
+<p>访问测试</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-3.jpg" alt="" /></p>
+
+<h3 id="模板抽离">模板抽离</h3>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-header.jpg" alt="" /></p>
+
+<p>引入header页面组件</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-header-2.jpg" alt="" /></p>
+
+<h3 id="编写表达式">编写表达式</h3>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-expression.jpg" alt="" /></p>
+
+<p><strong>1、Simple expressions 简单表达式</strong></p>
+
+<ul>
+  <li>
+    <p>Variable Expressions: ${…} 获取一些变量的值，有下面三种：</p>
+
+    <p>1、对象的属性，调用方法</p>
+
+    <p>2、内置的基本对象，看官方文档的 Expression Basic Objects</p>
+
+    <p>3、工具对象</p>
+  </li>
+  <li>
+    <p>Selection Variable Expressions: *{…}  选择表达式，和 ${} 是一样的；</p>
+  </li>
+  <li>Message Expressions: #{…}  国际化内容获取！</li>
+  <li>
+    <p>Link URL Expressions: @{…}  URL表达式/ 链接 th:href=“@{/login}”</p>
+  </li>
+  <li>Fragment Expressions: ~{…} 组件化表达式；th:replace=”~{common/header::header}”</li>
+</ul>
+
+<p><strong>2、Literals （字面量）</strong></p>
+
+<ul>
+  <li>
+    <p>Text literals: ‘one text’ , ‘Another one!’ ,… （字符串）</p>
+  </li>
+  <li>
+    <p>Number literals: 0 , 34 , 3.0 , 12.3 ,…</p>
+  </li>
+  <li>
+    <p>Boolean literals: true , false</p>
+
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">th:if=</span><span class="s">"${user.isAdmin} == false"</span><span class="nt">&gt;&lt;/div&gt;</span>
+或者
+<span class="nt">&lt;div</span> <span class="na">th:if=</span><span class="s">"${user.isAdmin == false}"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Null literal: null</p>
+
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">th:if=</span><span class="s">"${variable.something} == null"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Literal tokens: one , sometext , main ,…</p>
+  </li>
+</ul>
+
+<p><strong>3、Text operations: （文本操作）</strong></p>
+
+<ul>
+  <li>
+    <p>String concatenation: +  字符串连接</p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Literal substitutions:</td>
+          <td>The name is ${name}</td>
+          <td>字面量取值</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p><strong>4、Arithmetic operations: （数学运算）</strong></p>
+
+<ul>
+  <li>
+    <p>Binary operators: + , - , * , / , %</p>
+  </li>
+  <li>
+    <p>Minus sign (unary operator): -</p>
+  </li>
+</ul>
+
+<p><strong>5、Boolean operations: （布尔运算）</strong></p>
+
+<ul>
+  <li>
+    <p>Binary operators: and , or</p>
+  </li>
+  <li>
+    <p>Boolean negation (unary operator): ! , not</p>
+  </li>
+</ul>
+
+<p><strong>6、Comparisons and equality: （比较运算）</strong></p>
+
+<ul>
+  <li>
+    <p>Comparators: &gt; , &lt; , &gt;= , &lt;= ( gt , lt , ge , le )</p>
+  </li>
+  <li>
+    <p>Equality operators: == , != ( eq , ne )</p>
+  </li>
+</ul>
+
+<p><strong>7、Conditional operators: （条件运算符，三元表达式）</strong></p>
+
+<ul>
+  <li>
+    <p>If-then: (if) ? (then)</p>
+  </li>
+  <li>
+    <p>If-then-else: (if) ? (then) : (else)</p>
+  </li>
+  <li>
+    <p>Default: (value) ?: (defaultvalue)</p>
+  </li>
+</ul>
+
+<h3 id="内置基本对象">内置基本对象</h3>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-basic-objects.jpg" alt="" /></p>
+
+<p>1、Base objects</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>${#ctx.locale}
+${#ctx.response} 
+${#ctx.session} 
+${#ctx.servletContext}
+</code></pre></div></div>
+
+<p>2、Web context namespace for request/session attribute</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>${param.foo} <span class="c">&lt;!-- Retrieves a String[] with the values of request parameter 'foo' --&gt;</span>
+${param.size()} 
+${param.isEmpty()} 
+${param.containsKey('foo')}
+...
+${session.foo} <span class="c">&lt;!-- Retrieves the session atttribute 'foo' --&gt;</span>
+${session.size()} 
+${session.isEmpty()} 
+${session.containsKey('foo')}
+...
+${application.foo} <span class="c">&lt;!-- Retrieves the ServletContext atttribute 'foo' --&gt;</span>
+${application.size()} 
+${application.isEmpty()} 
+${application.containsKey('foo')}  
+</code></pre></div></div>
+
+<p>3、Web context objects 上下文</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>${#request.getAttribute('foo')} 
+${#request.getParameter('foo')} 
+${#request.getContextPath()} 
+${#request.getRequestName()}
+...
+${#session.getAttribute('foo')} 
+${#session.id} 
+${#session.lastAccessedTime}
+...
+${#servletContext.getAttribute('foo')} 
+${#servletContext.contextPath}
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-web-context.jpg" alt="" /></p>
+
+<h3 id="工具对象">工具对象</h3>
+
+<p>如#messages,#dates，具体使用看官方文档，为java 量身定做的模板引擎</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/thymeleaf-utility-object.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">messages</span><span class="o">.</span><span class="na">msg</span><span class="o">(</span><span class="err">'</span><span class="n">msgKey</span><span class="err">'</span><span class="o">)}</span> 
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">uris</span><span class="o">.</span><span class="na">escapePath</span><span class="o">(</span><span class="n">uri</span><span class="o">)}</span> 
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">conversions</span><span class="o">.</span><span class="na">convert</span><span class="o">(</span><span class="n">object</span><span class="o">,</span> <span class="err">'</span><span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">TimeZone</span><span class="err">'</span><span class="o">)}</span> <span class="err">转换</span>
+<span class="c1">// See javadoc API for class org.thymeleaf.expression.Dates </span>
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">dates</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">date</span><span class="o">,</span> <span class="err">'</span><span class="n">dd</span><span class="o">/</span><span class="no">MMM</span><span class="o">/</span><span class="n">yyyy</span> <span class="nl">HH:</span><span class="n">mm</span><span class="err">'</span><span class="o">)}</span> <span class="err">日期格式化</span>
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">calendars</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">cal</span><span class="o">)}</span> <span class="n">calendars</span><span class="err">对象</span>
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">numbers</span><span class="o">.</span><span class="na">formatInteger</span><span class="o">(</span><span class="n">num</span><span class="o">,</span><span class="mi">3</span><span class="o">)}</span> 
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">strings</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">obj</span><span class="o">)}</span> 
+<span class="err">$</span><span class="o">{</span><span class="err">#</span><span class="n">arrays</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="n">object</span><span class="o">)}</span>
+</code></pre></div></div>
+
+<p><mark>记住一句话：将官方文档翻熟即可，使用一个看一个</mark></p>
+
+<p>把官方文档usingthymeleaf.pdf下载到手机上看，偶尔看看，不要天天刷抖音浪费时间，还能学学英语</p>
+
+<h2 id="4mvc-自动配置原理">4、MVC 自动配置原理</h2>
+
+<h3 id="官方文档阅读">官方文档阅读</h3>
+
+<p>学习方式：源码 + 官方文档</p>
+
+<p>文档地址：<a href="https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/htmlsingle/#boot-features-spring-mvc-auto-configuration">https://docs.spring.io/spring-boot/docs/2.2.5.RELEASE/reference/htmlsingle/#boot-features-spring-mvc-auto-configuration</a></p>
+
+<p><img src="/assets/images/2020/icoding/springboot/spring-mvc-auto-configuration.jpg" alt="" /></p>
+
+<p>我们把这段官方文档拷贝下来，并翻译它</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Spring</span> <span class="no">MVC</span> <span class="nc">Auto</span><span class="o">-</span><span class="n">configuration</span>
+<span class="c1">// Springboot 为 spring mvc 提供了自动配置,很好的工作与大多数应用</span>
+<span class="nc">Spring</span> <span class="nc">Boot</span> <span class="n">provides</span> <span class="n">auto</span><span class="o">-</span><span class="n">configuration</span> <span class="k">for</span> <span class="nc">Spring</span> <span class="no">MVC</span> <span class="n">that</span> <span class="n">works</span> <span class="n">well</span> <span class="n">with</span> <span class="n">most</span> <span class="n">applications</span><span class="o">.</span>
+<span class="c1">// 自动配置在Spring默认配置的基础上添加了以下功能</span>
+<span class="nc">The</span> <span class="n">auto</span><span class="o">-</span><span class="n">configuration</span> <span class="n">adds</span> <span class="n">the</span> <span class="n">following</span> <span class="n">features</span> <span class="n">on</span> <span class="n">top</span> <span class="n">of</span> <span class="nc">Spring</span><span class="err">’</span><span class="n">s</span> <span class="nl">defaults:</span>
+<span class="c1">// 包含了内容导航视图解析器和bean名称视图解析器</span>
+<span class="nc">Inclusion</span> <span class="n">of</span> <span class="nc">ContentNegotiatingViewResolver</span> <span class="n">and</span> <span class="nc">BeanNameViewResolver</span> <span class="n">beans</span><span class="o">.</span>
+<span class="c1">// 支持静态资源文件路径映射，包含webjars的支持 </span>
+<span class="nc">Support</span> <span class="k">for</span> <span class="n">serving</span> <span class="kd">static</span> <span class="n">resources</span><span class="o">,</span> <span class="n">including</span> <span class="n">support</span> <span class="k">for</span> <span class="nf">WebJars</span> <span class="o">(</span><span class="n">covered</span> <span class="n">later</span> <span class="n">in</span> <span class="k">this</span> <span class="n">document</span><span class="o">)).</span>
+<span class="c1">// 自动注册转换器，通用转换器和格式化器</span>
+  <span class="c1">// 例如网页提交的前端对象，到后台自动封装为具体的对象；字符串 “1” 转换为数字1，都是转换器在工作；时间字符串2020-03-18 到后台能转换为Date类型，则是Formatter bean在工作，Springbooot默认引入jackjson 配置时间格式</span>
+<span class="nc">Automatic</span> <span class="n">registration</span> <span class="n">of</span> <span class="nc">Converter</span><span class="o">,</span> <span class="nc">GenericConverter</span><span class="o">,</span> <span class="n">and</span> <span class="nc">Formatter</span> <span class="n">beans</span><span class="o">.</span>
+<span class="c1">// 支持Http消息转换，如request\response 对象自动转换为json对象</span>
+<span class="nc">Support</span> <span class="k">for</span> <span class="nf">HttpMessageConverters</span> <span class="o">(</span><span class="n">covered</span> <span class="n">later</span> <span class="n">in</span> <span class="k">this</span> <span class="n">document</span><span class="o">).</span>
+<span class="c1">// 自动注册消息代码解析</span>
+<span class="nc">Automatic</span> <span class="n">registration</span> <span class="n">of</span> <span class="nf">MessageCodesResolver</span> <span class="o">(</span><span class="n">covered</span> <span class="n">later</span> <span class="n">in</span> <span class="k">this</span> <span class="n">document</span><span class="o">).</span>
+<span class="c1">// 支持静态首页定制</span>
+<span class="nc">Static</span> <span class="n">index</span><span class="o">.</span><span class="na">html</span> <span class="n">support</span><span class="o">.</span>
+<span class="c1">// 自定义网站图标</span>
+<span class="nc">Custom</span> <span class="nc">Favicon</span> <span class="nf">support</span> <span class="o">(</span><span class="n">covered</span> <span class="n">later</span> <span class="n">in</span> <span class="k">this</span> <span class="n">document</span><span class="o">).</span>
+<span class="c1">// 自动配置web数据绑定</span>
+<span class="nc">Automatic</span> <span class="n">use</span> <span class="n">of</span> <span class="n">a</span> <span class="nc">ConfigurableWebBindingInitializer</span> <span class="nf">bean</span> <span class="o">(</span><span class="n">covered</span> <span class="n">later</span> <span class="n">in</span> <span class="k">this</span> <span class="n">document</span><span class="o">).</span>
+
+<span class="c1">// 如果你想保持Springboot 对MVC的自动配置基础上，做更多的自定义配置，如拦截器、格式化器，视图控制，你可以在自定义配置类（类型为WebMvcConfigurer），并加上注解 @Configuration ，但是不要加@EnableWebMvc注解</span>
+<span class="nc">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">keep</span> <span class="n">those</span> <span class="nc">Spring</span> <span class="nc">Boot</span> <span class="no">MVC</span> <span class="n">customizations</span> <span class="n">and</span> <span class="n">make</span> <span class="n">more</span> <span class="no">MVC</span> <span class="nf">customizations</span> <span class="o">(</span><span class="n">interceptors</span><span class="o">,</span> <span class="n">formatters</span><span class="o">,</span> <span class="n">view</span> <span class="n">controllers</span><span class="o">,</span> <span class="n">and</span> <span class="n">other</span> <span class="n">features</span><span class="o">),</span> <span class="n">you</span> <span class="n">can</span> <span class="n">add</span> <span class="n">your</span> <span class="n">own</span> <span class="nd">@Configuration</span> <span class="kd">class</span> <span class="nc">of</span> <span class="n">type</span> <span class="nc">WebMvcConfigurer</span> <span class="n">but</span> <span class="n">without</span> <span class="nd">@EnableWebMvc</span><span class="o">.</span>
+
+<span class="c1">// 如果您想自定义request请求映射路由，或者自定义异常解析，你可以声明一个WebMvcRegistrations的bean,</span>
+<span class="nc">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">provide</span> <span class="n">custom</span> <span class="n">instances</span> <span class="n">of</span> <span class="nc">RequestMappingHandlerMapping</span><span class="o">,</span> <span class="nc">RequestMappingHandlerAdapter</span><span class="o">,</span> <span class="n">or</span> <span class="nc">ExceptionHandlerExceptionResolver</span><span class="o">,</span> <span class="n">and</span> <span class="n">still</span> <span class="n">keep</span> <span class="n">the</span> <span class="nc">Spring</span> <span class="nc">Boot</span> <span class="no">MVC</span> <span class="n">customizations</span><span class="o">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">declare</span> <span class="n">a</span> <span class="n">bean</span> <span class="n">of</span> <span class="n">type</span> <span class="nc">WebMvcRegistrations</span> <span class="n">and</span> <span class="n">use</span> <span class="n">it</span> <span class="n">to</span> <span class="n">provide</span> <span class="n">custom</span> <span class="n">instances</span> <span class="n">of</span> <span class="n">those</span> <span class="n">components</span><span class="o">.</span>
+
+<span class="c1">// 如果你想完全控制Spring MVC,你可以在自定义配置类上加上@EnableWebMvc注解</span>
+<span class="nc">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">take</span> <span class="n">complete</span> <span class="n">control</span> <span class="n">of</span> <span class="nc">Spring</span> <span class="no">MVC</span><span class="o">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">add</span> <span class="n">your</span> <span class="n">own</span> <span class="nd">@Configuration</span> <span class="n">annotated</span> <span class="n">with</span> <span class="nd">@EnableWebMvc</span><span class="o">,</span> <span class="n">or</span> <span class="n">alternatively</span> <span class="n">add</span> <span class="n">your</span> <span class="n">own</span> <span class="nd">@Configuration</span><span class="o">-</span><span class="n">annotated</span> <span class="nc">DelegatingWebMvcConfiguration</span> <span class="n">as</span> <span class="n">described</span> <span class="n">in</span> <span class="n">the</span> <span class="nc">Javadoc</span> <span class="n">of</span> <span class="nd">@EnableWebMvc</span><span class="o">.</span>
+</code></pre></div></div>
+
+<h3 id="内容协商视图解析器">内容协商视图解析器</h3>
+
+<p>ContentNegotiatingViewResolver ,内容协商视图解析器,</p>
+
+<p>就是所有的视图解析器都会经过它来协商判断是否使用，</p>
+
+<p>看源码，在springboot web项目中，按两下shift建 全局搜索<code class="highlighter-rouge">WebMvcAutoConfiguration</code></p>
+
+<p>找到<code class="highlighter-rouge">ContentNegotiatingViewResolver</code></p>
+
+<p><img src="/assets/images/2020/icoding/springboot/content-negotiating-view-resolver.jpg" alt="" /></p>
+
+<p>这个视图使用所有其他的视图解析器去精确定位视图，它拥有最高优先级，说明项目启动的时候会优先加载它，再去加载其他的视图解析器，由它来操作其他视图的定位</p>
+
+<p>点进<code class="highlighter-rouge">ContentNegotiatingViewResolver</code>的源码，找到解析视图名字的方法resolveViewName</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/resolver-view-name.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="nd">@Nullable</span> <span class="c1">// 参数可以为空</span>
+<span class="kd">public</span> <span class="nc">View</span> <span class="nf">resolveViewName</span><span class="o">(</span><span class="nc">String</span> <span class="n">viewName</span><span class="o">,</span> <span class="nc">Locale</span> <span class="n">locale</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="nc">RequestAttributes</span> <span class="n">attrs</span> <span class="o">=</span> <span class="nc">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
+  <span class="nc">Assert</span><span class="o">.</span><span class="na">state</span><span class="o">(</span><span class="n">attrs</span> <span class="k">instanceof</span> <span class="nc">ServletRequestAttributes</span><span class="o">,</span> <span class="s">"No current ServletRequestAttributes"</span><span class="o">);</span>
+  <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MediaType</span><span class="o">&gt;</span> <span class="n">requestedMediaTypes</span> <span class="o">=</span> <span class="n">getMediaTypes</span><span class="o">(((</span><span class="nc">ServletRequestAttributes</span><span class="o">)</span> <span class="n">attrs</span><span class="o">).</span><span class="na">getRequest</span><span class="o">());</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">requestedMediaTypes</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// 获取所有候选的视图，在分析springboot自动配置的源码时看到过getCandidate这个</span>
+    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">View</span><span class="o">&gt;</span> <span class="n">candidateViews</span> <span class="o">=</span> <span class="n">getCandidateViews</span><span class="o">(</span><span class="n">viewName</span><span class="o">,</span> <span class="n">locale</span><span class="o">,</span> <span class="n">requestedMediaTypes</span><span class="o">);</span>
+    <span class="c1">// 获取最好的视图</span>
+    <span class="nc">View</span> <span class="n">bestView</span> <span class="o">=</span> <span class="n">getBestView</span><span class="o">(</span><span class="n">candidateViews</span><span class="o">,</span> <span class="n">requestedMediaTypes</span><span class="o">,</span> <span class="n">attrs</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">bestView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">bestView</span><span class="o">;</span> <span class="c1">// 返回最好的视图，从所有的视图解析器中获取最好的返回</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="nc">String</span> <span class="n">mediaTypeInfo</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">requestedMediaTypes</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span>
+    <span class="s">" given "</span> <span class="o">+</span> <span class="n">requestedMediaTypes</span><span class="o">.</span><span class="na">toString</span><span class="o">()</span> <span class="o">:</span> <span class="s">""</span><span class="o">;</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">useNotAcceptableStatusCode</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Using 406 NOT_ACCEPTABLE"</span> <span class="o">+</span> <span class="n">mediaTypeInfo</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="no">NOT_ACCEPTABLE_VIEW</span><span class="o">;</span> <span class="c1">// 如果没有找到的话，就返回406错误</span>
+  <span class="o">}</span>
+  <span class="k">else</span> <span class="o">{</span>
+    <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"View remains unresolved"</span> <span class="o">+</span> <span class="n">mediaTypeInfo</span><span class="o">);</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="定义一个视图解析器">定义一个视图解析器</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span>
+<span class="nd">@ConditionalOnBean</span><span class="o">(</span><span class="nc">ViewResolver</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@ConditionalOnMissingBean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"viewResolver"</span><span class="o">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nc">ContentNegotiatingViewResolver</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">ContentNegotiatingViewResolver</span> <span class="nf">viewResolver</span><span class="o">(</span><span class="nc">BeanFactory</span> <span class="n">beanFactory</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">ContentNegotiatingViewResolver</span> <span class="n">resolver</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ContentNegotiatingViewResolver</span><span class="o">();</span>
+  <span class="n">resolver</span><span class="o">.</span><span class="na">setContentNegotiationManager</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="nc">ContentNegotiationManager</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+  <span class="c1">// ContentNegotiatingViewResolver uses all the other view resolvers to locate</span>
+  <span class="c1">// a view so it should have a high precedence</span>
+  <span class="n">resolver</span><span class="o">.</span><span class="na">setOrder</span><span class="o">(</span><span class="nc">Ordered</span><span class="o">.</span><span class="na">HIGHEST_PRECEDENCE</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">resolver</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>从源码可以看出所有的视图解析器都是从beanFactory中加载的，所以我们自己写一个视图解析器，也是可以被扫描加载的！来实操一下，定义一个视图解析器配置类MyViewResolverConfig</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyViewResolverConfig</span> <span class="o">{</span>
+	<span class="nd">@Bean</span> <span class="c1">// 生成一个组件实例放入beanFactory</span>
+	<span class="kd">public</span> <span class="nc">MyViewResolver</span> <span class="nf">myViewResolver</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">MyViewResolver</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyViewResolver</span> <span class="kd">implements</span> <span class="nc">ViewResolver</span><span class="o">{</span>
+		<span class="nd">@Override</span>
+		<span class="kd">public</span> <span class="nc">View</span> <span class="nf">resolveViewName</span><span class="o">(</span><span class="nc">String</span> <span class="n">viewName</span><span class="o">,</span> <span class="nc">Locale</span> <span class="n">locale</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们看一下<code class="highlighter-rouge">ViewResolver</code>接口有哪些子接口</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/view-resolver.jpg" alt="" /></p>
+
+<p>有我们熟悉的FreeMark视图解析器和Thymeleaf视图解析器，看源码，<code class="highlighter-rouge">ThymeleafViewResolver</code> 继承<code class="highlighter-rouge">AbstractCachingViewResolver</code>，后者重写了resolveViewName方法</p>
+
+<p>所有的request请求，没有被拦截器拦截的话，都会走到doDispatch(spring mvc下的方法) 分配到controller层对应的路由方法 ，我们debug方式启动项目</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/doDispatch.jpg" alt="" /></p>
+
+<p>在doDispatch方法上打一个断点</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/doDispatch-2.jpg" alt="" /></p>
+
+<p>浏览器访问一个请求，进入该断点，我们就可以看当前扫描的所有视图解析器</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/doDispatch-3.jpg" alt="" /></p>
+
+<p>其中就有我们自定义的视图解析器<code class="highlighter-rouge">MyViewResolver</code>，也可以看到<code class="highlighter-rouge">ContentNegotiatingViewResolver</code>是第一个优先加载，有最优先级，它会协调所有的视图解析器，并返回最合适的视图解析器。</p>
+
+<p>所以，记住一句话：<mark>在SpringBoot中，如果我们想要使用自己定制化的东西，只需要给Spring容器beanFactory中添加这个组件就好了。剩下的事情SpringBoot就会帮我们自动去做了。</mark></p>
+
+<h3 id="格式转化器formatter">格式转化器Formatter</h3>
+
+<p>全局搜索WebMvcAutoConfiguration，找到重写方法<code class="highlighter-rouge">addFormatters</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">addFormatters</span><span class="o">(</span><span class="nc">FormatterRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nc">ApplicationConversionService</span><span class="o">.</span><span class="na">addBeans</span><span class="o">(</span><span class="n">registry</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">beanFactory</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>搜索<code class="highlighter-rouge">WebMvcProperties</code>,找到dateFormat属性，发现它最终在<code class="highlighter-rouge">WebMvcAutoConfiguration</code>的方法mvcConversionService 被调用了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Bean</span>
+<span class="nd">@Override</span> <span class="c1">// 这是一个服务</span>
+<span class="kd">public</span> <span class="nc">FormattingConversionService</span> <span class="nf">mvcConversionService</span><span class="o">()</span> <span class="o">{</span>
+  <span class="nc">WebConversionService</span> <span class="n">conversionService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WebConversionService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mvcProperties</span><span class="o">.</span><span class="na">getDateFormat</span><span class="o">());</span>
+  <span class="n">addFormatters</span><span class="o">(</span><span class="n">conversionService</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">conversionService</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 默认的时间格式 / 开头
+	 * Date format to use. For instance, `dd/MM/yyyy`.
+	 */</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">dateFormat</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>注意，只要在<code class="highlighter-rouge">WebMvcProperties</code>中的都可以手动配置</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 前端提交的日期格式问题，和前端提交的格式对应即可
+</span><span class="py">spring.mvc.date-format</span><span class="p">=</span><span class="s">yyyy-MM-dd</span>
+</code></pre></div></div>
+
+<h3 id="实现webmvcconfigurer">实现WebMvcConfigurer</h3>
+
+<p>官方文档</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 如果你想保持Springboot 对MVC的自动配置基础上，做更多的自定义配置，如拦截器、格式化器，视图控制，你可以在自定义配置类（类型为WebMvcConfigurer），并加上注解 @Configuration ，但是不要加@EnableWebMvc注解</span>
+<span class="nc">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">keep</span> <span class="n">those</span> <span class="nc">Spring</span> <span class="nc">Boot</span> <span class="no">MVC</span> <span class="n">customizations</span> <span class="n">and</span> <span class="n">make</span> <span class="n">more</span> <span class="no">MVC</span> <span class="nf">customizations</span> <span class="o">(</span><span class="n">interceptors</span><span class="o">,</span> <span class="n">formatters</span><span class="o">,</span> <span class="n">view</span> <span class="n">controllers</span><span class="o">,</span> <span class="n">and</span> <span class="n">other</span> <span class="n">features</span><span class="o">),</span> <span class="n">you</span> <span class="n">can</span> <span class="n">add</span> <span class="n">your</span> <span class="n">own</span> <span class="nd">@Configuration</span> <span class="kd">class</span> <span class="nc">of</span> <span class="n">type</span> <span class="nc">WebMvcConfigurer</span> <span class="n">but</span> <span class="n">without</span> <span class="nd">@EnableWebMvc</span><span class="o">.</span>
+  
+<span class="c1">// 如果你想完全控制Spring MVC,你可以在自定义配置类上加上@EnableWebMvc注解</span>
+<span class="nc">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">take</span> <span class="n">complete</span> <span class="n">control</span> <span class="n">of</span> <span class="nc">Spring</span> <span class="no">MVC</span><span class="o">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">add</span> <span class="n">your</span> <span class="n">own</span> <span class="nd">@Configuration</span> <span class="n">annotated</span> <span class="n">with</span> <span class="nd">@EnableWebMvc</span><span class="o">,</span> <span class="n">or</span> <span class="n">alternatively</span> <span class="n">add</span> <span class="n">your</span> <span class="n">own</span> <span class="nd">@Configuration</span><span class="o">-</span><span class="n">annotated</span> <span class="nc">DelegatingWebMvcConfiguration</span> <span class="n">as</span> <span class="n">described</span> <span class="n">in</span> <span class="n">the</span> <span class="nc">Javadoc</span> <span class="n">of</span> <span class="nd">@EnableWebMvc</span><span class="o">.</span>  
+</code></pre></div></div>
+
+<p>扩展mvc 方法，3步</p>
+
+<ol>
+  <li>
+    <p>编写自己的config配置类</p>
+  </li>
+  <li>
+    <p>实现接口WebMvcConfigurer</p>
+  </li>
+  <li>
+    <p>重写接口的默认方法</p>
+
+    <p><img src="/assets/images/2020/icoding/springboot/webmvcconigurer.jpg" alt="" /></p>
+
+    <p>包括我们常用的配置</p>
+
+    <p>1) 异步支持<code class="highlighter-rouge">configureAsyncSupport</code></p>
+
+    <p>2) 添加格式化器<code class="highlighter-rouge">addFormatter</code></p>
+
+    <p>3) 添加拦截器<code class="highlighter-rouge">addInterceptor</code></p>
+
+    <p>4) 添加资源处理<code class="highlighter-rouge">addResourceHandler</code></p>
+
+    <p>5) 添加跨域配置<code class="highlighter-rouge">addCorsMappings</code></p>
+
+    <p>6) 添加视图控制<code class="highlighter-rouge">addViewController</code></p>
+
+    <p>7) 配置视图解析器<code class="highlighter-rouge">configureViewResolver</code>、</p>
+
+    <p>8) 配置返回数据处理<code class="highlighter-rouge">addReturnValueHandler</code>、</p>
+
+    <p>9) 配置消息转换<code class="highlighter-rouge">configureMessageConvert</code></p>
+  </li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 自己编写一个视图解析、路由，spring mvc底层就是这么做的</span>
+<span class="nd">@Configuration</span>
+<span class="c1">//@EnableWebMvc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyMvcConfig</span> <span class="kd">implements</span> <span class="nc">WebMvcConfigurer</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addViewControllers</span><span class="o">(</span><span class="nc">ViewControllerRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 视图跳转的控制！</span>
+        <span class="n">registry</span><span class="o">.</span><span class="na">addViewController</span><span class="o">(</span><span class="s">"/index"</span><span class="o">).</span><span class="na">setViewName</span><span class="o">(</span><span class="s">"login"</span><span class="o">);</span>
+        <span class="n">registry</span><span class="o">.</span><span class="na">addViewController</span><span class="o">(</span><span class="s">"/"</span><span class="o">).</span><span class="na">setViewName</span><span class="o">(</span><span class="s">"login"</span><span class="o">);</span>
+        <span class="n">registry</span><span class="o">.</span><span class="na">addViewController</span><span class="o">(</span><span class="s">"/index.html"</span><span class="o">).</span><span class="na">setViewName</span><span class="o">(</span><span class="s">"login"</span><span class="o">);</span>
+      	<span class="n">registry</span><span class="o">.</span><span class="na">addViewController</span><span class="o">(</span><span class="s">"/test"</span><span class="o">).</span><span class="na">setViewName</span><span class="o">(</span><span class="s">"login"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们加上<code class="highlighter-rouge">@EnableWebMvc</code>注解后，方法addViewControllers添加的路由跳转依然生效，但是在@Controller注解的控制类的自动配置的路由跳转请求方法就不生效了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IndexController</span> <span class="o">{</span>
+  <span class="nd">@RequestMapping</span><span class="o">({</span><span class="s">"/test"</span><span class="o">})</span>
+  <span class="kd">public</span> <span class="nc">String</span> <span class="nf">test</span><span class="o">(){</span>
+    <span class="k">return</span> <span class="s">"test"</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>启动项目，访问/test，</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/enable-web-mvc-error-page.jpg" alt="" /></p>
+
+<p>即使我们放在默认静态目录resources、static、public下静态资源js、css文件的访问都会失效，报error page错误</p>
+
+<p>分析问题为什么@EnableWebMvc不要加他，点击<code class="highlighter-rouge">WebMvcAutoConfiguration</code>，springboot 自动配置的核心xxxAutoConfiguration、xxxProperties</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/webmvc-auto-configuration.jpg" alt="" /></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 如果这个bean不存在，才生效</span>
+<span class="nd">@ConditionalOnMissingBean</span><span class="o">(</span><span class="nc">WebMvcConfigurationSupport</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>为什么会路由失效的？因为开启<code class="highlighter-rouge">@EnableWebMvc</code>注解后，会导入一个类<code class="highlighter-rouge">DelegatingWebMvcConfiguration</code>生成对应的bean，他是继承WebMvcConfigurationSupport的，所以就会导致<code class="highlighter-rouge">WebMvcAutoConfiguration</code>自动配置不生效，Springboot 对MVC的自动配置全部失效，除了我们自己实现<code class="highlighter-rouge">WebMvcConfigurer</code>的视图解析器</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Retention</span><span class="o">(</span><span class="nc">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+<span class="nd">@Target</span><span class="o">(</span><span class="nc">ElementType</span><span class="o">.</span><span class="na">TYPE</span><span class="o">)</span>
+<span class="nd">@Documented</span>
+<span class="nd">@Import</span><span class="o">(</span><span class="nc">DelegatingWebMvcConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="nc">EnableWebMvc</span> <span class="o">{</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2020/icoding/springboot/delegating-webmvc-configuration.jpg" alt="" /></p>
+
+<p><strong>小结</strong></p>
+
+<p>如果你要扩展MVC配置，但是又需要保留原来的配置，可以使用</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyMvcConfig</span> <span class="kd">implements</span> <span class="nc">WebMvcConfigurer</span> <span class="o">{</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>全面接管SpringMVC</p>
+</blockquote>
+
+<p>读官方文档，我们知道，只需要加一个<code class="highlighter-rouge">@EnableWebMvc</code>注解，spring只提供基本的MVC功能，其他需要自己实现。</p>
+
+<p>springboot源码是很精妙的，它有非常多的这种扩展配置，应该多留心注意。</p>
+
+<h2 id="5配置项目环境及首页">5、配置项目环境及首页</h2>
+
+<p>正式开发项目之前，需要将所有页面的中链接的路径改为 thymeleaf 的路径配置！</p>
+
+<p>html导入thymeleaf约束文件</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"zh"</span> <span class="na">xmlns:th=</span><span class="s">"http://www.thymeleaf.org"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>配置页面支持thymeleaf</p>
+
+<p>Js、css静态资源使用<code class="highlighter-rouge">@{}</code>进行适配</p>
+
+<p>不使用controller，自己配置视图控制，静态路由跳转</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/addViewController.jpg" alt="" /></p>
+
+<p>静态页面都支持thymeleaf，写在template目录下</p>
+
+<p><img src="/assets/images/2020/icoding/springboot/view-template.jpg" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-edu/2020/03/18/icoding-note-010.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

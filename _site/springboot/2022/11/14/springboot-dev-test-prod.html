@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> SpringBoot多环境切换配置 - 大伟的博客 </title>
+    <meta name="keywords" content="springboot">
+    <meta name="description"
+          content="创建不同环境的配置文件，maven多环境配置，maven资源过滤">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/springboot/2022/11/14/springboot-dev-test-prod.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="SpringBoot多环境切换配置">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>SpringBoot多环境切换配置</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2022/11/14
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1自带的多环境配置">1、自带的多环境配置</h2>
+
+<h3 id="创建不同环境的配置文件">创建不同环境的配置文件</h3>
+
+<p>既然每个环境的配置都不相同，索性将不同环境的配置放在不同的配置文件中，因此需要创建三个不同的配置文件，分别是</p>
+
+<ul>
+  <li>application-dev.properties</li>
+  <li>application-test.properties</li>
+  <li>application-prod.properties</li>
+</ul>
+
+<p><strong>注意</strong>：配置文件的名称一定要是 application-name.properties 或者 application-name.yml 格式。这个name 可以自定义，主要用于区分</p>
+
+<p>此时整个项目中就有四个配置文件，加上 application.properties ，然后需要指定运行环境，有两种方式</p>
+
+<ul>
+  <li>
+    <p><strong>配置文件中指定</strong></p>
+
+    <p>在 application.properties 或者 application.yml 文件中指定，内容如下</p>
+
+    <div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 指定运行环境为测试环境 
+</span><span class="py">spring.profiles.active</span><span class="p">=</span><span class="s">test</span>
+</code></pre></div>    </div>
+
+    <p>如果没有指定运行的环境， Spring Boot 默认会加载 application.properties 文件，而这个的文件又告诉 Spring Boot 去找 test 环境的配置文件</p>
+  </li>
+  <li>
+    <p><strong>运行jar的时候指定</strong></p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> xxx.jar <span class="nt">--spring</span>.profiles.active<span class="o">=</span><span class="nb">test</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="2maven多环境配置">2、maven多环境配置</h2>
+
+<p>Maven 本身也提供了对多环境的支持，不仅仅支持 Spring Boot 项目，只要是基于 Maven 的项目都可以配置。</p>
+
+<p>Maven 对于多环境的支持在功能方面更加强大，支持 JDK版本 、 资源文件 、 操作系统 等等因素来选择环境。</p>
+
+<p><strong>创建不同环境的配置文件</strong></p>
+
+<p>分别是 application-dev.properties 、 application-test.properties 、 application-prod.properties ，加上默认的配置文件 application.properties 同样是四个配置文件</p>
+
+<p><strong>定义激活的变量</strong></p>
+
+<p>需要将 Maven 激活的环境作用于 Spring Boot ，实际还是利用了 spring.profiles.active 这个属性，只是现在这个属性的取值将是取值于 Maven 。配置如下：</p>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="py">spring.profiles.active</span><span class="p">=</span><span class="s">@profile.active@</span>
+</code></pre></div></div>
+
+<p>profile.active 实际上就是一个变量，在 maven 打包的时候指定的 -P test 传入的就是值。</p>
+
+<p><strong>pom文件中定义profile</strong></p>
+
+<p>需要在 maven 的 pom.xml 文件中定义不同环境的 profile ，如下：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--定义三种开发环境--&gt;</span> 
+<span class="nt">&lt;profiles&gt;</span> 
+  <span class="nt">&lt;profile&gt;</span>
+    <span class="c">&lt;!--不同环境的唯一id--&gt;</span>
+    <span class="nt">&lt;id&gt;</span>dev<span class="nt">&lt;/id&gt;</span> 
+    <span class="nt">&lt;activation&gt;</span> 
+      <span class="c">&lt;!--默认激活开发环境--&gt;</span> 
+      <span class="nt">&lt;activeByDefault&gt;</span>true<span class="nt">&lt;/activeByDefault&gt;</span> 
+    <span class="nt">&lt;/activation&gt;</span> 
+    <span class="nt">&lt;properties&gt;</span> 
+      <span class="c">&lt;!--profile.active对应application.yml中的@profile.active@--&gt;</span>
+      <span class="nt">&lt;profile.active&gt;</span>dev<span class="nt">&lt;/profile.active&gt;</span> 
+    <span class="nt">&lt;/properties&gt;</span> 
+  <span class="nt">&lt;/profile&gt;</span>
+  <span class="c">&lt;!--测试环境--&gt;</span> 
+  <span class="nt">&lt;profile&gt;</span> 
+    <span class="nt">&lt;id&gt;</span>test<span class="nt">&lt;/id&gt;</span> 
+    <span class="nt">&lt;properties&gt;</span> 
+      <span class="nt">&lt;profile.active&gt;</span>test<span class="nt">&lt;/profile.active&gt;</span> 
+    <span class="nt">&lt;/properties&gt;</span> 
+  <span class="nt">&lt;/profile&gt;</span> 
+  <span class="c">&lt;!--生产环境--&gt;</span> 
+  <span class="nt">&lt;profile&gt;</span> 
+    <span class="nt">&lt;id&gt;</span>prod<span class="nt">&lt;/id&gt;</span> 
+    <span class="nt">&lt;properties&gt;</span> 
+      <span class="nt">&lt;profile.active&gt;</span>prod<span class="nt">&lt;/profile.active&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span> 
+  <span class="nt">&lt;/profile&gt;</span> 
+<span class="nt">&lt;/profiles&gt;</span>
+</code></pre></div></div>
+
+<p>标签 <profile.active> 正是对应着配置文件中的 @profile.active@</profile.active></p>
+
+<p><code class="highlighter-rouge">&lt;activeByDefault&gt;</code> 标签指定了默认激活的环境，则是打包的时候不指定 -P 选项默认选择的环境</p>
+
+<p>以上配置完成后，将会在IDEA的右侧 Maven 选项卡中出现以下内容：</p>
+
+<p><img src="/assets/images/2022/springboot/maven-profile.png" alt="" /></p>
+
+<p>可以勾选打包的环境，然后点击 package 即可。</p>
+
+<p>或者在项目的根目录下用命令打包，不过需要使用 -P 指定环境，如下</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn clean package package <span class="nt">-P</span> <span class="nb">test</span>
+</code></pre></div></div>
+
+<p>maven 中的 profile 的激活条件还可以根据 jdk 、 操作系统 、 文件存在或者缺失 来激活。这些内容都是在<code class="highlighter-rouge"> &lt;activation&gt;</code> 标签中配置，如下：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!--activation用来指定激活方式，可以根据jdk环境，环境变量，文件的存在或缺失--&gt;</span>
+<span class="nt">&lt;activation&gt;</span> 
+  <span class="c">&lt;!--配置默认激活--&gt;</span> 
+  <span class="nt">&lt;activeByDefault&gt;</span>true<span class="nt">&lt;/activeByDefault&gt;</span> 
+  <span class="c">&lt;!--通过jdk版本--&gt;</span>
+  <span class="c">&lt;!--当jdk环境版本为1.8时，此profile被激活--&gt;</span> 
+  <span class="nt">&lt;jdk&gt;</span>1.8<span class="nt">&lt;/jdk&gt;</span> 
+  <span class="c">&lt;!--当jdk环境版本1.8或以上时，此profile被激活--&gt;</span> 
+  <span class="nt">&lt;jdk&gt;</span>[1.8,)<span class="nt">&lt;/jdk&gt;</span> 
+  <span class="c">&lt;!--根据当前操作系统--&gt;</span> 
+  <span class="nt">&lt;os&gt;</span>
+    <span class="nt">&lt;name&gt;</span>Windows XP<span class="nt">&lt;/name&gt;</span> 
+    <span class="nt">&lt;family&gt;</span>Windows<span class="nt">&lt;/family&gt;</span> 
+    <span class="nt">&lt;arch&gt;</span>x86<span class="nt">&lt;/arch&gt;</span> 
+    <span class="nt">&lt;version&gt;</span>5.1.2600<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/os&gt;</span> 
+<span class="nt">&lt;/activation&gt;</span>
+</code></pre></div></div>
+
+<h2 id="3maven资源过滤">3、maven资源过滤</h2>
+
+<p>如果你不配置这一步，将会在任何环境下打包都会带上全部的配置文件，但是我们可以配置只保留对应环境下的配置文件，这样安全性更高。</p>
+
+<p>这一步配置很简单，只需要在 pom.xml 文件中指定 <resource> 过滤的条件即可，如下：</resource></p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;build&gt;</span> 
+  <span class="nt">&lt;resources&gt;</span>
+  <span class="c">&lt;!--排除配置文件--&gt;</span> 
+    <span class="nt">&lt;resource&gt;</span> 
+      <span class="nt">&lt;directory&gt;</span>src/main/resources<span class="nt">&lt;/directory&gt;</span>
+      <span class="c">&lt;!--先排除所有的配置文件--&gt;</span> 
+      <span class="nt">&lt;excludes&gt;</span> 
+        <span class="c">&lt;!--使用通配符，当然可以定义多个exclude标签进行排除--&gt;</span> 
+        <span class="nt">&lt;exclude&gt;</span>application*.properties<span class="nt">&lt;/exclude&gt;</span> 
+      <span class="nt">&lt;/excludes&gt;</span>
+    <span class="nt">&lt;/resource&gt;</span> 
+    
+    <span class="c">&lt;!--根据激活条件引入打包所需的配置和文件--&gt;</span> 
+    <span class="nt">&lt;resource&gt;</span> 
+      <span class="nt">&lt;directory&gt;</span>src/main/resources<span class="nt">&lt;/directory&gt;</span> 
+      <span class="c">&lt;!--引入所需环境的配置文件--&gt;</span> 
+      <span class="nt">&lt;filtering&gt;</span>true<span class="nt">&lt;/filtering&gt;</span>
+      <span class="nt">&lt;includes&gt;</span> 
+        <span class="nt">&lt;include&gt;</span>application.yml<span class="nt">&lt;/include&gt;</span> 
+        <span class="c">&lt;!--根据maven选择环境导入配置文件--&gt;</span> 
+        <span class="nt">&lt;include&gt;</span>application-${profile.active}.yml<span class="nt">&lt;/include&gt;</span>
+      <span class="nt">&lt;/includes&gt;</span> 
+    <span class="nt">&lt;/resource&gt;</span>
+  <span class="nt">&lt;/resources&gt;</span>
+<span class="nt">&lt;/build&gt;</span>
+</code></pre></div></div>
+
+<p>上述配置主要分为两个方面，第一是先排除所有配置文件，第二是根据 profile.active 动态的引入配置文件</p>
+
+<p>至此， Maven 的多环境打包已经配置完成，相对来说挺简单，既可以在 IDEA 中选择环境打包，也同样支持命令 -P 指定环境打包。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/springboot/2022/11/14/springboot-dev-test-prod.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

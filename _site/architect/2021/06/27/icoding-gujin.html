@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 孤尽老师做客艾编程笔记 - 大伟的博客 </title>
+    <meta name="keywords" content="architect">
+    <meta name="description"
+          content="软件研发全生命周期,项目和需求有什么区别，什么是项目管理，系统鲁棒性与容灾机制，架构图是什么，架构图的分类，业务架构、客户端与前端架构、系统架构，部署架构，为什么需要系统序列图">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/architect/2021/06/27/icoding-gujin.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="孤尽老师做客艾编程笔记">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>孤尽老师做客艾编程笔记</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2021/06/27
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="0软件研发全生命周期">0、软件研发全生命周期</h2>
+
+<p>低代码为企业提供了“<strong>降本、增效、提质</strong>”的价值。</p>
+
+<p>降本、增效、提质，就是为企业降低研发成本、人力成本，提升研发效率，缩短产品交付周期，加快企业试错的速度，降低试错成本。使得企业的产品和服务以更快的速度进行迭代和优化，在激烈的市场竞争中胜出。</p>
+
+<p>低代码平台的使用者中，<strong>约 67% 的人是 IT 开发者</strong>，剩下的则是业务人员，需要掌握需求分析、业务建模、代码调试、模块测试、发布和运维等工作，这些并非一个普通业务人员能够胜任的。</p>
+
+<p><strong>低代码仍然需要大量的专业程序员，只是低代码平台把程序员从低效的、没有技术含量的CRUD当中解放出来</strong>，<strong>做更有价值、更高效的软件开发工作</strong>。比如：<mark>业务建模、领域建模、数据结构设计、业务流程设计、业务系统调试和部署</mark>等等。</p>
+
+<p>低代码的主要使用者仍然是程序员，通过低代码平台完成：</p>
+
+<ul>
+  <li>需求分析、</li>
+  <li>业务建模、</li>
+  <li>代码调试、</li>
+  <li>模块测试、</li>
+  <li>发布和运维</li>
+</ul>
+
+<p>实现软件研发全流程的提效。</p>
+
+<h2 id="1项目与需求的区别">1、项目与需求的区别</h2>
+
+<ul>
+  <li>项目是有明确的目标，边界项目范围，这个过程人员会进行相对封闭式的、相对集中的开发；</li>
+  <li>需求是相对开放的，今天做需求A，明天做需求B</li>
+</ul>
+
+<p>从个人成就感来说，项目更能帮助你明确的成长，有明确的目标，你更能有大块的时间去做一件事；而需求就相对零碎，为了做需求还要了解项目的背景业务应用，时间被多个需求切割，需求是业务方提出的零碎的，对于点状的实现。</p>
+
+<p>项目是业务方提出的，需要立项，评估可行性，投入产出比。</p>
+
+<p><mark>项目管理：</mark>有明确的项目目标，项目边界，在开发过程中，管好进度、风险，并且理出计划，然后达到预期目的。尽量避免临时变更需求。</p>
+
+<p>项目的过程中，要考虑安全性，可靠性，系统是不断演化进化的。</p>
+
+<h2 id="2调用第三方">2、调用第三方</h2>
+
+<p>使用manager模块，防腐层</p>
+
+<p>红黑树的根节点，自己与自己比较的意图，就是为了放第一个节点，确定这个对象具有可比较性，有两种方式：</p>
+
+<ul>
+  <li>自己实现比较</li>
+  <li>使用比较器来比较</li>
+</ul>
+
+<h2 id="3系统鲁棒性">3、系统鲁棒性</h2>
+
+<p>鲁棒性怎么理解，举一个笑话说明：有一个程序猿在叹气，这个代码为什么就运行不起来了，可是过了一阵子，他又点了一次运行，这个代码怎么就运行起来了。当一个代码运行不起来和运行起来的时候，你都觉得很神奇的时候，那么这个代码就是缺乏鲁棒性的。</p>
+
+<p><mark>鲁棒性：指代码在正常的时候能运行，在不正常的时候一定能运行</mark></p>
+
+<blockquote>
+  <p>鲁棒是Robust的音译，也就是健壮和强壮的意思。它也是在异常和危险情况下系统生存的能力。比如说，计算机<a href="https://baike.baidu.com/item/软件">软件</a>在输入错误、磁盘故障、网络过载或有意攻击情况下，能否不死机、不崩溃，就是该软件的鲁棒性</p>
+</blockquote>
+
+<p>系统的复杂就体现在分布式、高可用、高性能上，当他们单机版的时候都是简单的</p>
+
+<p>为了保证系统的鲁棒性，就要做容灾：</p>
+
+<ul>
+  <li>
+    <p>限流</p>
+
+    <p>用户分层限流，当流量大的时候，我确保VIP用户可以使用，小白用户就不可以使用</p>
+
+    <p>地域限流，比如说新疆的用户，网络链路又长，用户又少，可以进行部分限流</p>
+
+    <p>针对特性的功能接口进行限流</p>
+  </li>
+  <li>
+    <p>降级</p>
+
+    <p>打个比方，我开个饭店，生意很好，来了很多客人，会员可以进，非会员不可以进，这就是限流了；平常都是服务员给你倒茶、拿筷子、上菜的，由于客人非常多，服务员忙不过来，部分客人就只能自己倒茶，拿餐具，菜做好后，自己去餐台窗口拿菜，这就是降级；我在隔壁又开了一家饭店，对面又开一家饭店，万一有一家出现什么情况不能服务客人，就可以让客人去隔壁的饭店就餐，这就是灾备</p>
+  </li>
+  <li>
+    <p>灾备</p>
+  </li>
+</ul>
+
+<p>技术的最优解并不是商业的最优解，有时候就希望产品出现故障不能用，促进新的消费。</p>
+
+<h2 id="4架构图">4、架构图</h2>
+
+<h3 id="架构师">架构师</h3>
+
+<p>架构设计的目的是为了降低系统的复杂性，</p>
+
+<p>架构师的职责是消除不确定性和降低复杂性</p>
+
+<p>架构师不能只顾技术，不懂业务</p>
+
+<p>架构师的三个核心能力</p>
+
+<ul>
+  <li>
+    <p>判断</p>
+
+    <p>业务理解能力</p>
+
+    <p>技术能力</p>
+
+    <p>沟通能力</p>
+  </li>
+  <li>
+    <p>拆解</p>
+
+    <p>技术深度</p>
+
+    <p>技术宽度</p>
+
+    <p>技术广度</p>
+  </li>
+  <li>
+    <p>取舍</p>
+
+    <p>设计理念</p>
+
+    <p>说服能力</p>
+
+    <p>决断能力</p>
+  </li>
+</ul>
+
+<h3 id="架构设计的几个阶段">架构设计的几个阶段</h3>
+
+<p>架构设计前期，就是跟相关干系人员开会，与业务方开会</p>
+
+<p>架构设计中期，设计备选方案，选择备选方案，内部开会，写文档，汇报</p>
+
+<p>架构设计后期，细化架构方案，交给开发团队实现</p>
+
+<p>架构验证阶段，·收集架构意见：开发人员、测试人员、运维人员意见</p>
+
+<h3 id="什么是架构图">什么是架构图</h3>
+
+<p>我们经常说画架构图，那什么是架构图</p>
+
+<p>从严格意义上说，区分为业务架构图、产品架构图、技术架构图3个层面</p>
+
+<ul>
+  <li>
+    <p>业务架构图：侧重于表达业务方想要什么，一般是运营端画的；</p>
+  </li>
+  <li>
+    <p>产品架构图：侧重于把业务进行产品层面的抽象，梳理共性，来形成产品架构，一般是产品经理画的；</p>
+  </li>
+  <li>
+    <p>技术架构图：侧重于体现技术实现上跟功能的结合地带，简单的说就是使用相应的技术栈实现对应的功能，一般是架构师画的；</p>
+  </li>
+</ul>
+
+<p>我们通常的说<strong>技术架构图</strong>，<strong>就是抽象的表示某个系统的产品和技术</strong>，即<mark>水平方向上的业务单元+垂直方向上的技术依赖</mark>形成的混合逻辑结构图。回想一下，架构图的样子包含：</p>
+
+<ul>
+  <li>上面是功能单元</li>
+  <li>中间是服务层</li>
+  <li>模块的抽象层</li>
+  <li>缓存</li>
+  <li>数据库</li>
+</ul>
+
+<p>参考：</p>
+
+<p><img src="/assets/images/2020/icoding/project-build/arch-10-3.jpg" alt="" /></p>
+
+<h3 id="画好架构图">画好架构图</h3>
+
+<p>怎么把框框的技术架构图画好，其实是挺难的事情。首先要表达出层次，可以使用颜色来区分，当我使用明显的颜色如红色去表达框、线的时候，这部分一定是核心的东西，当我使用灰色不显眼的颜色去表达框、线的时候，一般是外部依赖。</p>
+
+<p>1）画架构图的颜色布局：</p>
+
+<ul>
+  <li>显眼的颜色表达自己的东西，灰色等不显眼的颜色表达别人的东西外部依赖</li>
+</ul>
+
+<p>2）画架构图的方向布局：</p>
+
+<ul>
+  <li>从左到右表达业务的单元，如下单-&gt; 支付-&gt; 我的订单</li>
+  <li>从上往下表达技术的依赖</li>
+</ul>
+
+<p>3) 画架构图的规划年限</p>
+
+<ul>
+  <li>
+    <p>3-5年的规划</p>
+
+    <p>5年以后，新的技术框架迭代很快，你现在想的框架很好，很可能5年后就是被淘汰的技术</p>
+
+    <p>3年以内，太短，导致项目经常重构，浪费人力物力</p>
+  </li>
+</ul>
+
+<p>4）考虑架构的4大目的</p>
+
+<ul>
+  <li>
+    <p>确定系统边界</p>
+
+    <p>哪个功能做，哪个功能不做，</p>
+  </li>
+  <li>
+    <p>确定模块的内部关系，你的系统与外部依赖的关系</p>
+
+    <p>模块内有哪些API，与外部依赖关系的有哪些API</p>
+  </li>
+  <li>
+    <p>确定指导你的系统后续演化的原则</p>
+
+    <p>与外部接口通过防腐层调用，模块对不对外，模块的安全性</p>
+
+    <p>搞清楚模块之间的关系，也就是类之间的关系</p>
+
+    <ul>
+      <li>继承</li>
+      <li>依赖</li>
+      <li>组合</li>
+      <li>实现</li>
+      <li>聚合</li>
+      <li>关联</li>
+    </ul>
+
+    <p>面向对象的特征：封装、继承、多态</p>
+
+    <p>轮子与汽车车体的关系是：聚合，类图中用黑色的菱形表示</p>
+
+    <p>确定模块之间的关系，就是分任务</p>
+  </li>
+  <li>
+    <p>确定系统的非功能性需求</p>
+  </li>
+</ul>
+
+<h2 id="5上手架构设计">5、上手架构设计</h2>
+
+<p>4R架构指Rank 、Role、Relation、Rule</p>
+
+<h3 id="41架构视图">4+1架构视图</h3>
+
+<p><img src="/assets/images/2021/architect/four-add-one.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p><strong><font color="red">逻辑视图</font></strong></p>
+
+    <p>logical view 描述系统提供给用户的功能，对应UML class 类图 和状态图 state diagrams</p>
+  </li>
+  <li>
+    <p><strong><font color="red">处理视图</font></strong></p>
+
+    <p>process view 描述系统的处理过程，对应UML的sequence 和 activity 图</p>
+  </li>
+  <li>
+    <p><strong><font color="red">开发视图</font></strong></p>
+
+    <p>Development veiw 描述程序员视角看系统的逻辑组成，对应UML的package 图</p>
+  </li>
+  <li>
+    <p><strong><font color="red">物理视图</font></strong></p>
+
+    <p>Physical veiw 描述系统工程师视角看系统的物理组成，对应UML的部署图deployment diagrams</p>
+  </li>
+  <li>
+    <p><strong><font color="red">场景视图</font></strong></p>
+
+    <p>Scenarios  描述用户角度看系统需要实现的需求，对应UML的用例图 user case diagrams</p>
+  </li>
+</ul>
+
+<p>国内企业很少用4+1视图描述架构，因为</p>
+
+<p>1）4+1视图是1995年 Philippe kruchten在《IEEE Software》提出，那时候是单体系统时代，现在大多数都是分布式系统了，无法满足描述现在复杂的架构；</p>
+
+<p>2）4+1视图是绑定UML图去画我们的架构图的，比较丑</p>
+
+<p>3）理解困难，容易混淆</p>
+
+<p>举例：</p>
+
+<p><img src="/assets/images/2021/architect/four-add-one-2.png" alt="" /></p>
+
+<p>左边UML画的架构示意图，右边使用ppt画的架构示意图可以使用颜色的图标，就比较好看，有更好的表达</p>
+
+<h3 id="架构图分类">架构图分类</h3>
+
+<p><img src="/assets/images/2021/architect/category.png" alt="" /></p>
+
+<p>简单来说，客户端与前端都是一台设备上的，比如说手机或一台电脑上部署一个应用程序，而后端它是在多台服务器上部署很多个应用程序，比如nginx、业务数据库、业务应用等。客户端与前端基本上不存在像后端这么复杂的划分，还有不同的技术，所以说客户端和前端的架构一般情况下只会按照模块划分。</p>
+
+<h3 id="业务架构">业务架构</h3>
+
+<p>从业务的角度去划分你的系统，可以得到业务架构，它描述了系统对用户提供了什么业务功能，也就是4+1的<mark>场景视图</mark></p>
+
+<p>举例，香港支付宝钱包的业务架构图：</p>
+
+<p><img src="/assets/images/2021/architect/ali-pay-hk.png" alt="" /></p>
+
+<p>MTR：香港地铁</p>
+
+<p>人传人：你可以邀请你的好友来使用AlipayHK来获得一些红包</p>
+
+<blockquote>
+  <p>使用场景</p>
+</blockquote>
+
+<ul>
+  <li>产品人员规划业务</li>
+  <li>给新员工汇报业务</li>
+  <li>给新员工培训业务</li>
+</ul>
+
+<blockquote>
+  <p>画图技巧</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>通过不同<mark>颜色</mark>来标识业务状态</p>
+
+    <p>比如说你可以用颜色来标识业务是不是已经比较稳定了，还是说现在在快速发展</p>
+
+    <p>比如说某个颜色可以标识这个业务今年才开始做的，已经在规划，明年要做的</p>
+  </li>
+  <li>
+    <p>业务<mark>分组</mark>管理（业务相似性、关联性一组）</p>
+
+    <p>像上面分了4组：钱包业务、第三方业务、商家服务、用户管理</p>
+
+    <p>它的目的是把相关的业务放在一起，能够更方便的识别出整个业务的一个结构和它的状态。分组要有一个明确的要求，这些业务它本质上是要有一定的类似性的。</p>
+  </li>
+</ul>
+
+<h3 id="客户端与前端架构">客户端与前端架构</h3>
+
+<blockquote>
+  <p>定义</p>
+</blockquote>
+
+<p>本质上都是针对客户端领域或者前端领域，按照逻辑的领域划分的，类似于4+1视图的逻辑视图</p>
+
+<p>举例</p>
+
+<p><img src="/assets/images/2021/architect/weixin-front.png" alt="" /></p>
+
+<blockquote>
+  <p>使用场景</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>整体架构设计</p>
+
+    <p>比如，你代表你们的技术团队，跟产品团队、其他部门或者是业界的技术大会上进行分享</p>
+  </li>
+  <li>
+    <p>架构培训</p>
+
+    <p>新员工培训，与其他部门技术交流可以用这个客户端架构、前端架构</p>
+  </li>
+</ol>
+
+<blockquote>
+  <p>画图技巧</p>
+</blockquote>
+
+<ol>
+  <li>通过不同<mark>颜色</mark>来标识不同角色</li>
+  <li>通过<mark>连接线</mark>来表示关系relation</li>
+</ol>
+
+<h3 id="系统架构">系统架构</h3>
+
+<blockquote>
+  <p>定义</p>
+</blockquote>
+
+<p>后端的逻辑架构，也叫后端架构、技术架构</p>
+
+<p>举例，MongoDB的系统架构</p>
+
+<p><img src="/assets/images/2021/architect/mongodb.png" alt="" /></p>
+
+<p>首先看里面的角色：Router 、Config Server、Shard</p>
+
+<p>再看里面的关系：Router 会访问Config Server，Config server 同时管理Router、Shard，Router也会访问Shard来拿数据，同时每个Shard 主分片可以有1个或者多个副本分片叫replica set。</p>
+
+<p>这就是MongoDB整体分片的系统架构图</p>
+
+<blockquote>
+  <p>使用场景</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>整体架构设计</p>
+
+    <p>系统设计的核心</p>
+  </li>
+  <li>
+    <p>架构培训</p>
+  </li>
+</ol>
+
+<blockquote>
+  <p>画图技巧</p>
+</blockquote>
+
+<ol>
+  <li>通过不同<mark>颜色</mark>来标识不同<strong>角色</strong></li>
+  <li>通过<mark>连接线</mark>来表示关系<strong>relation</strong></li>
+</ol>
+
+<p><strong>为什么后端的逻辑架构直接就叫系统架构？</strong></p>
+
+<p>一个系统的架构核心的部分，它的重点其实就在后端架构，所以一般说系统架构主要就是讲它的后端架构</p>
+
+<blockquote>
+  <p>系统架构复杂难以表达，画2张图</p>
+</blockquote>
+
+<p>这个是一个钱包中台的案例</p>
+
+<p><strong>功能示意图：</strong></p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-2.png" alt="" /></p>
+
+<p>从逻辑的角度去划分整个中台架构，它能够看出系统里面的包含的角色，<strong>但是Relation关系即这些角色之间的关系没有清晰的表达出来</strong>，所以就需要我们再画一张交互图，如下：</p>
+
+<p><strong>交互示意图</strong></p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-3.png" alt="" /></p>
+
+<p>通过这两张图就可以清晰的看出整个钱包中台的系统架构。</p>
+
+<h3 id="应用架构">应用架构</h3>
+
+<p>容易与系统架构混淆，他的定义是：<strong>描述后端系统由哪些应用组成</strong>。什么是应用，你在开发、打包、测试、部署的时候，一个可执行的程序叫一个应用</p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-4.png" alt="" /></p>
+
+<p>上面会员中心是一个业务域，它包含了6个应用如LoginServer，这每个Server都是你开发出来然后部署上线的一个程序包，可以独立运行的一个应用。</p>
+
+<p>问题来了：<strong>为什么需要一个单独的应用架构</strong></p>
+
+<p>看它的使用场景</p>
+
+<ul>
+  <li>
+    <p>项目开发、测试中，不是直接使用系统架构，而是应用架构，因为我们的团队，包括开发、测试、运维团队，它负责维护的一个单元，其实是一个应用，而不是整体的一个领域，不管你是打包、测试、部署，其实最终都是针对一个个的应用，所以我们需要一个应用架构图来指导我们项目开发过程中的开发测试和部署</p>
+  </li>
+  <li>
+    <p>部署发布</p>
+  </li>
+  <li>
+    <p>子域架构设计</p>
+
+    <p>做子域的架构设计的时候，比如上面的会员中心，最后你要拆分出这些应用，不同的应用要提供什么样的接口，对应哪一个需求，每个应用要做什么，都是要在应用架构里面体现的。</p>
+
+    <p>就像之前做的国内营销系统重构项目，结算中心是整个系统的一个子域，还包括其他子域：交易中心、政策中心、基础中心等。</p>
+
+    <p>其中结算中心分5个应用：smc结算应用、mcc收款应用、cdc信用应用、rcc对账应用、ivc发票开票应用。</p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>画图技巧</p>
+</blockquote>
+
+<ol>
+  <li>通过不同<mark>颜色</mark>来标识不同角色</li>
+  <li>通过<mark>连接线</mark>来表示关系relation</li>
+</ol>
+
+<p><strong>应用架构与系统架构的区别和联系在哪里？</strong></p>
+
+<ul>
+  <li>
+    <p>简单来说有时候，它们可以是等价的。比如MongoDB的系统架构与应用架构，因为它的划分方式就是一个应用对应系统里面的一个角色，比如Router就是一个角色，也是一个应用，Config Server和Shard也是如此</p>
+  </li>
+  <li>
+    <p>有时候，它们不相等，如上面举例的中台案例。</p>
+  </li>
+</ul>
+
+<p>看你这个架构的复杂度有多大，一般来说像MongoDB这种中间件，复杂度不大，基本上应用架构就是系统架构。</p>
+
+<p>但是你说做支付中台、电商中台，复杂度大，需要把应用架构与系统架构分开</p>
+
+<h3 id="部署架构">部署架构</h3>
+
+<blockquote>
+  <p>定义</p>
+</blockquote>
+
+<p>描述后端系统具体如何部署，对应4+1视图的物理视图</p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-5.png" alt="" /></p>
+
+<p>首先北京机房里部署了Nginx，下面有Web服务器的集群，存储这块有MySQL集群、Hadoop集群；</p>
+
+<p>还有一个深圳镜像机房，它的结构是跟北京机房是一样的；</p>
+
+<p>还有对接外部的系统，如银行、便利店，它们都是通过网络加速点来接入我们的机房。</p>
+
+<blockquote>
+  <p>区别</p>
+</blockquote>
+
+<p>前面的前端架构、系统架构都是用这个区块来代表这个角色，但是在部署架构里面，为了直观与比较形象的展现部署架构，尽量使用<mark>图标</mark>，比如说服务器的图标，存储的图标</p>
+
+<h2 id="6系统序列图">6、系统序列图</h2>
+
+<h3 id="为什么需要系统序列图">为什么需要系统序列图</h3>
+
+<p>我们回顾一下4R架构的定义： Rank 级别、Role角色、Relation关系、Rule规则</p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-6.png" alt="" /></p>
+
+<p>前面讲的客户端前端架构图、系统架构图，还有部署架构图，都是描述Role 跟 Relation的，我们称之为<strong>静态架构图</strong>，它是没办法描述运作规则的，这就是<strong>动态架构图</strong>需要实现的目的。</p>
+
+<p>这是前面讲支付中台的系统架构时的交互示意图</p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-3.png" alt="" /></p>
+
+<p>这个图只是描述了各个中心角色之间的关系，但是具体一个业务或者一个需求的处理流程是怎么样的，就需要系统序列图去描述具体的一个业务场景时如何实现的。</p>
+
+<p>我们可以看一下下面这个系统序列图：扫码支付流程图</p>
+
+<p><img src="/assets/images/2021/architect/arch-demo-7.png" alt="" /></p>
+
+<h2 id="总结">总结：</h2>
+
+<p>1) 什么是好的设计方案？</p>
+
+<p>你设计的目的为了迎合变化点，解耦合</p>
+
+<p>2) 知识 = 40%装B(体现你的学习能力) + 30%用来解决问题 + 30%用来协同沟通
+3) 学过的知识、理论一定要内化成为自己的知识，<mark>记住知识最大作用并不是解决问题，而是建立自己的知识品牌和理论势能，其次才是合理高效地解决问题。</mark></p>
+
+<p>作为一个后端，要做表设计ER图、功能示意图、交互示意图、场景序列图。</p>
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/architect/2021/06/27/icoding-gujin.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringCloud Hystirx 文档翻译
+title: 聊聊 SpringCloud Hystirx
 category: springcloud
 tags: [springcloud]
 keywords: springcloud

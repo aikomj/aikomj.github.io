@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+    <title> 黄埔班第62节：SpringCloud Gateway 服务网关 - 大伟的博客 </title>
+    <meta name="keywords" content="springcloud">
+    <meta name="description"
+          content="快速体验gateway，路由的工作流程，断言机制，断言的作用阶段，常用断言，yaml配置断言，java断言配置类，After断言实现定时网关层访问，过滤器的实现方式，过滤器例子，自定义过滤器实现访问接口的时间统计，全局过滤器，传统单体应用的用户鉴权，分布式环境下的鉴权，分布式session的替代方案spring session+redis、Oauth、JWT,gateway整合jwt鉴权，服务网关层统一异常返回，服务网关层限流">
+
+    <link rel="canonical" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/04/12/gavin-note-062.html">
+    <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
+
+    <!-- Third-Party CSS -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/octicons/octicons/octicons.css">
+    <link rel="stylesheet" href="/bower_components/hover/css/hover-min.css">
+    <link rel="stylesheet" href="/bower_components/primer-markdown/dist/user-content.min.css">
+    <link rel="stylesheet" href="/assets/css/syntax.css">
+    <link rel="stylesheet" href="/assets/css/gitalk.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"> -->
+
+    
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+
+    <!-- CSS set in page -->
+    
+
+    <!-- CSS set in layout -->
+    
+    <link rel="stylesheet" href="/assets/css/sidebar-post-nav.css">
+    
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">-->
+
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/lock.js"></script>
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+    <div class="site-header-topbar">
+        <div class="container">
+            <div class="topbar-menu">
+                
+                <div class="item">
+                    <a href="/archives.html"
+                       target="_self"
+                       title="Archives">
+                        Archives
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/linux.html"
+                       target="_self"
+                       title="Linux">
+                        Linux
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mysql.html"
+                       target="_self"
+                       title="Mysql">
+                        Mysql
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mongodb.html"
+                       target="_self"
+                       title="MongoB">
+                        MongoB
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/mq.html"
+                       target="_self"
+                       title="MQ">
+                        MQ
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/fastdfs.html"
+                       target="_self"
+                       title="FastDFS">
+                        FastDFS
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/redis.html"
+                       target="_self"
+                       title="Redis">
+                        Redis
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/elasticsearch.html"
+                       target="_self"
+                       title="ES">
+                        ES
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/docker.html"
+                       target="_self"
+                       title="Docker">
+                        Docker
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/k8s.html"
+                       target="_self"
+                       title="K8s">
+                        K8s
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/architect.html"
+                       target="_self"
+                       title="架构师">
+                        架构师
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/gitee.html"
+                       target="_self"
+                       title="开源项目">
+                        开源项目
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/tool.html"
+                       target="_self"
+                       title="工具">
+                        工具
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/life.html"
+                       target="_self"
+                       title="生活">
+                        生活
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/say.html"
+                       target="_self"
+                       title="说说">
+                        说说
+                    </a>
+                </div>
+                
+                <div class="item">
+                    <a href="/link.html"
+                       target="_self"
+                       title="友链">
+                        友链
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <a id="site-header-brand" href="/" title="大展宏兔">
+            <!--<span class="octicon octicon-mark-github"></span>-->
+            <img class="logo" src="/assets/images/favicon.jpeg">
+            大展宏兔
+        </a>
+        <nav class="site-header-nav" role="navigation">
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/"
+                   target=""
+                   title="Home">
+                    Home
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Icoding">
+                    Icoding
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/icoding-edu.html" 
+                           target="_self"
+                     >飞天班笔记</a></li>
+                    
+                    <li><a href="/icoding-gavin.html" 
+                           target="_self"
+                     >黄埔班笔记</a></li>
+                    
+                    <li><a href="/icoding-allen.html" 
+                           target="_self"
+                     >源码分析</a></li>
+                    
+                    <li><a href="https://www.icodingedu.com/" 
+                           target="_blank"
+                     >艾编程官网</a></li>
+                    
+                    <li><a href="https://leetcode-cn.com/problemset/all/" 
+                           target="_blank"
+                     >力扣刷题</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Java">
+                    Java
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/java-base.html" 
+                           target="_self"
+                     >Java基础</a></li>
+                    
+                    <li><a href="/java-concurrent.html" 
+                           target="_self"
+                     >Java并发</a></li>
+                    
+                    <li><a href="/design-mode.html" 
+                           target="_self"
+                     >设计模式</a></li>
+                    
+                    <li><a href="http://www.justdojava.com" 
+                           target="_blank"
+                     >Java 极客技术</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring.html"
+                   target="_self"
+                   title="Spring">
+                    Spring
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-boot.html"
+                   target="_self"
+                   title="Spring Boot">
+                    Spring Boot
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/spring-cloud.html"
+                   target="_self"
+                   title="Spring Cloud">
+                    Spring Cloud
+                </a>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href=""
+                   target=""
+                   title="Go全栈">
+                    Go全栈
+                </a>
+                
+                <ul class="submenu">
+                    
+                    <li><a href="/go-base.html" 
+                           target="_self"
+                     >Go语言基础</a></li>
+                    
+                    <li><a href="/go-web.html" 
+                           target="_self"
+                     >Web开发</a></li>
+                    
+                    <li><a href="/go-middleware.html" 
+                           target="_self"
+                     >中间件</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            <div class=" site-header-nav-item hvr-underline-from-center">
+                <a href="/front.html"
+                   target="_self"
+                   title="大前端">
+                    大前端
+                </a>
+                
+            </div>
+            
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <section class="jumbotron geopattern" data-pattern-id="黄埔班第62节：SpringCloud Gateway 服务网关">
+    <div class="container">
+        <div id="jumbotron-meta-info">        
+            <h1>黄埔班第62节：SpringCloud Gateway 服务网关</h1>
+            <span class="meta-info">
+                
+                
+                <span class="octicon octicon-calendar"></span> 2020/04/12
+                
+            </span>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function(){
+
+        $('.geopattern').each(function(){
+            $(this).geopattern($(this).data('pattern-id'));
+        });
+
+    });
+</script>
+<article class="post container noneed" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="row">
+
+        
+        <div class="col-md-9 markdown-body">
+
+            <h2 id="1-服务网关在微服务中的应用">1. 服务网关在微服务中的应用</h2>
+
+<h3 id="对外服务的难题">对外服务的难题</h3>
+
+<p>微服务架构的应用系统的体系非常庞大的，光是需要独立部署的基础组件就有注册中心(eureka)、配置中心(config)、服务总线bus、Turbine异常聚合和监控大盘、调用链追踪和链路聚合，还用kafka和MQ之类的消息中间件，加上按照业务域拆分的微服务组件和模块，一个小的系统非常轻松的就能弄出20多个module，会有这么多的部署包，也要考虑高可用。</p>
+
+<p>我们前面都是采用localhost加端口的方式直接访问，如果这些服务一并都要提供给外部用户访问那该怎么处理？开发在各个页面给不同的请求配置URL和端口号，但是一大堆的URL在我们的前端进行配置，需要我们开发人员自己手动配置一套路由表，因此就需要引入一套机制来降低路由表的维护成本。</p>
+
+<p>还有一个问题就是安全性，需要进行安全验证，如果让没有提供对外服务的接口都自己实现一定非常浪费资源，这个时候就需要一个中间件统一来进行安全处理并对外进行数据的安全验证。</p>
+
+<p>我们如何对外提供服务、还能管好路由规则，并做好访问控制，在这样的背景下，API网关应运而生，他就像一个传达室的角色，接待所有来访的请求。</p>
+
+<h3 id="微服务的传达室">微服务的传达室</h3>
+
+<p>在计算机领域，有一个设计理论：<mark>任何问题都可以通过引入一个中间件来解决。</mark>如果一个不够那就两个</p>
+
+<p>我们去到别的公司办事，第一道关就是传达室/前台，它们会做两件事</p>
+
+<ul>
+  <li>访问控制：看你是不是有权限进行访问，拒绝未授权的来访者</li>
+  <li>引导指路：问清楚你要办的事情，指导你如何到达，找到你想要访问的内容</li>
+</ul>
+
+<p>引入网关层后，我们的服务架构就变成如下的样子：</p>
+
+<p><img src="/assets/images/2020/icoding/springcloud/image-1.png" alt="" /></p>
+
+<p>网关层作为唯一的对外服务，外部请求不直接访问服务层，由网关层承接所有HTTP请求，在实际的应用里，我们也会将网关服务和Nginx一同使用，Nginx作为服务器层面，gateway作为业务服务层面。</p>
+
+<h3 id="访问控制">访问控制</h3>
+
+<p>访问控制住要包含两个方面，具体实现不是由网关层提供的，但是网关作为一个载体承载了两个任务</p>
+
+<ul>
+  <li><strong>拦截请求</strong>：有的接口需要登录用户才能范围，对于这类接口，网关成可以检查访问请求中是否携带令牌等身份信息，比如HTTP Header中的Authorization或token属性，如果没有携带令牌，则说明没有登录，这时候可以返回403</li>
+  <li><strong>鉴权</strong>：对于有携带令牌的服务，我们需要验证令牌的真假，否则用户可以通过伪造令牌进行通信，对于令牌过期或失效的服务要进行拒绝</li>
+</ul>
+
+<h3 id="路由规则">路由规则</h3>
+
+<p>路由规则包含两个方面，分别是URL映射和服务寻址</p>
+
+<ul>
+  <li>URL映射：在大多数情况下，客户端访问的HTTP URL往往不是我们在conroller里配置的真实路径而是虚拟路由地址，比如客户端可以发起请求/password/update来修改密码，但后台没有这个服务，这个时候就需要网关层做一个路由规则，来访问URL映射真的服务路径</li>
+  <li>服务寻址：URL映射好了之后，网关层就需要找到可以提供服务的服务器地址，对于服务集群的话，还需要实现负载均衡策略（在springcloud中gateway是借助eureka服务发现机制实现服务寻址的，负载均衡依靠的Ribbon）</li>
+</ul>
+
+<h2 id="2-第二代网关gateway">2. 第二代网关Gateway</h2>
+
+<blockquote>
+  <p>介绍</p>
+</blockquote>
+
+<p><strong>Gateway的标签</strong></p>
+
+<ul>
+  <li>Gateway是spring官方主推的组件</li>
+  <li>底层是基于Netty构建（快）</li>
+  <li>由spring开源社区直接贡献开源力量</li>
+</ul>
+
+<p><strong>Gateway可以做什么</strong></p>
+
+<ul>
+  <li>路由寻址</li>
+  <li>负载均衡</li>
+  <li>限流，nginx可以限流</li>
+  <li>鉴权</li>
+</ul>
+
+<p><strong>Gateway VS Zuul</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Gateway</th>
+      <th>Zuul 1.x</th>
+      <th>Zuul 2.x</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>靠谱性</td>
+      <td>官方背书支持</td>
+      <td>开创者，曾经靠谱</td>
+      <td>一直跳票，终于发布了</td>
+    </tr>
+    <tr>
+      <td>性能</td>
+      <td>Netty</td>
+      <td>同步阻塞，性能慢</td>
+      <td>Netty</td>
+    </tr>
+    <tr>
+      <td>QPS</td>
+      <td>超30000</td>
+      <td>20000左右</td>
+      <td>20000-30000</td>
+    </tr>
+    <tr>
+      <td>Spring Cloud</td>
+      <td>已整合到组件库</td>
+      <td>已整合到组件库</td>
+      <td>暂无整合到组件库的计划，但可以引用</td>
+    </tr>
+    <tr>
+      <td>长连接（keepalive）</td>
+      <td>支持</td>
+      <td>不支持</td>
+      <td>支持</td>
+    </tr>
+    <tr>
+      <td>编程体验</td>
+      <td>略复杂(习惯就好)</td>
+      <td>同步模型，比较简单</td>
+      <td>略复杂</td>
+    </tr>
+    <tr>
+      <td>调试&amp;链路追踪</td>
+      <td>异步模型，略复杂</td>
+      <td>同步方式，比较容易</td>
+      <td>异步模型，略复杂</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>综上对比分析，新项目果断选择Gateway</p>
+
+<h3 id="快速落地实施体验">快速落地实施体验</h3>
+
+<ul>
+  <li>创建gateway项目</li>
+  <li><mark>连接Eureka基于服务发现自动创建路由规则</mark></li>
+  <li>通过Actuator实现动态路由功能，即服务在运行的时候，可以创建新的路由规则</li>
+</ul>
+
+<p>1、创建springboot项目并加入POM依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-gateway<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="c">&lt;!-- 目前暂时用不上，后面进行限流时使用 --&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-redis-reactive<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div></div>
+
+<p>2、创建application启动类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.boot.SpringApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.client.discovery.EnableDiscoveryClient</span><span class="o">;</span>
+
+<span class="nd">@SpringBootApplication</span><span class="o">(</span><span class="n">exclude</span> <span class="o">=</span> <span class="o">{</span><span class="nc">RedisReactiveAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span> <span class="c1">// 先排除redis自动配置,后面使用redis限流要去掉exclude</span>
+<span class="nd">@EnableDiscoveryClient</span> <span class="c1">// 连接Eureka基于服务发现自动创建路由规则</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayServerApplication</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">GatewayServerApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>3、创建配置文件application</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span> 
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gateway-server</span>
+  <span class="na">cloud</span><span class="pi">:</span> 
+    <span class="na">gateway</span><span class="pi">:</span> 
+      <span class="na">discovery</span><span class="pi">:</span> 
+        <span class="na">locator</span><span class="pi">:</span>
+          <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span> <span class="c1"># 服务发现功能打开</span>
+<span class="na">server</span><span class="pi">:</span>
+  <span class="na">port</span><span class="pi">:</span> <span class="s">50080</span>    
+<span class="na">eureka</span><span class="pi">:</span>
+  <span class="na">client</span><span class="pi">:</span>
+    <span class="na">serviceUrl</span><span class="pi">:</span>
+      <span class="na">defaultZone</span><span class="pi">:</span> <span class="s">http://localhost:20001/eureka/</span>
+<span class="na">management</span><span class="pi">:</span>
+  <span class="na">security</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">endpoints</span><span class="pi">:</span>
+    <span class="na">web</span><span class="pi">:</span>
+      <span class="na">exposure</span><span class="pi">:</span>
+        <span class="na">include</span><span class="pi">:</span> <span class="s2">"</span><span class="s">*"</span>
+  <span class="na">endpoint</span><span class="pi">:</span>
+    <span class="na">health</span><span class="pi">:</span>
+      <span class="na">show-details</span><span class="pi">:</span> <span class="s">always</span>
+</code></pre></div></div>
+
+<p>启动eureka-server，启动eureka-client（启动两个实例），启动gateway-server</p>
+
+<p><img src="" alt="" /></p>
+
+<p>可以通过 http://localhost:50080/actuator/gateway/routes 查看routes规则，打开后会发现根据eureka注册的两个服务节点：EUREKA-CLIENT、GATEWAY-SERVER</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes.png" alt="" /></p>
+
+<p>每个节点都有一个断言：predicate，一个过滤器：filters</p>
+
+<p>现在就可以通过gateway做服务访问了：http://localhost:50080/EUREKA-CLIENT/sayhello 访问注册到eureka的服务了，并且如果该服务有多个节点就会轮询访问</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-client.png" alt="" /></p>
+
+<p><strong>注意这里的FEIGN-CLIENT目前必须时大写</strong>：如果是小写就404了，是按照eureka中的服务名进行访问的</p>
+
+<p>如果网关访问不想用大写，可以修改gateway-server的yaml配置支持小写访问</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gateway-server</span>
+  <span class="na">cloud</span><span class="pi">:</span>
+    <span class="na">gateway</span><span class="pi">:</span>
+      <span class="na">discovery</span><span class="pi">:</span>
+        <span class="na">locator</span><span class="pi">:</span>
+          <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span>
+          <span class="na">lower-case-service-id</span><span class="pi">:</span> <span class="no">true</span> <span class="c1">#设置路由服务名可以全小写，但设置后就不支持大写了</span>
+          
+<span class="c1"># http://localhost:50080/feign-client/sayhello </span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Gateway支持创建动态路由规则</p>
+</blockquote>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#</span><span class="w"> </span><span class="mi">1</span><span class="err">、POST</span><span class="w"> </span><span class="err">动态创建和修改路由规则</span><span class="w">
+</span><span class="err">#</span><span class="w"> </span><span class="err">创建地址：http://localhost:</span><span class="mi">50080</span><span class="err">/actuator/gateway/routes/myrouter</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nl">"predicates"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Path"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"_genkey_0"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/myrouter-path/**"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"filters"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"StripPrefix"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"_genkey_0"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lb://EUREKA-CLIENT"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"order"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="err">#</span><span class="w"> </span><span class="err">可以看下新的路由规则是否创建成功</span><span class="w">
+</span><span class="err">#</span><span class="w"> </span><span class="err">http://localhost:</span><span class="mi">50080</span><span class="err">/actuator/gateway/routes</span><span class="w">
+
+</span><span class="err">#</span><span class="w"> </span><span class="mi">2</span><span class="err">、可以删除路由规则</span><span class="w">
+</span><span class="err">#</span><span class="w"> </span><span class="err">DELETE</span><span class="w"> </span><span class="err">http://localhost:</span><span class="mi">50080</span><span class="err">/actuator/gateway/routes/myrouter</span><span class="w">
+</span><span class="err">#</span><span class="w"> </span><span class="err">可以访问我们创建的路由规则</span><span class="w">
+</span><span class="err">#</span><span class="w"> </span><span class="err">http://localhost:</span><span class="mi">50080</span><span class="err">/myrouter-path/sayhello</span><span class="w">
+</span></code></pre></div></div>
+
+<p>POST 动态创建规则后，访问http://localhost:50080/actuator/gateway/routes</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-myroute.png" alt="" /></p>
+
+<p>访问myroute-path</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-myroute2.png" alt="" /></p>
+
+<p>将myrouter-path修改为myroutes</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-myroute3.png" alt="" /></p>
+
+<p>再访问http://localhost:50080/actuator/gateway/routes</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-myroute4.png" alt="" /></p>
+
+<p>myrouter-path已修改为myrouters，注意看 route_id是 <code class="highlighter-rouge">myroute</code></p>
+
+<p><strong>删除路由规则</strong></p>
+
+<p>发起DELETE请求</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-myroute-delete.png" alt="" /></p>
+
+<p>删除路由会有一定时间的延迟，所以是先路由规则，再停服务，访问路由表http://localhost:50080/actuator/gateway/routes</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-myroute-delete-2.png" alt="" /></p>
+
+<p><code class="highlighter-rouge">myroute</code>的路由规则已删除了。</p>
+
+<p>源码：./Jacob-study-demo/springcloud-learn/gateway</p>
+
+<h3 id="路由功能详解">路由功能详解</h3>
+
+<blockquote>
+  <p>路由组成结构</p>
+</blockquote>
+
+<p>Gateway中可以定义很多个Route，一个Route就是一套包含完整转发规则的路由，主要有三部分组成</p>
+
+<p><img src="/assets/images/2020/icoding/springcloud/image-2.png" alt="image-20201021213241132" /></p>
+
+<ul>
+  <li><strong>断言集合 predicate</strong>：断言是路由器处理的第一个环节，他是<mark>路由的匹配规则</mark>，他决定了一个网络请求是否可以匹配给当前路径来处理，之所以他是一个集合是因为我们可以个一个路由添加多个断言，当每个断言都配置成功了才算是过了路由这一关</li>
+  <li><strong>过滤器集合 filters</strong>：如果请求通过了前面断言的匹配，表明被路由正式接手了，结下来就需要经过过滤器了，比如说权限验证，如果验证不通过就设置为Status Code为403并中断操作</li>
+  <li><strong>URI</strong>：服务地址,如果请求顺利通过过滤器的处理，那就要走到最后一步了，也就是转发请求（URI是统一资源标识符）</li>
+</ul>
+
+<h3 id="负载均衡">负载均衡</h3>
+
+<p>对最后一步寻址来说，如果采用基于Eureka的服务发现机制，那么Gateway的转发过程中可以采用服务注册后的名字来访问，后台会借助Ribbon实现负载均衡（可以为某个服务指定具体的负载均衡策略），配置方式如下：</p>
+
+<p>lb://FEIGN-SERVER，lb就是代表Ribbon作为LoadBalancer</p>
+
+<h3 id="路由的工作流程">路由的工作流程</h3>
+
+<p><img src="/assets/images/2020/icoding/springcloud/image-3.png" alt="image-20201021214543388" /></p>
+
+<ul>
+  <li>Predicate Handler（断言）：其实就是路由规则判断，首先获取所有的路由（配置的routes全集），然后依次循环每个Route，把应该请求与Route中配置的所有断言进行匹配，如果当前Route所有断言都验证通过，Predicate Handler就选定当前的路由，这个模式典型的责任链模式</li>
+  <li>Filter Handler；在前一步选中路由后，在具体处理过程中，不仅当前Route中定义的过滤器会生效，我们在项目中添加的全局过滤器（Global Filter）也会一同参与，Pre Filter和Post Filter是指过滤器的作用阶段</li>
+  <li>寻址：这一步将会把请求转发到URI指定的地址，在发送请求之前，所有Pre类型的过滤器都将被执行，而Post过滤器会在调用请求返回之后起作用</li>
+</ul>
+
+<h2 id="3-断言功能详解">3. 断言功能详解</h2>
+
+<h3 id="predicate断言机制">Predicate断言机制</h3>
+
+<p>Predicate是Java8中引入的一个新功能，和我们平时写单元测试的时候Assertion差不多，Predicate是接收一个判断条件，返回一个ture或false的布尔值结果，告知调用方判断结果。也可以通过and、or和negative(非)三个操作符多个Predicate串联在一块共同判断</p>
+
+<p>Predicate其实就是我们和Gateway对接的数据暗号，比如要求你的Request中必须带有某个指定的参数叫name，对应的值必须是一个指定的人名（Gavin），如果Request中没有包含name，或者名字不是Gavin，断言就失败了，只有标示和值都一样的情况下才会通过</p>
+
+<p><strong>断言的作用阶段</strong></p>
+
+<p><mark>一个请求在抵达网关层后，首先就要进行断言匹配，在满足所有断言之后才会进入Filter阶段</mark></p>
+
+<h3 id="常用断言介绍">常用断言介绍</h3>
+
+<p>Gateway提供了十多种内置断言，介绍一些常用的</p>
+
+<blockquote>
+  <p>1、路径断言</p>
+</blockquote>
+
+<p>Path断言是最常用的一个断言请求，几乎所有的路由都要用到</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/gateway/**"</span><span class="o">)</span>
+						 .uri<span class="o">(</span><span class="s2">"lb://FEIGN-SERVICE-PROVIDER/"</span><span class="o">)</span>
+<span class="o">)</span>
+.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/baidu"</span><span class="o">)</span>
+						 .uri<span class="o">(</span><span class="s2">"http://www.baidu.com"</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<p>Path断言的使用非常简单，就像我们在Controller中配置@RequestPath的方式一样，在Path断言中填入一段URL匹配规则，当实际请求的URL和断言中的规则相匹配的时候，就下发到该路由中URI指定地址，这个地址可以是一个具体的HTTP地址，也可以是一个Eureka中注册的服务名称，路由规则可以一次编写多个绑定关系</p>
+
+<blockquote>
+  <p>2、Method断言</p>
+</blockquote>
+
+<p>这个断言是专门验证<mark>HTTP Method</mark>的</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/gateway/**"</span><span class="o">)</span>
+						 .and<span class="o">()</span>.method<span class="o">(</span>HttpMethod.GET<span class="o">)</span>
+						 .uri<span class="o">(</span><span class="s2">"lb://FEIGN-SERVICE-PROVIDER/"</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<p>将Path断言通过一个and连接符和method关联起来，我们如果访问/gateway/sample并且method是GET时才会适配上面的路由规则</p>
+
+<blockquote>
+  <p>3、RequestParam匹配</p>
+</blockquote>
+
+<p><mark>请求断言</mark>也是在业务中经常使用的，他会从ServerHttpRequest中的Parameters列表中查询指定的属性，</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/gateway/**"</span><span class="o">)</span>
+						 .and<span class="o">()</span>.method<span class="o">(</span>HttpMethod.GET<span class="o">)</span>
+						 .and<span class="o">()</span>.query<span class="o">(</span><span class="s2">"name"</span>,<span class="s2">"test"</span><span class="o">)</span>
+						 .and<span class="o">()</span>.query<span class="o">(</span><span class="s2">"age"</span><span class="o">)</span>
+						 .uri<span class="o">(</span><span class="s2">"lb://FEIGN-SERVICE-PROVIDER/"</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>属性名验证，如query(“age”)，此时断言只会验证QueryParameters列表中是否包含了一个叫age的属性，并不会验证他的值</li>
+  <li>属性值验证，如query(“name”,”test”)，它不仅会验证name属性是否存在，还会验证他的值是不是和断言相匹配，当前断言会验证参数中name的属性值是不是test</li>
+</ul>
+
+<blockquote>
+  <p>4、Header断言</p>
+</blockquote>
+
+<p>header断言是检查头信息里是否携带了相关属性或令牌token</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/gateway/**"</span><span class="o">)</span>
+						 .and<span class="o">()</span>.header<span class="o">(</span><span class="s2">"Authorization"</span><span class="o">)</span>
+						 .uri<span class="o">(</span><span class="s2">"lb://FEIGN-SERVICE-PROVIDER/"</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>5、Cookie断言</p>
+</blockquote>
+
+<p>cookie验证的是cookie中保存的信息，cookie断言和上面介绍的几种断言方式都大同小异，<strong>唯一不同的是他必须连同属性值一起验证</strong>，不能单独只验证属性是否存在</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/gateway/**"</span><span class="o">)</span>
+						 .and<span class="o">()</span>.cookie<span class="o">(</span><span class="s2">"name"</span>,<span class="s2">"test"</span><span class="o">)</span>
+						 .uri<span class="o">(</span><span class="s2">"lb://FEIGN-SERVICE-PROVIDER/"</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>6、时间片验证</p>
+</blockquote>
+
+<p>时间匹配有三种模式，分别是Before、After和Between，<mark>这些断言指定了在什么时间范围内路由才会生效</mark>,场景：秒杀活动</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.route<span class="o">(</span>r -&gt; r.path<span class="o">(</span><span class="s2">"/gateway/**"</span><span class="o">)</span>
+						 .and<span class="o">()</span>.before<span class="o">(</span>ZonedDateTime.now<span class="o">()</span>.plusMinutes<span class="o">(</span>1<span class="o">))</span>
+						 .uri<span class="o">(</span><span class="s2">"lb://FEIGN-SERVICE-PROVIDER/"</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="4-实现断言的配置">4. 实现断言的配置</h2>
+
+<h3 id="在yaml里进行配置">在yaml里进行配置</h3>
+
+<p>去到gateway-server项目的yaml配置文件里进行配置</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 新的配置routes和discovery是平级的</span>
+<span class="c1"># id是这个断言的唯一标识</span>
+<span class="c1"># uri是如果匹配上所有断言，请求将转发到服务应用</span>
+<span class="c1"># StripPrefix相当于把 localhost:50080/gavinrouter/sayhello替换成 FEIGN-CLIENT/sayhello</span>
+<span class="na">spring</span><span class="pi">:</span>
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">gateway-server</span>
+  <span class="na">cloud</span><span class="pi">:</span>
+    <span class="na">gateway</span><span class="pi">:</span>
+      <span class="na">discovery</span><span class="pi">:</span>
+        <span class="na">locator</span><span class="pi">:</span>
+          <span class="na">enabled</span><span class="pi">:</span> <span class="no">true</span>
+          <span class="na">lower-case-service-id</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">routes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">feignclient</span>
+        <span class="na">predicates</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">Path=/gavinrouter/**</span>
+        <span class="na">filters</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">StripPrefix=1</span>
+        <span class="na">uri</span><span class="pi">:</span> <span class="s">lb://FEIGN-CLIENT</span> <span class="c1"># 服务名，对应注册到注册中心的服务应用名</span>
+</code></pre></div></div>
+
+<p>配置完成后可以通过下面的路径访问</p>
+
+<p>http://localhost:50080/gavinrouter/sayhello</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-config.png" alt="" /></p>
+
+<p>访问 : http://localhost:50080/actuator/gateway/routes，看已生效的路由</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-2.png" alt="" /></p>
+
+<h3 id="在java程序里进行配置">在Java程序里进行配置</h3>
+
+<p>创建一个config包，在里面创建GatewayConfiguration</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">config</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.route.RouteLocator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.annotation.Order</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.HttpMethod</span><span class="o">;</span>
+
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayConfiguration</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="nd">@Order</span>
+    <span class="kd">public</span> <span class="nc">RouteLocator</span> <span class="nf">customerRouters</span><span class="o">(</span><span class="nc">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">){</span>
+        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gavinjava/**"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+                       			<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">header</span><span class="o">(</span><span class="s">"name"</span><span class="o">)</span> <span class="c1">// 请求头必须带有name参数</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+                                            <span class="o">.</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"java-param"</span><span class="o">,</span><span class="s">"gateway-config"</span><span class="o">)</span>
+                             <span class="o">)</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)</span>
+                <span class="o">).</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在前面yaml配置了断言的情况下，也同时配置了java的断言配置，是否两者都生效了？启动项目</p>
+
+<p>访问 http://localhost:50080/actuator/gateway/routes</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-3.png" alt="" /></p>
+
+<p>发现两个断言路由都有了</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-4.png" alt="" /></p>
+
+<p>修改后（请求头必须带有name参数的限制去掉）进行访问验证：http://localhost:50080/gavinjava/sayhello</p>
+
+<p>通过<code class="highlighter-rouge">gavinjava</code>访问，注意请求头要增加一个name参数</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-5.png" alt="" /></p>
+
+<p>发现在response增加了我们在java配置了的参数java-param = gateway-config</p>
+
+<h2 id="5-after断言实现网关层定时秒杀">5. After断言实现网关层定时秒杀</h2>
+
+<p>gateway调用的是feign-client的业务，我们就要到feign-client里创建一个controller实现相应的功能</p>
+
+<p>这里面使用的product需要提前在feign-client-intf中定义好</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">pojo</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.Builder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+
+<span class="nd">@Data</span>
+<span class="nd">@Builder</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">productId</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">description</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Long</span> <span class="n">stock</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在feign-client中创建一个GatewayController</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">controller</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.pojo.Product</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.ConcurrentHashMap</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"gateway"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayController</span> <span class="o">{</span>
+
+    <span class="c1">//Product要在feign-client-intf里提前定义好</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">Product</span><span class="o">&gt;</span> <span class="n">items</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"detail"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">Product</span> <span class="nf">getProduct</span><span class="o">(</span><span class="nc">Long</span> <span class="n">pid</span><span class="o">){</span>
+        <span class="c1">//如果第一次没有就先创建一个</span>
+        <span class="k">if</span><span class="o">(!</span><span class="n">items</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">pid</span><span class="o">)){</span>
+            <span class="nc">Product</span> <span class="n">product</span> <span class="o">=</span> <span class="nc">Product</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">productId</span><span class="o">(</span><span class="n">pid</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">description</span><span class="o">(</span><span class="s">"new arrival"</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">stock</span><span class="o">(</span><span class="mi">100L</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+            <span class="n">items</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">pid</span><span class="o">,</span><span class="n">product</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pid</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"placeOrder"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">buy</span><span class="o">(</span><span class="nc">Long</span> <span class="n">pid</span><span class="o">){</span>
+        <span class="nc">Product</span> <span class="n">product</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pid</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">product</span><span class="o">==</span><span class="kc">null</span><span class="o">){</span>
+            <span class="k">return</span> <span class="s">"Product Not Found"</span><span class="o">;</span>
+        <span class="o">}</span><span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">product</span><span class="o">.</span><span class="na">getStock</span><span class="o">()&lt;=</span><span class="mi">0L</span><span class="o">){</span>
+            <span class="k">return</span> <span class="s">"Sold Out"</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//如果是单体应用,即便是集群也可以保留这个代码,集群解决需要用到分布式锁将控制放到中心节点即可</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">product</span><span class="o">){</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">product</span><span class="o">.</span><span class="na">getStock</span><span class="o">()&lt;=</span><span class="mi">0L</span><span class="o">){</span>
+                <span class="k">return</span> <span class="s">"Sold Out"</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">product</span><span class="o">.</span><span class="na">setStock</span><span class="o">(</span><span class="n">product</span><span class="o">.</span><span class="na">getStock</span><span class="o">()-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="s">"Order Placed"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-6.png" alt="" /></p>
+
+<p>第3步，回到Gateway-server项目里，按照时间顺延的方式做断言定义</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayConfiguration</span> <span class="o">{</span>
+    <span class="nd">@Bean</span>
+    <span class="nd">@Order</span>
+    <span class="kd">public</span> <span class="nc">RouteLocator</span> <span class="nf">customerRouters</span><span class="o">(</span><span class="nc">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">){</span>
+        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gavinjava/**"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">query</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"gavin"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+                                            <span class="o">.</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"java-param"</span><span class="o">,</span><span class="s">"gateway-config"</span><span class="o">)</span>
+                             <span class="o">)</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)</span>
+                <span class="o">)</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/secondkill/**"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">after</span><span class="o">(</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusSeconds</span><span class="o">(</span><span class="mi">30</span><span class="o">))</span> <span class="c1">// 30秒后才生效</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)</span>
+                <span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>启动feign-client项目，先通过<code class="highlighter-rouge">detail</code>接口添加一个商品</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-7.png" alt="" /></p>
+
+<p>然后重启Gateway-server项目，立即访问<code class="highlighter-rouge">localhost:50080/secondkill/gateway/detail?pid=1001</code></p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-8.png" alt="" /></p>
+
+<p>会报404，30秒后，我们再访问，链接才生效</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-9.png" alt="" /></p>
+
+<blockquote>
+  <p>可以精确的定义时间节点</p>
+</blockquote>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayConfiguration</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="nd">@Order</span>
+    <span class="kd">public</span> <span class="nc">RouteLocator</span> <span class="nf">customerRouters</span><span class="o">(</span><span class="nc">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">){</span>
+        <span class="nc">LocalDateTime</span> <span class="n">ldt</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2020</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">20</span><span class="o">,</span><span class="mi">31</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+      	<span class="nc">LocalDateTime</span> <span class="n">ldt2</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2020</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">20</span><span class="o">,</span><span class="mi">32</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gavinjava/**"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">query</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"gavin"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+                                            <span class="o">.</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"java-param"</span><span class="o">,</span><span class="s">"gateway-config"</span><span class="o">)</span>
+                             <span class="o">)</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)</span>
+                <span class="o">)</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/secondkill/**"</span><span class="o">)</span>
+                             <span class="c1">//.and().after(ZonedDateTime.of(ldt, ZoneId.of("Asia/Shanghai")))</span>
+                       <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">between</span><span class="o">(</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt</span><span class="o">,</span><span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)),</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt2</span><span class="o">,</span><span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)))</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">redirect</span><span class="o">(</span><span class="s">"304"</span><span class="o">,</span><span class="s">"https://www.icodingedu.com/"</span><span class="o">))</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)</span>
+                <span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>上面定义了上海时区，2020年10月24日20时31分10秒后，该链接才生效。</p>
+
+<p>也可以使用between定义在某个时间段内，该链接才生效</p>
+
+<h2 id="6-过滤器原理和生命周期">6. 过滤器原理和生命周期</h2>
+
+<p>所有的开源框架实现过滤器的模式都是大同小异的，通过一种类似责任链的方式，传统的职责链模式中的事件会传递指直到有一个处理对象接手，而过滤器和传统的职责链有点不同，所有过滤器都要进行过滤和处理，一路走到底，直到被最后一个过滤器处理完成。</p>
+
+<h3 id="过滤器的实现方式">过滤器的实现方式</h3>
+
+<p>在Gateway中实现一个过滤器非常简单，只要实现GatewayFilter接口的默认方法就好了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Void</span><span class="o">&gt;</span> <span class="nf">filter</span><span class="o">(</span><span class="nc">ServerWebExchange</span> <span class="n">exchange</span><span class="o">,</span> <span class="nc">GatewayFilterChain</span> <span class="n">chain</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>这里面有两个关键信息</p>
+
+<ul>
+  <li>ServerWebExchange：这是Spring封装的HTTP request-response的交互协议，从中我们可以获取request和resposne中的各种请求参数，也可以向其中添加内容</li>
+  <li>GatewayFilterChain：他是过滤器的调用链，<mark>在方法结束的时候我们需要将exchange对象传入调用链中的下一个对象</mark></li>
+</ul>
+
+<h3 id="过滤器的执行阶段">过滤器的执行阶段</h3>
+
+<p>Gateway是通过Filter中的代码来实现类似Pre和Post的效果的</p>
+
+<p>Pre和Post是指代当前过滤器的执行阶段，Pre是在下一个过滤器之前被执行，Post是在过滤器执行后再执行。我们在Gateway Filter中也可以同时定义Pre和Post执行逻辑</p>
+
+<p><strong>Pre类型</strong>和<strong>Post类型</strong>一个在过滤器执行前一个在执行后</p>
+
+<p>过滤器可以排顺序的</p>
+
+<p><mark>在Gateway中可以实现 org.springframework.core.Ordered接口，来指定过滤器的执行顺序</mark>，通过实现getOrder方法</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getOrder</span><span class="o">(){</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="c1">// Pre类型的过滤器来说，数字越大表示优先级越高，也就越早被执行。但对于Post类型过滤器，则是数字越小越先被执行</span>
+</code></pre></div></div>
+
+<h3 id="过滤器示例">过滤器示例</h3>
+
+<blockquote>
+  <p>Header过滤器**</p>
+</blockquote>
+
+<p>这个系列有很多组过滤器，可以将信息加入到指定Header和减少Header的值</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span><span class="s">"gateway-server"</span><span class="o">))</span>
+<span class="c1">//相当于向header中添加一个name属性，对应的值是gateway-server</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springcloud/gateway-filter.png" alt="" /></p>
+
+<blockquote>
+  <p>StripPrefix过滤器</p>
+</blockquote>
+
+<p>这是个比较常用的过滤器，他的作用是<strong>去掉部分URL路径</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gateway-test/**"</span><span class="o">)</span>
+						 <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+       			 <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIFN-SERVICE/"</span><span class="o">)</span>
+<span class="o">)</span>
+<span class="c1">//假如HTTP请求访问的是/gateway-test/sample/update，如果没有StripPrefix过滤器，那么转发到FEIGN-SERVIC服务的访问路径也是一样的//FEIGN-SERVICE/gateway-test/sample/update，如果添加了这个过滤器，gateway就会根据stripPrefix(1)中的配置截取URL的路径，比如这里设置的是1，那么就去掉一个前缀，最终发送给后台服务的路径就变成//FEIGN-SERVICE/sample/update</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>PrefixPath过滤器</p>
+</blockquote>
+
+<p>他和StripPrefix的作用是完全相反的，会在请求路径的前面<strong>加入前缀</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gateway-test/**"</span><span class="o">)</span>
+						 <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">prefixPath</span><span class="o">(</span><span class="s">"go"</span><span class="o">))</span>
+       			 <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-SERVICE/"</span><span class="o">)</span>
+<span class="o">)</span>
+<span class="c1">//假如我们访问的路径是/gateway-test/sample，如果使用这个过滤器就会变成//FEIGN-SERVICE/go/gateway-test/sample</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>RedirectTo过滤器</p>
+</blockquote>
+
+<p>他可以把收到特定状态码的请求重定向到一个指定网址，<strong>必须是3xx的httpStatus</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">redirect</span><span class="o">(</span><span class="mi">304</span><span class="o">,</span><span class="s">"https://www.baidu.com"</span><span class="o">))</span>
+<span class="c1">//Caused by: java.lang.IllegalArgumentException: status must be a 3xx code, but was 404</span>
+ <span class="c1">// 遇到3xx的返回状态，跳转到baidu</span>
+</code></pre></div></div>
+
+<h2 id="7-自定义过滤器实现接口计时功能">7. 自定义过滤器实现接口计时功能</h2>
+
+<h3 id="当前路由的过滤器">当前路由的过滤器</h3>
+
+<p>在gateway-server项目组进行修改，创建一个filter的package，自定义过滤器</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">filter</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.filter.GatewayFilter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.filter.GatewayFilterChain</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.Ordered</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.util.StopWatch</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.server.ServerWebExchange</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">reactor.core.publisher.Mono</span><span class="o">;</span>
+
+<span class="nd">@Slf4j</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TimerFilter</span> <span class="kd">implements</span> <span class="nc">GatewayFilter</span><span class="o">,</span> <span class="nc">Ordered</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Void</span><span class="o">&gt;</span> <span class="nf">filter</span><span class="o">(</span><span class="nc">ServerWebExchange</span> <span class="n">exchange</span><span class="o">,</span> <span class="nc">GatewayFilterChain</span> <span class="n">chain</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//给接口计时并能输出log</span>
+        <span class="nc">StopWatch</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StopWatch</span><span class="o">();</span>
+        <span class="c1">//开始计时,</span>
+        <span class="n">timer</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getURI</span><span class="o">().</span><span class="na">getRawPath</span><span class="o">());</span>
+        <span class="c1">//我们也可以对调用链进行加工，手工放入请求参数</span>
+        <span class="n">exchange</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">"requestTimeBegin"</span><span class="o">,</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">exchange</span><span class="o">).</span><span class="na">then</span><span class="o">(</span>
+            <span class="c1">//这里就是执行完过滤进行调用的地方</span>
+            <span class="nc">Mono</span><span class="o">.</span><span class="na">fromRunnable</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="n">timer</span><span class="o">.</span><span class="na">stop</span><span class="o">();;</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">timer</span><span class="o">.</span><span class="na">prettyPrint</span><span class="o">());</span>
+            <span class="o">})</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getOrder</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>去到GatewayConfiguration里，注入timerFilter，设置自定义filter</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayConfiguration</span> <span class="o">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">TimerFilter</span> <span class="n">timerFilter</span><span class="o">;</span>
+
+    <span class="nd">@Bean</span>
+    <span class="nd">@Order</span>
+    <span class="kd">public</span> <span class="nc">RouteLocator</span> <span class="nf">customerRouters</span><span class="o">(</span><span class="nc">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">){</span>
+        <span class="nc">LocalDateTime</span> <span class="n">ldt</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2020</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">21</span><span class="o">,</span><span class="mo">05</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gavinjava/**"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+                                            <span class="o">.</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"java-param"</span><span class="o">,</span><span class="s">"gateway-config"</span><span class="o">)</span>
+                                            <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">timerFilter</span><span class="o">)</span>
+                             <span class="o">)</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)</span>
+                <span class="o">)</span>
+                <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/secondkill/**"</span><span class="o">)</span>
+                             <span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">after</span><span class="o">(</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt</span><span class="o">,</span> <span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)))</span>
+                             <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+                             <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT/"</span><span class="o">)</span>
+                <span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试后结果如下</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 这里的百分比指的是这个接口执行的时间占整个执行链路的百分比</span>
+<span class="c"># 1秒=1000000000(ns)9个0</span>
+<span class="nt">---------------------------------------------</span>
+ns         %     Task name
+<span class="nt">---------------------------------------------</span>
+1775599286  100%  /sayhello
+</code></pre></div></div>
+
+<h3 id="全局过滤器">全局过滤器</h3>
+
+<p>上面定义的是针对具体的route的filter，我们也可以定义一个全局的filter直接应用在所有的route上，只需要把filter的继承修改下即可，所有route就可以自动加载了，无需调用</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Slf4j</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TimerFilter</span> <span class="kd">implements</span> <span class="nc">GlobalFilter</span><span class="o">,</span> <span class="nc">Ordered</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springcloud/gateway-global-filter.png" alt="" /></p>
+
+<p>将原来config中引用的timeFilter都去掉即可</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-global-filter-2.png" alt="" /></p>
+
+<h2 id="8-权限认证方案分析">8. 权限认证方案分析</h2>
+
+<h3 id="传统单体应用的用户鉴权">传统单体应用的用户鉴权</h3>
+
+<p>使用session保存登录状态，通过存放的key-value来进行鉴权，对于一台机器无法同步session到其他机器的时候，我们的问题就来了，如何进行服务应用的鉴权</p>
+
+<h3 id="分布式环境下的解决方案">分布式环境下的解决方案</h3>
+
+<blockquote>
+  <p>同步session</p>
+</blockquote>
+
+<p>session复制是最容易先想到的解决方案，可以将一台机器中的session复制到集群中其他的机器里，比如Tomcat中也有内置的session的同步方案，但是这并不是一个非常优雅的解决方案，他会带来以下两个问题</p>
+
+<ul>
+  <li><strong>Timing问题</strong>：同步需要花费一定的时间，我们无法保证session同步的及时性，也就是说，当用户发起两个请求分别落在不同的机器上的时候，前一个请求写入session的信息可能还没有同步到所有的机器，后一个请求就已经开始执行业务逻辑了，这就会引起脏读和幻读</li>
+  <li><strong>数据冗余：</strong>所有的服务器都需要保存一份session的全集，这就产生了大量的冗余数据</li>
+</ul>
+
+<blockquote>
+  <p>反向代理：绑定IP或一致性hash</p>
+</blockquote>
+
+<p>这个方案是在Nginx网关层来做的，我们可以指定某些ip请求落在某个指定的机器上，这样一来session始终只会存在同一个机器上，不过相比前一种session复制的方法来说，绑定IP的方式更明显缺陷如下：</p>
+
+<ul>
+  <li>负载均衡：在绑定IP的情况下无法在网关层应用负载均衡策略的，而且某个服务器出现故障会对指定IP的来访用户产生较大的影响，对网关层来讲这种路由规则的配置也比较麻烦</li>
+  <li>IP变更：很多运营商的IP时不时就会进行切换，这就会导致更换IP后的请求被路由到不同的服务节点处理，这样一来就读不到前面设置的session信息了</li>
+</ul>
+
+<p>为了解决第二个问题，可以通过一致性hash路由的方式来做，比如根据用户ID做hash，不同的hash值落在不同的机器上，保证足够均衡的分配，这样也就避免了IP切换的问题，但依然无法解决第一点里提到的负载均衡的问题</p>
+
+<blockquote>
+  <p>Redis解决方案</p>
+</blockquote>
+
+<p>通过将session中心化，从服务器的存储上转移到redis中</p>
+
+<ul>
+  <li>
+    <p>在tomcat层面可以直接使用组件将容器的session放入到redis中</p>
+  </li>
+  <li>
+    <p>借助springboot的管理session方式，将session存储进redis中</p>
+  </li>
+</ul>
+
+<h3 id="分布式session的替代方案">分布式Session的替代方案</h3>
+
+<blockquote>
+  <p>OAuth 2.0</p>
+</blockquote>
+
+<p>OAuth 2.0是一个开放授权标准协议，它允许第三方应用访问该用户在某服务的特定私有资源，但不提供账号密码信息给第三方应用</p>
+
+<blockquote>
+  <p>JWT鉴权</p>
+</blockquote>
+
+<p>JWT也是一种基于Token的鉴权机制，他的基本思想是通过用户名+密码换取一个Access Token</p>
+
+<p><strong>鉴权流程</strong></p>
+
+<p>1、用户名+密码访问鉴权服务</p>
+
+<ul>
+  <li>验证通过：服务器返回一个Access Token给客户端，并将Token保存在服务端某个地方用于后面的访问控制（可以保存在数据库里也可以保存在Redis中）</li>
+  <li>验证失败：不生成Token</li>
+</ul>
+
+<p>2、客户端使用令牌访问资源，服务器验证令牌有效性</p>
+
+<ul>
+  <li>令牌错误或过期：拦截请求，让客户端重新申请令牌</li>
+  <li>令牌正确：允许放行</li>
+</ul>
+
+<h2 id="9-实现jwt鉴权">9. 实现JWT鉴权</h2>
+
+<p>通过以下几步完成鉴权操作</p>
+
+<ul>
+  <li>创建auth-service（登录、鉴权服务）</li>
+  <li>添加JwtService类实现token创建和验证</li>
+  <li>网关层集成auth-service（添加AuthFilter到网关层，如果没有登录则返回403）</li>
+</ul>
+
+<h3 id="auth-service-api模块">auth-service-api模块</h3>
+
+<blockquote>
+  <p>在gateway目录下创建一个auth-service-api的module模块</p>
+</blockquote>
+
+<p>添加pom依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-openfeign<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springcloud/gateway-auth-sevice-api.png" alt="" /></p>
+
+<p>创建一个entity包，创建一个账户实体对象</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">entity</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Builder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.NoArgsConstructor</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+
+<span class="nd">@Data</span>
+<span class="nd">@Builder</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">username</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">token</span><span class="o">;</span>
+
+    <span class="c1">//当token接近失效的时候可以用refreshToken生成一个新的token</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">refreshToken</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在entity包下面创建一个AuthResponseCode类，定义一些错误状态码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">entity</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthResponseCode</span> <span class="o">{</span>
+	<span class="cm">/**
+	 * 成功
+	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Long</span> <span class="no">SUCCESS</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 无效密码
+	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Long</span> <span class="no">INCORRENT_PWD</span> <span class="o">=</span> <span class="mi">1000L</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 用户不存在
+	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Long</span> <span class="no">USER_NOT_FOUND</span> <span class="o">=</span> <span class="mi">1001L</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 无效TOKEN
+	 */</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Long</span> <span class="no">INVALID_TOKEN</span> <span class="o">=</span> <span class="mi">1002L</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在entity包下创建一个AuthResponse处理结果类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">entity</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Builder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.NoArgsConstructor</span><span class="o">;</span>
+
+<span class="nd">@Data</span>
+<span class="nd">@Builder</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthResponse</span> <span class="o">{</span>
+	<span class="cm">/**
+	 * 账号
+	 */</span>
+	<span class="kd">private</span> <span class="nc">Account</span> <span class="n">account</span><span class="o">;</span>
+
+	<span class="cm">/**
+	 * 响应结果码
+	 */</span>
+	<span class="kd">private</span> <span class="nc">Long</span> <span class="n">code</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>创建一个service包在里面创建接口AuthService，可feign调用的用户接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">icodingedu</span><span class="o">.</span><span class="na">springcloud</span><span class="o">.</span><span class="na">service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.entity.AuthResponse</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.openfeign.FeignClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestParam</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.ResponseBody</span><span class="o">;</span>
+
+<span class="nd">@FeignClient</span><span class="o">(</span><span class="s">"auth-service"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AuthService</span> <span class="o">{</span>
+  <span class="cm">/**
+	 * 登录
+	 * @param username
+	 * @param password
+	 * @return
+	 */</span>
+	<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/login"</span><span class="o">)</span>
+	<span class="nd">@ResponseBody</span>
+	<span class="nc">AuthResponse</span> <span class="nf">login</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"username"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">username</span><span class="o">,</span>
+	                   <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"password"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">password</span><span class="o">);</span>
+
+	<span class="cm">/**
+	 * 认证
+	 * @param token
+	 * @param username
+	 * @return
+	 */</span>
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/verify"</span><span class="o">)</span>
+	<span class="nd">@ResponseBody</span>
+	<span class="nc">AuthResponse</span> <span class="nf">verify</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"token"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">token</span><span class="o">,</span>
+	                           <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"username"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">username</span><span class="o">);</span>
+
+	<span class="cm">/**
+	 * 刷新token
+	 * @param refreshToken
+	 * @return
+	 */</span>
+	<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">"/refresh"</span><span class="o">)</span>
+	<span class="nd">@ResponseBody</span>
+	<span class="nc">AuthResponse</span> <span class="nf">refresh</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">"refresh"</span><span class="o">)</span> <span class="nc">String</span> <span class="n">refreshToken</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="auth-service模块">auth-service模块</h3>
+
+<blockquote>
+  <p>gateway目录下创建一个服务实现auth-service的module模块</p>
+</blockquote>
+
+<p>coding老师的jwt讲解笔记:<a href="/icoding-edu/2020/05/06/icoding-note-031.html">/icoding-edu/2020/05/06/icoding-note-031.html</a></p>
+
+<p>导入POM依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+  <span class="c">&lt;!--redis用来存放生成token与refresh token的关系--&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-redis<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.auth0<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>java-jwt<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>3.7.0<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.icodingedu<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>auth-service-api<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>${project.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div></div>
+
+<p>创建启动类AuthServiceApplication</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableDiscoveryClient</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthServiceApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">new</span> <span class="nf">SpringApplicationBuilder</span><span class="o">(</span><span class="nc">AuthServiceApplication</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">web</span><span class="o">(</span><span class="nc">WebApplicationType</span><span class="o">.</span><span class="na">SERVLET</span><span class="o">).</span><span class="na">run</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springcloud/gateway-auth-sevice.png" alt="" /></p>
+
+<p>创建一个service包，建立JwtService类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Slf4j</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JwtService</span> <span class="o">{</span>
+	<span class="c1">// 密钥，生产环境中应该从外部加密后获取，通过配置中心加密后获取，解密得到</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">SERCET</span> <span class="o">=</span> <span class="s">"you must change it"</span><span class="o">;</span>
+	<span class="c1">// 发行人，生产环境中应该从外部加密后获取，通过配置中心加密后获取，解密得到</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">ISSUER</span> <span class="o">=</span> <span class="s">"icodingedu"</span><span class="o">;</span>
+	<span class="c1">// 过期时间,60分钟</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="no">EXPIRE</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="o">;</span>
+	<span class="c1">// 自包含的数据</span>
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">USERNAME</span> <span class="o">=</span> <span class="s">"username"</span><span class="o">;</span>
+
+
+	<span class="cm">/**
+	 * 生成token
+	 * @param account
+	 * @return
+	 */</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getToken</span><span class="o">(</span><span class="nc">Account</span> <span class="n">account</span><span class="o">){</span>
+		<span class="nc">Date</span> <span class="n">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Date</span><span class="o">();</span>
+		<span class="c1">// 签名加密</span>
+		<span class="nc">Algorithm</span> <span class="n">algorithm</span> <span class="o">=</span> <span class="nc">Algorithm</span><span class="o">.</span><span class="na">HMAC256</span><span class="o">(</span><span class="no">SERCET</span><span class="o">);</span>
+		<span class="nc">String</span> <span class="n">token</span> <span class="o">=</span> <span class="no">JWT</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">withSubject</span><span class="o">(</span><span class="s">"member-user"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">withIssuer</span><span class="o">(</span><span class="no">ISSUER</span><span class="o">)</span> <span class="c1">// 解密的时候如果不知道发行方也无法解密</span>
+				<span class="o">.</span><span class="na">withIssuedAt</span><span class="o">(</span><span class="n">now</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">withExpiresAt</span><span class="o">(</span><span class="k">new</span> <span class="nc">Date</span><span class="o">(</span><span class="n">now</span><span class="o">.</span><span class="na">getTime</span><span class="o">()</span> <span class="o">+</span> <span class="no">EXPIRE</span><span class="o">))</span> <span class="c1">// 过期时间</span>
+ 				<span class="o">.</span><span class="na">withClaim</span><span class="o">(</span><span class="no">USERNAME</span><span class="o">,</span><span class="n">account</span><span class="o">.</span><span class="na">getUserName</span><span class="o">())</span> <span class="c1">// 自包含的数据</span>
+				<span class="o">.</span><span class="na">sign</span><span class="o">(</span><span class="n">algorithm</span><span class="o">);</span> <span class="c1">// 签名</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"jwt generated username={}"</span><span class="o">,</span><span class="n">account</span><span class="o">.</span><span class="na">getUserName</span><span class="o">());</span>
+		<span class="k">return</span> <span class="n">token</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="cm">/**
+	 * 验证token
+	 */</span>
+	<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">verifyToken</span><span class="o">(</span><span class="nc">String</span> <span class="n">token</span><span class="o">,</span><span class="nc">String</span> <span class="n">username</span><span class="o">){</span>
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"verify jwt user={}"</span><span class="o">,</span><span class="n">username</span><span class="o">);</span>
+		<span class="k">try</span><span class="o">{</span>
+			<span class="c1">// 签名加密</span>
+			<span class="nc">Algorithm</span> <span class="n">algorithm</span> <span class="o">=</span> <span class="nc">Algorithm</span><span class="o">.</span><span class="na">HMAC256</span><span class="o">(</span><span class="no">SERCET</span><span class="o">);</span>
+			<span class="c1">// 构建验证器</span>
+			<span class="nc">JWTVerifier</span> <span class="n">verifier</span> <span class="o">=</span> <span class="no">JWT</span><span class="o">.</span><span class="na">require</span><span class="o">(</span><span class="n">algorithm</span><span class="o">).</span><span class="na">withIssuer</span><span class="o">(</span><span class="no">ISSUER</span><span class="o">).</span><span class="na">withClaim</span><span class="o">(</span><span class="no">USERNAME</span><span class="o">,</span> <span class="n">username</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+			<span class="c1">// 验证,没有错误就直接通过</span>
+			<span class="n">verifier</span><span class="o">.</span><span class="na">verify</span><span class="o">(</span><span class="n">token</span><span class="o">);</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+			<span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"verify fail"</span><span class="o">,</span><span class="n">e</span><span class="o">);</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+  
+  	<span class="cm">/**
+	 * 获取token中的用户名
+	 */</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">getUsername</span><span class="o">(</span><span class="nc">String</span> <span class="n">token</span><span class="o">){</span>
+		<span class="c1">// 签名加密</span>
+		<span class="nc">Algorithm</span> <span class="n">algorithm</span> <span class="o">=</span> <span class="nc">Algorithm</span><span class="o">.</span><span class="na">HMAC256</span><span class="o">(</span><span class="no">SERCET</span><span class="o">);</span>
+		<span class="c1">// 构建验证器</span>
+		<span class="nc">JWTVerifier</span> <span class="n">verifier</span> <span class="o">=</span> <span class="no">JWT</span><span class="o">.</span><span class="na">require</span><span class="o">(</span><span class="n">algorithm</span><span class="o">).</span><span class="na">withIssuer</span><span class="o">(</span><span class="no">ISSUER</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+		<span class="nc">Claim</span> <span class="n">claim</span> <span class="o">=</span> <span class="n">verifier</span><span class="o">.</span><span class="na">verify</span><span class="o">(</span><span class="n">token</span><span class="o">).</span><span class="na">getClaim</span><span class="o">(</span><span class="no">USERNAME</span><span class="o">);</span>
+		<span class="k">return</span>  <span class="n">claim</span><span class="o">.</span><span class="na">asString</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>创建controller包，建立JwtController类</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.pojo.Account</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.pojo.AuthResponse</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.pojo.AuthResponseCode</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.service.AuthService</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.service.JwtService</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.data.redis.core.RedisTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Objects</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.UUID</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JwtController</span> <span class="kd">implements</span> <span class="nc">AuthService</span> <span class="o">{</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">RedisTemplate</span> <span class="n">redisTemplate</span><span class="o">;</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">JwtService</span> <span class="n">jwtService</span><span class="o">;</span>
+
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">AuthResponse</span> <span class="nf">login</span><span class="o">(</span><span class="nc">String</span> <span class="n">username</span><span class="o">,</span> <span class="nc">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Account</span> <span class="n">account</span> <span class="o">=</span> <span class="nc">Account</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">userName</span><span class="o">(</span><span class="n">username</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+		<span class="c1">// TODO 从数据库根据用户名查询密码进行比较验证，这里假设验证通过</span>
+		<span class="c1">// 1、生成token</span>
+		<span class="nc">String</span> <span class="n">token</span> <span class="o">=</span> <span class="n">jwtService</span><span class="o">.</span><span class="na">getToken</span><span class="o">(</span><span class="n">account</span><span class="o">);</span>
+		<span class="n">account</span><span class="o">.</span><span class="na">setToken</span><span class="o">(</span><span class="n">token</span><span class="o">);</span>
+		<span class="c1">// 刷新token</span>
+		<span class="n">account</span><span class="o">.</span><span class="na">setRefreshToken</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+		<span class="c1">// 2、保存refresh-token与token的关系</span>
+		<span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getRefreshToken</span><span class="o">(),</span><span class="n">account</span><span class="o">);</span>
+
+		<span class="k">return</span> <span class="nc">AuthResponse</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">account</span><span class="o">(</span><span class="n">account</span><span class="o">).</span><span class="na">code</span><span class="o">(</span><span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">AuthResponse</span> <span class="nf">verify</span><span class="o">(</span><span class="nc">String</span> <span class="n">token</span><span class="o">,</span> <span class="nc">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">boolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="n">jwtService</span><span class="o">.</span><span class="na">verifyToken</span><span class="o">(</span><span class="n">token</span><span class="o">,</span><span class="n">username</span><span class="o">);</span>
+		<span class="k">return</span> <span class="nc">AuthResponse</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">code</span><span class="o">(</span><span class="n">flag</span><span class="o">?</span><span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">:</span><span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">INVALID_TOKEN</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">AuthResponse</span> <span class="nf">refresh</span><span class="o">(</span><span class="nc">String</span> <span class="n">refreshToken</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Account</span> <span class="n">account</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Account</span><span class="o">)</span> <span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">refreshToken</span><span class="o">);</span>
+		<span class="k">if</span><span class="o">(</span><span class="nc">Objects</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">account</span><span class="o">)){</span>
+			<span class="k">return</span> <span class="nc">AuthResponse</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">code</span><span class="o">(</span><span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">USER_NOT_FOUND</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="c1">// 1、生成一个新的token</span>
+		<span class="nc">String</span> <span class="n">token</span> <span class="o">=</span> <span class="n">jwtService</span><span class="o">.</span><span class="na">getToken</span><span class="o">(</span><span class="n">account</span><span class="o">);</span>
+		<span class="n">account</span><span class="o">.</span><span class="na">setToken</span><span class="o">(</span><span class="n">token</span><span class="o">);</span>
+		<span class="c1">// 2、更新refreshToken</span>
+		<span class="n">account</span><span class="o">.</span><span class="na">setRefreshToken</span><span class="o">(</span><span class="no">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+		<span class="c1">// 3、删除redis上的旧值</span>
+		<span class="n">redisTemplate</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">refreshToken</span><span class="o">);</span>
+		<span class="c1">// 4、保存refresh-token与token的关系</span>
+		<span class="n">redisTemplate</span><span class="o">.</span><span class="na">opsForValue</span><span class="o">().</span><span class="na">set</span><span class="o">(</span><span class="n">account</span><span class="o">.</span><span class="na">getRefreshToken</span><span class="o">(),</span><span class="n">account</span><span class="o">);</span>
+
+		<span class="k">return</span> <span class="nc">AuthResponse</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">account</span><span class="o">(</span><span class="n">account</span><span class="o">).</span><span class="na">code</span><span class="o">(</span><span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>配置application.yaml</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+  <span class="na">application</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">auth-service</span>
+  <span class="na">redis</span><span class="pi">:</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">6379</span>
+    <span class="na">host</span><span class="pi">:</span> <span class="s">localhost</span>
+    <span class="na">database</span><span class="pi">:</span> <span class="s">0</span>  
+<span class="na">server</span><span class="pi">:</span>
+  <span class="na">port</span><span class="pi">:</span> <span class="m">50001</span>
+<span class="na">eureka</span><span class="pi">:</span>
+  <span class="na">client</span><span class="pi">:</span>
+    <span class="na">service-url</span><span class="pi">:</span>
+      <span class="na">defaultZone</span><span class="pi">:</span> <span class="s">http://localhost:20001/eureka/</span>
+  <span class="na">instance</span><span class="pi">:</span>
+    <span class="na">lease-renewal-interval-in-seconds</span><span class="pi">:</span> <span class="m">5</span> <span class="c1"># 心跳间隔</span>
+    <span class="na">lease-expiration-duration-in-seconds</span><span class="pi">:</span> <span class="m">30</span> <span class="c1"># 没有心跳返回的淘汰时间30秒</span>
+
+<span class="na">management</span><span class="pi">:</span>
+  <span class="na">security</span><span class="pi">:</span>
+    <span class="na">enabled</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">endpoints</span><span class="pi">:</span>
+    <span class="na">web</span><span class="pi">:</span>
+      <span class="na">exposure</span><span class="pi">:</span>
+        <span class="na">include</span><span class="pi">:</span> <span class="s2">"</span><span class="s">*"</span>
+  <span class="na">endpoint</span><span class="pi">:</span>
+    <span class="na">health</span><span class="pi">:</span>
+      <span class="na">show-details</span><span class="pi">:</span> <span class="s">always</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>测试</p>
+</blockquote>
+
+<p>启动eureka-server、auth-service，启动redis服务，使用ApiPost测试</p>
+
+<p>登录</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-auth-sevice-1.png" alt="" /></p>
+
+<p>使用refreshToken=‘004cc7f1-5bb2-4726-86f4-4940f4ce9648’刷新token</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-auth-sevice-refresh-token.png" alt="" /></p>
+
+<p>返回新的token和refresh-token了</p>
+
+<h2 id="10-gateway整合jwt">10. Gateway整合JWT</h2>
+
+<p>项目Gateway-server，导入依赖，记得要排除<code class="highlighter-rouge">spring-boot-starter-web</code>的依赖</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>com.icodingedu.springcloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>auth-service-api<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>${project.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;exclusions&gt;</span>
+    <span class="nt">&lt;exclusion&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;/exclusion&gt;</span>
+  <span class="nt">&lt;/exclusions&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.commons<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>commons-lang3<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>3.7<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+<p>第一步，创建权限验证过滤器<code class="highlighter-rouge">AuthFilter</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Component</span>                                                                                                  
+<span class="nd">@Slf4j</span>                                                                                                      
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthFilter</span> <span class="kd">implements</span> <span class="nc">GatewayFilter</span><span class="o">,</span> <span class="nc">Ordered</span> <span class="o">{</span>                                                 
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">AUTH</span><span class="o">=</span><span class="s">"Authorization"</span><span class="o">;</span>                                                       
+	<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">USERNAME</span> <span class="o">=</span> <span class="s">"icodingedu-username"</span><span class="o">;</span>                                           
+                                                                                                            
+	<span class="nd">@Autowired</span>                                                                                              
+	<span class="nc">AuthService</span> <span class="n">authService</span><span class="o">;</span>                                                                                
+                                                                                    
+	<span class="nd">@Override</span>                                                                                               
+	<span class="kd">public</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Void</span><span class="o">&gt;</span> <span class="nf">filter</span><span class="o">(</span><span class="nc">ServerWebExchange</span> <span class="n">exchange</span><span class="o">,</span> <span class="nc">GatewayFilterChain</span> <span class="n">chain</span><span class="o">)</span> <span class="o">{</span>                        
+		<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Auth start"</span><span class="o">);</span>                                                                             
+		<span class="nc">ServerHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequest</span><span class="o">();</span>                                                  
+		<span class="nc">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">();</span>                                                         
+		<span class="c1">// 获取请求头上的toen                                                                                      </span>
+		<span class="nc">String</span> <span class="n">token</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="na">getFirst</span><span class="o">(</span><span class="no">AUTH</span><span class="o">);</span>                                                              
+		<span class="c1">// 获取请求头上的username                                                                                  </span>
+		<span class="nc">String</span> <span class="n">username</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="na">getFirst</span><span class="o">(</span><span class="no">USERNAME</span><span class="o">);</span>                                                       
+		                                                                                                    
+		<span class="c1">// 响应返回                                                                                             </span>
+		<span class="nc">ServerHttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getResponse</span><span class="o">();</span>                                               
+		<span class="k">if</span><span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isBlank</span><span class="o">(</span><span class="n">token</span><span class="o">)){</span>                                                                     
+			<span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"token not found"</span><span class="o">);</span>                                                                   
+			<span class="n">response</span><span class="o">.</span><span class="na">setStatusCode</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">UNAUTHORIZED</span><span class="o">);</span>                                                
+			<span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="na">setComplete</span><span class="o">();</span>                                                                  
+		<span class="o">}</span>                                                                                                   
+		<span class="c1">// 验证token                                                                                          </span>
+		<span class="nc">AuthResponse</span> <span class="n">res</span> <span class="o">=</span> <span class="n">authService</span><span class="o">.</span><span class="na">verify</span><span class="o">(</span><span class="n">token</span><span class="o">,</span> <span class="n">username</span><span class="o">);</span>                                             
+		<span class="k">if</span><span class="o">(</span><span class="n">res</span><span class="o">.</span><span class="na">getCode</span><span class="o">()</span> <span class="o">!=</span> <span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">){</span>                                                      
+			<span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"invalid token"</span><span class="o">);</span>                                                                     
+		    <span class="n">response</span><span class="o">.</span><span class="na">setStatusCode</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">FORBIDDEN</span><span class="o">);</span>                                                   
+		    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="na">setComplete</span><span class="o">();</span>                                                                  
+		<span class="o">}</span>                                                                                                   
+		<span class="c1">// 将用户信息再次放到请求的header中传递给下游                                                                 </span>
+		<span class="nc">ServerHttpRequest</span><span class="o">.</span><span class="na">Builder</span> <span class="n">mutate</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">mutate</span><span class="o">();</span>                                                
+		<span class="n">mutate</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="no">USERNAME</span><span class="o">,</span><span class="n">username</span><span class="o">);</span>                                                                   
+		<span class="nc">ServerHttpRequest</span> <span class="n">buildRequest</span> <span class="o">=</span> <span class="n">mutate</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>                                                    
+                                                                                                            
+		<span class="c1">// 如果响应中要存放数据，可以放到response的header中                                                           </span>
+		<span class="n">response</span><span class="o">.</span><span class="na">setStatusCode</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">OK</span><span class="o">);</span>                                                              
+		<span class="n">response</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">"icodingedu-user"</span><span class="o">,</span><span class="n">username</span><span class="o">);</span>                                              
+                                                                                                            
+		<span class="c1">// 传递给下一个路由过滤器                                                                                   </span>
+		<span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">mutate</span><span class="o">().</span><span class="na">request</span><span class="o">(</span><span class="n">buildRequest</span><span class="o">).</span><span class="na">response</span><span class="o">(</span><span class="n">response</span><span class="o">).</span><span class="na">build</span><span class="o">());</span>            
+	<span class="o">}</span>                                                                                                       
+                                                                                                            
+	<span class="nd">@Override</span>                                                                                               
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">getOrder</span><span class="o">()</span> <span class="o">{</span>                                                                                 
+		<span class="k">return</span> <span class="mi">0</span><span class="o">;</span>                                                                                           
+	<span class="o">}</span>                                                                                                       
+<span class="o">}</span>                                                                                                                                                                                                                       
+</code></pre></div></div>
+
+<p>第二步，因为要通过Feign调用auth-service服务，所以启动类要开启注解<code class="highlighter-rouge">@EnableFeignClients</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span><span class="o">(</span><span class="n">exclude</span> <span class="o">=</span> <span class="o">{</span><span class="nc">RedisReactiveAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@EnableDiscoveryClient</span>
+<span class="nd">@EnableFeignClients</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayServerApplication</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">GatewayServerApplication</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第三步，GatewayConfiguration里,指定路由使用过滤器AuthFilter</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-authfliter.png" alt="" /></p>
+
+<p>启动eureka-server、eureka-client、gateway-server、auth-service</p>
+
+<p><img src="/assets/images/2022/springcloud/eureka-20001.png" alt="" /></p>
+
+<p>访问http://localhost:50080/actuator/gateway/routes，看当前生效的路由</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-routes-10.png" alt="" /></p>
+
+<p>访问eureka-client的sayhello请求</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-sayhello.png" alt="" /></p>
+
+<p>报500内部错误</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-sayhello-npe.png" alt="" /></p>
+
+<p>修改AuthFilter使用ribbon的方式调用auth-service服务的验证token的请求，代码片段如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//	@Autowired</span>
+<span class="c1">//	AuthService authService;</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nc">RestTemplate</span> <span class="n">restTemplate</span><span class="o">;</span>
+<span class="o">...</span> 
+<span class="c1">// 验证token                                                                                           </span>
+<span class="c1">// AuthResponse res = authService.verify(token, username);                                           </span>
+<span class="nc">String</span> <span class="n">path</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"http://auth-service/verify?token=%s&amp;username=%s"</span><span class="o">,</span><span class="n">token</span><span class="o">,</span><span class="n">username</span><span class="o">);</span>        
+<span class="nc">AuthResponse</span> <span class="n">res</span> <span class="o">=</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getForObject</span><span class="o">(</span><span class="n">path</span><span class="o">,</span><span class="nc">AuthResponse</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>     
+<span class="k">if</span><span class="o">(</span><span class="n">res</span><span class="o">.</span><span class="na">getCode</span><span class="o">()</span> <span class="o">!=</span> <span class="nc">AuthResponseCode</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">){</span>                                                      
+			<span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"invalid token"</span><span class="o">);</span>                                                                     
+		    <span class="n">response</span><span class="o">.</span><span class="na">setStatusCode</span><span class="o">(</span><span class="nc">HttpStatus</span><span class="o">.</span><span class="na">FORBIDDEN</span><span class="o">);</span>                                                   
+		    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="na">setComplete</span><span class="o">();</span>                                                                  
+		<span class="o">}</span>     
+<span class="o">...</span>
+</code></pre></div></div>
+
+<p>需要在启动类GatewayServerApplication，注入restTemplate的bean到spring 容器</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@SpringBootApplication</span><span class="o">(</span><span class="n">exclude</span> <span class="o">=</span> <span class="o">{</span><span class="nc">RedisReactiveAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="nd">@EnableDiscoveryClient</span>
+<span class="nd">@EnableFeignClients</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayServerApplication</span> <span class="o">{</span>
+	<span class="nd">@Bean</span>
+	<span class="nd">@LoadBalanced</span> <span class="c1">// 支持负载均衡的功能</span>
+	<span class="kd">public</span> <span class="nc">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">RestTemplate</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="nc">GatewayServerApplication</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>重新启动gateway-server</p>
+
+<p>再次访问eureka-client的sayhello请求</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-unauthorized.png" alt="" /></p>
+
+<p>成功了，报401没有权限访问，我们来看后台输出，打印了Auth start ，token not found 的日志内容</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-unauthorized-2.png" alt="" /></p>
+
+<p>接下来，我们访问登录请求来获取token，这个需要启动redis，因为我们把refresh-token与登录用户的绑定关系放到redis上了</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-login.png" alt="" /></p>
+
+<p>然后，我们带上token和username再次访问sayhello</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-authorized.png" alt="" /></p>
+
+<p>可以看到成功访问到了eureka-client服务的sayhello请求。</p>
+
+<p>注意，我们设置了token的有效时间上60分钟，过期后再访问sayhello请求，我们在AuthFilter 设置了验证token失败，打印 invalid token。</p>
+
+<p>如果要在gateway-sever服务本地验证token，那么需要将auth-service服务的JwtService类放到gateway-sever服务就可以了</p>
+
+<h2 id="11-实现服务网关层统一异常返回">11. 实现服务网关层统一异常返回</h2>
+
+<ul>
+  <li>
+    <p>方式一在业务应用层自己实现统一异常返回，参考<a href="/icoding-edu/2020/04/05/icoding-note-018.html">/icoding-edu/2020/04/05/icoding-note-018.html</a></p>
+  </li>
+  <li>
+    <p>方式二在网关层对500响应的统一异常返回</p>
+  </li>
+</ul>
+
+<p>这里我们讲一下第二种方式，会使用到代理模式和<a href="/design-mode/2020/05/02/java-decorate-mode.html">装饰器模式</a>(对feign调用请求的返回接口进行封装/装饰)，要理解装饰模式的结构。</p>
+
+<p>第一步，在项目gateway-server，新建接口<code class="highlighter-rouge">BodyHackerFunction</code>继承BiFunction函数式接口</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.reactivestreams.Publisher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.buffer.DataBuffer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.server.reactive.ServerHttpResponse</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">reactor.core.publisher.Mono</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.function.BiFunction</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @Author jude
+ * @Date 2022/5/16 7:58 PM
+ * @Version 1.0
+ */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">BodyHackerFunction</span> <span class="kd">extends</span> <span class="nc">BiFunction</span><span class="o">&lt;</span><span class="nc">ServerHttpResponse</span><span class="o">,</span> <span class="nc">Publisher</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">DataBuffer</span><span class="o">&gt;,</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Void</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第二步，新建具体装饰类<code class="highlighter-rouge">BodyHackerHttpResponseDecorator</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.reactivestreams.Publisher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.io.buffer.DataBuffer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.server.reactive.ServerHttpResponse</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.server.reactive.ServerHttpResponseDecorator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">reactor.core.publisher.Mono</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @Author jude
+ * @Date 2022/5/16 11:17 PM
+ * @Version 1.0
+ * ServerHttpResponseDecorator 是装饰基类，
+ * 这里写具体装饰类，一定要记住装饰模式的结构
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BodyHackerHttpResponseDecorator</span> <span class="kd">extends</span> <span class="nc">ServerHttpResponseDecorator</span> <span class="o">{</span>
+	<span class="cm">/**
+	 * 负责具体写入body内容的代理类
+	 */</span>
+	<span class="kd">private</span> <span class="nc">BodyHackerFunction</span> <span class="n">delegate</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+	<span class="kd">public</span> <span class="nf">BodyHackerHttpResponseDecorator</span><span class="o">(</span><span class="nc">BodyHackerFunction</span> <span class="n">bodyHandler</span><span class="o">,</span> <span class="nc">ServerHttpResponse</span> <span class="n">delegate</span><span class="o">){</span>
+		<span class="kd">super</span><span class="o">(</span><span class="n">delegate</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">delegate</span> <span class="o">=</span> <span class="n">bodyHandler</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Void</span><span class="o">&gt;</span> <span class="nf">writeWith</span><span class="o">(</span><span class="nc">Publisher</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">DataBuffer</span><span class="o">&gt;</span> <span class="n">body</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">delegate</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">getDelegate</span><span class="o">(),</span><span class="n">body</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第三步，新建过滤器<code class="highlighter-rouge">ErrorFiltter</code></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.tool.BodyHackerFunction</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.icodingedu.springcloud.tool.BodyHackerHttpResponseDecorator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.filter.GatewayFilter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.filter.GatewayFilterChain</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.core.Ordered</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.server.reactive.ServerHttpRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.server.ServerWebExchange</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">reactor.core.publisher.Flux</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">reactor.core.publisher.Mono</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @Author jude
+ * @Date 2022/5/17 12:51 PM
+ * @Version 1.0
+ */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ErrorFilter</span> <span class="kd">implements</span> <span class="nc">GatewayFilter</span><span class="o">,</span> <span class="nc">Ordered</span> <span class="o">{</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">Mono</span><span class="o">&lt;</span><span class="nc">Void</span><span class="o">&gt;</span> <span class="nf">filter</span><span class="o">(</span><span class="nc">ServerWebExchange</span> <span class="n">exchange</span><span class="o">,</span> <span class="nc">GatewayFilterChain</span> <span class="n">chain</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">ServerHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequest</span><span class="o">();</span>
+		<span class="c1">// 声明Function函数式接口</span>
+		<span class="nc">BodyHackerFunction</span> <span class="n">delegate</span> <span class="o">=</span> <span class="o">(</span><span class="n">resp</span><span class="o">,</span><span class="n">body</span><span class="o">)-&gt;</span>
+			<span class="nc">Flux</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="n">body</span><span class="o">).</span><span class="na">flatMap</span><span class="o">(</span><span class="n">orgBody</span><span class="o">-&gt;{</span>
+				<span class="c1">// 原始的responseBody，即业务服务返回的responseBody</span>
+				<span class="kt">byte</span><span class="o">[]</span> <span class="n">orgContent</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">orgBody</span><span class="o">.</span><span class="na">readableByteCount</span><span class="o">()];</span>
+				<span class="n">orgBody</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">orgContent</span><span class="o">);</span>
+				<span class="nc">String</span> <span class="n">content</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">orgContent</span><span class="o">);</span>
+				<span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"original content{}"</span><span class="o">,</span><span class="n">content</span><span class="o">);</span>
+
+				<span class="c1">// 如果是500，则替换为json字符串返回</span>
+      <span class="nc">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">();</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">resp</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">().</span><span class="na">value</span><span class="o">()</span> <span class="o">==</span> <span class="mi">500</span><span class="o">){</span>
+					<span class="n">content</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"{\"status\":%d,\"path\":\"%s\"}"</span><span class="o">,</span><span class="n">resp</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">().</span><span class="na">value</span><span class="o">(),</span><span class="n">request</span><span class="o">.</span><span class="na">getPath</span><span class="o">().</span><span class="na">value</span><span class="o">());</span>
+          <span class="n">headers</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="c1">// 告知客户端body的长度，如果不设置，客户端会一直等待</span>
+				<span class="n">headers</span><span class="o">.</span><span class="na">setContentLength</span><span class="o">(</span><span class="n">content</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+
+				<span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="na">writeWith</span><span class="o">(</span><span class="nc">Flux</span><span class="o">.</span><span class="na">just</span><span class="o">(</span><span class="n">content</span><span class="o">).</span><span class="na">map</span><span class="o">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">resp</span><span class="o">.</span><span class="na">bufferFactory</span><span class="o">().</span><span class="na">wrap</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getBytes</span><span class="o">())));</span>
+			<span class="o">}).</span><span class="na">then</span><span class="o">();</span>
+
+		<span class="c1">// 具体装饰类返回，它继承装饰基类ServerHttpResponseDecorator也是接口ServerHttpResponse的实现类</span>
+		<span class="nc">BodyHackerHttpResponseDecorator</span> <span class="n">responseDecorator</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BodyHackerHttpResponseDecorator</span><span class="o">(</span><span class="n">delegate</span><span class="o">,</span><span class="n">exchange</span><span class="o">.</span><span class="na">getResponse</span><span class="o">());</span>
+		<span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">mutate</span><span class="o">().</span><span class="na">response</span><span class="o">(</span><span class="n">responseDecorator</span><span class="o">).</span><span class="na">build</span><span class="o">()</span>   <span class="o">)</span> <span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">getOrder</span><span class="o">()</span> <span class="o">{</span>
+		<span class="c1">// 更高的优先级执行。WHRITE_RESPONSE_FILTER的执行顺序是-1，这里-2比它更优先执行</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>第四步，GatewayConfiguration 给路由添加过滤器</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayConfiguration</span> <span class="o">{</span>
+<span class="c1">//	@Autowired</span>
+<span class="c1">//	TimerFilter timerFilter;</span>
+	<span class="nd">@Autowired</span>
+	<span class="nc">AuthFilter</span> <span class="n">authFilter</span><span class="o">;</span>
+	
+	<span class="nd">@Autowired</span>
+	<span class="nc">ErrorFilter</span> <span class="n">errorFilter</span><span class="o">;</span>
+
+	<span class="nd">@Bean</span>
+	<span class="nd">@Order</span>
+	<span class="kd">public</span> <span class="nc">RouteLocator</span> <span class="nf">customerRouters</span><span class="o">(</span><span class="nc">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">){</span>
+		<span class="nc">LocalDateTime</span> <span class="n">ldt</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2022</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">22</span><span class="o">,</span><span class="mi">55</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+		<span class="nc">LocalDateTime</span> <span class="n">ldt2</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2022</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">22</span><span class="o">,</span><span class="mi">56</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+
+		<span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">().</span><span class="na">route</span><span class="o">(</span><span class="n">r</span><span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gavinjava/**"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">header</span><span class="o">(</span><span class="s">"name"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"java-param"</span><span class="o">,</span><span class="s">"gateway-config"</span><span class="o">)</span>
+					<span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">errorFilter</span><span class="o">)</span>
+					<span class="c1">//.filter(authFilter)</span>
+					<span class="c1">//.filter(timerFilter)</span>
+				<span class="o">)</span>
+				<span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://EUREKA-CLIENT"</span><span class="o">)</span>
+		<span class="o">).</span><span class="na">route</span><span class="o">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/secondkill/**"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+				<span class="c1">//.and().after(ZonedDateTime.now().plusSeconds(60))</span>
+				<span class="c1">//.and().after(ZonedDateTime.of(ldt, ZoneId.of("Asia/Shanghai")))</span>
+				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">between</span><span class="o">(</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt</span><span class="o">,</span><span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)),</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt2</span><span class="o">,</span><span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)))</span>
+				<span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">redirect</span><span class="o">(</span><span class="s">"304"</span><span class="o">,</span><span class="s">"https://www.icodingedu.com/"</span><span class="o">))</span>
+				<span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)).</span><span class="na">build</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/2022/springcloud/gateway-errorfilter.png" alt="" /></p>
+
+<p>修改一下eureka-client服务的controller层</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
+	<span class="nd">@Value</span><span class="o">(</span><span class="s">"${server.port}"</span><span class="o">)</span>
+	<span class="kd">private</span> <span class="nc">String</span> <span class="n">port</span><span class="o">;</span>
+  
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/sayhello"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">sayHello</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="s">"my port is "</span><span class="o">+</span><span class="n">port</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"/valid"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">String</span> <span class="nf">valid</span><span class="o">(){</span>
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">0</span><span class="o">;</span>
+		<span class="k">return</span> <span class="s">"valid"</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>启动eureka-server、gateway-server、eureka-client服务</p>
+
+<p>没有添加ErrorFilter过滤器时，访问，响应的500错误页面</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-no-errorfilter.png" alt="" /></p>
+
+<p>GatewayConfiguration 给路由添加过滤器ErrorFilter后，访问，响应的500，json格式返回</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-with-errorfilter.png" alt="" /></p>
+
+<h2 id="12-实现服务网关层限流">12. 实现服务网关层限流</h2>
+
+<p>限流可以看<a href="/icoding-edu/2020/07/04/icoding-note-055.html">SpringCloud Aibaba-Sentinel流量卫兵</a>，在业务应用层进行限流。</p>
+
+<p><a href="/springboot/2022/03/22/limit.html">7种限流方式</a></p>
+
+<p>下面介绍gateway基于redis实现限流，它是使用令牌桶算法的</p>
+
+<p>在gateway-server创建配置类RedisLimiterConfiguration</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.filter.ratelimit.KeyResolver</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Primary</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">reactor.core.publisher.Mono</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @Author jude
+ * @Date 2022/5/18 12:49 PM
+ * @Version 1.0
+ */</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisLimiterConfiguration</span> <span class="o">{</span>
+	<span class="c1">// ID 限流的业务标识</span>
+	<span class="c1">// 根据用户请求IP地址进行限流</span>
+	<span class="nd">@Bean</span>  <span class="c1">// 注入spring 容器</span>
+	<span class="nd">@Primary</span>
+	<span class="kd">public</span> <span class="nc">KeyResolver</span> <span class="nf">remoteAddressKeyResolver</span><span class="o">(){</span>
+		<span class="k">return</span> <span class="n">exchange</span> <span class="o">-&gt;</span> <span class="nc">Mono</span><span class="o">.</span><span class="na">just</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getRemoteAddress</span><span class="o">().</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getHostAddress</span><span class="o">());</span>
+	<span class="o">}</span>
+ 
+	<span class="nd">@Bean</span><span class="o">(</span><span class="s">"redisLimiterUser"</span><span class="o">)</span>
+  <span class="nd">@Primary</span>
+	<span class="kd">public</span> <span class="nc">RedisRateLimiter</span> <span class="nf">redisRateLimiterUser</span><span class="o">(){</span>
+		<span class="c1">// 第一个参数defaultReplensihRate 生成redis令牌的速率，这里每秒1个 </span>
+		<span class="c1">// 第二个参数defaultBurstCapacity 令牌桶的容量，这里定义可容纳2个令牌 </span>
+		<span class="k">return</span> <span class="n">n</span> <span class="n">ew</span> <span class="nf">RedisRateLimiter</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Bean</span><span class="o">(</span><span class="s">"redisLimiterProduct"</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="nc">RedisRateLimiter</span> <span class="nf">redisRateLimiterProduct</span><span class="o">(){</span>
+		<span class="c1">// 第一个参数defaultReplensihRate 生成redis令牌的速率，这里每秒10个 </span>
+		<span class="c1">// 第二个参数defaultBurstCapacity 令牌桶的容量，这里定义可容纳30个令牌 </span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">RedisRateLimiter</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span><span class="mi">60</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>application.ymal 配置redis，前面已导入redis依赖</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">spring</span><span class="pi">:</span>
+   <span class="na">redis</span><span class="pi">:</span>
+    <span class="na">port</span><span class="pi">:</span> <span class="m">6379</span>
+    <span class="na">host</span><span class="pi">:</span> <span class="s">localhost</span>
+    <span class="na">database</span><span class="pi">:</span> <span class="m">0</span>
+   <span class="na">main</span><span class="pi">:</span>
+    <span class="na">allow-bean-definition-overriding</span><span class="pi">:</span> <span class="no">true</span> <span class="c1"># 允许bean重复定义</span>
+</code></pre></div></div>
+
+<p>修改GatewayConfiguration，添加限流过滤</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GatewayConfiguration</span> <span class="o">{</span>
+<span class="c1">//	@Autowired</span>
+<span class="c1">//	TimerFilter timerFilter;</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nc">AuthFilter</span> <span class="n">authFilter</span><span class="o">;</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nc">ErrorFilter</span> <span class="n">errorFilter</span><span class="o">;</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nc">KeyResolver</span> <span class="n">hostNameResolver</span><span class="o">;</span>
+
+	<span class="nd">@Autowired</span>
+	<span class="nd">@Qualifier</span><span class="o">(</span><span class="s">"redisLimiterUser"</span><span class="o">)</span>
+	<span class="nc">RedisRateLimiter</span> <span class="n">redisLimiterUser</span><span class="o">;</span>
+
+	<span class="nd">@Bean</span>
+	<span class="nd">@Order</span>
+	<span class="kd">public</span> <span class="nc">RouteLocator</span> <span class="nf">customerRouters</span><span class="o">(</span><span class="nc">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">){</span>
+		<span class="nc">LocalDateTime</span> <span class="n">ldt</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2022</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">22</span><span class="o">,</span><span class="mi">55</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+		<span class="nc">LocalDateTime</span> <span class="n">ldt2</span> <span class="o">=</span> <span class="nc">LocalDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="mi">2022</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">22</span><span class="o">,</span><span class="mi">56</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+
+		<span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">().</span><span class="na">route</span><span class="o">(</span><span class="n">r</span><span class="o">-&gt;</span> <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/gavinjava/**"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+				<span class="c1">//.and().header("name")</span>
+				<span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">addResponseHeader</span><span class="o">(</span><span class="s">"java-param"</span><span class="o">,</span><span class="s">"gateway-config"</span><span class="o">)</span>
+					<span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">errorFilter</span><span class="o">).</span><span class="na">requestRateLimiter</span><span class="o">(</span><span class="n">c</span><span class="o">-&gt;{</span>
+						<span class="n">c</span><span class="o">.</span><span class="na">setKeyResolver</span><span class="o">(</span><span class="n">hostNameResolver</span><span class="o">);</span>
+						<span class="n">c</span><span class="o">.</span><span class="na">setRateLimiter</span><span class="o">(</span><span class="n">redisLimiterUser</span><span class="o">);</span>
+					<span class="o">})</span>
+					<span class="c1">//.filter(authFilter)</span>
+					<span class="c1">//.filter(timerFilter)</span>
+				<span class="o">)</span>
+				<span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://EUREKA-CLIENT"</span><span class="o">)</span>
+		<span class="o">).</span><span class="na">route</span><span class="o">(</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">"/secondkill/**"</span><span class="o">)</span>
+				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">method</span><span class="o">(</span><span class="nc">HttpMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>				<span class="o">.</span><span class="na">and</span><span class="o">().</span><span class="na">between</span><span class="o">(</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt</span><span class="o">,</span><span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)),</span><span class="nc">ZonedDateTime</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ldt2</span><span class="o">,</span><span class="nc">ZoneId</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"Asia/Shanghai"</span><span class="o">)))</span>
+				<span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span><span class="o">-&gt;</span><span class="n">f</span><span class="o">.</span><span class="na">stripPrefix</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">redirect</span><span class="o">(</span><span class="s">"304"</span><span class="o">,</span><span class="s">"https://www.icodingedu.com/"</span><span class="o">))</span>
+				<span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">"lb://FEIGN-CLIENT"</span><span class="o">)).</span><span class="na">build</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>启动eureka-server、eureka-client、gateway-server，启动redis，使用Apipost测试，</p>
+
+<p>正常访问</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-limit-1.png" alt="" /></p>
+
+<p>当我在1秒内点击多次请求，就会报429响应状态返回，限流成功</p>
+
+<p><img src="/assets/images/2022/springcloud/gateway-limit-2.png" alt="" /></p>
+
+
+
+            <div>
+   <!-- <p align="center">
+     	  
+         <img src="/assets/images/keeppuresmile.jpg" >
+         <br/>
+         微信扫描二维码，关注一个有故事的程序员
+        
+
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 11px;color: #cc0000;">
+       <strong>（转载本站文章请注明作者和出处 <a href="http://www.ityouknow.com">纯洁的微笑-ityouknow</a>）</strong>
+   </p>
+   <p align="center" style="margin-top: 15px; font-size: 16px;color: #337ab7;">
+       <strong><a href="http://www.justdojava.com/" target="_blank">点击了解 ：Java 技术人的网站</a></strong>
+   </p> -->
+</div>
+
+            <!-- Comments -->
+            <div class="comment">
+             
+
+  
+
+  
+        <div id="gitalk-container"></div>
+        <script src="/assets/js/gitalk.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+        <script>
+        var gitalk = new Gitalk({
+            id: '/icoding-gavin/2020/04/12/gavin-note-062.html',
+            clientID: '6cd8ad4d1cf1d1e6ad95',
+            clientSecret: 'c4ce22a25efe50bfd60da67c990b534bc99a6424',
+            repo: 'aikomj.github.io',
+            owner: 'aikomj',
+            admin: ['aikomj'],
+            labels: ['gitalk'],
+            perPage: 50,
+        })
+        gitalk.render('gitalk-container')
+        </script>
+  
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <h3>Post Directory</h3>
+<div id="post-directory-module">
+<section class="post-directory">
+    <!-- Links that trigger the jumping -->
+    <!-- Added by javascript below -->
+    <dl></dl>
+</section>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $( "article h2" ).each(function( index ) {
+            $(".post-directory dl").append("<dt><a class=\"jumper\" hre=#" +
+                    $(this).attr("id")
+                    + ">"
+                    + $(this).text()
+                    + "</a></dt>");
+
+            var children = $(this).nextUntil("h2", "h3")
+
+            children.each(function( index ) {
+                $(".post-directory dl").append("<dd><a class=\"jumper\" hre=#" +
+                        $(this).attr("id")
+                        + ">"
+                        + "&nbsp;&nbsp;- " + $(this).text()
+                        + "</a></dd>");
+            });
+        });
+
+        var fixmeTop = $('#post-directory-module').offset().top - 100;       // get initial position of the element
+
+        $(window).scroll(function() {                  // assign scroll event listener
+
+            var currentScroll = $(window).scrollTop(); // get current position
+
+            if (currentScroll >= fixmeTop) {           // apply position: fixed if you
+                $('#post-directory-module').css({      // scroll to that element or below it
+                    top: '100px',
+                    position: 'fixed',
+                    width: 'inherit'
+                });
+            } else {                                   // apply position: static
+                $('#post-directory-module').css({      // if you scroll above it
+                    position: 'inherit',
+                    width: 'inherit'
+                });
+            }
+
+        });
+
+        $("a.jumper").on("click", function( e ) {
+
+            e.preventDefault();
+
+            $("body, html").animate({
+                scrollTop: ($( $(this).attr('hre') ).offset().top - 100)
+            }, 600);
+
+        });
+    });
+
+</script>
+        </div>
+        
+
+    </div>
+     <!--<div class="asb-post-01">-->
+        <!--<div class="mask"></div>-->
+            <!--<div class="info">-->
+                <!--<div>扫码关注公众号：<span style="color: #E9405A; font-weight: bold;">纯洁的微笑</span></div>-->
+            <!--<div>-->
+            <!--<span>发送 </span><span class="token" style="color: #e9415a; font-weight: bold; font-size: 17px; margin-bottom: 45px;">290992</span>-->
+            <!--<div>-->
+                <!--即可<span style="color: #e9415a; font-weight: bold;">立即永久</span>解锁本站全部文章-->
+            <!--</div>-->
+            <!--<img class="code-img" style="width: 300px;display:unset" src="/assets/images/keeppuresmile.jpg">-->
+        <!--</div>-->
+    <!--</div>-->
+</article>
+
+        </div>
+
+    
+<footer class="container">
+    <div class="site-footer">
+       <!--  <div class="site-footer-icons">
+            <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+               知乎
+            </a>
+            <a target="_blank" href="http://weibo.com/ityouknow">
+               微博
+            </a>
+            <a target="_blank" href="https://github.com/ityouknow">
+                GitHub
+            </a>
+        </div> -->
+        <!-- <div class="card text-center">
+            <ul class="list-inline" style="margin-left: 0;">
+               <li>
+                <a target="_blank" href="https://github.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a target="_blank" href="https://www.zhihu.com/people/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa  fa-stack-1x fa-inverse">知</i>
+                  </span>
+                </a>
+              </li>
+                  <li>
+                <a target="_blank" href="https://weibo.com/ityouknow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          </ul>
+        </div> -->
+        <div class="site-footer-links mobile-hidden">
+            
+        </div>
+        <div class="scrolltop">
+            <a href="javascript:window.scrollTo(0,0)" >TOP</a>
+        </div>
+        <div class="rss">
+            <a href="/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a>
+            Power by <a href="https://github.com/DONGChuan/Yummy-Jekyll">Yummy Jekyll</a>
+        </div>
+    </div>
+    <!-- Third-Party JS -->
+    <script type="text/javascript" src="/bower_components/geopattern/js/geopattern.min.js"></script>
+    <!-- My JS -->
+    <script type="text/javascript" src="/assets/js/script.js"></script>
+    
+    
+     <!-- Cnzz Analytics -->
+       <div style="display:none">
+         <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260945749'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260945749' type='text/javascript'%3E%3C/script%3E"));</script>
+       </div>
+     <!-- Cnzz Analytics -->
+</footer>
+
+
+    </body>
+
+</html>

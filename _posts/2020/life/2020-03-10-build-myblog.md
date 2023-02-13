@@ -2,9 +2,9 @@
 layout: post
 title: Jekyll搭建自己的个人博客
 category: life
-tags: [java]
+tags: [life]
 keywords: blog
-excerpt: Jekyll静态博客
+excerpt: Jekyll静态博客，markdown文档转换为html文件
 lock: noneed
 ---
 
