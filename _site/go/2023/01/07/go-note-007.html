@@ -394,7 +394,21 @@
 变量a的值： 20
 </code></pre></div></div>
 
-<p><img src="/assets/images/2022/go/zhizhen.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/zhizhen.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/zhizhen.png" alt="" /></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>指针的概念
+b的内存地址0x111111111,值：500，var b int <span class="o">=</span> 500
+a指针变量，指向了内存地址0x111111111,
+变量a持有了变量b的地址，这就是a指向了b
+</code></pre></div></div>
+
+<p>&amp;取地址符</p>
+
+<p><img src="/assets/images/2023/go/zhizhen-1.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/zhizhen-1.png" alt="" /></p>
 
 <h2 id="2指针的使用">2、指针的使用</h2>
 
@@ -416,9 +430,9 @@
 	<span class="c">// 给指针变量赋值内存地址</span>
 	<span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span>
 
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"指针变量p存储的内存地址："</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"指针变量p的内存地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*p变量的值："</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"指针变量p存储的内存地址："</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="c">// a的内存地址</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"指针变量p的内存地址："</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span> <span class="c">// p的内存地址</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"*p变量的值："</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="c">// a的值</span>
 
 	<span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="m">20</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"a变量的值："</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
@@ -457,7 +471,9 @@ a变量的值： 100
 <span class="k">*</span>p变量的值 100
 </code></pre></div></div>
 
-<p><strong>go语言使用指针就很方便的操作其他变量，尽管那个变量不可以直接访问，但是可以通过指针指向那个变量的值来进行修改</strong></p>
+<p><strong>go语言使用指针就很方便的操作其他变量，尽管那个变量不可以直接访问，但是可以通过指针指向那个变量的值来进行修改</strong>。</p>
+
+<p>指针是特殊的变量，它存储的是别的变量的内存地址，它可以操控别的变量</p>
 
 <h2 id="3指针与数组">3、指针与数组</h2>
 
@@ -468,7 +484,7 @@ a变量的值： 100
     <p>数组指针：指向一个数组的指针</p>
 
     <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-	<span class="c">// 定义一个数组</span>
+	<span class="c">// 定义一个数组，有固定的长度4</span>
 	<span class="k">var</span> <span class="n">arr1</span> <span class="o">=</span> <span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">}</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"arr1的地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr1</span><span class="p">)</span>
 	<span class="c">// 声明一个指针，指向数组arr1</span>
@@ -490,6 +506,8 @@ a变量的值： 100
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">*</span><span class="n">p1</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>    </div>
+
+    <p><mark>指针指向谁就代表谁</mark></p>
 
     <p>执行结果：</p>
 
@@ -519,11 +537,11 @@ p1-&gt;地址-&gt;值： <span class="o">[</span>1 2 3 4]
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr2</span><span class="p">)</span>
 	<span class="c">// 通过指针修改数组元素指向的变量</span>
 	<span class="o">*</span><span class="n">arr2</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="o">=</span> <span class="m">500</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="c">// 500</span>
   
 	<span class="c">// 修改变量a,通过指针来获取值</span>
 	<span class="n">a</span> <span class="o">=</span> <span class="m">100</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">*</span><span class="n">arr2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="o">*</span><span class="n">arr2</span><span class="p">[</span><span class="m">0</span><span class="p">])</span> <span class="c">// 100</span>
 <span class="p">}</span>
   
 </code></pre></div>    </div>
@@ -609,9 +627,13 @@ ptr: 0xc0000ac008
 
 <p>使用的时候，只需要注意一个点：<mark>指针指向了谁</mark></p>
 
+<p>什么时候定义的变量会销毁，没有任何东西指向它的时候，垃圾回收器GC就会回收它。</p>
+
 <h2 id="5结构体的定义与使用">5、结构体的定义与使用</h2>
 
-<p>我觉得结构体的概念来源于C中的结构体，就相当于Java里封装一个实体类(PO,DTO,VO)，一个对象</p>
+<p>我觉得结构体的概念来源于C中的结构体，就相当于Java里封装一个实体类(PO,DTO,VO)，一个对象。</p>
+
+<p><mark>面向对象思维OOP：将世界上的所有东西，抽象成一个个的类（属性、方法）</mark></p>
 
 <p>go语言中：</p>
 
@@ -661,7 +683,7 @@ ptr: 0xc0000ac008
 	<span class="k">var</span> <span class="n">user1</span> <span class="n">User</span>
 	<span class="c">// 打印，发现对象user1的成员变量是有默认值的，int默认0,string默认空字符串</span>
   <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span> <span class="c">// { 0 }</span>
-	<span class="c">// 赋值</span>
+	<span class="c">// 赋值，xxx.属性 = 值</span>
 	<span class="n">user1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
 	<span class="n">user1</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">18</span>
 	<span class="n">user1</span><span class="o">.</span><span class="n">sex</span> <span class="o">=</span> <span class="s">"男"</span>
@@ -736,7 +758,7 @@ feige
 	<span class="n">user3</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"zhangsan"</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">user1</span><span class="p">)</span> <span class="c">// user1的name变为zhangsan</span>
 
-	<span class="c">//  new 创建结构体，返回结构体指针</span>
+	<span class="c">//  new 创建结构体，返回结构体指针，突破了结构体是</span>
 	<span class="n">user4</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
 	<span class="c">// 打印user4的数据类型，它是结构体User指针</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">user4</span><span class="p">)</span> <span class="c">// User类型指针</span>
@@ -756,9 +778,23 @@ feige
 &amp;<span class="o">{</span>qinjiang 18 <span class="o">}</span>
 </code></pre></div></div>
 
+<blockquote>
+  <p>new 源码</p>
+</blockquote>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// The new built-in function allocates memory. The first argument is a type,</span>
+<span class="c">// not a value, and the value returned is a pointer to a newly</span>
+<span class="c">// allocated zero value of that type.</span>
+<span class="k">func</span> <span class="nb">new</span><span class="p">(</span><span class="n">Type</span><span class="p">)</span> <span class="o">*</span><span class="n">Type</span>
+</code></pre></div></div>
+
+<p>返回该类型的指针</p>
+
 <h2 id="7匿名结构体">7、匿名结构体</h2>
 
-<p>匿名变量，匿名函数，匿名结构体</p>
+<blockquote>
+  <p>匿名变量，匿名函数，匿名结构体，匿名字段</p>
+</blockquote>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 定义结构体</span>
 <span class="k">type</span> <span class="n">Student</span> <span class="k">struct</span> <span class="p">{</span>
@@ -809,7 +845,7 @@ qinjiang
 <span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
 	<span class="n">name</span> <span class="kt">string</span>
 	<span class="n">age</span>  <span class="kt">int</span>
-	<span class="c">// 结构体嵌套</span>
+	<span class="c">// 结构体嵌套,has a 关系</span>
 	<span class="n">addr</span> <span class="n">Address</span>
 <span class="p">}</span>
 
@@ -830,25 +866,27 @@ qinjiang
 <span class="o">{</span>广州 中国<span class="o">}</span>
 </code></pre></div></div>
 
-<h2 id="9结构体导出">9、结构体导出</h2>
+<h2 id="9结构体导出访问">9、结构体导出访问</h2>
 
 <ul>
   <li>如果结构体名称首字母小写，这结构体不会被导出</li>
-  <li>如果结构体名称首字母大写，则结构体可被导出，但只会到处大写首字母的成员字段，那些小写首字母的成员字段不会被导出</li>
+  <li>如果结构体名称首字母大写，则结构体可被导出，但只会导出大写首字母的成员字段，那些小写首字母的成员字段不会被导出</li>
   <li>如果存在嵌套结构体，即使嵌套的结构体字段首字母小写，外部也能访问到其中首字母大写的成员字段</li>
 </ul>
 
-<p>正常开发，会把结构体放到一个独立的package中</p>
+<p>正常开发，会把结构体放到一个独立的package包中</p>
 
-<p><img src="/assets/images/2022/go/user-struct.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/user-struct.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/user-struct.png" alt="" /></p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">pojo</span>
 
-<span class="c">// 大写首字母就是外部可以访问的 public</span>
+<span class="c">// 大写首字母就是外部可以访问的，相当于java的public</span>
 <span class="k">type</span> <span class="n">User</span> <span class="k">struct</span> <span class="p">{</span>
-	<span class="n">Name</span>  <span class="kt">string</span>
-	<span class="n">age</span>   <span class="kt">int</span> <span class="c">// 小写首字母字段外部不可以访问</span>
-	<span class="n">Money</span> <span class="kt">string</span>
+	<span class="n">Name</span>  <span class="kt">string</span> <span class="c">// 大写首字母字段外部包可以访问使用（导出）</span>
+	<span class="n">age</span>   <span class="kt">int</span> <span class="c">// 小写首字母字段外部包不可以访问使用（不能导出）</span>
+	<span class="n">Money</span> <span class="kt">string</span> <span class="c">// 大写首字母字段外部包可以访问使用（导出）</span>
 <span class="p">}</span>
 
 <span class="c">// 小写首字母，外部不可以访问的，private</span>
@@ -864,6 +902,7 @@ qinjiang
 <span class="k">import</span> <span class="s">"./pojo"</span>
 <span class="k">import</span> <span class="s">"fmt"</span>
 
+<span class="c">// 程序入口</span>
 <span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">user1</span> <span class="o">:=</span> <span class="n">pojo</span><span class="o">.</span><span class="n">User</span><span class="p">{}</span>
 	<span class="n">user1</span><span class="o">.</span><span class="n">Name</span> <span class="o">=</span> <span class="s">"kuangshen"</span>
@@ -878,7 +917,9 @@ qinjiang
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>kuangshen 0 99999<span class="o">}</span>  // age是小写首字母字段，外部不可以访问，无法赋值，int 默认0
 </code></pre></div></div>
 
-<p><img src="/assets/images/2022/go/user-struct-2.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/user-struct-2.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/user-struct-2.png" alt="" /></p>
 
 
             <div>

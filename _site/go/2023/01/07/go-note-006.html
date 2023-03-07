@@ -551,7 +551,7 @@ len:13,cap:24
   <li>切片扩容完成，重新指向一个新的底层数组</li>
 </ul>
 
-<p><img src="/assets/images/2022/go/slice-2.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/slice-2.png" alt="" /></p>
 
 <p><img src="../../../assets/images/2023/go/slice-2.png" alt="" /></p>
 
@@ -565,30 +565,39 @@ len:13,cap:24
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">arr</span> <span class="o">:=</span> <span class="p">[</span><span class="m">10</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="m">8</span><span class="p">}</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"通过数组创建切片"</span><span class="p">)</span>
+  <span class="c">// 通过数组创建切片</span>
 	<span class="n">s1</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="o">:</span><span class="m">5</span><span class="p">]</span> <span class="c">// 下标从0到5，不包括5</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>  <span class="c">// 长度5，容量10</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
 
 	<span class="n">s2</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="m">5</span><span class="o">:</span><span class="p">]</span> <span class="c">// 从下标5到末尾</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
 
 	<span class="n">s3</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="m">3</span><span class="o">:</span><span class="m">8</span><span class="p">]</span> <span class="c">// 从下标3到8</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s3</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s3</span><span class="p">))</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s3</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
 
 	<span class="n">s4</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="o">:</span><span class="p">]</span> <span class="c">// 整个数组</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s4</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s4</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s4</span><span class="p">))</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片的内存地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s4</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"数组的内存地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s4</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
 
 	<span class="n">s1</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片s1扩容后的内存地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="c">// 扩容后，切片指向新的底层数组</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"数组的内存地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+  
+  <span class="c">// 修改原数组的内容，切片也会发生变化,说明切片指向的底层数组还是原数组</span>
+	<span class="n">arr</span><span class="p">[</span><span class="m">2</span><span class="p">]</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">arr</span><span class="p">[</span><span class="m">7</span><span class="p">]</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s4</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
@@ -597,20 +606,91 @@ len:13,cap:24
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>通过数组创建切片
 <span class="o">[</span>1 2 3 4 5]
 len:5,cap:10
-0xc0000280f0
+切片内存地址：0xc0000280f0，数组内存地址:0xc0000280f0
 <span class="o">[</span>6 7 8 0 0]
 len:5,cap:5
-0xc000028118
+切片内存地址：0xc000028118，数组内存地址:0xc0000280f0
 <span class="o">[</span>4 5 6 7 8]
 len:5,cap:7
-0xc000028108
+切片内存地址：0xc000028108，数组内存地址:0xc0000280f0
 <span class="o">[</span>1 2 3 4 5 6 7 8 0 0]
 len:10,cap:10
-切片的内存地址：0xc0000280f0
-数组的内存地址：0xc0000280f0
+切片内存地址：0xc0000280f0，数组内存地址:0xc0000280f0
 切片s1扩容后的内存地址：0xc00007c000
 数组的内存地址：0xc0000280f0
+<span class="o">[</span>1 2 100 4 5 6 7 100 0 0]
+<span class="o">[</span>1 2 3 4 5 1 1 1 1 1 1 1]
+<span class="o">[</span>6 7 100 0 0]
+<span class="o">[</span>4 5 6 7 100]
+<span class="o">[</span>1 2 100 4 5 6 7 100 0 0]
 </code></pre></div></div>
+
+<p>可以发现，切片没有截断数组的情况下，切片只需指向原数组</p>
+
+<p><mark>切片本身不保存数组</mark>，只是做指向</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">arr</span> <span class="o">:=</span> <span class="p">[</span><span class="m">10</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="m">8</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"通过数组创建切片"</span><span class="p">)</span>
+	<span class="n">s1</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="o">:</span><span class="m">5</span><span class="p">]</span> <span class="c">// 下标从0到5，不包括5</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+
+	<span class="n">s2</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="m">5</span><span class="o">:</span><span class="p">]</span> <span class="c">// 从下标5到末尾</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+
+	<span class="n">s3</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="m">3</span><span class="o">:</span><span class="m">8</span><span class="p">]</span> <span class="c">// 从下标3到8</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s3</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s3</span><span class="p">))</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+
+	<span class="n">s4</span> <span class="o">:=</span> <span class="n">arr</span><span class="p">[</span><span class="o">:</span><span class="p">]</span> <span class="c">// 整个数组</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s4</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"len:%d,cap:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s4</span><span class="p">),</span> <span class="nb">cap</span><span class="p">(</span><span class="n">s4</span><span class="p">))</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片内存地址：%p，数组内存地址:%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s4</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+
+	<span class="n">s1</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span> <span class="c">// 没有扩容</span>
+	<span class="c">// s1 = append(s1, 1, 1, 1, 1, 1, 1, 1)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"切片s1扩容后的内存地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span> <span class="c">// 扩容后，切片指向新的底层数组</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"数组的内存地址：%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">)</span>
+
+	<span class="c">// 修改原数组的内容，切片也会发生变化</span>
+	<span class="n">arr</span><span class="p">[</span><span class="m">2</span><span class="p">]</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">arr</span><span class="p">[</span><span class="m">7</span><span class="p">]</span> <span class="o">=</span> <span class="m">100</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s4</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>执行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>通过数组创建切片
+<span class="o">[</span>1 2 3 4 5]
+len:5,cap:10
+切片内存地址：0xc0000b6000，数组内存地址:0xc0000b6000
+<span class="o">[</span>6 7 8 0 0]
+len:5,cap:5
+切片内存地址：0xc0000b6028，数组内存地址:0xc0000b6000
+<span class="o">[</span>4 5 6 7 8]
+len:5,cap:7
+切片内存地址：0xc0000b6018，数组内存地址:0xc0000b6000
+<span class="o">[</span>1 2 3 4 5 6 7 8 0 0]
+len:10,cap:10
+切片内存地址：0xc0000b6000，数组内存地址:0xc0000b6000
+切片s1扩容后的内存地址：0xc0000b6000
+数组的内存地址：0xc0000b6000
+<span class="o">[</span>1 2 100 4 5 1 1 100 0 0]
+<span class="o">[</span>1 2 100 4 5 1 1 100]
+<span class="o">[</span>1 1 100 0 0]
+<span class="o">[</span>4 5 1 1 100]
+<span class="o">[</span>1 2 100 4 5 1 1 100 0 0]
+</code></pre></div></div>
+
+<p>发现，切片没有扩容的情况下，底层指向的是原数组，修改切片的值，原数组的值也会发生变化，指向同一个底层数组的切片，根据下标获取的值也会发生变化</p>
 
 <h3 id="切片是引用类型">切片是引用类型</h3>
 
@@ -623,7 +703,7 @@ len:10,cap:10
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%p,%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">arr2</span><span class="p">)</span> <span class="c">// 不同的内存地址</span>
 
-	<span class="c">// 引用类型</span>
+	<span class="c">// 引用类型，指向同一个内存地址</span>
 	<span class="n">s1</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">}</span>
 	<span class="n">s2</span> <span class="o">:=</span> <span class="n">s1</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
@@ -651,16 +731,14 @@ len:10,cap:10
   <li>值类型的数据，默认都是深拷贝：array数组，int，float，string，bool,struct结构体</li>
 </ul>
 
-<p>浅拷贝：拷贝的是数据地址，会导致多个变量指向同一块内存地址</p>
+<p><strong>浅拷贝：拷贝的是数据地址，会导致多个变量指向同一块内存地址</strong></p>
 
 <ul>
   <li>引用类型的数据默认都是浅拷贝：slice，map</li>
   <li>切片是引用类型，直接拷贝的是地址</li>
 </ul>
 
-<blockquote>
-  <p>实现切片深拷贝</p>
-</blockquote>
+<h3 id="实现切片深拷贝">实现切片深拷贝</h3>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">s1</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">}</span>
@@ -689,17 +767,22 @@ len:10,cap:10
 <span class="o">[</span>4 5 6 4]
 </code></pre></div></div>
 
+<h3 id="切片本质是指针变量">切片本质是指针变量</h3>
+
 <h2 id="2map讲解">2、Map讲解</h2>
 
 <p>跟java的Map一样，是一种无序的键值对集合，Map最重要的一点是通过key来快速检索数据</p>
 
 <p>Map是一种集合，我们可以像遍历数组和切片那样遍历它</p>
 
-<h3 id="map的初始化">Map的初始化</h3>
+<h3 id="map的声明与初始化">Map的声明与初始化</h3>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="c">// map类型的定义,格式 map[key]value</span>
 	<span class="k">var</span> <span class="n">map1</span> <span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">string</span> <span class="c">// 声明 map1对象还没有创建 等于 nil</span>
+  <span class="k">if</span> <span class="n">map1</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"map1为空"</span><span class="p">)</span>
+	<span class="p">}</span>
 	<span class="c">// make函数定义map</span>
 	<span class="k">var</span> <span class="n">map2</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span> <span class="c">// map2对象已经创建，里面没有元素</span>
 	<span class="c">// 初始化数据创建map</span>
@@ -711,6 +794,7 @@ len:10,cap:10
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">map1</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">map2</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">map3</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">map3</span><span class="p">)</span> <span class="c">// 打印数据类型</span>
 
 	<span class="c">// 判断对象是否为空 nil 相当于java的null</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">map1</span> <span class="o">==</span> <span class="no">nil</span><span class="p">)</span> <span class="c">// true map1对象还没有创建</span>
@@ -729,10 +813,16 @@ false</span>
 
 <h3 id="map的使用">Map的使用</h3>
 
+<ul>
+  <li>创建并初始化 make</li>
+  <li>map[key]=value，将value赋值给对应map的key</li>
+  <li>判断key是否存在，value, ok</li>
+</ul>
+
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="c">// 声明 ，还没有创建对象，等于nil</span>
 	<span class="k">var</span> <span class="n">map1</span> <span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">string</span>
-	<span class="c">// 创建对象</span>
+	<span class="c">// 创建</span>
 	<span class="n">map1</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span>
 
 	<span class="c">// 存储键值对</span>
@@ -783,6 +873,8 @@ map[3:kuangshen 5:feige]
 
 <h3 id="map的遍历">Map的遍历</h3>
 
+<p>rang遍历</p>
+
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="k">var</span> <span class="n">map1</span> <span class="o">=</span> <span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="s">"Go"</span><span class="o">:</span> <span class="m">100</span><span class="p">,</span> <span class="s">"Java"</span><span class="o">:</span> <span class="m">90</span><span class="p">,</span> <span class="s">"Python"</span><span class="o">:</span> <span class="m">89</span><span class="p">}</span>
 
@@ -803,13 +895,13 @@ Java 90
 <p>使用map过程中要注意的几点：</p>
 
 <ul>
-  <li>map是无序的</li>
+  <li>map是无序的，每次打印出来的map可能都不一样</li>
   <li>map的长度是不固定的，和切片slice一样，是一种引用类型</li>
   <li>内置的len函数返回map的key的数量</li>
   <li>map的key是所有可比较的类型，如bool、整型、string、float</li>
 </ul>
 
-<h2 id="3整合案例">3、整合案例</h2>
+<h2 id="3整合切片与map">3、整合切片与Map</h2>
 
 <p>需求：</p>
 

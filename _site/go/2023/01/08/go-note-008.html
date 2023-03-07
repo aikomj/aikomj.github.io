@@ -363,7 +363,13 @@
 
 <p>面向对象编程思想，go语言不是面向对象的语言，无法像Java 定义Class来封装一个类，但是通过理解面向对象思想，go可以通过一些方法来<mark>模拟面向对象</mark></p>
 
-<p>“物以类聚”</p>
+<p>面向对象就是把所有东西都分析拆解成一个个的类（属性、方法）</p>
+
+<p><code class="highlighter-rouge">物以类聚</code>,oop就是拟人化的思想，</p>
+
+<p>类：抽象的模版，定义一个类（属性、方法），实例化出来一个对象（具体的），</p>
+
+<p>面向对象的三大核心：封装、继承、多态</p>
 
 <ul>
   <li>语句多了，函数出现了</li>
@@ -385,23 +391,39 @@
 
 <p>这样就可以形成很好的协作分工，比如架构师分了10个类，然后将10个类交给10个人分别进行详细设计和编码。</p>
 
-<p>显然面向对象适合处理复杂的问题可，适合处理需要多人协作的问题</p>
+<p>显然面向对象适合处理复杂的问题，适合处理需要多人协作的问题</p>
 
 <p><mark>一个复杂的项目，我们先从宏观上进行分析，使用面向对象的思路来拆分整个系统，拆分出功能接口，每个接口仍然需要面向过程的思路去处理</mark></p>
 
-<p>面向对象的三大特征：</p>
+<p>面向对象：可以解决复杂的问题，将现实中的问题，拟人化（用人的思想去解决），适合多人协作</p>
+
+<p>面向过程：适合解决简单的问题，个人就可以完成</p>
+
+<p>面向对象的核心三大特征：</p>
 
 <ol>
-  <li>封装</li>
-  <li>继承</li>
-  <li>多态（接口，不同的实现类）</li>
+  <li>
+    <p>封装</p>
+
+    <p>模版-产出商品（对象）</p>
+  </li>
+  <li>
+    <p>继承</p>
+
+    <p>生物，大型物种</p>
+  </li>
+  <li>
+    <p>多态（接口，不同的实现类）</p>
+
+    <p>一个事物可能有多种形态，比如 动物（猫、狗）</p>
+  </li>
 </ol>
 
 <h2 id="2继承与提升字段">2、继承与提升字段</h2>
 
-<p>子结构体嵌套了父结构体做为匿名字段，父结构体的属性就叫做提升字段，可以直接访问</p>
+<p><strong>子结构体嵌套了父结构体做为匿名字段，父结构体的属性就叫做提升字段，可以直接访问</strong></p>
 
-<p>Go 模拟继承的方法</p>
+<p>Go 模拟继承的方法：结构体嵌套，使用匿名字段实现继承</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/**
 Go 语言的结构体嵌套
@@ -435,7 +457,7 @@ type D struct{
 
 <span class="c">// 2、定义一个子类，结构体</span>
 <span class="k">type</span> <span class="n">Student</span> <span class="k">struct</span> <span class="p">{</span>
-	<span class="n">Person</span> <span class="c">// 匿名字段</span>
+	<span class="n">Person</span> <span class="c">// 匿名字段，继承了结构体Person</span>
 	<span class="n">school</span> <span class="kt">string</span>
 <span class="p">}</span>
 
@@ -466,7 +488,15 @@ type D struct{
 <span class="o">{</span> <span class="o">{</span>feige 0<span class="o">}</span> 北大<span class="o">}</span>
 </code></pre></div></div>
 
+<blockquote>
+  <p>go里，结构体可以是多继承的，而java只能单继承</p>
+</blockquote>
+
+<p>继承让子结构体拥有了父结构体的属性和方法。</p>
+
 <h2 id="3方法讲解">3、方法讲解</h2>
+
+<h3 id="与函数的区别">与函数的区别</h3>
 
 <p>Go语言中同时拥有函数和方法</p>
 
@@ -497,13 +527,15 @@ type D struct{
 
 <p>方法是有调用者对象的，而函数没有。</p>
 
+<h3 id="定义结构体的方法">定义结构体的方法</h3>
+
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Dog</span> <span class="k">struct</span> <span class="p">{</span>
 	<span class="n">name</span> <span class="kt">string</span>
 	<span class="n">age</span>  <span class="kt">int</span>
 <span class="p">}</span>
 
 <span class="c">// 方法定义，指定结构体接受者是Dog</span>
-<span class="k">func</span> <span class="p">(</span><span class="n">dog</span> <span class="n">Dog</span><span class="p">)</span> <span class="n">eat</span><span class="p">()</span> <span class="p">{</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">dog</span> <span class="n">Dog</span><span class="p">)</span> <span class="n">eat</span><span class="p">()</span> <span class="p">{</span> <span class="c">// </span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Dog eating"</span><span class="p">)</span>
 <span class="p">}</span>
 
@@ -518,7 +550,7 @@ type D struct{
 <span class="p">}</span>
 
 <span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-	<span class="c">// 结构体有了属性和方法，就模拟了面向对象语言的Class 有成员变量和方法 了</span>
+	<span class="c">// 结构体有了属性和方法，就是模拟了面向对象语言的Class 有成员变量和方法了</span>
 	<span class="n">dog</span> <span class="o">:=</span> <span class="n">Dog</span><span class="p">{</span><span class="s">"旺财"</span><span class="p">,</span> <span class="m">2</span><span class="p">}</span>
 	<span class="n">dog</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
 
@@ -531,6 +563,177 @@ type D struct{
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Dog eating
 Cat eating
 </code></pre></div></div>
+
+<p>函数同一个包中，不能重名，方法可以重名，只要属于不同的结构体调用者</p>
+
+<p><strong>方法必须依赖对象的存在</strong></p>
+
+<h3 id="值接收者与指针接收者">值接收者与指针接收者</h3>
+
+<p>原文：<a href="https://cloud.tencent.com/developer/article/2196117">https://cloud.tencent.com/developer/article/2196117</a></p>
+
+<p>直接上代码，看执行结果</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+   <span class="n">name</span> <span class="kt">string</span>
+   <span class="n">age</span>  <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="c">// 值针接收者</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">Person</span><span class="p">)</span> <span class="n">GetName</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+<span class="p">}</span>
+
+<span class="c">// 指针接收者</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Person</span><span class="p">)</span> <span class="n">GetAge</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="c">//  定义了一个【值类型】的Person对象</span>
+   <span class="n">t</span> <span class="o">:=</span> <span class="n">Person</span><span class="p">{</span>
+      <span class="n">name</span><span class="o">:</span> <span class="s">"DaYu"</span><span class="p">,</span>
+      <span class="n">age</span><span class="o">:</span>  <span class="kt">int</span><span class="p">(</span><span class="m">28</span><span class="p">),</span>
+   <span class="p">}</span>
+   <span class="c">// 调用值方法</span>
+   <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">GetName</span><span class="p">())</span>
+   <span class="c">// 调用指针方法</span>
+   <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">GetAge</span><span class="p">())</span>
+<span class="p">}</span>
+
+<span class="o">-----</span><span class="n">运行结果</span><span class="o">------</span>
+<span class="n">DaYu</span>
+<span class="m">28</span>
+</code></pre></div></div>
+
+<p>修改为指针类型变量</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+   <span class="n">name</span> <span class="kt">string</span>
+   <span class="n">age</span>  <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Person</span><span class="p">)</span> <span class="n">GetName</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">Person</span><span class="p">)</span> <span class="n">GetAge</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="c">// 注意，其它地方都没有改，只是这里改变了类型</span>
+   <span class="n">t</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">Person</span><span class="p">{</span>
+      <span class="n">name</span><span class="o">:</span> <span class="s">"DaYu"</span><span class="p">,</span>
+      <span class="n">age</span><span class="o">:</span>  <span class="kt">int</span><span class="p">(</span><span class="m">28</span><span class="p">),</span>
+   <span class="p">}</span>
+   <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">GetName</span><span class="p">())</span>
+   <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">GetAge</span><span class="p">())</span>
+<span class="p">}</span>
+
+<span class="o">-----</span><span class="n">运行结果</span><span class="o">-------</span>
+<span class="n">DaYu</span>
+<span class="m">28</span>
+</code></pre></div></div>
+
+<ul>
+  <li>值类型变量，可以调用值接收的方法，也可以调用指针接收者的方法；</li>
+  <li>指针类型变量，可以调用值接收的方法，也可以调用指针接收者的方法。</li>
+</ul>
+
+<p>看起来没有差别，用结构体Person声明值类型变量或者指针类型变量的时候，如果用接口声明变量，结构体Person实现了某个接口，就是面向对象的的多态特性，代码如下：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 新增的接口</span>
+<span class="k">type</span> <span class="n">Animal</span> <span class="k">interface</span> <span class="p">{</span>
+   <span class="n">GetName</span><span class="p">()</span> <span class="kt">string</span>
+   <span class="n">GetAge</span><span class="p">()</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+   <span class="n">name</span> <span class="kt">string</span>
+   <span class="n">age</span>  <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Person</span><span class="p">)</span> <span class="n">GetName</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">Person</span><span class="p">)</span> <span class="n">GetAge</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="c">// 定义的接口变量</span>
+   <span class="k">var</span> <span class="n">ani</span> <span class="n">Animal</span>
+
+   <span class="c">// person 实现了 Animal 接口，赋值给了 ani 变量</span>
+   <span class="c">// 但是，这里编译会通不过，错误如下：</span>
+   <span class="c">// Cannot use 'Person{ name: "DaYu", age: int(28), }' (type Person) as the type Animal Type does not implement 'Animal' as the 'GetName' method has a pointer receiver</span>
+   <span class="n">ani</span> <span class="o">=</span> <span class="n">Person</span><span class="p">{</span>
+      <span class="n">name</span><span class="o">:</span> <span class="s">"DaYu"</span><span class="p">,</span>
+      <span class="n">age</span><span class="o">:</span>  <span class="kt">int</span><span class="p">(</span><span class="m">28</span><span class="p">),</span>
+   <span class="p">}</span>
+
+   <span class="n">ani</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span>
+   <span class="n">ani</span><span class="o">.</span><span class="n">GetAge</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>错误提醒很明显了：Person 没有实现 Animal 的 GetName 方法。因为在上面的代码中，我们实现 GetName 方法的是 (*Person) 类型。</p>
+
+<p>但是为什么 GetAge 方法不报错呢？那是因为 Go 里边对于 (Type)Method 的方法，会自动让他拥有 (*Type)Method 方法的能力。</p>
+
+<p>总结一下，实现接口时有下面的约束：</p>
+
+<ul>
+  <li>如果定义的是 (Type)Method，则该类型会隐式的声明一个 (*Type)Method；</li>
+  <li>如果定义的是 (*Type)Method ，则不会隐式什么一个 (Type)Method。</li>
+</ul>
+
+<p>我们知道深拷贝是拷贝数据本身（值类型传参），浅拷贝是拷贝内存地址（引用类型传参）</p>
+
+<p>如果使用值类型接收者，方法内部对接收者的属性改变是，接收者本身是不会改变，看代码：</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Animal</span> <span class="k">interface</span> <span class="p">{</span>
+	<span class="n">GetName</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="n">GetAge</span><span class="p">()</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">type</span> <span class="n">Person</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">name</span> <span class="kt">string</span>
+	<span class="n">age</span> <span class="kt">int</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="n">Person</span><span class="p">)</span> <span class="n">GetName</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+	<span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"rex"</span>
+	<span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">p</span> <span class="o">*</span><span class="n">Person</span><span class="p">)</span> <span class="n">GetAge</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="n">p</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">11</span>
+	<span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span>  <span class="p">{</span>
+	<span class="c">//var ani Animal</span>
+	<span class="n">ani</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="n">Person</span><span class="p">{</span><span class="s">"dayu"</span><span class="p">,</span><span class="m">10</span><span class="p">}</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">ani</span><span class="o">.</span><span class="n">GetName</span><span class="p">())</span> <span class="c">// 方法内部，改变了ani的属性name的值</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">ani</span><span class="o">.</span><span class="n">GetAge</span><span class="p">())</span> <span class="c">// 方法内部，改变了ani的属性age的值</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">ani</span><span class="p">)</span> <span class="c">// ani的属性name不变，age改变了</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="/assets/images/2023/go/struct-func-1.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/struct-func-1.png" alt="" /></p>
+
+<p>所以我们使用指针类型接收者，为了避免：</p>
+
+<ul>
+  <li>方法内部对接收者的属性值的改变，接收者本身不改变的问题出现，因为结构体是值类型，并非引用类型。</li>
+</ul>
 
 <h2 id="4方法重写">4、方法重写</h2>
 
@@ -590,17 +793,25 @@ Cat eating
 喵喵 miao miao 
 </code></pre></div></div>
 
-<p>疑问：怎么在子结构体中调用父结构体的方法</p>
+<p>疑问：怎么在子结构体中调用父结构体的方法。</p>
+
+<h3 id="多态">多态</h3>
+
+<p>一个事物拥有多种形态，</p>
+
+<p>模糊  类 具体 对象</p>
 
 <h2 id="5接口实现">5、接口实现</h2>
 
-<p>接口只做方法定义，不做具体的方法实现</p>
+<p><strong>接口只做方法定义，不做具体的方法实现</strong></p>
 
-<p>go语言里结构体不用显示的用implement声明自己实现了某个接口，<mark>只要他实现了接口定义的全部方法，那他就是实现了这个接口</mark></p>
+<p>面向对象语言里使用implement显示声明类实现接口，Go语言里结构体不用显示的用implement声明自己实现了某个接口，<mark>只要他实现了接口定义的全部方法，那他就是实现了这个接口</mark></p>
 
-<p><img src="/assets/images/2022/go/interface-1.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/interface-1.png" alt="" /></p>
 
-<p>例子：</p>
+<p><img src="../../../assets/images/2023/go/interface-1.png" alt="" /></p>
+
+<p>1例子：</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">USB</span> <span class="k">interface</span> <span class="p">{</span>
 	<span class="n">oInput</span><span class="p">()</span>
@@ -678,7 +889,7 @@ Cat eating
 <p>go语言中非常重要的一个概念：<mark>空接口</mark>，相当于Java里的Object，它是所有数据类型的父类</p>
 
 <ul>
-  <li>不包含任何的方法，正因为如此，<mark>所有的类型都实现了空接口</mark>，<strong>因此空接口可以存储任意类型的数值</strong></li>
+  <li>不包含任何的方法，正因为如此，<mark>所有的类型都实现了空接口，因此空接口可以存储任意类型的数值</mark></li>
 </ul>
 
 <p>fmt包的Println()方法中的参数a就是一个空接口</p>
@@ -687,7 +898,7 @@ Cat eating
 	<span class="k">return</span> <span class="n">Fprintln</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdout</span><span class="p">,</span> <span class="n">a</span><span class="o">...</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="k">type</span> <span class="n">any</span> <span class="o">=</span> <span class="k">interface</span><span class="p">{}</span>
+<span class="k">type</span> <span class="n">any</span> <span class="o">=</span> <span class="k">interface</span><span class="p">{}</span> <span class="c">// 空接口的别名是any</span>
 </code></pre></div></div>
 
 <p>map[string]interface{} value是空接口，相当于Java的Map&lt;String,Object&gt;</p>
@@ -729,7 +940,8 @@ Cat eating
 	<span class="n">test</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span> <span class="c">// 实现多态</span>
 
 	<span class="c">// map[string]interface{} value是空接口，相当于Java的Map&lt;String,Object&gt;</span>
-	<span class="n">map1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span>
+	<span class="n">map1</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="k">interface</span><span class="p">{})</span> 
+  <span class="n">map2</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="n">any</span><span class="p">)</span>
 	<span class="n">map1</span><span class="p">[</span><span class="s">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"qinjiang"</span>
 	<span class="n">map1</span><span class="p">[</span><span class="s">"age"</span><span class="p">]</span> <span class="o">=</span> <span class="m">18</span>
 	<span class="n">map1</span><span class="p">[</span><span class="s">"dog"</span><span class="p">]</span> <span class="o">=</span> <span class="n">a1</span>
@@ -782,11 +994,11 @@ map[age:18 dog:<span class="o">{</span>旺财<span class="o">}</span> name:qinji
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">"testing3"</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="k">func</span> <span class="p">(</span><span class="n">d</span> <span class="n">Dog</span><span class="p">)</span> <span class="n">test2</span><span class="p">()</span> <span class="p">{</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">d</span> <span class="n">Dog</span><span class="p">)</span> <span class="n">test2</span><span class="p">()</span> <span class="p">{</span> <span class="c">// 实现了接口B</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">"testing3"</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="k">func</span> <span class="p">(</span><span class="n">d</span> <span class="n">Dog</span><span class="p">)</span> <span class="n">test1</span><span class="p">()</span> <span class="p">{</span>
+<span class="k">func</span> <span class="p">(</span><span class="n">d</span> <span class="n">Dog</span><span class="p">)</span> <span class="n">test1</span><span class="p">()</span> <span class="p">{</span> <span class="c">// 实现了接口A</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">"testing1"</span><span class="p">)</span>
 <span class="p">}</span>
 
@@ -826,6 +1038,8 @@ map[age:18 dog:<span class="o">{</span>旺财<span class="o">}</span> name:qinji
 
 <p>检查接口类型变量的值是否实现了期望的接口，这就是接口断言。</p>
 
+<p>前面有判断map是否有某个key值，现在判断某个结构体对象是否实现了某个接口</p>
+
 <p>例子：</p>
 
 <p>空接口interface{}可用保存任何类型的变量，假如保存的值的数字int类型，当前值要参与数学运算，就必须转化为int类型才可以参加运算，这就需要接口断言来实现类型转换。</p>
@@ -833,11 +1047,11 @@ map[age:18 dog:<span class="o">{</span>旺财<span class="o">}</span> name:qinji
 <p><mark>被断言的对象必须是接口类型，否则报错</mark></p>
 
 <blockquote>
-  <p>t:=i.(T)</p>
+  <p>t:=i.(T)。// T为接口类型</p>
 </blockquote>
 
 <ul>
-  <li>断言成功，则t为T类型的接口值</li>
+  <li>断言成功，返回t为T类型的接口值</li>
   <li>断言失败则报错，panic</li>
 </ul>
 
@@ -847,7 +1061,7 @@ map[age:18 dog:<span class="o">{</span>旺财<span class="o">}</span> name:qinji
 <span class="p">}</span>
 
 <span class="k">func</span> <span class="n">assertString</span><span class="p">(</span><span class="n">i</span> <span class="k">interface</span><span class="p">{})</span>  <span class="p">{</span>
-	<span class="n">s</span><span class="o">:=</span><span class="n">i</span><span class="o">.</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="c">// 接口断言入参是string类型</span>
+	<span class="n">s</span><span class="o">:=</span><span class="n">i</span><span class="o">.</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="c">// 接口断言入参是否string类型</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -858,7 +1072,7 @@ map[age:18 dog:<span class="o">{</span>旺财<span class="o">}</span> name:qinji
 panic: interface conversion: interface <span class="o">{}</span> is int, not string
 </code></pre></div></div>
 
-<p>可以看到断言成功打印了字符串“haha”，断言失败报panic错误</p>
+<p>可以看到断言成功打印了字符串“haha”，断言失败报panic错误（恐慌，则程序会停止）</p>
 
 <blockquote>
   <p>v,ok:=i.(T)</p>
@@ -874,6 +1088,16 @@ panic: interface conversion: interface <span class="o">{}</span> is int, not str
 	<span class="c">// assertString(100)</span>
 	<span class="n">assertInt</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
 	<span class="n">assertInt</span><span class="p">(</span><span class="s">"bbb"</span><span class="p">)</span>
+  
+  <span class="c">// 通过ok-idom来判断map对象的key,value 是存在</span>
+  <span class="k">var</span> <span class="n">map1</span> <span class="o">=</span> <span class="nb">make</span><span class="p">(</span><span class="k">map</span><span class="p">[</span><span class="kt">int</span><span class="p">]</span><span class="kt">string</span><span class="p">)</span>
+  <span class="n">map1</span><span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">"xuexiangban"</span>
+  <span class="n">value</span><span class="p">,</span> <span class="n">ok</span> <span class="o">:=</span> <span class="n">map1</span><span class="p">[</span><span class="m">6</span><span class="p">]</span>
+	<span class="k">if</span> <span class="n">ok</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"map key 存在，value:"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"map key 不存在"</span><span class="p">)</span>
+	<span class="p">}</span>
 <span class="p">}</span>
 
 <span class="k">func</span> <span class="n">assertString</span><span class="p">(</span><span class="n">i</span> <span class="k">interface</span><span class="p">{})</span>  <span class="p">{</span>
@@ -882,7 +1106,7 @@ panic: interface conversion: interface <span class="o">{}</span> is int, not str
 <span class="p">}</span>
 
 <span class="k">func</span> <span class="n">assertInt</span><span class="p">(</span><span class="n">i</span> <span class="k">interface</span><span class="p">{}){</span>
-	<span class="n">v</span><span class="p">,</span><span class="n">ok</span> <span class="o">:=</span><span class="n">i</span><span class="o">.</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span>
+	<span class="n">v</span><span class="p">,</span><span class="n">ok</span> <span class="o">:=</span><span class="n">i</span><span class="o">.</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="c">// ok-idom模式判断</span>
 	<span class="k">if</span> <span class="n">ok</span> <span class="p">{</span>
 		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"接口变量是int类型"</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
 	<span class="p">}</span><span class="k">else</span><span class="p">{</span>
@@ -898,7 +1122,7 @@ panic: interface conversion: interface <span class="o">{}</span> is int, not str
 接口变量不是int类型
 </code></pre></div></div>
 
-<p>一般使用该方式进行断言</p>
+<p><strong>一般使用该方式进行断言</strong></p>
 
 <blockquote>
   <p>type.switch</p>
@@ -932,7 +1156,7 @@ panic: interface conversion: interface <span class="o">{}</span> is int, not str
 <span class="k">func</span> <span class="n">test2</span><span class="p">(</span><span class="n">i</span> <span class="k">interface</span><span class="p">{}){</span>
 	<span class="k">switch</span> <span class="n">i</span><span class="o">.</span><span class="p">(</span><span class="k">type</span><span class="p">){</span>
 	<span class="k">case</span> <span class="kt">string</span><span class="o">:</span>
-		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"string 类型"</span><span class="p">)</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"string 类型"</span><span class="p">)</span> <span class="c">// 没有fallthrough贯穿</span>
 	<span class="k">case</span> <span class="kt">int</span><span class="o">:</span>
 		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"int 类型"</span><span class="p">)</span>
 	<span class="k">case</span> <span class="no">nil</span> <span class="o">:</span>
@@ -967,16 +1191,27 @@ nil类型
 <span class="nb">true</span>
 </code></pre></div></div>
 
+<p>场景：如果一个对象存在多种形态：接口断言 登录 20个实现类：微信登录、账号密码登录</p>
+
+<ul>
+  <li>v,ok := i.(T)</li>
+  <li>switch i.(T)</li>
+</ul>
+
 <h2 id="10type别名">10、type别名</h2>
+
+<p>var 变量：值变量，引用变量</p>
+
+<p>type 类型：结构体struct，接口interface</p>
 
 <p>定义结构体、接口都用type关键字，还可以type 进行起别名</p>
 
-<blockquote>
-  <p>自定义类型（在函数外面定义）需要强制类型转换才能参加运算</p>
-</blockquote>
+<h3 id="自定义类型">自定义类型</h3>
+
+<p>（在函数外面定义）需要强制类型转换才能参加运算</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
-<span class="c">// Diyint就是新的类型，它具有int的特性</span>
+<span class="c">// Diyint就是新的类型，它具有int的特性, 但是要强转才能参加运算</span>
 <span class="k">type</span> <span class="n">Diyint</span> <span class="kt">int</span>
 </code></pre></div></div>
 
@@ -995,9 +1230,9 @@ nil类型
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>30
 </code></pre></div></div>
 
-<blockquote>
-  <p>类型别名（在函数里面定义）</p>
-</blockquote>
+<h3 id="类型别名">类型别名</h3>
+
+<p>（在函数里面定义）</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 <span class="k">func</span> <span class="n">main</span><span class="p">(){</span>
@@ -1006,13 +1241,24 @@ nil类型
   <span class="k">var</span> <span class="n">b</span> <span class="kt">int</span> <span class="o">=</span> <span class="m">20</span>
   <span class="c">// myint类型只会在代码中存在，编译完成时并不会有Myint类型</span>
   <span class="n">d</span> <span class="o">:=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>  <span class="c">// 无需强制类型转换</span>
-  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <p>执行结果:</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>120
+</code></pre></div></div>
+
+<p>any是空接口的类型别名，看源码</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">any</span> <span class="o">=</span> <span class="k">interface</span><span class="p">{}</span>
+</code></pre></div></div>
+
+<p>自定义类型与别名就多了一个等号=</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Diyint</span> <span class="kt">int</span> <span class="c">// 自定义类型</span>
+<span class="k">type</span> <span class="n">Diyint</span> <span class="o">=</span> <span class="kt">int</span> <span class="c">// 类型别名，增加代码的可阅读性，项目编译时，其实还是原来的类型</span>
 </code></pre></div></div>
 
 

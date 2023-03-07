@@ -11,7 +11,7 @@
     <title> Go全栈第11节：Go I/O流 - 大伟的博客 </title>
     <meta name="keywords" content="go">
     <meta name="description"
-          content="input输入流与output输出流，os包中的file接口,Stat获取文件信息，文件权限科普，Mkdir创建目录，Create创建文件，Remove删除目录与文件，Openfile打开文件，File.Read方法读取文件内容">
+          content="os包中的file接口,Stat获取文件信息，文件权限，Mkdir创建目录，Create创建文件，Remove删除目录与文件，Openfile打开文件，file.Read方法读取文件内容,file.Write写入文件内容，文件复制，file.Seek偏移文件光标位置，实现断点续传文件，递归遍历文件，bufio包缓冲区方式读取写入文件，提高IO效率，bufio包获取键盘的输入">
 
     <link rel="canonical" href="http://47.113.95.179/jk-blog/go/2023/01/17/go-note-011.html">
     <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
@@ -374,9 +374,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<blockquote>
-  <p>Stat方法获取文件信息</p>
-</blockquote>
+<h3 id="stat方法">Stat方法</h3>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
 	<span class="s">"fmt"</span>
@@ -392,7 +390,7 @@
 	<span class="p">}</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">fileInfo</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">fileInfo</span><span class="o">.</span><span class="n">IsDir</span><span class="p">())</span> <span class="c">// 是否一个目录</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">fileInfo</span><span class="o">.</span><span class="n">Size</span><span class="p">())</span>  <span class="c">// 文件大小</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">fileInfo</span><span class="o">.</span><span class="n">Size</span><span class="p">())</span>  <span class="c">// 文件大小 字节大小</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">fileInfo</span><span class="o">.</span><span class="n">Mode</span><span class="p">())</span>   <span class="c">// 文件权限</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">fileInfo</span><span class="o">.</span><span class="n">ModTime</span><span class="p">())</span> <span class="c">// 修改时间</span>
 
@@ -424,24 +422,26 @@
 <span class="nb">type </span>文件类型，-代表文件，d代表目录 | 连接符号
 <span class="nt">---</span>代表的文件读写可执行，字母rwx,如果没有那个权限就用 - 代替
 
-2、八进制表示
+2、八进制表示权限
 r  004
 w  002
 x  001
 -  000
-
-<span class="nb">chmod </span>777 授权ower group others可读可写可执行
+// 这里 <span class="nv">7</span><span class="o">=</span>4+2+1 代表可读可写可执行
+<span class="nb">chmod </span>777 授权ower group others
+r:可读  w:可写  x: 可执行
 </code></pre></div></div>
 
 <p>授权脚本</p>
 
-<h2 id="2创建目录与文件">2、创建目录与文件</h2>
+<h2 id="2创建删除目录与文件">2、创建删除目录与文件</h2>
 
 <blockquote>
   <p>创建目录 Mkdir，MkdirAll，Remove，</p>
 </blockquote>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c">// 创建目录</span>
 	<span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Mkdir</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/test"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModeDir</span><span class="p">)</span>
 	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
 		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
@@ -453,11 +453,12 @@ x  001
 	<span class="p">}</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"文件夹创建成功"</span><span class="p">)</span>
 
-	<span class="c">// 删除文件夹或文件</span>
-	<span class="c">// RemoveAll 谨慎使用</span>
+	<span class="c">// 删除目录或文件</span>
+	<span class="c">// Remove 如果存在多层文件，会报错</span>
+	<span class="c">// RemoveAll 强制删除 谨慎使用 会删除文件下的所有东西，就像linux的rm -rf </span>
 	<span class="n">err</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">Remove</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/test2"</span><span class="p">)</span>
 	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
-		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="c">// 文件不存在或文件已删除</span>
 	<span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -468,22 +469,23 @@ x  001
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="c">// 创建文件</span>
-	<span class="c">// 返回文件指针，与err变量,如果原文件存在，会把文件内容清空，并重新创建</span>
-	<span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s">"./b.txt"</span><span class="p">)</span>
+	<span class="c">// 返回文件指针与err变量,如果原文件存在，会把文件内容清空，并重新创建</span>
+	<span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/b.txt"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
 	<span class="n">os</span><span class="o">.</span><span class="n">Remove</span><span class="p">(</span><span class="s">"./b.txt"</span><span class="p">)</span> <span class="c">// 可以是相对路径或绝对路径</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="3读取文件内容">3、读取文件内容</h2>
+<h2 id="3io读">3、IO读</h2>
 
 <blockquote>
   <p>OpenFile (文件路径名称，文件打开方式，文件权限)打开文件，要记得使用defer关闭文件</p>
-
-  <p>Read 读取文件</p>
 </blockquote>
+
+<p>Read 读取文件</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
@@ -502,27 +504,27 @@ x  001
 	<span class="c">// 返回文件指针与error变量</span>
 	<span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"./b.txt"</span><span class="p">)</span>
 	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
-		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> 
 		<span class="k">return</span>
 	<span class="p">}</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
-	<span class="c">// 2、关闭文件，使用defer延迟执行关键字，压栈延迟执行</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span> <span class="c">// ./b.txt</span>
+	<span class="c">// 关闭文件，使用defer延迟执行关键字，压栈延迟执行</span>
 	<span class="k">defer</span> <span class="n">file</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
 
-	<span class="c">// 读取文件内容</span>
+	<span class="c">// 2、读取文件内容</span>
 	<span class="c">// 创建切片来接收内容（缓冲区大小与读取文件）</span>
 	<span class="n">bs</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">1024</span><span class="p">,</span> <span class="m">1024</span><span class="p">)</span> <span class="c">// byte类型，长度为1024，容量1024）</span>
-	<span class="c">// Read到容器，返回读取的数量n, 与 err变量，后续可以使用for循环判断n&gt;0读取文件的所有内容</span>
+	<span class="c">// Read到容器，返回读取的数量n 与 err变量，后续可以使用for循环判断n&gt;0读取文件的所有内容</span>
   <span class="c">// 直到返回n==0,光标移动到了文件的末尾，同时返回err=io.EOF</span>
 	<span class="c">// 如果读到文件的末尾，err = io.EOF</span>
 	<span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">file</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">bs</span><span class="p">))</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c">// 12</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">bs</span><span class="p">))</span> <span class="c">// 钱兔无量</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="c">// nil</span>
 	<span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">bs</span><span class="p">))</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c">// 0 光标移动到文件的末尾，返回0</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">bs</span><span class="p">))</span> <span class="c">// 上一次读取的值钱兔无量</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="c">// EOF</span>
 
 	<span class="c">// OpenFile (文件路径名称，文件打开方式，文件权限) 返回文件指针与error变量</span>
 	<span class="n">file2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="s">"b.txt"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_WRONLY</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
@@ -530,7 +532,7 @@ x  001
 		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 		<span class="k">return</span>
 	<span class="p">}</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">file2</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">file2</span><span class="o">.</span><span class="n">Name</span><span class="p">())</span> <span class="c">// b.txt</span>
 	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -563,8 +565,591 @@ b.txt
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="4写入文件内容">4、写入文件内容</h2>
+<h2 id="4io写">4、IO写</h2>
 
+<h3 id="write-追加写入">Write 追加写入</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span>  <span class="p">{</span>
+	<span class="c">// 打开文件，创建连接</span>
+	<span class="n">file2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="s">"b.txt"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_WRONLY</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 养成习惯，defer延迟关闭文件</span>
+	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 定义一个字节切片，存储数据</span>
+	<span class="n">bs</span><span class="o">:=</span><span class="p">[]</span><span class="kt">byte</span><span class="p">{</span><span class="m">65</span><span class="p">,</span><span class="m">66</span><span class="p">,</span><span class="m">67</span><span class="p">,</span><span class="m">68</span><span class="p">,</span><span class="m">69</span><span class="p">}</span>
+	<span class="n">n</span><span class="p">,</span><span class="n">err</span> <span class="o">:=</span><span class="n">file2</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 打印返回的行数</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c">// 5</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>看写入的文件 b.txt</p>
+
+<p><img src="/assets/images/2023/go/file-write.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/file-write.png" alt="" /></p>
+
+<p>发现把原来文件的部分内容干没了，从开头写入 <code class="highlighter-rouge">ABCDE</code> 5个字符</p>
+
+<p>我们要把写入内容追加到文件末尾，而不是从头开始写入，增加打开方式 <code class="highlighter-rouge">os.O_APPEND</code></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span>  <span class="p">{</span>
+	<span class="c">// 打开文件，创建连接</span>
+	<span class="n">file2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="s">"b.txt"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_WRONLY</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_APPEND</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span> <span class="c">// 追加</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 养成习惯，defer延迟关闭文件</span>
+	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 定义一个字节切片，存储数据</span>
+	<span class="n">bs</span><span class="o">:=</span><span class="p">[]</span><span class="kt">byte</span><span class="p">{</span><span class="m">65</span><span class="p">,</span><span class="m">66</span><span class="p">,</span><span class="m">67</span><span class="p">,</span><span class="m">68</span><span class="p">,</span><span class="m">69</span><span class="p">}</span>
+	<span class="n">n</span><span class="p">,</span><span class="n">err</span> <span class="o">:=</span><span class="n">file2</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 打印返回的行数</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c">// 5</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>恢复 b.txt文件内容，执行上面代码，看输出结果</p>
+
+<p><img src="/assets/images/2023/go/file-write-2.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/file-write-2.png" alt="" /></p>
+
+<h3 id="writestring字符串写入">WriteString字符串写入</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span>  <span class="p">{</span>
+	<span class="c">// 打开文件，创建连接，方式：O_RDONLY 可读，O_WRONLY可写，O_APPEND追加，O_CREATE创建文件</span>
+	<span class="n">file2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="s">"b.txt"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_WRONLY</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_APPEND</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 养成习惯，defer延迟关闭文件</span>
+	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 定义一个字节切片，存储数据</span>
+	<span class="n">bs</span><span class="o">:=</span><span class="p">[]</span><span class="kt">byte</span><span class="p">{</span><span class="m">65</span><span class="p">,</span><span class="m">66</span><span class="p">,</span><span class="m">67</span><span class="p">,</span><span class="m">68</span><span class="p">,</span><span class="m">69</span><span class="p">}</span>
+	<span class="n">n</span><span class="p">,</span><span class="n">err</span> <span class="o">:=</span><span class="n">file2</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="c">// 打印返回的行数</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+	<span class="n">n</span><span class="p">,</span><span class="n">err</span> <span class="o">=</span> <span class="n">file2</span><span class="o">.</span><span class="n">WriteString</span><span class="p">(</span><span class="s">"hahaha 狂神说"</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="c">// 16</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>执行文件，看文件b.txt的内容</p>
+
+<p><img src="/assets/images/2023/go/file-write-3.jpg" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/file-write-3.jpg" alt="" /></p>
+
+<h2 id="5复制">5、复制</h2>
+
+<h3 id="手动复制">手动复制</h3>
+
+<p>创建两个文件的连接，读取一个文件的内容，写到另外一个文件。</p>
+
+<ol>
+  <li>编写函数，源文件，目标地址，缓冲区</li>
+  <li>读取源文件，保存到缓冲区</li>
+  <li>读取缓冲区内容，将内存写到新的文件中</li>
+  <li>要判断文件读取完毕</li>
+</ol>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">utils</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"io"</span>
+	<span class="s">"os"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">Copy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">detination</span> <span class="kt">string</span><span class="p">,</span> <span class="n">buffersize</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c">// 输入文件</span>
+	<span class="n">file1</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"open文件file1错误"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file1</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 输出文件(可创建的)</span>
+	<span class="n">file2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">detination</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_CREATE</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"open文件file2错误"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 缓冲区</span>
+	<span class="n">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="n">buffersize</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">file1</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="m">0</span> <span class="o">||</span> <span class="n">err</span> <span class="o">==</span> <span class="n">io</span><span class="o">.</span><span class="n">EOF</span> <span class="p">{</span>
+			<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"文件复制完毕"</span><span class="p">)</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+		<span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">file2</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="o">:</span><span class="n">n</span><span class="p">])</span>
+		<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+			<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"文件写入错误"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>main函数入口</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">source</span> <span class="o">:=</span> <span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/layui.png"</span>
+	<span class="n">destination</span> <span class="o">:=</span> <span class="s">"/Users/xjw/GoWorks/src/awesomeProject/layui"</span> <span class="o">+</span> <span class="n">strconv</span><span class="o">.</span><span class="n">FormatInt</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span><span class="o">.</span><span class="n">UnixMilli</span><span class="p">(),</span> <span class="m">10</span><span class="p">)</span> <span class="o">+</span> <span class="s">".png"</span>
+	<span class="c">// 可以调整缓冲区大小</span>
+	<span class="n">utils</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="m">1024</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="iocopy方法">io.copy方法</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Copy2</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">detination</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c">// 输入文件</span>
+	<span class="n">file1</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"open文件file1错误"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file1</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 输出文件(可创建的)</span>
+	<span class="n">file2</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">detination</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_CREATE</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"open文件file2错误"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 返回写入的文件字节大小与错误</span>
+	<span class="n">writeByteSize</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">io</span><span class="o">.</span><span class="n">Copy</span><span class="p">(</span><span class="n">file2</span><span class="p">,</span> <span class="n">file1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"写入的文件字节大小："</span><span class="p">,</span> <span class="n">writeByteSize</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="oscopy方法">os.copy方法</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">Copy3</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">fileBuf</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">ReadFile</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"读取文件错误,"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+	<span class="n">err</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">fileBuf</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"文件写入错误："</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>上面手写了3种文件复制的实现方式</p>
+
+<h2 id="6seek接口">6、Seek接口</h2>
+
+<p>Seeker接口上包装seek方法的接口，移动读取的光标（游标）</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">Seeker</span> <span class="k">interface</span> <span class="p">{</span>
+  <span class="c">// 该方法的作用是对光标进行偏移</span>
+	<span class="n">Seek</span><span class="p">(</span><span class="n">offset</span> <span class="kt">int64</span><span class="p">,</span> <span class="n">whence</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">int64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>参数offset 光标的偏移量</p>
+  </li>
+  <li>
+    <p>参数whence，如何设置偏移</p>
+
+    <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="m">0</span><span class="o">:</span> <span class="n">seekStart</span> <span class="n">表示相对于文件开头</span><span class="err">，</span><span class="n">进行偏移</span>
+<span class="m">1</span><span class="o">:</span> <span class="n">seekCurrent</span> <span class="n">表示相对于当前光标所在位置来说</span><span class="err">，</span><span class="n">进行偏移</span>
+<span class="m">2</span><span class="o">:</span> <span class="n">seekEnd</span> <span class="n">表示相对于文件末尾</span><span class="err">，</span><span class="n">进行偏移</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"io"</span>
+	<span class="s">"os"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// cs.O_RDWR，可读写</span>
+	<span class="c">// 与文件建立连接，返回文件的指针</span>
+	<span class="n">file</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/a.txt"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="c">// 养成习惯，延迟关闭文件资源</span>
+	<span class="k">defer</span> <span class="n">file</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="c">// 相对于文件开头，光标偏移为 2</span>
+	<span class="n">file</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekStart</span><span class="p">)</span>
+	<span class="c">// 定义切片缓存区</span>
+	<span class="n">buf</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">byte</span><span class="p">{</span><span class="m">0</span><span class="p">}</span>
+	<span class="c">// 读取文件内容到缓冲区 ，不接收返回值n和err</span>
+	<span class="n">file</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+	<span class="c">// 打印测试</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span> <span class="c">// 输出x,读完后光标停在x后面</span>
+  
+  <span class="c">// 光标在当前位置往后移2位，光标来到b后面</span>
+	<span class="n">file</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekCurrent</span><span class="p">)</span>
+	<span class="n">file</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span> <span class="c">// 输出 c</span>
+  
+  <span class="c">// 相对于结尾，往前移动2位</span>
+  <span class="n">file</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="o">-</span><span class="m">2</span><span class="p">,</span><span class="n">io</span><span class="o">.</span><span class="n">SeekEnd</span><span class="p">)</span>
+  
+  <span class="c">// 光标偏移到文件末尾，进行写入</span>
+	<span class="n">file</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekEnd</span><span class="p">)</span>
+	<span class="n">file</span><span class="o">.</span><span class="n">WriteString</span><span class="p">(</span><span class="s">"hahahahahahaha"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>文件a.txt的内容是</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Rexabc大展宏兔
+</code></pre></div></div>
+
+<p>写入后a.txt的内容是</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Rexabc大展宏兔hahahahahahaha</span>
+</code></pre></div></div>
+
+<p>通过光标的偏移，我们可以实现文件的断点续传，程序记录每次读取文件后光标的位置，下次通过Seek方法偏移光标位置，直接从上次光标位置开始读取，就实现了文件断点续传。</p>
+
+<h2 id="7实现断点续传">7、实现断点续传</h2>
+
+<ol>
+  <li>如果你要传70g的大文件，是否有方法可以缩短耗时？
+    <ul>
+      <li>文件拆分</li>
+      <li>同时多线程进行下载</li>
+    </ul>
+  </li>
+  <li>如果文件传递过程中，程序被迫中断（断网，断电，内存满了），下次重启之后，文件是否需要重头再传？
+    <ul>
+      <li>希望能够继续上传或者下载</li>
+    </ul>
+  </li>
+  <li>传递文件的时候，支持暂停和恢复上传？
+    <ul>
+      <li>支持</li>
+    </ul>
+  </li>
+</ol>
+
+<p>思路：</p>
+
+<ol>
+  <li>需要记住上一次传递了多少数据，temp.txt记录上传文件每次读取</li>
+  <li>如果被暂停或中断了，我们就可以读取这个temp.txt的记录，恢复上传</li>
+</ol>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"io"</span>
+	<span class="s">"os"</span>
+	<span class="s">"strconv"</span>
+<span class="p">)</span>
+
+<span class="c">// 文件断点续传</span>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 传输源文件</span>
+	<span class="n">srcfile</span> <span class="o">:=</span> <span class="s">"/Users/xjw/Pictures/404-bg.jpg"</span>
+	<span class="c">// 传输的目标位置</span>
+	<span class="n">destFile</span> <span class="o">:=</span> <span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/server/404-bg.jpg"</span>
+	<span class="c">// 临时记录文件</span>
+	<span class="n">tempFile</span> <span class="o">:=</span> <span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/temp.txt"</span>
+
+	<span class="c">// 创建对于的file对象，连接起来</span>
+	<span class="n">file1</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="n">file2</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">destFile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_CREATE</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="n">file3</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="n">tempFile</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_CREATE</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"文件建立连接完毕"</span><span class="p">)</span>
+	<span class="c">// 关闭读取与写入文件</span>
+	<span class="k">defer</span> <span class="n">file1</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="k">defer</span> <span class="n">file2</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="c">// 1、读取temp。txt</span>
+	<span class="n">file3</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekStart</span><span class="p">)</span>
+	<span class="n">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">1024</span><span class="p">,</span> <span class="m">1024</span><span class="p">)</span>
+	<span class="n">n</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">file3</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+	<span class="c">// 2、转换 string-&gt;数字</span>
+	<span class="n">countStr</span> <span class="o">:=</span> <span class="kt">string</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="o">:</span><span class="n">n</span><span class="p">])</span> <span class="c">// 类型强转换</span>
+	<span class="n">count</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">ParseInt</span><span class="p">(</span><span class="n">countStr</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">64</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"temp.txt记录中的值是："</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+
+	<span class="c">// 3、设置读写的偏移量</span>
+	<span class="n">file1</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekStart</span><span class="p">)</span>
+	<span class="n">file2</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekStart</span><span class="p">)</span>
+
+	<span class="c">// 4、开始读写</span>
+	<span class="n">bufData</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">1024</span><span class="p">,</span> <span class="m">1024</span><span class="p">)</span>
+	<span class="c">// 需要记录读取了多少个字节 , 强转换类型为int</span>
+	<span class="n">total</span> <span class="o">:=</span> <span class="kt">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">file1</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">bufData</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="n">io</span><span class="o">.</span><span class="n">EOF</span> <span class="p">{</span>
+			<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"文件传输完毕"</span><span class="p">)</span>
+			<span class="n">file3</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+			<span class="n">os</span><span class="o">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">tempFile</span><span class="p">)</span> <span class="c">// 删除临时文件</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+		<span class="c">// 向目标文件中写入数据</span>
+		<span class="n">writeNum</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">file2</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">bufData</span><span class="p">[</span><span class="o">:</span><span class="n">n</span><span class="p">])</span>
+    <span class="c">// 写到一半断电了，如何处理</span>
+    
+		<span class="c">// 记录读取了多少数据</span>
+		<span class="n">total</span> <span class="o">=</span> <span class="n">total</span> <span class="o">+</span> <span class="n">writeNum</span>
+		<span class="c">// 写入temp.txt,将光标重置到文件开头，覆盖写入</span>
+		<span class="n">file3</span><span class="o">.</span><span class="n">Seek</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">SeekStart</span><span class="p">)</span>
+		<span class="n">file3</span><span class="o">.</span><span class="n">WriteString</span><span class="p">(</span><span class="n">strconv</span><span class="o">.</span><span class="n">Itoa</span><span class="p">(</span><span class="n">total</span><span class="p">))</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">total</span><span class="p">)</span>
+
+		<span class="c">// 模拟断电，抛出panic异常</span>
+		<span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="m">5000</span> <span class="p">{</span>
+			<span class="nb">panic</span><span class="p">(</span><span class="s">"断电了"</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>文件建立连接完毕
+temp.txt记录中的值是： 5120
+6144
+panic: 断电了
+</code></pre></div></div>
+
+<h2 id="8递归遍历文件夹">8、递归遍历文件夹</h2>
+
+<p>tree 命令 ，查看当前文件夹下的所有文件</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">dir</span> <span class="o">:=</span> <span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11"</span>
+	<span class="n">listDir</span><span class="p">(</span><span class="n">dir</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">listDir</span><span class="p">(</span><span class="n">filepath</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c">// 读取目录,返回文件目录切片</span>
+	<span class="n">fileInfos</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">ReadDir</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+	<span class="c">// range循环遍历切片</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">fileInfos</span> <span class="p">{</span>
+		<span class="n">filename</span> <span class="o">:=</span> <span class="n">filepath</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">Name</span><span class="p">()</span>
+		<span class="c">// 输出文件名称</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+		<span class="c">// 如果是目录,递归调用本身，向下找文件</span>
+		<span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">IsDir</span><span class="p">()</span> <span class="p">{</span>
+			<span class="n">listDir</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/private/var/folders/0k/hc_c70bs2bb51tp0wp5w1xfw0000gn/T/GoLand/___go_build_demo08_go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/.DS_Store
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/a.txt
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo01.go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo02.go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo03.go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo04.go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo06.go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo08.go
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/test2
+/Users/xjw/GoWorks/src/awesomeProject/lesson11/test2/c.txt
+</code></pre></div></div>
+
+<p>增加层级感</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">dir</span> <span class="o">:=</span> <span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11"</span>
+	<span class="n">listDir</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">listDir</span><span class="p">(</span><span class="n">filepath</span> <span class="kt">string</span><span class="p">,</span> <span class="n">tabint</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">tabstr</span> <span class="o">:=</span> <span class="s">"|--"</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tabint</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+		<span class="n">tabstr</span> <span class="o">=</span> <span class="s">"|  "</span> <span class="o">+</span> <span class="n">tabstr</span>
+	<span class="p">}</span>
+
+	<span class="c">// 读取目录,返回文件目录切片</span>
+	<span class="n">fileInfos</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">ReadDir</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+	<span class="c">// range循环遍历切片</span>
+	<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">:=</span> <span class="k">range</span> <span class="n">fileInfos</span> <span class="p">{</span>
+		<span class="n">filename</span> <span class="o">:=</span> <span class="n">filepath</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">Name</span><span class="p">()</span>
+		<span class="c">// 输出文件名称</span>
+		<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%s%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">tabstr</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+		<span class="c">// 如果是目录,递归调用本身，向下找文件</span>
+		<span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">IsDir</span><span class="p">()</span> <span class="p">{</span>
+			<span class="n">listDir</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">tabint</span><span class="o">+</span><span class="m">1</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/.DS_Store
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/a.txt
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo01.go
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo02.go
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo03.go
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo04.go
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo06.go
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo08.go
+|--/Users/xjw/GoWorks/src/awesomeProject/lesson11/test2
+|  |--/Users/xjw/GoWorks/src/awesomeProject/lesson11/test2/c.txt
+</code></pre></div></div>
+
+<h2 id="9bufio包">9、bufio包</h2>
+
+<p>Go语言自带的io操作包，使用这个包可以大幅度提高文件读写的效率</p>
+
+<p>bufio包通过缓冲来提高效率，提供了一个缓冲区，读和写都在缓冲区，最后一次性读取和写入，降低访问本地磁盘的次数。</p>
+
+<p><mark>io操作本身的效率并不低，低的是频繁的访问本地磁盘文件</mark></p>
+
+<p><img src="/assets/images/2023/go/bufio-1.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/bufio-1.png" alt="" /></p>
+
+<h3 id="读取">读取</h3>
+
+<p><img src="/Users/xjw/Documents/项目-个人/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2023/go/bufio-new-reader.png" alt="" /></p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+	<span class="s">"bufio"</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"log"</span>
+	<span class="s">"os"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 读取文件</span>
+	<span class="c">// 创建一个bufio包下的reader对象</span>
+	<span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo01.go"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="s">"打开文件失败"</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="c">// bufio读取文件</span>
+	<span class="c">// 创建reader对象</span>
+	<span class="c">// file.Read()</span>
+	<span class="n">reader</span> <span class="o">:=</span> <span class="n">bufio</span><span class="o">.</span><span class="n">NewReader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+	<span class="c">// 也是读到切片中</span>
+	<span class="n">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">1024</span><span class="p">,</span> <span class="m">1024</span><span class="p">)</span>
+	<span class="n">n</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">reader</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"读取了多少个字节"</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"读取到内容"</span><span class="p">,</span> <span class="kt">string</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="o">:</span><span class="n">n</span><span class="p">]))</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="/Users/xjw/Documents/项目-个人/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2023/go/bufio-reader-2.png" alt="" /></p>
+
+<h3 id="读取行">读取行</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 读取文件</span>
+	<span class="c">// 创建一个bufio包下的reader对象</span>
+	<span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo01.go"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="s">"打开文件失败"</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="c">// bufio读取文件</span>
+	<span class="c">// 创建reader对象</span>
+	<span class="c">// file.Read()</span>
+	<span class="n">reader</span> <span class="o">:=</span> <span class="n">bufio</span><span class="o">.</span><span class="n">NewReader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+	<span class="c">// 也是读到切片中</span>
+	<span class="c">// buf := make([]byte, 1024, 1024)</span>
+	<span class="c">// n, err := reader.Read(buf)</span>
+	<span class="c">// fmt.Println("读取了多少个字节", n)</span>
+	<span class="c">// fmt.Println("读取到内容", string(buf[:n]))</span>
+
+	<span class="c">// 读取行</span>
+	<span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">reader</span><span class="o">.</span><span class="n">ReadLine</span><span class="p">()</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">))</span> <span class="c">// 输出一行</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="读取键盘的输入">读取键盘的输入</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c">// 读取文件</span>
+	<span class="c">// 创建一个bufio包下的reader对象</span>
+	<span class="n">file</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/demo01.go"</span><span class="p">)</span>
+	<span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+		<span class="n">log</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+		<span class="nb">panic</span><span class="p">(</span><span class="s">"打开文件失败"</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="n">file</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+	<span class="c">// 读取键盘的输入 os.stdout 是输出</span>
+	<span class="c">// 建立键盘输入流</span>
+	<span class="n">reader2</span> <span class="o">:=</span> <span class="n">bufio</span><span class="o">.</span><span class="n">NewReader</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stdin</span><span class="p">)</span>
+	<span class="c">// 参数 delim 是结束符，即到哪里结束读取 ，通常是enter回车键</span>
+	<span class="n">readString</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">reader2</span><span class="o">.</span><span class="n">ReadString</span><span class="p">(</span><span class="sc">'\n'</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"读取键盘输入的信息："</span><span class="p">,</span> <span class="n">readString</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>运行结果：</p>
+
+<p><img src="/assets/images/2023/go/bufio-2.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/bufio-2.png" alt="" /></p>
+
+<h3 id="写入">写入</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
+	<span class="s">"bufio"</span>
+	<span class="s">"fmt"</span>
+	<span class="s">"os"</span>
+<span class="p">)</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">file</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">OpenFile</span><span class="p">(</span><span class="s">"/Users/xjw/GoWorks/src/awesomeProject/lesson11/c.txt"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_CREATE</span><span class="o">|</span><span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">ModePerm</span><span class="p">)</span>
+	<span class="k">defer</span> <span class="n">file</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+	<span class="c">// 创建写入对象</span>
+	<span class="n">writer</span> <span class="o">:=</span> <span class="n">bufio</span><span class="o">.</span><span class="n">NewWriter</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+	<span class="n">writeNum</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">writer</span><span class="o">.</span><span class="n">WriteString</span><span class="p">(</span><span class="s">"kuangshen hello world"</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"writeNum"</span><span class="p">,</span> <span class="n">writeNum</span><span class="p">)</span>
+
+	<span class="c">// 记得要手动刷新缓冲区，将缓冲区的数据一次性写入文件中</span>
+	<span class="n">writer</span><span class="o">.</span><span class="n">Flush</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><mark>记得要手动刷新缓冲区，将缓冲区的数据一次性写入文件中</mark></p>
 
 
             <div>

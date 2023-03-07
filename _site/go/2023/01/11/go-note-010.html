@@ -11,7 +11,7 @@
     <title> Go全栈第10节：Go常用包 - 大伟的博客 </title>
     <meta name="keywords" content="go">
     <meta name="description"
-          content="包的声明与导入，默认方式，包别名导入，匿名导入包执行init初始化函数，init优先于main函数执行,strings包的字符串常用操作，strconv包字符串与基本类型的转换,	time包 获取时间与时间戳、时间格式化、解析字符串格式的时间,时间戳与时间对象的转换,生成随机数，时间间隔常量Duration,time.Tick定时器,time包时间的常用操作Add、Sub、Equal、Before、After">
+          content="包的声明与导入，默认方式导入，包别名导入，匿名导入包只执行init初始化函数，init优先于main函数执行,strings包的字符串常用操作，strconv包字符串与基本类型的转换,	time包 获取时间与时间戳、时间格式化、解析字符串格式的时间,时间戳与时间对象的转换,生成随机数，时间间隔常量Duration,time.Tick定时器,time包时间的常用操作Add、Sub、Equal、Before、After">
 
     <link rel="canonical" href="http://47.113.95.179/jk-blog/go/2023/01/11/go-note-010.html">
     <link rel="alternate" type="application/rss+xml" title="大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术" href="http://47.113.95.179/jk-blog/feed.xml">
@@ -361,9 +361,7 @@
 
             <h2 id="1包的声明与导入">1、包的声明与导入</h2>
 
-<h3 id="go语言中的包">go语言中的包</h3>
-
-<p>包的本质：创建不同的文件夹，来存放程序文件</p>
+<p>go语言中包的本质：创建不同的文件夹，以功能模块来存放程序文件</p>
 
 <p>go语言的源码复用建立在包基础之上</p>
 
@@ -387,56 +385,80 @@
 
     <p>关于包的使用</p>
 
-    <ul>
+    <ol>
       <li>package 声明的包和对应的目录名可以不一致，但习惯上还是写成一致的</li>
-      <li>同包下的函数不要导入包，可以直接使用，函数名大写</li>
+      <li><mark>一个目录下的所有go文件的package必须同名</mark></li>
+      <li>同包下的函数不要导入包，可以直接使用，函数名要大写</li>
       <li>main包，main函数所在的包必须是main包，其他包不能使用</li>
-      <li>对于包外而言，导入包的时候可以使用”包名.函数名”的方式使用包内函数，如fmt.Println</li>
-    </ul>
+      <li>对于包外而言，导入包的时候可以使用”包名.函数名”的方式使用包内函数，如fmt.Println，函数名必须要大写首字母</li>
+    </ol>
   </li>
 </ul>
 
-<p>导入包的关键字import</p>
+<p><strong>main函数外面Run，编译执行单个go文件</strong></p>
 
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"fmt"</span> <span class="c">// 导入系统内置包</span>
+<p><img src="/assets/images/2023/go/main-run-1.png" alt="" /></p>
 
-<span class="c">// 批量导入包</span>
-<span class="k">import</span> <span class="p">{</span>
+<p><img src="../../../assets/images/2023/go/main-run-1.png" alt="" /></p>
+
+<p><strong>main函数里面Run，编译执行整个项目，一个项目下只能有一个main函数入口</strong></p>
+
+<p><img src="/assets/images/2023/go/main-run-2.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/main-run-2.png" alt="" /></p>
+
+<blockquote>
+  <p>1、导入其他包的标准写法，需要goworks下面的src目录开始导</p>
+</blockquote>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"studygo/service/user"</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>2、批量导入包</p>
+</blockquote>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span>
+  <span class="c">// 系统包</span>
+  <span class="s">"fmt"</span>
+  
+  <span class="c">// 自定义的包</span>
   <span class="s">"studygo/service"</span>
   <span class="s">"studygo/service/user"</span>
+  
+  <span class="c">// 从网上下载的包</span>
 <span class="p">}</span>
+</code></pre></div></div>
 
-<span class="c">// 相对路径导入包</span>
-<span class="k">import</span> <span class="s">"../pojo"</span>
+<blockquote>
+  <p>3、相对路径导入包</p>
+</blockquote>
 
-<span class="c">/* 包的重命名可以用于解决包名冲突，包名过长，避免与变量或常量名称冲突等情况*/</span>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"../pojo"</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>4、包名冲突的解决方式，起别名</p>
+</blockquote>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">/* 包的重命名可以用于解决包名冲突，包名过长，避免与变量或常量名称冲突等情况*/</span>
 <span class="k">import</span> <span class="s">"crypto/rand"</span> <span class="c">// 默认模式,访问 rand.Function ，跟fmt一样</span>
 <span class="k">import</span> <span class="n">R</span> <span class="s">"crypto/rand"</span> <span class="c">// 包的别名，通过别名访问该包下的函数等，访问 R.function</span>
 <span class="k">import</span> <span class="o">.</span> <span class="s">"crypto/rand"</span> <span class="c">// 简便模式，可以直接调用该包下的函数等 （不建议，怕方法重名），直接访问函数</span>
 <span class="k">import</span> <span class="n">_</span> <span class="s">"crypto/rand"</span> <span class="c">// 匿名导入，仅让该包执行init初始化函数</span>
-
 </code></pre></div></div>
 
 <p>Go 语言使用名称首字母大小写来判断一个对象（函数、全局变量、类型、结构字段、函数）的访问权限，对于包而言同样如此，首字母大写，可被包外访问，即public，首字母小写，仅包内成员可以访问，即internal</p>
 
-<h2 id="2init函数">2、init函数</h2>
+<h2 id="2init函数初始化">2、init函数初始化</h2>
 
-<p>Go语言有一个特殊的<mark>函数init，先于main函数执行</mark>，实现包级别的一些初始化操作</p>
+<p>Go语言有一个特殊的<mark>函数init，它先于main函数执行</mark>，实现包级别的一些初始化操作，如建立数据库连接、初始化全局变量、注册、检查修复程序状态等。</p>
 
 <p>init用在设置包、初始化变量或者其他要在程序运行前优先完成的引导工作。</p>
 
-<p>即使包被导入多次，初始化只需要一次</p>
+<p>即使包被导入多次，初始化只执行一次</p>
 
-<p>init函数通常用在：</p>
-
-<ul>
-  <li>对变量进行初始化</li>
-  <li>检查/修复程序的状态</li>
-  <li>注册</li>
-  <li>运行一次计算</li>
-</ul>
-
-<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 匿名导入，执行该包下的init初始化函数，先与main函数执行</span>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// 匿名导入，仅执行该包下的init初始化函数，先main函数执行</span>
 <span class="c">// 注意必须是Goworks/src目录下的包路径</span>
 <span class="k">import</span> <span class="p">(</span>
 	<span class="n">_</span> <span class="s">"awesomeProject/lesson10/test"</span>
@@ -450,11 +472,15 @@
 
 <p>test包：</p>
 
-<p><img src="image/init.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/init.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/init.png" alt="" /></p>
 
 <h3 id="多个init函数">多个init函数</h3>
 
-<p>a.go 下多个init函数</p>
+<blockquote>
+  <p>a.go 下多个init函数</p>
+</blockquote>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"fmt"</span>
 
@@ -503,7 +529,7 @@ main---
 
 <h3 id="init执行顺序">init执行顺序</h3>
 
-<p>为了使用导入的包，首先必须将其初始化，初始化总是以<mark>单线程</mark>执行的，并且按照包的依赖关系顺序执行，这通过golang的运行时系统控制，如下图所示：</p>
+<p>为了使用导入的包，首先必须将其初始化，初始化总是以单线程执行的，并且按照包的依赖关系顺序执行，这通过golang的运行时系统控制，如下图所示：</p>
 
 <ol>
   <li>初始化导入的包（递归导入）</li>
@@ -511,7 +537,7 @@ main---
   <li>执行包中的init函数</li>
 </ol>
 
-<p><img src="image/init-flow.png" alt="" /></p>
+<p><img src="/Users/xjw/Documents/项目-个人/jacob-jekyll-blog-个人技术博客/aikomj.github.io/assets/images/2023/go/init-flow.png" alt="" /></p>
 
 <p>例子：</p>
 
@@ -556,8 +582,6 @@ main init
 main---
 </code></pre></div></div>
 
-<p>符合上面的执行顺序</p>
-
 <p>包test2下再增加多一个c.go，包含init函数</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">test2</span>
@@ -569,7 +593,9 @@ main---
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><img src="image/init-c.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/init-c.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/init-c.png" alt="" /></p>
 
 <p>执行结果：</p>
 
@@ -593,7 +619,9 @@ main init
 main---
 </code></pre></div></div>
 
-<p>所以，同一个包下的多个init函数，根据go文件名称的首字母排序执行</p>
+<p>所以同一个包下的多个init函数，根据go文件名称的首字母排序执行init函数</p>
+
+<p>总结，init函数总是自上而下执行的</p>
 
 <h2 id="3strings包常用函数">3、strings包常用函数</h2>
 
@@ -646,7 +674,7 @@ main---
 	<span class="n">str3</span> <span class="o">:=</span> <span class="n">strings</span><span class="o">.</span><span class="n">Join</span><span class="p">(</span><span class="n">str2</span><span class="p">,</span> <span class="s">"-"</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">str3</span><span class="p">)</span> <span class="c">// a-b-c-d</span>
 
-	<span class="c">// Split 分隔字符串返回切片</span>
+	<span class="c">// Split 分隔字符串返回切片，用的最多</span>
 	<span class="n">str4</span> <span class="o">:=</span> <span class="n">strings</span><span class="o">.</span><span class="n">Split</span><span class="p">(</span><span class="n">str3</span><span class="p">,</span> <span class="s">"-"</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"Split 返回切片:"</span><span class="p">,</span> <span class="n">str4</span><span class="p">,</span> <span class="s">"切片长度"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">str4</span><span class="p">))</span> <span class="c">// 切片长度4</span>
 
@@ -674,6 +702,10 @@ main---
 
 <p>string convert ,字符串与基本类型之间的转换</p>
 
+<p>前端：网页、小程序、app</p>
+
+<p>后端：go代码</p>
+
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 
 <span class="k">import</span> <span class="p">(</span>
@@ -683,36 +715,42 @@ main---
 
 <span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">s1</span> <span class="o">:=</span> <span class="s">"true"</span>
-	<span class="c">// 字符串转换为bool类型</span>
+	<span class="c">// 1、字符串转换为bool类型</span>
 	<span class="n">b1</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">ParseBool</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
 
-	<span class="c">// bool类型转换字符串</span>
+	<span class="c">// 2、bool类型转换字符串</span>
 	<span class="n">s2</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">FormatBool</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
 
-	<span class="c">// 字符串转换为整型, 入参 base 代表进制，如10进制，2进制</span>
+	<span class="c">// 3、字符串与整型的互转, 转换为对应的进制数</span>
+  <span class="c">// 第一个参数，字符串</span>
+  <span class="c">// 第二个参数进制，如10进制，2进制</span>
+  <span class="c">// 第三个参数大小 </span>
 	<span class="n">s3</span> <span class="o">:=</span> <span class="s">"100"</span>
 	<span class="n">i1</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">ParseInt</span><span class="p">(</span><span class="n">s3</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">64</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i1</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i1</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i1</span><span class="p">)</span> <span class="c">// 打印类型 int64</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i1</span><span class="p">)</span> <span class="c">// 打印100</span>
 
-	<span class="c">// 整型转字符串,入参 base 代表进制，如10进制，2进制</span>
+	<span class="c">// 整型转字符串,</span>
+  <span class="c">// 第一个参数，整数</span>
+  <span class="c">// 第二个参数进制，如10进制，2进制</span>
 	<span class="n">s4</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">FormatInt</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">s4</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s4</span><span class="p">)</span>
 
-	<span class="c">// 整型与字符串快速转换的方法</span>
-	<span class="c">// atoi 字符串转整型 itoa整型转字符串</span>
+	<span class="c">// 4、整型与字符串快速互转的方法 Ascii to Integer </span>
+	<span class="c">// atoi 字符串转整型 </span>
 	<span class="n">i2</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">Atoi</span><span class="p">(</span><span class="s">"-20"</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i2</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i2</span> <span class="o">+</span> <span class="m">10</span><span class="p">)</span> <span class="c">// -10</span>
-	
+	<span class="c">// itoa 整型转字符串</span>
 	<span class="n">s5</span> <span class="o">:=</span> <span class="n">strconv</span><span class="o">.</span><span class="n">Itoa</span><span class="p">(</span><span class="m">30</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">i2</span><span class="p">)</span> <span class="c">// int</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">s5</span><span class="p">)</span>  <span class="c">// 30</span>
+  
 <span class="p">}</span>
 </code></pre></div></div>
 
@@ -736,11 +774,15 @@ int
 
 <p><mark>time包</mark></p>
 
+<ul>
+  <li>获取当前时间</li>
+  <li>时间格式化</li>
+  <li>定时</li>
+</ul>
+
 <p>时间和日期是我们编程中经常会用到的，我们讲一下go内置的time包的基本用法</p>
 
-<blockquote>
-  <p>获取当前时间</p>
-</blockquote>
+<h3 id="获取当前时间">获取当前时间</h3>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">time1</span><span class="p">()</span>
@@ -749,14 +791,14 @@ int
 <span class="k">func</span> <span class="n">time1</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">now</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
-	<span class="n">year</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Year</span><span class="p">()</span>
-	<span class="n">month</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Month</span><span class="p">()</span>
-	<span class="n">day</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Day</span><span class="p">()</span>
+	<span class="n">year</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Year</span><span class="p">()</span> <span class="c">// 年</span>
+	<span class="n">month</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Month</span><span class="p">()</span> <span class="c">// 月</span>
+	<span class="n">day</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Day</span><span class="p">()</span> <span class="c">// 日</span>
 	<span class="n">hour</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Hour</span><span class="p">()</span>
 	<span class="n">minute</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Minute</span><span class="p">()</span>
 	<span class="n">second</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Second</span><span class="p">()</span>
 
-	<span class="c">// 打印，%02d 整数不足两位，左边用0补齐</span>
+	<span class="c">// 格式化打印，%02d 整数不足两位，左边用0补齐</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%d-%2d-%2d %2d:%2d:%2d"</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -764,14 +806,16 @@ int
 <p>执行结果：</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2023-01-17 19:35:49.605219 +0800 CST <span class="nv">m</span><span class="o">=</span>+0.000101799
-2023- 1-17 19:35:49
+2023-01-17 19:35:49
 </code></pre></div></div>
 
-<blockquote>
-  <p>时间格式化</p>
-</blockquote>
+<p><img src="/assets/images/2023/go/time-struct-1.png" alt="" /></p>
 
-<p>时间类型有一个自带的方法<code class="highlighter-rouge">Format</code>进行格式化，需要注意的是Go语言中格式化时间模版不常见的<code class="highlighter-rouge">Y-m-d H:M:S</code>，而是go的诞生时间2006年1月2号15点04分，记忆口径 2006 1 2 3 4</p>
+<p><img src="../../../assets/images/2023/go/time-struct-1.png" alt="" /></p>
+
+<h3 id="时间格式化">时间格式化</h3>
+
+<p>时间类型有一个自带的方法<code class="highlighter-rouge">Format</code>进行格式化，需要注意的是Go语言中格式化时间模版不常见的<code class="highlighter-rouge">YY-MM-DD Hh:M:S</code>，而是go的诞生时间2006年1月2号15点04分，记忆口径 2006 1 2 3 4</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="c">// time1()</span>
@@ -793,9 +837,9 @@ int
 2023-01-17
 </code></pre></div></div>
 
-<blockquote>
-  <p>解析字符串格式的时间</p>
-</blockquote>
+<h3 id="解析字符串格式的时间">解析字符串格式的时间</h3>
+
+<p>返回time对象</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="c">// time1()</span>
@@ -804,9 +848,10 @@ int
 
 	<span class="c">// 时区</span>
 	<span class="n">loc</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">LoadLocation</span><span class="p">(</span><span class="s">"Asia/Shanghai"</span><span class="p">)</span> <span class="c">// 点进去看源码，UTC 0时区，Local 本地时区</span>
-	<span class="c">// 字符串转时间对象</span>
+	<span class="c">// 字符串转时间对象，需要指定时区</span>
 	<span class="n">timeObj</span><span class="p">,</span> <span class="n">_</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">ParseInLocation</span><span class="p">(</span><span class="s">"2006-01-02 15:04:05"</span><span class="p">,</span> <span class="s">"2023-01-20 19:10:20"</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span>
-	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timeObj</span><span class="p">)</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"%T</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">timeObj</span><span class="p">)</span> <span class="c">// 打印时间对象类型</span>
+  <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timeObj</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timeObj</span><span class="o">.</span><span class="n">Format</span><span class="p">(</span><span class="s">"2006/01/02"</span><span class="p">))</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -818,9 +863,7 @@ int
 <span class="m">2023</span><span class="o">/</span><span class="m">01</span><span class="o">/</span><span class="m">20</span>
 </code></pre></div></div>
 
-<blockquote>
-  <p>时间戳</p>
-</blockquote>
+<h3 id="时间戳">时间戳</h3>
 
 <p>时间戳是自1970年1月1日（08:00:00GMT），到当前时间的总毫秒数，它也被称为Unix时间戳UnixTimestamp</p>
 
@@ -829,9 +872,15 @@ int
 	<span class="n">now</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Now</span><span class="p">()</span>
 
 	<span class="c">// 时间戳,获取当前时间戳</span>
-	<span class="n">timestamp</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Unix</span><span class="p">()</span>
+	<span class="n">timestamp</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">Unix</span><span class="p">()</span> <span class="c">// 秒</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
-	<span class="c">// 时间戳转换时间对象</span>
+  <span class="n">timestamp2</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">UnixMilli</span><span class="p">()</span> <span class="c">// 毫秒</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timestamp2</span><span class="p">)</span>
+	<span class="n">timestamp3</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">UnixMicro</span><span class="p">()</span> <span class="c">// 微秒</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timestamp3</span><span class="p">)</span>
+	<span class="n">timestamp4</span> <span class="o">:=</span> <span class="n">now</span><span class="o">.</span><span class="n">UnixNano</span><span class="p">()</span> <span class="c">// 纳秒</span>
+	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">timestamp4</span><span class="p">)</span>
+	<span class="c">// 时间戳转换时间对象, 获取 年月日时分秒</span>
 	<span class="n">time1</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">Unix</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
 	<span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="n">time1</span><span class="p">)</span>
 <span class="p">}</span>
@@ -845,7 +894,7 @@ int
 
 <h2 id="6生成随机数">6、生成随机数</h2>
 
-<p>随机数需要调用<code class="highlighter-rouge">math/rand</code>包，注意要设置种子数，这样每次生成的结果会不断变化</p>
+<p>随机数需要调用<code class="highlighter-rouge">math/rand</code>包，<mark>注意要设置种子数，这样每次生成的结果会不断变化</mark></p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="n">rand</span><span class="o">.</span><span class="n">Seed</span><span class="p">(</span><span class="m">13</span><span class="p">)</span>        <span class="c">// 种子数不一样，生成的随机数才会不一样</span>
@@ -872,7 +921,7 @@ int
 
 <h2 id="7定时器与时间判断">7、定时器与时间判断</h2>
 
-<h3 id="时间间隔常量duration">时间间隔常量Duration</h3>
+<h3 id="间隔常量duration">间隔常量Duration</h3>
 
 <p>time.Duration是time包定义的一个类型，它代表两个时间点之间经过的时间</p>
 
@@ -901,7 +950,9 @@ int
 
 <p>定时器time.tick</p>
 
-<p><img src="image/time-tick.png" alt="" /></p>
+<p><img src="/assets/images/2023/go/time-tick.png" alt="" /></p>
+
+<p><img src="../../../assets/images/2023/go/time-tick.png" alt="" /></p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">(</span>
 	<span class="s">"fmt"</span>
@@ -933,11 +984,9 @@ int
 ...
 </code></pre></div></div>
 
-<h3 id="时间常用操作">时间常用操作</h3>
+<h2 id="8时间常用操作">8、时间常用操作</h2>
 
-<blockquote>
-  <p>Add</p>
-</blockquote>
+<h3 id="add">Add</h3>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
 	<span class="c">// Add</span>
@@ -966,28 +1015,21 @@ true
 false</span>
 </code></pre></div></div>
 
-<blockquote>
-  <p>Sub 求两个时间之间的差值</p>
-</blockquote>
+<h3 id="sub">Sub</h3>
 
 <p>求两个时间之间的差值</p>
 
-<blockquote>
-  <p>Equal</p>
-</blockquote>
+<h3 id="equal">Equal</h3>
 
 <p>判断两个时间是否相同，这种方法还会比较地点和时区信息，因此不同时区标准的时间也可以正确比较</p>
 
-<blockquote>
-  <p>Before 是否在某个时间点之前</p>
-</blockquote>
+<h3 id="before">Before</h3>
 
-<p>如果t代表的时间点在u之前，返回true,否则返回false</p>
+<p>是否在某个时间点之前，如果t代表的时间点在u之前，返回true,否则返回false</p>
 
-<blockquote>
-  <p>After 是否在某个时间点之后</p>
-</blockquote>
+<h3 id="after">After</h3>
 
+<p>是否在某个时间点之后</p>
 
 
             <div>

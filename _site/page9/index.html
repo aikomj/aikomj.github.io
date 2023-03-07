@@ -351,6 +351,76 @@
                  
                     <li class="post-list-item">
                         <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/architect/2021/06/11/single-table-query.html">建议尽量不做联表查询</a>
+                        </h2>
+                        <p class="post-list-description">
+                            单表查询利于后续维护，代码可复用性高，效率问题，减少冗余字段的查询
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2021/06/11
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/springcloud/2021/06/10/nacos-issues.html">使用Nacos 1.4.1 版本的一个bug</a>
+                        </h2>
+                        <p class="post-list-description">
+                            网络抖动导致域名解析失败，线上服务停止了发送心跳到Nacos Server 导致nacos server认为服务下线不可用，即使网络恢复了，也不会自动恢复心跳，只能重启应用服务或者机器,这个问题仅存在与nacos-client1.4.1版本，建议升级至 1.4.2 以避免此问题。
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2021/06/10
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/redis/2021/06/03/seven-solve-distribute-lock.html">Redis分布式锁的正确使用姿势,七种方案</a>
+                        </h2>
+                        <p class="post-list-description">
+                            Redis分布式锁的解决方案，你会用哪种，redis单实例使用redisson实现分布式锁，redis集群部署使用Redlock+Redisson实现分布式锁
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2021/06/03
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/architect/2021/05/28/way-to-solve-high-concurrence.html">聊聊高并发</a>
+                        </h2>
+                        <p class="post-list-description">
+                            高并发意味着大流量衍生出的一些技术问题，设计目标高性能、高可用、高扩展，使用缓存减少IO次数，使用并发或者异步的方式增加吞吐量，按垂直业务做微服务化，存储层使用各种异构数据库，多级缓存、读写分离、分库分表和索引优化、异步化、并发处理，通过多线程将串行逻辑并行化
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2021/05/28
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/design-mode/2021/05/20/visitor.html">23种设计模式之访问者模式-Visitor</a>
+                        </h2>
+                        <p class="post-list-description">
+                            访问者模式是一种行为设计模式，它能将算法与其所作用的对象隔离开来，无需修改原对象代码就可以为对象带来新的行为
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2021/05/20
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
                             <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/java/2021/05/18/rule-executor.html">使用一个规则执行器替代大量if判断</a>
                         </h2>
                         <p class="post-list-description">
@@ -414,76 +484,6 @@
                         </p>
                         <p class="post-list-meta">
                             <span class="octicon octicon-calendar"></span> 2021/04/16
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/design-mode/2021/04/13/memento.html">23种设计模式之备忘录模式-Memento</a>
-                        </h2>
-                        <p class="post-list-description">
-                            亦称快照模式Snapshot，是一种行为设计模式， 允许生成对象状态的快照并在以后将其还原。
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2021/04/13
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/design-mode/2021/04/07/mediator.html">23种设计模式之中介者模式-Mediator</a>
-                        </h2>
-                        <p class="post-list-description">
-                            中介者模式是一种行为设计模式， 能让你减少对象之间混乱无序的依赖关系。 该模式会限制对象之间的直接交互， 迫使它们通过一个中介者对象进行合作。
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2021/04/07
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/mysql/2021/03/25/update-db-or-cache-first.html">高并发场景下，Redis与Mysql的数据一致性如何保证</a>
-                        </h2>
-                        <p class="post-list-description">
-                            常用策略是先更新数据库再删除缓存，理论上还是会出现问题，解决办法是给缓存设置过期时间，允许系统中少量数据短时间不一致的场景出现，数据库和缓存数据保存强一致，可以吗?不可以，3种方案保证最终一致性，
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2021/03/25
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/mq/2021/03/24/rocketmq-stater-001.html">RocketMq消息队列应用实战-1</a>
-                        </h2>
-                        <p class="post-list-description">
-                            rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2021/03/24
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/design-mode/2021/03/23/iterator.html">23种设计模式之迭代器模式-Iterator</a>
-                        </h2>
-                        <p class="post-list-description">
-                            迭代器模式是一种行为设计模式，让你能在不暴露集合底层表现形式的情况下遍历集合中所有的元素。
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2021/03/23
                         </p>
                     </li>
                   

@@ -351,6 +351,76 @@
                  
                     <li class="post-list-item">
                         <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/java/2020/09/11/java-taishan.html">阿里Java开发手册泰山版-个人精简</a>
+                        </h2>
+                        <p class="post-list-description">
+                            会当凌绝顶，一览众山小
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2020/09/11
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/spring/2020/09/10/spring-controller.html">Spring的Controller是单例还是多例？怎么保证并发的安全</a>
+                        </h2>
+                        <p class="post-list-description">
+                            Spring的Controller默认是单例的，线程不安全的，尽量不使用成员变量，ThreadLocal成员变量，Request请求会复用线程池里线程，所以也不能达到请求并发安全，使用ConcurrentHashMap等并发安全类，微服务的并发安全考虑使用可共享信息的分布式缓存中间件如Redis
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2020/09/10
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/springboot/2020/09/09/rabbitmq-tcc.html">SpringBoot整合RabbitMQ实现事务补偿</a>
+                        </h2>
+                        <p class="post-list-description">
+                            与阿里的Setta框架提供的强一致性事务补偿不一样，MQ提供的是弱一致性事务补偿
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2020/09/09
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/java/2020/09/09/integer-cache.html">为什么 Java 中“1000==1000”为false，而”100==100“为true？</a>
+                        </h2>
+                        <p class="post-list-description">
+                            integer的缓存，快戳进来看答案
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2020/09/09
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
+                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/spring/2020/08/25/spring-ioc.html">Spring IOC 理论推导</a>
+                        </h2>
+                        <p class="post-list-description">
+                            spring框架的7大模块了解，IOC的原型由我们自行控制对象的创建，控制反转的本质是获得对象的方式反转了，将对象的创建转移给第三方
+                        </p>
+                        <p class="post-list-meta">
+                            <span class="octicon octicon-calendar"></span> 2020/08/25
+                        </p>
+                    </li>
+                  
+                
+                 
+                    <li class="post-list-item">
+                        <h2 class="post-list-title">
                             <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/08/25/gavin-keepalive-nginx-tomcat.html">高并发分布式环境下的高可用负载均衡方案</a>
                         </h2>
                         <p class="post-list-description">
@@ -414,76 +484,6 @@
                         </p>
                         <p class="post-list-meta">
                             <span class="octicon octicon-calendar"></span> 2020/08/08
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/tool/2020/08/07/learn-skywalking.html">体验分布式系统的监控工具Skywalking</a>
-                        </h2>
-                        <p class="post-list-description">
-                            Skywalking是一个分布式系统的应用程序性能监视工具，专为微服务、云原生架构和基于容器（Docker、K8s、Mesos）架构而设计
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2020/08/07
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/springcloud/2020/08/06/correct-use-redis-lock.html">一个不正确使用Redis做分布式锁造成的事故</a>
-                        </h2>
-                        <p class="post-list-description">
-                            本篇文章主要是基于我们实际项目中因为不正确使用redis分布式锁造成的事故分析及解决方案。
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2020/08/06
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/tool/2020/08/03/maven-docker-images.html">使用Maven插件构建Docker镜像</a>
-                        </h2>
-                        <p class="post-list-description">
-                            Docker Registry 服务器镜像仓库，项目工程的pom.xml文件中添加docker-maven-plugin的依赖
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2020/08/03
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/icoding-gavin/2020/08/03/gavin-scrum.html">架构师敏捷管理思想Scrum框架</a>
-                        </h2>
-                        <p class="post-list-description">
-                            Scrum敏捷具体落地实现的框架，就好像spring是落地实现java MVC的框架一样，推崇的价值观是自管理
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2020/08/03
-                        </p>
-                    </li>
-                  
-                
-                 
-                    <li class="post-list-item">
-                        <h2 class="post-list-title">
-                            <a class="hvr-underline-from-center" href="http://47.113.95.179/jk-blog/life/2020/08/01/vuepress-blog.html">vuepress搭建自己的个人博客</a>
-                        </h2>
-                        <p class="post-list-description">
-                            使用vuepress快速搭建个人博客，代码推送到gitee上，使用gitee pages服务在线访问
-                        </p>
-                        <p class="post-list-meta">
-                            <span class="octicon octicon-calendar"></span> 2020/08/01
                         </p>
                     </li>
                   
