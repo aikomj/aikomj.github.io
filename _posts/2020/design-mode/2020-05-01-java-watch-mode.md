@@ -17,8 +17,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru: [https://refactoringguru.cn/design-patterns/observer](https://refactoringguru.cn/design-patterns/observer)
-
 行为模式：负责对象间的高效沟通和职责委派
 
 **观察者模式**是一种行为设计模式， 允许你定义一种订阅机制， 可在对象事件发生时通知多个 “观察” 该对象的其他对象。

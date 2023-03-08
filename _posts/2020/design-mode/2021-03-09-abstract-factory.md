@@ -14,8 +14,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru：[https://refactoringguru.cn/design-patterns/abstract-factory](https://refactoringguru.cn/design-patterns/abstract-factory)
-
 创建型模式：提供创建对象的机制， 增加已有代码的灵活性和可复用性。
 
 **抽象工厂模式**是一种创建型设计模式， 它能创建一系列相关的对象， 而无需指定其具体类。

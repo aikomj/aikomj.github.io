@@ -16,8 +16,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru：[https://refactoringguru.cn/design-patterns/decorator](https://refactoringguru.cn/design-patterns/decorator)
-
 结构型设计模式：这类模式介绍如何将对象和类组装成较大的结构， 并同时保持结构的灵活和高效。
 
 **装饰模式**是一种结构型设计模式， 允许你通过将对象放入包含行为的特殊封装对象中来为原对象绑定新的行为。感觉有点像代理，目的都是为了增强原对象的功能，加一层的架构思想

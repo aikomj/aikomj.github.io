@@ -14,8 +14,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru：[https://refactoringguru.cn/design-patterns/composite](https://refactoringguru.cn/design-patterns/composite)
-
 结构型设计模式：这类模式介绍如何将对象和类组装成较大的结构， 并同时保持结构的灵活和高效。
 
 **组合模式**是一种结构型设计模式， 你可以使用它将对象组合成<mark>树状结构</mark>， 并且能像使用独立对象一样使用它们。

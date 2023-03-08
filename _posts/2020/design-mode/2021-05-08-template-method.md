@@ -14,8 +14,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru：[https://refactoringguru.cn/design-patterns/template-method](https://refactoringguru.cn/design-patterns/template-method)
-
 行为模式：这类模式负责对象间的高效沟通和职责委派。
 
 **模板方法模式**是一种行为设计模式， 它在超类中定义了一个算法的框架， 允许子类在不修改结构的情况下重写算法的特定步骤。

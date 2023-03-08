@@ -14,13 +14,13 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru  : [https://refactoringguru.cn/design-patterns/singleton](https://refactoringguru.cn/design-patterns/singleton)
-
 创建型模式：提供创建对象的机制， 增加已有代码的灵活性和可复用性
 
 **单例模式**是一种创建型设计模式， 让你能够保证一个类只有一个实例， 并提供一个访问该实例的全局节点。
 
 ![](\assets\images\2021\javabase\singleton.png)
+
+![](../../..\assets\images\2021\javabase\singleton.png)
 
 ### 问题
 
@@ -240,5 +240,3 @@ public class Singleton {
 ```
 
 我个人比较喜欢静态内部类写法和饿汉式写法，其实这两种写法能够应付绝大多数情况了。其他写法也可以选择，主要还是看业务需求吧。
-
-> 本文为转载文章，来源方志朋的公众号

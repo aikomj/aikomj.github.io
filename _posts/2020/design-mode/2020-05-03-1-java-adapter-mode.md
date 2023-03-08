@@ -14,8 +14,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru：[https://refactoringguru.cn/design-patterns/adapter](https://refactoringguru.cn/design-patterns/adapter)
-
 结构型设计模式：这类模式介绍如何将对象和类组装成较大的结构， 并同时保持结构的灵活和高效
 
 **适配器模式**是一种结构型设计模式， 它能使接口不兼容的对象能够相互合作。

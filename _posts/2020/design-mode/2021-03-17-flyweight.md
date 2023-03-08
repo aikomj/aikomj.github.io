@@ -14,8 +14,6 @@ lock: noneed
 
 ## 1、意图
 
-以下内容来源于网站 Refactoring Guru：[https://refactoringguru.cn/design-patterns/flyweight](https://refactoringguru.cn/design-patterns/flyweight)
-
 结构型设计模式：这类模式介绍如何将对象和类组装成较大的结构， 并同时保持结构的灵活和高效。
 
 **享元模式**是一种结构型设计模式， 它摒弃了在每个对象中保存所有数据的方式， 通过共享多个对象所<mark>共有的相同状态</mark>， 让你能在有限的内存容量中载入更多对象。
