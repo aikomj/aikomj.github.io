@@ -10,9 +10,7 @@ lock: noneed
 
 <mark>单例模式 Singleton</mark>
 
-![](\assets\images\2021\javabase\design-singleton.png)
-
-![](../../..\assets\images\2021\javabase\design-singleton.png)
+![](/assets/images/2021/javabase/design-singleton.png)
 
 ## 1、意图
 
@@ -20,9 +18,7 @@ lock: noneed
 
 **单例模式**是一种创建型设计模式， 让你能够保证一个类只有一个实例， 并提供一个访问该实例的全局节点。
 
-![](\assets\images\2021\javabase\singleton.png)
-
-![](../../..\assets\images\2021\javabase\singleton.png)
+![](/assets/images/2021/javabase/singleton.png)
 
 ### 问题
 
@@ -32,9 +28,7 @@ lock: noneed
 
    它的运作方式是这样的： 如果你创建了一个对象， 同时过一会儿后你决定再创建一个新对象， 此时你会获得之前已创建的对象， 而不是一个新对象。
 
-   ![](../../..\assets\images\2021\javabase\singleton-comic-1-zh.png)
-
-   ![](\assets\images\2021\javabase\singleton-comic-1-zh.png)
+   ![](/assets/images/2021/javabase/singleton-comic-1-zh.png)
 
 2. 为该实例提供一个全局访问节点
 
@@ -54,8 +48,6 @@ lock: noneed
 ### 单例模式结构
 
 ![](/assets/images/2021/javabase/singleton-structure.jpg)
-
-![](../../../assets/images/2021/javabase/singleton-structure.jpg)
 
 ### 伪代码
 
