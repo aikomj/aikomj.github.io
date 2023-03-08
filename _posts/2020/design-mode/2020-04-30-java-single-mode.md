@@ -12,6 +12,8 @@ lock: noneed
 
 ![](\assets\images\2021\javabase\design-singleton.png)
 
+![](../../..\assets\images\2021\javabase\design-singleton.png)
+
 ## 1、意图
 
 创建型模式：提供创建对象的机制， 增加已有代码的灵活性和可复用性
@@ -30,9 +32,9 @@ lock: noneed
 
    它的运作方式是这样的： 如果你创建了一个对象， 同时过一会儿后你决定再创建一个新对象， 此时你会获得之前已创建的对象， 而不是一个新对象。
 
-   ![](\assets\images\2021\javabase\singleton-comic-1-zh.png)
+   ![](../../..\assets\images\2021\javabase\singleton-comic-1-zh.png)
 
-   
+   ![](\assets\images\2021\javabase\singleton-comic-1-zh.png)
 
 2. 为该实例提供一个全局访问节点
 
@@ -52,6 +54,8 @@ lock: noneed
 ### 单例模式结构
 
 ![](/assets/images/2021/javabase/singleton-structure.jpg)
+
+![](../../../assets/images/2021/javabase/singleton-structure.jpg)
 
 ### 伪代码
 
@@ -125,30 +129,12 @@ class Application is
 
 ### 与其他模式的关系
 
-1）[外观模式](https://refactoringguru.cn/design-patterns/facade)类通常可以转换为[单例模式](https://refactoringguru.cn/design-patterns/singleton)类， 因为在大部分情况下一个外观对象就足够了。
+1）`外观模式`类通常可以转换单例模式类， 因为在大部分情况下一个外观对象就足够了。
 
-2）如果你能将对象的所有共享状态简化为一个享元对象， 那么[享元模式](https://refactoringguru.cn/design-patterns/flyweight)就和[单例](https://refactoringguru.cn/design-patterns/singleton)类似了。 但这两个模式有两个根本性的不同。
+2）如果你能将对象的所有共享状态简化为一个享元对象， 那么享元模式就和单例类似了。 但这两个模式有两个根本性的不同。
 
-- 只会有一个单例实体， 但是*享元*类可以有多个实体， 各实体的内在状态也可以不同。 
-
+- 只会有一个单例实体， 但是享元类可以有多个实体， 各实体的内在状态也可以不同。 
 - 单例对象可以是可变的。 享元对象是不可变的。
-
-3) [抽象工厂模式](https://refactoringguru.cn/design-patterns/abstract-factory)、 [生成器模式](https://refactoringguru.cn/design-patterns/builder)和[原型模式](https://refactoringguru.cn/design-patterns/prototype)都可以用[单例](https://refactoringguru.cn/design-patterns/singleton)来实现。
-
-### 代码示例
-
-在Java中使用
-
-复杂度：1
-
-流行度：3
-
-Java 核心程序库中仍有相当多的单例示例：
-
-- [`java.lang.Runtime#getRuntime()`](http://docs.oracle.com/javase/8/docs/api/java/lang/Runtime.html#getRuntime--)
-- [`java.lang.System#getSecurityManager()`](http://docs.oracle.com/javase/8/docs/api/java/lang/System.html#getSecurityManager--)
-
-看下面的写法
 
 ## 2、四种写法
 
