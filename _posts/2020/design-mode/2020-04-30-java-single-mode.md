@@ -115,7 +115,7 @@ class Application is
 
 ### 优缺点
 
-![](\assets\images\2021\javabase\design-singleton-good.png)
+![](/assets/images/2021/javabase/design-singleton-good.png)
 
 违反“单一职责”原则，指的是多个线程（客户端）共享单个调用类实例处理业务，按常理应该是每个客户端应该new一个调用类实例处理业务的，这叫做单一职责。
 
