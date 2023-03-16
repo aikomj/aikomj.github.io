@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 工作中Oracle的认识与使用
+title: Oracle的知识点
 category: mysql
 tags: [mysql]
 keywords: oracle

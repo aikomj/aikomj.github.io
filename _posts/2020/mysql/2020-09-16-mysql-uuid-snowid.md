@@ -1,6 +1,6 @@
 ---
 layout: post
-title: MySQL不推荐使用uuid或者雪花id作为主键？
+title: MySQL使用自增ID，UUID，雪花ID
 category: mysql
 tags: [mysql]
 keywords: mysql

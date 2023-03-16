@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spring IOC 理论推导
+title: Spring IOC
 category: spring
 tags: [spring]
 keywords: spring

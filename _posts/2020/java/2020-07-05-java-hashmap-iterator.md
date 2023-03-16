@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 遍历HashMap的5种最佳方式，我不信你全知道！
+title: 遍历HashMap的5种最佳方式！
 category: java
 tags: [java]
 keywords: java

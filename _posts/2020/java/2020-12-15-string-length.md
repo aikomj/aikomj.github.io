@@ -1,6 +1,6 @@
 ---
 layout: post
-title: String的长度限制,Java的常见陷阱，生成随机数的4种方法
+title: Java的常见陷阱，生成随机数的4种方法，String的长度限制
 category: java
 tags: [java]
 keywords: java

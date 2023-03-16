@@ -10,9 +10,9 @@ lock: noneed
 
 ## 前言
 
-Insert into select请慎用。这天xxx接到一个需求，需要将表A的数据迁移到表B中去做一个备份。本想通过程序先查询查出来然后批量插入。但xxx觉得这样有点慢，需要耗费大量的网络I/O，决定采取别的方法进行实现。通过在Baidu的海洋里遨游，他发现了可以使用insert into select实现，这样就可以避免使用网络I/O，直接使用SQL依靠数据库I/O完成，这样简直不要太棒了。然后他就被开除了。
+Insert into select请慎用。这天xxx接到一个需求，需要将表A的数据迁移到表B中去做一个备份。本想通过程序先查询查出来然后批量插入。但xxx觉得这样有点慢，需要耗费大量的网络I/O，决定采取别的方法进行实现。通过在Baidu的海洋里遨游，他发现了可以使用insert into select实现，这样就可以避免使用网络I/O，直接使用SQL依靠数据库I/O完成，这样简直不要太棒了，然后他就被开除了。
 
-## 事情发生经过
+## 1、事情发生经过
 
 由于数据数据库中order_today数据量过大，当时好像有700W了并且每天在以30W的速度增加。所以上司命令xxx将order_today内的部分数据迁移到order_record中，并将order_today中的数据删除。这样来降低order_today表中的数据量
 
@@ -28,7 +28,7 @@ Insert into select请慎用。这天xxx接到一个需求，需要将表A的数�
 
 本以为停止迁移就就可以恢复了，但是并没有。后面发生的你们可以脑补一下。
 
-## 事故还原
+## 2、事故还原
 
 在本地建立一个精简版的数据库，并生成了100w的数据。模拟线上发生的情况。
 
@@ -115,7 +115,11 @@ WHERE
 
 ![](/assets/images/2020/mysql/order-today-explain-idx.jpg)
 
-<mark>总结</mark>
+![](../../../assets/images/2020/mysql/order-today-explain-idx.jpg)
+
+## 3、总结
 
 使用insert into tablA select * from tableB语句时，一定要确保tableB后面的where，order或者其他条件，都需要有对应的索引，来避免出现tableB全部记录被锁定的情况。
+
+Insert 与update语句都会产生间隙锁，尽量避免大事务，即同一事务下大量数据的插入更新。
 

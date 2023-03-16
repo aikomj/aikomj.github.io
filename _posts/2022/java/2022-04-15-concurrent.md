@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Java并发编程的注意事项，10个坑
+title: Java并发编程的10个注意事项
 category: java
 tags: [juc]
 keywords: juc

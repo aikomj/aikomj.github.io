@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spring的Controller是单例还是多例？怎么保证并发的安全
+title: Spring的Controller单例，怎么保证并发的安全
 category: spring
 tags: [spring]
 keywords: spring

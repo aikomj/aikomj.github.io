@@ -1,10 +1,10 @@
 ---
 layout: post
-title: maven的知识点总结
+title: maven知识点
 category: tool
 tags: [maven]
 keywords: maven
-excerpt: 记录maven相关的知识点，optional可选依赖，scope依赖定位默认值compile，exclude排除子依赖，idea查看依赖关系图，snapshot与release的区别，打包构建命令，多环境profile，guava依赖包的使用
+excerpt: optional可选依赖，scope依赖定位默认值compile，exclude排除子依赖，idea查看依赖关系图，snapshot与release的区别，打包构建命令，多环境profile，guava依赖包的使用
 lock: noneed
 ---
 
