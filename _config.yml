@@ -17,9 +17,9 @@ keywords: Spring,Spring Boot,Spring Cloud,Jvm,Docker,FastDFS,Java,MQ,Redis
 encoding: "utf-8"
 favicon: favicon.ico
 
-repository: aikomj/aikomj.github.io
-github_url: https://github.com/aikomj
-url: http://47.113.95.179/jk-blog
+repository: aikomj/jekyll-blog
+github_url: https://aikomj.github.io/jekyll-blog/
+url: https://aikomj.github.io/jekyll-blog/
 #enforce_ssl: aikomj.com
 
 ## Gem 插件
@@ -241,7 +241,7 @@ classes:
     describe: Java之根基，Java程序员必学
 
   -
-    href: /arch.html
+    href: /architect.html
     name: 架构师之路
     describe: 一个架构师的自我修养
 
