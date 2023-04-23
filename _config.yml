@@ -18,8 +18,8 @@ encoding: "utf-8"
 favicon: favicon.ico
 
 repository: aikomj/jekyll-blog
-github_url: https://aikomj.github.io/jekyll-blog/
-url: https://aikomj.github.io/jekyll-blog/
+github_url: https://aikomj.github.io
+url: https://aikomj.github.io
 #enforce_ssl: aikomj.com
 
 ## Gem 插件
