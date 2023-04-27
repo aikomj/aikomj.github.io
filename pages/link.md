@@ -7,6 +7,14 @@ menu: Link
 permalink: /link
 ---
 
+## 推荐网站
+- [程序员工具站](https://www.cxygjz.com/)， 整合了各种博客、社区、工具、学习网站、插件等资源，集程序员工作、学习、休闲娱乐为一体的实用性效用性都很强的网站
+- [艾编程](https://www.icodingedu.com/) - 学习商业项目研发解决方案，就来艾编程
+- [学相伴](https://www.kuangstudy.com/course?cid=4) - Go ，集合了java和c的优点，没有了java的臃肿，简单高效，天生支持并发，云原生时代，将会是新的主力开发语言，赶紧学起来
+- [小白学堂](http://www.itmind.net/) - 学的不仅是技术，更是前程！
+- [java极客教程](https://geek-docs.com/java/java-tutorial/zipinputstream.html) - java极客教程，基础，IO,多线程
+- [猿天地](http://cxytiandi.com/) - 天地是一个综合性的网站,以程序猿用户为主,提供各种开发相关的内容。
+
 ## 友情链接
 
 - [方志朋的专栏](https://www.fangzhipeng.com) - 生命不息，奋斗不止
@@ -16,20 +24,12 @@ permalink: /link
 - [江南一点雨](https://www.javaboy.org/) - 专注于 Spring Boot + 微服务
 - [闷瓜蛋子的博客](https://fookwood.com) - 八年博客，大公司小公司游荡多年，目前为自由职业
 - [匠心零度博客](http://www.jiangxinlingdu.com/) - 以匠心，铸非凡！ 
-- [王登科-DK博客](http://www.wdk.pw) - 一个技术创业者  
 - [rickiyeat的博客](http://blog.csdn.net/rickiyeat) - hadoop、spring boot/cloud技术博客   
 - [小柒博客](https://blog.52itstyle.vip) - 小柒博客，一个主JAVA，次架构，偶尔聊聊生活的地方。
-- [Java极客技术](http://www.justdojava.com) - Java 技术人的一片天地
 - [姜戈看世界](https://www.jianshu.com/u/85c6c3dcbb4f) - 开源爱好者，互联网IT专栏作者
 
-## 推荐网站
-- [Tooool-程序员一站式导航网站](http://tooool.org/) - 整合了各种博客、社区、工具、学习网站、插件等资源，集程序员工作、学习、休闲娱乐为一体的实用性效用性都很强的网站。
-- [小白学堂](http://www.itmind.net/) - 学的不仅是技术，更是前程！
-- [猿天地](http://cxytiandi.com/) - 天地是一个综合性的网站,以程序猿用户为主,提供各种开发相关的内容。
-- [java极客教程](https://geek-docs.com/java/java-tutorial/zipinputstream.html) - java极客教程，基础，IO,多线程
-- [艾编程](https://www.icodingedu.com/) - 学习商业项目研发解决方案，就来艾编程
-
 <!-- 
+
 ## 个人链接
 
 - [aikomj](http://139.199.13.139/blog/) - 个人独立博客
