@@ -10,51 +10,57 @@ lock: noneed
 
 ## 1、前言
 
-Spring Boot其实默认内嵌了Tomcat，当然默认的端口号也是 8080 ，如果需要修改的话，只需要在配置文件中添加如下一行配置即可:
+Spring Boot默认内嵌了Tomcat，默认的端口号是8080 ，如果需要修改的话，只需要在配置文件中添加如下一行配置即可:
 
 ```properties
 server.port=9090
 ```
 
-自定义项目路径，在配置文件中添加如下配置即可：
+自定义项目的上下文路径，在配置文件中添加：
 
 ```properties
 server.servlet.context-path=/springboot01
 ```
 
-以上的端口和项目路径改了之后，只需要访问 http://localhost:9090/springboot01/user/1 即可
+以上的端口和项目路径改了之后，访问web接口就变为 http://localhost:9090/springboot01/user/1 
 
-### json格式化
+### JSON格式化
 
-在前后端分离的项目中大部分的接口基本都是返回JSON字符串，因此对返回的JSON也是需要定制一下，比如**日期的格式**，**NULL值是否返回**等等内容。
+在前后端分离的项目中大部分的接口基本都是返回JSON字符串，因此对返回的JSON也是需要定制一下，比如`日期的格式，NULL值是否返回`等等内容。
 
 Spring Boot默认是使用Jackson对返回结果进行处理，在引入WEB启动器的时候会引入相关的依赖，看maven依赖如下图：
 
 ![](/assets/images/2022/springboot/web-maven-dependency.png)
 
-同样是引入了一个启动器，则意味着我们既可以在配置文件中修改配置，也可以在配置类中重写其中的配置。JackSon的自动配置类是`JacksonAutoConfiguration`
+![](../../../assets/images/2022/springboot/web-maven-dependency.png)
 
-可以在配置文件 application.properties 中设置指定的格式，这属于**全局配置**，如下：
+引入了一个启动器，意味着我们既可以在配置文件中修改配置，也可以在配置类中重写其中的配置，JackSon的自动配置类是`JacksonAutoConfiguration`
 
-```properties
-spring.jackson.date-format= yyyy-MM-dd HH:mm:ss 
-spring.jackson.time-zone= GMT+8
-```
+- 在配置文件 application.properties 中设置指定格式，这属于**全局配置**，如下：
 
-也可以在实体属性中标注 @JsonFormat 这个注解，属于局部配置，会覆盖全局配置，如下：
+  ```properties
+  spring.jackson.date-format= yyyy-MM-dd HH:mm:ss 
+  spring.jackson.time-zone= GMT+8
+  ```
 
-```java
-@JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8") 
-private Date birthday;
-```
+- 在实体属性中标注 @JsonFormat 这个注解，属于局部配置，会覆盖全局配置，如下：
 
-上述日期格式配置完成之后返回的就是指定格式的日期，如下：
+  ```java
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8") 
+  private Date birthday;
+  ```
+
+配置完成之后返回的就是指定格式的日期，如下：
 
 ```json
 {"id": "1", "age": 18, "birthday": "2020-09-30 17:21", "name": "不才陈某" }
 ```
 
-此只需要定义一个配置类，注入 ObjectMapper ，如下:
+自动配置类`JacksonAutoConfiguration ` 注入的ObjectMapper
+
+![](\assets\images\2023\springboot\jacksonObjectMapper.png)
+
+自定义一个配置类，覆盖自动配置类`JacksonAutoConfiguration `注入的ObjectMapper 
 
 ```java
 /*** 自定义jackson序列化与反序列规则，增加相关格式（全局配置） */ 
@@ -82,11 +88,9 @@ public class JacksonConfig {
 }
 ```
 
-个自动配置类`JacksonAutoConfiguration `中注入的将会失效
-
 ## 2、拦截器如何配置
 
-基于的Spring Boot的版本是 2.3.4.RELEASE 
+基于Spring Boot 版本 2.3.4.RELEASE 
 
 Spring MVC中的拦截器（ Interceptor ）类似于Servlet中的过滤器（ Filter ），它主要用于拦截用户请求并作相应的处理。例如通过拦截器可以进行权限验证、记录请求信息的日志、判断用户是否登录等。
 
@@ -252,7 +256,7 @@ public class CrosFilter implements Filter {
   }
 ```
 
-自定义好了过滤器当然要使其在Spring Boot中生效了，Spring Boot配置Filter有两种方式，其实都很简单，下面一一介绍。
+自定义好了过滤器当然要使其在Spring Boot中生效了，Spring Boot配置Filter有两种方式
 
 1. **配置类中使用@Bean注入【推荐使用】**
 
@@ -324,9 +328,7 @@ public class SpringbootApplication {
 
 ### 跨域举例
 
-天主要介绍如何使用过滤器来解决跨域问题
-
-其实原理很简单，只需要在请求头中添加相应支持跨域的内容即可，如下代码仅仅是简单的演示下，针对细致的内容还需自己完善，比如白名单等等。
+主要介绍如何使用过滤器来解决跨域问题，只需要在请求头中添加相应支持跨域的内容即可， 如下代码仅仅是简单的演示下，针对细致的内容还需自己完善，比如白名单等等。
 
 ```java
 @Component 
@@ -370,17 +372,17 @@ public class FilterConfig {
 
 至此，配置完成，相关细致功能还需自己润色。
 
-过滤器内容相对简单些，但是在实际开发中不可或缺，比如常用的权限控制框架 Shiro ， Spring Security ，内部都是使用过滤器，了解一下对以后的深入学习有着固本的作用
+过滤器内容相对简单些，但是在实际开发中不可或缺，比如常用的权限控制框架 Shiro ， Spring Security ，源码都使用了过滤器
 
-参考：
+- [SpringMVC拦截器Interceptor和过滤器filter的使用](/spring/2020/01/07/springmvc-interceptor-filter.html)
 
-[/jk-blog/springboot/2020/01/07/springmvc-interceptor-filter.html](/jk-blog/springboot/2020/01/07/springmvc-interceptor-filter.html)
+- [SpringSecurity 过滤器链](/icoding-edu/2020/03/25/icoding-note-013.html)
 
-[/jk-blog/icoding-edu/2020/03/25/icoding-note-013.html](/jk-blog/icoding-edu/2020/03/25/icoding-note-013.html)
+- [SpringBoot 解决跨域问题的3种方法](/springboot/2021/01/27/spring-boot-cors.html)
 
 ## 4、过滤gzip请求解压数据
 
-Controller层
+Controller层请求接口
 
 ```java
 @RestController
@@ -403,7 +405,7 @@ public class LogbackController implements LogbackApi {
 
 上传的是json数组
 
-业务实现层
+业务层实现类
 
 ```java
 @Slf4j
@@ -453,9 +455,7 @@ public class LogbackServiceImpl implements LogbackService {
 }
 ```
 
-日志数据发送到kafka
-
-日志数据量大，未来减少网络传输的耗时，数据经过gzip压缩为字节流后再传输，经过nginx，如果nginx配置了自动解压，那么数据解压后才会流向后端服务，gzip请求对后端来说是无感的，否则压缩后数据流向后端服务，后端服务需要解压数据才能正常使用，为了不入侵原有代码，可以使用过滤器Filter将数据处理后再dispatch到Controlle层接口
+日志数据发送到kafka，日志数据量大，为了减少网络传输的耗时，前端会将数据gzip压缩为字节流后再传输给后端，经过nginx，如果nginx配置了自动解压，那么数据解压后才会流向后端服务，gzip请求对后端来说是无感的，否则压缩后数据流向后端服务，后端服务需要解压数据才能正常使用，为了不入侵原有代码，可以使用过滤器Filter将压缩数据解压后再将请求dispatch发送到Controlle层的接口方法
 
 1、新增解压请求的包装类`UnZipRequestWrapper`继承`HttpServletRequestWrapper`，对请求体进行解压写回body
 
@@ -467,10 +467,11 @@ public class UnZipRequestWrapper extends HttpServletRequestWrapper {
     public UnZipRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
         try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream());
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             final byte[] body;
             byte[] buffer = new byte[1024];
             int len;
+            // 读取IO输入流到字节数组，字节数组写入IO输出流
             while ((len = bis.read(buffer)) > 0) {
                 baos.write(buffer, 0, len);
             }
@@ -481,7 +482,8 @@ public class UnZipRequestWrapper extends HttpServletRequestWrapper {
                 return;
             }
             // this.bytes = GZIPUtils.uncompressToByteArray(body); // 自定义的压缩工具类
-           this.bytes = ZipUtil.unGzip(body); // hutool的压缩工具类
+           // hutool的压缩工具类, 解压字节数组
+           this.bytes = ZipUtil.unGzip(body); 
         } catch (IOException ex) {
             log.info("解压缩步骤发生异常！");
             ex.printStackTrace();
@@ -675,6 +677,7 @@ public class GzipFilter implements Filter {
         String encodeType = httpServletRequest.getHeader(CONTENT_ENCODING);
         if (CONTENT_ENCODING_TYPE.equals(encodeType)) {
             log.info("请求:{} 需要解压", httpServletRequest.getRequestURI());
+            // 对request请求进行解压包装
             UnZipRequestWrapper unZIPRequestWrapper = new UnZipRequestWrapper(httpServletRequest);
             chain.doFilter(unZIPRequestWrapper,response);
         } else {
@@ -711,3 +714,376 @@ public class FilterConfig {
 ```
 
 完成，可以测试
+
+## 5、过滤器修改响应数据
+
+第一步，自定义注解@CsDict
+
+```java
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface CsDict {
+
+    /**
+     * 字典编码
+     */
+    String code() default "";
+}
+```
+
+第二步，返回的DTO类字段增加该注解标记
+
+```java
+@Data
+@ApiModel("Bip用户信息")
+public class PersonInformationDTO implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@ApiModelProperty(value = "bip账号")
+	private String bip;
+
+	@ApiModelProperty(value = "姓名")
+	private String name;
+
+	@CsDict(code = "GenderTypeEnum")
+	@ApiModelProperty(value = "性别，M:男，F:女")
+	private GenderTypeEnum gender;
+
+	@ApiModelProperty(value = "民族")
+	@CsDict(code = "PartyMemberEthnicity")
+	private String nation;
+
+	@ApiModelProperty(value = "籍贯")
+	private String nativePlace;
+
+	@ApiModelProperty(value = "学历")
+	@CsDict(code = "EducationType")
+	private String education;
+}
+```
+
+第三步，pom.xml增加maven依赖
+
+```xml
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.60</version>
+</dependency>
+```
+
+自定义过滤器EnumAfterFilter 继承AfterFilter，AfterFilter实现了序列化过滤器SerializeFilter 接口，该接口有个`writeAfter`方法，对响应的DTO进行序列化处理
+
+![](\assets\images\2023\springboot\after-filter.png)
+
+![](../../..\assets\images\2023\springboot\after-filter.png)
+
+```java
+public class EnumAfterFilter extends AfterFilter {
+    
+    /**
+     * 字典查询接口
+     */
+    private DictMapQuery dictMapQuery;
+
+    public EnumAfterFilter(DictMapQuery dictMapQuery) {
+        this.dictMapQuery = dictMapQuery;
+    }
+
+    @Override
+    public void writeAfter(Object object) {
+        if (object == null) {
+            return;
+        }
+        // 反射获取响应DTO的所有属性字段
+        Field[] fields = ReflectUtil.getFields(object.getClass());
+        // 没有包含@CsDict注解的字段，方法执行结束，否则往下执行
+        if (!hasCsDict(fields)) {
+            return;
+        }
+        Map<String, Map<String, String>> fieldValueMap;
+        // 判断是否能从线程变量获取DTO的注解字段与字典的映射Map集合，Map集合要包含DTO的所有@CsDict注解字段
+        if (checkIfCanGetFromLocal(fields)) {
+            // 获取线程变量，字段与字典配置的Map集合
+            fieldValueMap = ThreadLocalHolder.queryFromDictMapHolder();
+        } else {
+            // 创建字段与字典配置的Map集合
+            fieldValueMap = generateFieldValueMap(fields);
+            // 线程变量set值
+            pushToThreadLocal(fieldValueMap);
+        }
+        // 循环DTO字段
+        for (Field field : fields) {
+            if (CsEnum.class.isAssignableFrom(field.getType())) {
+                // 枚举类，通过反射获取字段的枚举值
+            	CsEnum<?> enumValue = (CsEnum<?>) ReflectUtil.getFieldValue(object, field);
+                if (enumValue != null) {
+                    writeKeyValue(field.getName() + "Description", enumValue.getDescription());
+                    writeKeyValue(field.getName(), enumValue.getValue().toString());
+                }
+            }else {
+                // 读取字典配置
+	            Map<String, String> valueMap = fieldValueMap.get(field.getName());
+	            if (valueMap != null && !valueMap.isEmpty()) {
+	                Object fieldValue = ReflectUtil.getFieldValue(object, field);
+	                if(fieldValue != null){
+	                    String value = valueMap.get(fieldValue.toString());
+	                    if (value != null) {
+	                        writeKeyValue(field.getName(), fieldValue);
+	                        writeKeyValue(field.getName() + "Description", value);
+	                    }
+	                }
+	            }
+            }
+        }
+    }
+    
+    /**
+     * 判断是否能直接从线程变量获取DTO的字段与字典映射Map集合
+     * @param fields DTO的字段数组
+     * @return
+     */
+    private boolean checkIfCanGetFromLocal(Field[] fields) {
+        // 获取字典Map集合的线程变量
+        Map<String, Map<String, String>> fieldValueMap = ThreadLocalHolder.queryFromDictMapHolder();
+        if (fieldValueMap == null || fieldValueMap.isEmpty()) {
+            return false;
+        }
+
+        // 带有@CsDict注解的Field字段名称Set集合
+        Set<String> currentFieldNameWithCsDict = Stream.of(fields)
+                // [字段名称:字典编码]的键值对
+                .map(generatePair())
+                .filter(Objects::nonNull)
+                .map(Pair::getKey)
+                .collect(Collectors.toSet());
+
+        // 线程变量fieldValueMap是否包含返回DTO的全部@CsDict注解字段
+        return fieldValueMap.keySet().containsAll(currentFieldNameWithCsDict);
+    }
+    
+    /**
+     * 创建DTO字段与字典配置的映射Map集合
+     * @param fields DTO的字段数组
+     * @return
+     */
+    private Map<String, Map<String, String>> generateFieldValueMap(Field[] fields) {
+        if (dictMapQuery == null) {
+            return Collections.emptyMap();
+        }
+        // Map集合[field: dictCode]
+        Map<String, String> fieldCodeMap = Stream.of(fields)
+                // [字段名称:字典编码]的键值对
+                .map(generatePair())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(Pair::getKey, this::generateValue, (oldOne, newOne) -> newOne));
+        // 字典编码Set集合
+        Set<String> codeSet = new HashSet<>(fieldCodeMap.values());
+        // 根据字典编码查询字典的子集，返回Map集合，key是dictCode, value是Map[dictKey:dictValue]
+        Map<String, Map<String, String>> queryResultMap = dictMapQuery.query(codeSet);
+
+        return fieldCodeMap.entrySet()
+                .stream()
+                .map(entry -> {
+                    // dictCode的字典配置
+                    Map<String, String> value = queryResultMap.get(entry.getValue());
+                    if (value == null) {
+                        value = new HashMap<>();
+                    }
+                    // 字段映射字典配置的键值对
+                    return new Pair<>(entry.getKey(), value);
+                }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    }
+    
+    /**
+     * 返回字典编码，后缀-
+     * @param pair [字段名称:字典编码]的键值对
+     * @return
+     */
+    private String generateValue(Pair<String, String> pair) {
+        String code = pair.getValue();
+        if (code.endsWith("-")) {
+            return code;
+        }
+        return code + "-";
+    }
+    
+    /**
+     * 判断是否包含CsDict注解
+     * @param fields
+     * @return
+     */
+    private Boolean hasCsDict(Field[] fields) {
+        boolean flag = false;
+        for (Field field : fields) {
+            CsDict annotation = field.getAnnotation(CsDict.class);
+            if(Objects.nonNull(annotation) && !StrUtil.isEmpty(annotation.code())){
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+    
+    /**
+     * 返回一个函数式接口，该函数式接口传入一个Field参数，返回[字段名称:字典编码]的键值对
+     * @return
+     */
+    private Function<Field, Pair<String, String>> generatePair() {
+        return field -> {
+            CsDict annotation = field.getAnnotation(CsDict.class);
+            if (annotation == null) {
+                return null;
+            }
+            String code = annotation.code();
+            // 字典编码不能为空
+            if (StrUtil.isEmpty(code)) {
+                return null;
+            }
+            // 返回[字段名称:字典编码]的键值对
+            return new Pair<>(field.getName(), code);
+        };
+    }
+    
+    private void pushToThreadLocal(Map<String, Map<String, String>> fieldValueMap) {
+        if (fieldValueMap.isEmpty()) {
+            return;
+        }
+        Map<String, Map<String, String>> existDictMap = ThreadLocalHolder.queryFromDictMapHolder();
+        if (existDictMap == null || existDictMap.isEmpty()) {
+            ThreadLocalHolder.pushToDictMapHolder(fieldValueMap);
+            return;
+        }
+        Map<String, Map<String, String>> tempMap = new HashMap<>();
+        existDictMap.forEach(tempMap::putIfAbsent);
+        fieldValueMap.forEach(tempMap::putIfAbsent);
+        ThreadLocalHolder.cleanDictMapHolder();
+        ThreadLocalHolder.pushToDictMapHolder(tempMap);
+    }
+}   
+```
+
+第四步，自定义配置类`CsWebConfiguration`实现接口`WebMvcConfigurer`，重写 `configureMessageConverters`方法
+
+![](\assets\images\2023\springboot\config-message-converters.png)
+
+![](../../..\assets\images\2023\springboot\config-message-converters.png)
+
+```java
+public class CsWebConfiguration implements WebMvcConfigurer {
+	private DictMapQuery dictMapQuery;
+	private SerializeFilter[] serializeFilters;
+
+	public CsWebConfiguration(DictMapQuery dictMapQuery, SerializeFilter... serializeFilters) {
+		this.dictMapQuery = dictMapQuery;
+		this.serializeFilters = serializeFilters;
+	}
+
+	/**
+	 * 注册Http消息转换器，当读写request请求体或response响应体会使用已注册的过滤器对body进行过滤
+	 */
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		// json转换器
+		FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
+		converter.setSupportedMediaTypes(SupportedMediaTypes.TYPES);
+		
+		FastJsonConfig config = new FastJsonConfig();
+		config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect, SerializerFeature.WriteEnumUsingToString, SerializerFeature.WriteDateUseDateFormat, SerializerFeature.WriteMapNullValue);
+		List<SerializeFilter> serializeFilterList = new ArrayList<>();
+		serializeFilterList.add(new MaxLongValueFilter());
+		if (dictMapQuery != null) {
+			serializeFilterList.add(new EnumAfterFilter(dictMapQuery));
+		}
+		if (serializeFilters != null) {
+			serializeFilterList.addAll(Arrays.asList(serializeFilters));
+		}
+//		serializeFilterList.add(new MaxLongValueFilter());
+		config.setSerializeFilters(serializeFilterList.toArray(new SerializeFilter[0]));
+		converter.setFastJsonConfig(config);
+		config.setParserConfig(new ParserConfig() {
+			@Override
+			public ObjectDeserializer getDeserializer(Class<?> clazz, Type type) {
+				if (clazz.isEnum()) {
+					Class<?> deserClass = null;
+					JSONType jsonType = clazz.getAnnotation(JSONType.class);
+					if (jsonType != null) {
+						deserClass = jsonType.deserializer();
+						try {
+							ObjectDeserializer derializer = (ObjectDeserializer) deserClass.newInstance();
+							this.putDeserializer(type, derializer);
+							return derializer;
+						} catch (Throwable error) {
+							// skip
+						}
+					}
+					// 这里替换了原来的反序列化器。
+					return new EnumValueDeserializer();
+				}
+				return super.getDeserializer(clazz, type);
+			}
+		});
+		converters.add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+//		converters.add(0, new MappingJackson2HttpMessageConverter());
+		converters.add(1, converter);
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new HttpResponseContentTypeInterceptor()).addPathPatterns("/**");
+	}
+
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addConverterFactory(new CsEnumConverterFactory());
+	}
+
+	public static class CsEnumConverterFactory implements ConverterFactory<Serializable, CsEnum<Serializable>> {
+		private static final Map<Class<?>, Converter<?, ?>> CONVERTERS = new HashMap<>();
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T extends CsEnum<Serializable>> Converter<Serializable, T> getConverter(Class<T> targetType) {
+			Converter<Serializable, T> converter = (Converter<Serializable, T>) CONVERTERS.get(targetType);
+			if (converter == null) {
+				converter = new ObjectToEnumConverter<T>(targetType);
+				CONVERTERS.put(targetType, converter);
+			}
+			return converter;
+		}
+	}
+
+	@Slf4j
+	static final class ObjectToEnumConverter<E extends CsEnum<Serializable>> implements Converter<Serializable, E> {
+		private Class<E> enumType;
+
+		ObjectToEnumConverter(Class<E> enumType) {
+			this.enumType = enumType;
+		}
+
+		@Override
+		public E convert(Serializable source) {
+			return Optional.ofNullable(ConstantEnumUtils.getEnumByAttribute(enumType, source, (ele) -> ele.getValue())).map(value -> {
+				log.debug("【类型转换】获取枚举字段【{}】【枚举值】：{}", enumType, source);
+				return value;
+			}).orElseGet(() -> {
+				log.debug("【类型转换】获取枚举字段【{}】【枚举名称】：{}", enumType, source);
+				return null;
+			});
+		}
+	}
+}
+```
+
+最终返回的DTO对象会增加xxxDescription字段，会读取原字段的枚举值或者系统字典配置的描述值，如下面的`genderDescription`、`educationDescription`
+
+![](\assets\images\2023\springboot\after-filter-2.png)
+
+![](../../..\assets\images\2023\springboot\after-filter-2.png)
+
+系统字典配置通常可在页面进行配置：
+
+<img src="\assets\images\2023\springboot\after-filter-dict.png" style="zoom:60%;" />
+
+<img src="C:\jacob\code\aikomj.github.io\assets\images\2023\springboot\after-filter-dict.png" style="zoom:60%;" />
