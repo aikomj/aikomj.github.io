@@ -4,7 +4,7 @@ title: 40个Spring常用注解
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 链式编程注解，跨域注解，@Mapper和@Repository的区别，@PostConstruct服务启动后执行一些初始操作，本地事务管理，@Autowired与@Resource装配bean的两种方式，@Slf4打印日志注解，@RequestMapping的post、put、get、delete请求，@Aspect切面编程，@JsonFormat与前端对接日期格式化
+excerpt: 链式编程注解，跨域注解，@Mapper和@Repository的区别，@PostConstruct服务启动后执行一些初始操作,@PreDestroy服务停止前执行一些操作，本地事务管理，@Autowired与@Resource装配bean的两种方式，@Slf4打印日志注解，@RequestMapping的post、put、get、delete请求，@Aspect切面编程，@JsonFormat前端日期格式化,@ControllerAdvice统一异常处理
 lock: noneed
 ---
 
@@ -949,8 +949,6 @@ spring.jackson.time-zone=GMT+8 # 北京时间
 
 ## 11、@RedisOpener
 
-点击源码
-
 ```java
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -969,11 +967,13 @@ public @interface RedisOpener {
 
 ![](\assets\images\2021\redis\redisselector.png)
 
+![](../../..\assets\images\2021\redis\redisselector.png)
+
 enableLock=true会开启RedissonConfig的配置，就是配置redisson分布式锁
 
 ![](\assets\images\2021\redis\redisson-config.png)
 
-
+![](../../..\assets\images\2021\redis\redisson-config.png)
 
 **@ControllerAdvice**
 
@@ -1159,7 +1159,7 @@ this is send DingDing method message.
 
 ![](/assets/images/2021/spring/annotation-qualifier.jpg)
 
-## 15、SpringBoot注解
+## 15、条件注解
 
 **@SpringBootApplication**
 
@@ -1264,3 +1264,44 @@ CustomProperties addCustomProperties(){
  //...
 }
 ```
+
+## 16、热刷新Bean的配置属性值
+
+**@RefreshScope**
+
+经过@RefreshScope注解修饰的bean，将被RefreshScope进行代理，用来实现配置、实例热加载，即当配置变更时可以在不重启应用的前提下刷新bean中相关的属性值，咱们先搞懂@Scope注解，因为它是基于Scope的实现
+
+```java
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Scope("refresh")
+@Documented
+public @interface RefreshScope {
+    ScopedProxyMode proxyMode() default ScopedProxyMode.TARGET_CLASS;
+}
+```
+
+@Scope是spring ioc容器的作用域，当bean超出作用域就会被ioc销毁，有下面几种：
+
+- singleton: 单例模式（默认），spring ioc容器中只有一个实例
+- prototype: 原型模式，每次通过getBean获取该bean就会新产生一个实例
+- request：每次http请求都会产生一个新的bean，同时仅在该http请求的spring 上下文中有效
+- session：在一个http session中，每个bean定义对应
+- global session：
+
+> RefreshScope刷新
+
+当配置中心刷新配置之后，有两种方式可以动态刷新Bean的配置变量值
+
+- 向上下文发布一个RefreshEvent事件
+- Http访问/refresh这个EndPoint
+
+两种方式，最终都会调用RefreshScope#refreshAll
+
+```java
+public void refreshAll{
+    super.destroy();
+    this.context.publishEvent(new RefreshScopeRefreshedEvent());
+}
+```
+

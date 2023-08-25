@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 8种异步实现方式，你用过几种?
+title: 8种异步实现方式，你用过几种
 category: springboot
 tags: [springboot]
 keywords: springboot

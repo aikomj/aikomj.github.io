@@ -301,11 +301,9 @@ EasyExcel和EasyPoi的使用非常类似，都是通过注解来控制导入导�
       public void exportMemberList(HttpServletResponse response) {
           setExcelRespProp(response, "会员列表");
           List<Member> memberList = LocalJsonUtil.getListFromJson("json/members.json", Member.class);
-          EasyExcel.write(response.getOutputStream())
-                  .head(Member.class)
-                  .excelType(ExcelTypeEnum.XLSX)
-                  .sheet("会员列表")
-                  .doWrite(memberList);
+          // 这里需要设置不关闭流，设置列宽自适应
+              EasyExcel.write(response.getOutputStream(), WorkResumePlanExportVO.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).autoCloseStream(Boolean.FALSE).sheet("会员列表")
+                      .doWrite(memberList);
       }
       
     /**
@@ -314,6 +312,7 @@ EasyExcel和EasyPoi的使用非常类似，都是通过注解来控制导入导�
     private void setExcelRespProp(HttpServletResponse response, String rawFileName) throws UnsupportedEncodingException {
       response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       response.setCharacterEncoding("utf-8");
+       // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
       String fileName = URLEncoder.encode(rawFileName, "UTF-8").replaceAll("\\+", "%20");
       response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
     }
@@ -323,6 +322,8 @@ EasyExcel和EasyPoi的使用非常类似，都是通过注解来控制导入导�
   运行项目，通过Swagger测试接口，注意在Swagger中访问接口无法直接下载，需要点击返回结果中的`下载按钮`才行，访问地址：http://localhost:8088/swagger-ui/
 
   ![](/assets/images/2022/springboot/easyexcel-1.png)
+
+  ![](../../../assets/images/2022/springboot/easyexcel-1.png)
 
   下载完成后，查看下文件，一个标准的Excel文件已经被导出了
 

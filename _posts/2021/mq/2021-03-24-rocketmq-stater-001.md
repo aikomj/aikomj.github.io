@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: mq
 tags: [mq]
 keywords: rocketmq
-excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者
+excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者，RocketMQPushConsumerLifecycleListener接口设置最大消费次数
 lock: noneed
 ---
 
@@ -1610,6 +1610,38 @@ replyMessage.setTopic(replyTopic);
 相当于消费者对生产者的每一个消息消费后的一个应答
 
 ![](\assets\images\2021\mq\rocketmq-replylistener.png)
+
+### RocketMQPushConsumerLifecycleListener
+
+```java
+/**
+ * @author xiejinwei02
+ * @date 2023/3/8 8:49
+ * 设备信息上报异步更新消费者
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RocketMQMessageListener(topic = "${rocketmq.topic.device_info:TOPIC_DEVICE_INFO}",selectorExpression = "${rocketmq.tag.reported:TAG_REPORTED}",consumerGroup = "${rocketmq.consumerGroup.deviceInfoReported:CG_DEVICE_INFO_REPORTED}")
+public class DeviceInfoReportedListener implements RocketMQListener<DeviceInfoReportVO>, RocketMQPushConsumerLifecycleListener {
+	private final DeviceNativeService deviceNativeService;
+	
+	@Override
+	public void onMessage(DeviceInfoReportVO message) {
+		try {
+			deviceNativeService.reportedDevice(message);
+		} catch (Exception e) {
+			// 记录异常后不重新消费
+			log.error("设备信息上报MQ消费失败:{},异常:{}",message,e);
+		}
+	}
+	
+	@Override
+	public void prepareStart(DefaultMQPushConsumer consumer) {
+		consumer.setMaxReconsumeTimes(1);
+	}
+}
+```
 
 
 
