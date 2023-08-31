@@ -304,10 +304,24 @@ show OPEN TABLES where In_use > 0;
 show profiles;
 
 -- 查看服务器状态
+show status;
 show status like '%lock%';
+-- 状态参数说明
+Connections  试图连接MYSQL服务器的次数
+Created_tmp_tables 执行语句时，已经被创造了隐含临时表的数量
+Open_tables 打开表的数量
+Opened_tables 已经打开的表数量
+Questions 发往服务器的查询的数量
+Slow_queries 要花超过long_query_time的查询数量
+Threads_connected 当前打开的连接的数量
+Threads_created 已经创建的线程数量
+Threads_running 不在睡眠的线程数量
+Uptime 服务器工作了多少秒
 
--- 查看超时时间：
+-- 查看超时时间
+show variables
 show variables like '%timeout%';
+show variables 'long_query_time';
 
 -- 查看当前用户的所有会话连接前100条，包括当前status,执行的sql
 show processlist;
@@ -334,7 +348,6 @@ SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS;
 show open tables;
 -- 查看是否锁表
 show open tables where in_use>0;
-
 ```
 
 

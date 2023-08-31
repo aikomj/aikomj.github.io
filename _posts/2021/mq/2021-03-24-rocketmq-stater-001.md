@@ -993,14 +993,11 @@ private void registerContainer(String beanName, Object bean) {
         if (!RocketMQListener.class.isAssignableFrom(bean.getClass())) {
             throw new IllegalStateException(clazz + " is not instance of " + RocketMQListener.class.getName());
         }
-
   // 利用反射获取注解信息
         RocketMQMessageListener annotation = clazz.getAnnotation(RocketMQMessageListener.class);
-
   // 从注解你获取消费组、topic名称
         String consumerGroup = this.environment.resolvePlaceholders(annotation.consumerGroup());
         String topic = this.environment.resolvePlaceholders(annotation.topic());
-
   // 判断是否不订阅注解中的消费组和topic，是则不创建消费者
         boolean listenerEnabled =
             (boolean)rocketMQProperties.getConsumer().getListeners().getOrDefault(consumerGroup, Collections.EMPTY_MAP)
@@ -1643,9 +1640,22 @@ public class DeviceInfoReportedListener implements RocketMQListener<DeviceInfoRe
 }
 ```
 
+该接口继承了`RocketMQConsumerLifecycleListener`
 
+```java
+public interface RocketMQPushConsumerLifecycleListener extends RocketMQConsumerLifecycleListener<DefaultMQPushConsumer> {
+}
+```
 
+```java
+public interface RocketMQConsumerLifecycleListener<T> {
+    void prepareStart(final T consumer);
+}
+```
 
+可对消息消费生命周期的一些属性进行配置，包括最长消费次数，消费者线程数等
 
+![](\assets\images\2023\springboot\mqconsumer-prepare.png)
 
+看`DefaultMQPushConsumer` 继承了配置类`ClientConfig`
 
