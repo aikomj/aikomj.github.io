@@ -1037,7 +1037,7 @@ public class ScheduleExecutorTest {
 
 ## 5、Spring task
 
-### 注解@Schedule
+### @Scheduled注解原理与坑
 
 Spring实现定时任务，首先说它支持的定时任务注解@Scheduled，支持cron表达式，代码内嵌简单的定时任务，例子：
 
@@ -1138,13 +1138,14 @@ spring task先通过ScheduledAnnotationBeanPostProcessor类的processScheduled�
 
 <mark>缺点：</mark>
 
-- 默认单线程，如果前面的任务执行时间太长，对后面任务的执行有影响。不支持集群方式部署，不能做数据存储型定时任务
+- 默认单线程，如果前面的任务执行时间太长，对后面任务的执行就会被延迟执行直到占用着单线程的任务被执行完。不支持集群方式部署，不能做数据存储型定时任务
 
+  可以配合@Async注解并指定自定义的线程池，解决单线程池的问题
 
+参考文档：
 
-
-
-
+- [@Scheduled注解实现定时任务的原理](https://www.jianshu.com/p/fca80065c106)
+- [@Scheduled注解的线程池配置](https://blog.csdn.net/m0_68064743/article/details/123866645)
 
 ## 6、定时框架Quartz
 

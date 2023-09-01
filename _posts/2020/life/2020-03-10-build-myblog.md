@@ -34,6 +34,8 @@ ln -s ~/node-12.16.1/bin/npm /usr/bin/npm
 node -v
 ```
 
+nodejs的各版本下载地址：https://nodejs.org/download/release/
+
 **安装Ruby**
 
 Jekyll依赖于Ruby环境，需要安装Ruby

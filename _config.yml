@@ -156,9 +156,13 @@ navs:
         subHref: https://www.icodingedu.com/
         subLabel: 艾编程官网
         target: _blank
-
-      - subHref: https://leetcode-cn.com/problemset/all/
+      -
+        subHref: https://leetcode-cn.com/problemset/all/
         subLabel: 力扣刷题
+        target: _blank
+      -
+        subHref: https://c.binjie.fun/#/chat/1693550837278
+        subLabel: chatGPT国内代理访问
         target: _blank
   - label: Java
     subnav:
@@ -201,6 +205,10 @@ navs:
         subHref: /go-middleware.html
         subLabel: 中间件
         target: _self
+      -
+        subHref: http://books.studygolang.com/
+        subLabel: Go语言中文网
+        target: _blank
   -
     href: /front.html
     label: 大前端
