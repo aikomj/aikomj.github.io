@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ElasticSearch冷热数据分离，滚动索引的使用
+title: ElasticSearch冷热数据分离，滚动索引与生命周期管理
 category: springcloud
 tags: [elasticSearch]
 keywords: elasticSearch
@@ -970,18 +970,6 @@ POST _ilm/start
 POST _ilm/stop
 ```
 
-参考：
-
-https://mp.weixin.qq.com/s/Px5Eo7_aGy8cDLrhToSn_w
-
-https://mp.weixin.qq.com/s/7VQd5sKt_PH56PFnCrUOHQ
-
-https://www.alibabacloud.com/help/zh/elasticsearch/latest/use-ilm-to-separate-hot-data-and-cold-data
-
-https://www.csdn.net/tags/MtTagg0sNDM2NjgtYmxvZwO0O0OO0O0O.html
-
-[ElasticSearch索引容量管理实践](https://zhuanlan.zhihu.com/p/154339421)
-
 ### 滚动踩坑
 
 ILM触发索引滚动后，旧索引会添加两个设置，通过别名进行写操作会被阻塞（新增、更新、删除）
@@ -1038,3 +1026,16 @@ GET /index_todo/_ilm/explain
 
 经过测试确实支持删除文档操作。因为配置ILM策略，在warm阶段，增加forcemerge强制合并或者shrink收缩索引操作，导致索引变成只读，ILM就会给旧索引增加属性`blocks.write=true`，阻塞写操作（不能删除，更新）。
 
+## 参考文档
+
+https://mp.weixin.qq.com/s/Px5Eo7_aGy8cDLrhToSn_w
+
+https://mp.weixin.qq.com/s/7VQd5sKt_PH56PFnCrUOHQ
+
+https://www.alibabacloud.com/help/zh/elasticsearch/latest/use-ilm-to-separate-hot-data-and-cold-data
+
+https://www.csdn.net/tags/MtTagg0sNDM2NjgtYmxvZwO0O0OO0O0O.html
+
+[ElasticSearch索引容量管理实践](https://zhuanlan.zhihu.com/p/154339421)
+
+[ES冷热数据读写分离](https://elasticsearch.cn/article/6127#tip3)

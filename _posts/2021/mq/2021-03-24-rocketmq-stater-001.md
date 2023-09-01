@@ -4,7 +4,7 @@ title: RocketMq消息队列应用实战-1
 category: mq
 tags: [mq]
 keywords: rocketmq
-excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者，RocketMQPushConsumerLifecycleListener接口设置最大消费次数
+excerpt: rocketMQ的架构模型，topic由多个queue组成，rocketmq使用netty框架的创建自己的网络模型，与kafka的吞吐量比较，查看消息堆积，springboot集成rocketMQ发送接收消息，事务消息与本地事务绑定保证原子性，本地事务成功，消息才能被消费，消费端的ACK机制，注解RocketMQListener源码分析，注册生产者、消费者，RocketMQPushConsumerLifecycleListener接口设置最大消费次数，集成多个rocketmq nameserve,发送延迟消息
 lock: noneed
 ---
 
@@ -1243,7 +1243,7 @@ consumeMessage()就是消费方法啦，它把消息经过转换解析后再给�
 
 ### 集成多个rocketMQ集群
 
-统一APP的app-msg服务需要集成大公共消息中心的rocketmq集群和统一APP的rocketmq集群，下面是实现方案
+统一APP的app-msg服务需要集成大公共消息中心的rocketmq集群和统一APP的rocketmq集群，下面是解决方案
 
 > 生产者
 
@@ -1452,6 +1452,10 @@ public static RPCHook getRPCHookByAkSk(Environment env, String accessKeyOrExpr, 
     return null;
 }
 ```
+
+参考文章： [RocketMQ多个namesrv使用遇到的坑](https://blog.csdn.net/lvxiucai/article/details/103438742)
+
+- https://blog.csdn.net/ke7025/article/details/119982155
 
 ### RocketMQListener和RocketMQReplyListener
 
