@@ -56,7 +56,7 @@ public void fun() {
 
 可以将业务逻辑封装到`Runnable`或`Callable`中，交由线程池来执行，submit是异步方法
 
-### 2、Future异步
+## 2、Future异步
 
 ```java
 @Slf4j
@@ -222,7 +222,7 @@ public class AsyncServiceImpl implements AsyncService {
 }
 ```
 
-注意：在实际项目中， 使用`@Async`调用线程池，推荐等方式是是使用自定义线程池的模式，不推荐直接使用@Async直接实现异步
+注意：在实际项目中， 使用`@Async`调用线程池，推荐等方式是是使用自定义线程池的模式，不推荐直接使用@Async直接实现异步，因为@Async默认每次调用都会创建一个线程来执行。
 
 ## 5、SpringApplicationEvent事件实现异步
 

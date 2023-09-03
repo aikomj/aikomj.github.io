@@ -206,9 +206,34 @@ navs:
         subLabel: 中间件
         target: _self
       -
+        subHref: /go-third-technology.html
+        subLabel: 第三方技术
+        target: _self
+      -
+        subHref: /go-microservices.html
+        subLabel: 微服务
+        target: _self
+      -
+        subHref: /go-project.html
+        subLabel: 项目实战
+        target: _self
+      -
+        subHref: /go-cloud-maintenance.html
+        subLabel: 云原生运维
+        target: _self
+      -
         subHref: http://books.studygolang.com/
         subLabel: Go语言中文网
         target: _blank
+      -
+        subHref: https://www.kuangstudy.com/course?cid=4
+        subLabel: 学相伴
+        target: _blank
+      -
+        subHref: https://pan.baidu.com/s/1hCLCPojZufzPyEq1X5lr8w?pwd=3333#list/path=%2F&parentPath=%2Fsharelink2382911006-326745433513992
+        subLabel: 直播课下载
+        target: _blank
+
   -
     href: /front.html
     label: 大前端

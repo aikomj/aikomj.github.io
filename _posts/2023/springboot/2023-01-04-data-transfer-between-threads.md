@@ -4,7 +4,7 @@ title: SpringBoot优雅实现异步线程间数据传递
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 手动设置，线程池设置TaskDecorator，InheritableThreadLocal（不建议）,TransmittableThreadLocal
+excerpt: 主线程与子线程间传递threadLocal变量的4种方式，手动设置、线程池设置TaskDecorator、InheritableThreadLocal（不建议）、TransmittableThreadLocal
 lock: noneed
 ---
 
