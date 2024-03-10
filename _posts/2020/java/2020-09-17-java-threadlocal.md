@@ -18,9 +18,9 @@ lock: noneed
 
 ![](\assets\images\2020\juc\threadlocal.jpg)
 
-可以看到，在 Thread 中持有一个 ThreadLocalMap ， ThreadLocalMap 是由 Entry 来组成的，在 Entry 里面有 ThreadLocal 和 value，
+![](..\..\..\assets\images\2020\juc\threadlocal.jpg)
 
-,ThreadLocalMap 是Thread的静态内部类，它通过调用creatMap()方法懒加载创建，这里也要说要一下ThreadLocal的子类InheritableThreadLocal，源码如下：
+可以看到，在 Thread 中持有一个 ThreadLocalMap ， ThreadLocalMap 是由 Entry 来组成的，在 Entry 里面有 ThreadLocal 和 value，ThreadLocalMap 是Thread的静态内部类，它通过调用creatMap()方法懒加载创建，这里说一下ThreadLocal的子类InheritableThreadLocal，源码如下：
 
 ```java
 public class InheritableThreadLocal<T> extends ThreadLocal<T> {
@@ -93,7 +93,7 @@ public void set(T value) {
 
 都是给当前线程Thread的成员变量创建ThreadLocalMap对象，并把线程变量值放入ThreadLocalMap对象中，当线程结束，它里面的成员变量就会被回收
 
-![](\assets\images\2021\javabase\Thread-threadLocals-threadLocalMap.jpg)
+![](..\..\..\assets\images\2021\javabase\Thread-threadLocals-threadLocalMap.jpg)
 
 看ThreadLocalMap的构造方法
 
@@ -107,7 +107,7 @@ ThreadLocalMap(ThreadLocal<?> firstKey, Object firstValue) {
 }
 ```
 
-Entry 数组初始容量是16，ThreadLocal线程变量本身就是个key，Entry是ThreadLocalMap的静态内部类
+Entry 数组初始容量是16，<mark>ThreadLocal线程变量本身就是个key</mark>，Entry是ThreadLocalMap的静态内部类
 
 ```java
 static class Entry extends WeakReference<ThreadLocal<?>> {
@@ -150,7 +150,7 @@ public class WeakReference<T> extends Reference<T> {
 }
 ```
 
-Entry的key就是ThreadLocal的弱引用，发送GC时就被回收，导致ThreadLocal的value值无法访问，但是value不会被回收。
+Entry的key即ThreadLocal线程变量本身就是弱引用，发生GC时就被回收，导致ThreadLocal的value值（在堆内存中创建）无法访问，但是value不会被回收。
 
 当前线程的另ThreadLocal变量调用set方法，当前线程的ThreadLocalMap已创建就直接调用它的set方法，把ThreadLocal变量值放进Entry数组
 
@@ -203,7 +203,7 @@ private void set(ThreadLocal<?> key, Object value) {
 
 在调用 super(k) 时就将 ThreadLocal 实例包装成了一个 WeakReference
 
-Java的4大引用，在我JUC的笔记中，coding老师也讲过
+Java的4大引用，在我JUC的笔记中
 
 |           引用类型           |                           功能特点                           |
 | :--------------------------: | :----------------------------------------------------------: |
@@ -212,7 +212,7 @@ Java的4大引用，在我JUC的笔记中，coding老师也讲过
 |  弱引用 ( Weak Reference )   |    只被弱引用关联的对象，只要发生垃圾收集事件，就会被回收    |
 | 虚引用 ( Phantom Reference ) | 被虚引用关联的对象的唯一作用是能在这个对象被回收器回收时收到一个系统通知 |
 
-为什么key不使用强引用，如果使用强引用，没有对threadlocal对象设置为null，ThreadLocalMap 没有对remove，在 GC 时进行可达性分析， ThreadLocal 依然可达，这样就不会对 ThreadLocal 进行回收
+为什么key不使用强引用，如果使用强引用，没有对threadlocal对象设置为null，ThreadLocalMap 没有被remove，在 GC 时进行可达性分析， ThreadLocal 依然可达，这样就不会对 ThreadLocal 进行回收
 
 使用弱引用的话，虽然会出现内存泄漏的问题，但是在 ThreadLocal 生命周期里面，都有对 key 值为 null 时进行回收的处理操作
 

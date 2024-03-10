@@ -140,7 +140,7 @@ jasypt还有许多高级用法，比如可以自己配置加密算法，具体�
 
 介绍使用springboot+mybatis拦截器+自定义注解的形式对敏感数据进行<mark>存储前拦截加密</mark>的详细过程。
 
-**什么是mybatis plugin**
+1、**什么是mybatis plugin**
 
 MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用。默认情况下，MyBatis 允许使用插件来拦截的方法调用包括：
 
@@ -160,7 +160,9 @@ StatementHandler (prepare, parameterize, batch, update, query)
 
 简而言之，即在执行sql的整个周期中，我们可以任意切入到某一点对sql的参数、sql执行结果集、sql语句本身等进行切面处理。基于这个特性，我们便可以使用其对我们需要进行加密的数据进行切面统一加密处理了（分页插件 pageHelper 就是这样实现数据库分页查询的）。
 
-> 1、实现思路
+2、**实现基于注解的敏感信息加解密拦截器**
+
+> 2.1、实现思路
 
 对于数据的加密与解密，应当存在两个拦截器对数据进行拦截操作参照官方文档，此处我们应当使用ParameterHandler拦截器对入参进行加密使用ResultSetHandler拦截器对出参进行解密操作。
 
@@ -179,7 +181,7 @@ default void setProperties(Properties properties) {}
 }
 ```
 
-> 2、定义需要加密解密的敏感信息注解
+> 2.2、定义需要加密解密的敏感信息注解
 
 定义注解敏感信息类（如实体类POJO\PO）的注解
 
@@ -203,7 +205,7 @@ public @interface SensitiveField {
 }
 ```
 
-> 3、定义加密接口及其实现类
+> 2.3、定义加密接口及其实现类
 
 定义加密接口，方便以后拓展加密方法（如AES加密算法拓展支持PBE算法，只需要注入时指定一下便可）
 
@@ -255,7 +257,7 @@ public <T> T encrypt(Field[] declaredFields, T paramsObject) throws IllegalAcces
 }
 ```
 
-> 4、实现入参加密拦截器
+> 2.4、实现入参加密拦截器
 
 Myabtis包中的org.apache.ibatis.plugin.Interceptor拦截器接口要求我们实现以下三个方法
 
@@ -281,71 +283,202 @@ public interface Interceptor {
 @Component
 @Intercepts({@Signature(type = ParameterHandler.class, method = "setParameters", args =PreparedStatement.class)})
 public class EncryptInterceptor implements Interceptor {
-private final EncryptDecryptUtil encryptUtil;
-    @Autowired
+	private final EncryptDecryptUtil encryptUtil;
+  @Autowired
 	public EncryptInterceptor(EncryptDecryptUtil encryptUtil) {
 		this.encryptUtil = encryptUtil;
 	}
 	
-    @Override
 	@Override
 	public Object intercept(Invocation invocation) throws Throwable {
 		//@Signature 指定了 type= parameterHandler 后，这里的 invocation.getTarget() 便是	parameterHandler
 		//若指定ResultSetHandler ，这里则能强转为ResultSetHandler
-ParameterHandler parameterHandler = (ParameterHandler) invocation.getTarget();
-// 获取参数对像，即 mapper 中 paramsType 的实例
-Field parameterField = parameterHandler.getClass().getDeclaredField("parameterObject");
-parameterField.setAccessible(true);
-//取出实例
-Object parameterObject = parameterField.get(parameterHandler);
-if (parameterObject != null) {
-Class<?> parameterObjectClass = parameterObject.getClass();
-//校验该实例的类是否被@SensitiveData所注解
-SensitiveData sensitiveData = AnnotationUtils.findAnnotation(parameterObjectClass,
-SensitiveData.class);
-if (Objects.nonNull(sensitiveData)) {
-//取出当前当前类所有字段，传入加密方法
-Field[] declaredFields = parameterObjectClass.getDeclaredFields();
-encryptUtil.encrypt(declaredFields, parameterObject);
-}
-}
-return invocation.proceed();
-}
-/**
-* 切记配置，否则当前拦截器不会加入拦截器链
-*/
-@Override
-public Object plugin(Object o) {
-return Plugin.wrap(o, this);
-}
-//自定义配置写入，没有自定义配置的可以直接置空此方法
-@Override
-public void setProperties(Properties properties) {
-}
+		ParameterHandler parameterHandler = (ParameterHandler) invocation.getTarget();
+		// 获取参数对像，即 mapper 中 paramsType 的实例
+		Field parameterField = parameterHandler.getClass().getDeclaredField("parameterObject");
+		parameterField.setAccessible(true);
+		//取出实例
+		Object parameterObject = parameterField.get(parameterHandler);
+		if (parameterObject != null) {
+			Class<?> parameterObjectClass = parameterObject.getClass();
+			//校验该实例的类是否被@SensitiveData所注解
+			SensitiveData sensitiveData = AnnotationUtils.findAnnotation(parameterObjectClass,
+			SensitiveData.class);
+			if (Objects.nonNull(sensitiveData)) {
+				//取出当前当前类所有字段，传入加密方法
+				Field[] declaredFields = parameterObjectClass.getDeclaredFields();
+				encryptUtil.encrypt(declaredFields, parameterObject);
+			}
+		}
+		return invocation.proceed();
+	}
+
+  /**
+	* 切记配置，否则当前拦截器不会加入拦截器链
+	*/
+	@Override
+	public Object plugin(Object o) {
+		return Plugin.wrap(o, this);
+	}
+	
+  //自定义配置写入，没有自定义配置的可以直接置空此方法
+	@Override
+	public void setProperties(Properties properties) {
+	}
 }
 ```
 
-@Intercepts 注解开启拦截器，@Signature 注解定义拦截器的实际类型：
+@Intercepts 注解开启拦截器，
+
+@Signature 注解定义拦截器的实际类型：
 
 - type 属性指定当前拦截器使用StatementHandler 、ResultSetHandler、ParameterHandler，Executor的一种
 - method 属性指定使用以上四种类型的具体方法（可进入class内部查看其方法）
 - args 属性指定预编译语句
 
-此处我们使用了 ParameterHandler.setParamters()方法，拦截mapper.xml中paramsType的实例
+此处我们使用了 ParameterHandler.setParamters()方法，拦截mapper.xml中paramsType的实例（即在每个含有paramsType属性mapper语句中，都执行该拦截器，对paramsType的实例进行拦截处理）
 
-（即在每个含有paramsType属性mapper语句中，都执行该拦截器，对paramsType的实例进行拦截处
+> 2.5、定义解密接口及其实现类
 
-理）
+解密接口，其中result为mapper.xml中resultType的实例。
 
-> 5、定义解密接口及其实现类
+```java
+public interface DecryptUtil {
+/**
+* 解密
+*
+* @param result resultType的实例
+* @return T
+* @throws IllegalAccessException 字段不可访问异常
+*/
+<T> T decrypt(T result) throws IllegalAccessException;
+}
+```
 
+AES工具解密实现类
 
+```java
+public class AESDescrypt implements DecryptUtil{
+  @Autowired
+  AESUtil aesUtil;
+  
+  /**
+* 解密
+*
+* @param result resultType的实例
+* @return T
+* @throws IllegalAccessException 字段不可访问异常
+*/
+  @Override
+  public <T> descrypt(T result) throws IllegalAccessException{
+    // 取出result的类
+    Class<?> resultClass = result.getClass();
+    // 取出属性字段
+    Field[] declaredFields = resultClass.getDeclaredFields;
+    for(Field field : declaredField)s{
+      // 被EncryptDecryptField注解的字段
+      SensitiveField sensitiveField = field.getAnnotation(SensitiveField.class);
+      if(!Object.isNull(sensitiveField)){
+        // 反射，设置该字段可访问
+        field.setAccessible(true);
+        // 获取字段变量
+        Object object = field.get(result);
+        // 只支持string 的解密
+        if(object instanceof String){
+          String value = (String) object;
+          // 解密
+          field.set(result,aesUtil.decrypt(value));
+        }
+      }
+    }
+    return result;
+  }
+}
+```
 
+> 2.6、定义出参解密拦截器
 
+```java
+@Slf4j
+@Component
+@Intercepts({
+@Signature(type = ResultSetHandler.class, method = "handleResultSets", args =
+{Statement.class})})
+public class DecryptInterceptor implements Interceptor {
+  @Autowired
+	DecryptUtil aesDecrypt;
+
+  @Override
+	public Object intercept(Invocation invocation) throws Throwable {
+		//取出查询的结果
+		Object resultObject = invocation.proceed();
+		if (Objects.isNull(resultObject)) {
+			return null;
+		}
+		//基于selectList
+		if (resultObject instanceof ArrayList) {
+			ArrayList resultList = (ArrayList) resultObject;
+			if (!CollectionUtils.isEmpty(resultList) && needToDecrypt(resultList.get(0))) {
+				for (Object result : resultList) {
+					//逐一解密
+					aesDecrypt.decrypt(result);
+				}
+			}
+		//基于selectOne
+		} else {
+			if (needToDecrypt(resultObject)) {
+				aesDecrypt.decrypt(resultObject);
+			}
+		}
+		return resultObject;
+	}
+  
+private boolean needToDecrypt(Object object) {
+		Class<?> objectClass = object.getClass();
+		SensitiveData sensitiveData = AnnotationUtils.findAnnotation(objectClass,
+		SensitiveData.class);
+		return Objects.nonNull(sensitiveData);
+}
+
+  @Override
+	public Object plugin(Object target) {
+		return Plugin.wrap(target, this);
+	}
+  
+	@Override
+	public void setProperties(Properties properties) {
+	}
+}
+```
+
+到这里完成了解密拦截器的配置工作
+
+3、**注解实体类中需要加解密的字段**
+
+```java
+@Data
+@SensitiveData
+@Accessors(chain = true)
+public class User {
+  // 用户名
+  private String username;
+  // 身份证
+  @SensitiveField
+  private String identityNo;
+  // 真实姓名
+  @SensitiveField
+  private String realName;
+  // 手机号
+  @SensitiveField;
+  private String mobile;
+}
+```
+
+这样，mapper中，指定paramType = User，resultType = User，便可实现脱离业务层，基于mybatis拦截器的加解密操作。
 
 ### 整合Jackson
 
-下面演示第二种，整合Jackson
+下面演示第二种方案，整合Jackson
 
 第1步，需要自定义一个脱敏注解，一旦有属性被标注，则进行对应得脱敏，如下
 

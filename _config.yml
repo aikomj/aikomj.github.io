@@ -8,9 +8,9 @@
 # Site settings
 title: 大伟,专注Spring Boot,Spring Cloud,Docker,Java后端技术
 subtitle: 人生 = 思维方式 x 热情 x 能力
-mood: 活出个样子给自己看，2023希望❤️我的希望，有希望❤️
+mood: 你只有走完必须走的路，才能过想过的生活
 soul: 唯有热爱，能抵岁月漫长 💪 🎸 💻
-name: 大展宏兔
+name: 弹吉他的兔子
 email: 747463168@qq.com
 description: 本站是大伟的技术分享博客，参考自纯洁的微笑《技术人如何搭建自己的技术博客》。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、Dubbo、微服务架构相关的研究与知识分享。
 keywords: Spring,Spring Boot,Spring Cloud,Jvm,Docker,FastDFS,Java,MQ,Redis
@@ -161,7 +161,7 @@ navs:
         subLabel: 力扣刷题
         target: _blank
       -
-        subHref: https://c.binjie.fun/#/chat/1693550837278
+        subHref: https://chat18.aichatos.xyz/#/chat/1700872763573
         subLabel: chatGPT国内代理访问
         target: _blank
   - label: Java

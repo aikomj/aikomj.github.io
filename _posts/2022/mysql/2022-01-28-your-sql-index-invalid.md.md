@@ -53,7 +53,7 @@ mysql的版本号是 8.0.21
 
 ## 1、不满足最左匹配原则
 
-联合索引`idx_code_age_name`的索引字段顺序是code->age->name，它要满足最左匹配原则，该索引才会生效
+联合索引`idx_code_age_name`的索引字段顺序是code->age->name，只要code字段在where条件中不顺序如何，该索引都会生效
 
 - 哪些情况该索引生效
 
@@ -75,13 +75,14 @@ mysql的版本号是 8.0.21
 
   ```sql
   explain select * from user where code= '101' and name = '周星驰';
+  explain select * from user where  name = '周星驰' and code= '101';
   ```
 
   执行结果：
 
   ![](\assets\images\2022\mysql\index-invalid-left-2.png)
 
-  发现4种情况都会有code字段，它是最左边的字段，只要有这个字段在，那么联合索引就会生效。
+  发现4种情况都会有code字段，它是最左边的字段，<mark>只要这个字段在where条件中不管顺序如何，那么联合索引就会生效。</mark>
 
   这就是我们所说的<mark>最左匹配原则</mark>
 

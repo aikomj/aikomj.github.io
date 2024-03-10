@@ -273,6 +273,8 @@ where order_id= 1111 and version = #{version}
 
 ![](/assets/images/2022/springcloud/mall-concurrent-8.jpg)
 
+![](../../../assets/images/2022/springcloud/mall-concurrent-8.jpg)
+
 一个订单号 19 位，我们会发现同一个用户不同订单的最后 6 位都是一样的，没错，那是用户id的后6位。
 
 这样，上文中  `场景1`、`场景2` 的查询可以共性抽取， 采用 `buyer_id` 或 `order_id` 的 `后六位` 作为分表键，对 `1 000 000` 取模，得到买家维度的订单分表的编号。

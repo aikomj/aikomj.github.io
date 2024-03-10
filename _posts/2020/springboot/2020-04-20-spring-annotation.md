@@ -235,6 +235,41 @@ public class SerialNumberServiceImpl implements SerialNumberService {
 
 ```
 
+> @Bean注解中指定初始化方法
+
+这种方式与@PostConstruct类似，同样是指定一个方法在Bean初始化完成之后调用
+
+```java
+public class SimpleExampleBean {
+  public void init(){
+    log.debug("Bean初始化完成，调用。。");
+  }
+}
+```
+
+然后在配置类中通过@Bean实例化这个Bean，不过@Bean中的initMethod这个属性需要指定初始之后需要执行的方法，如下：
+
+```java
+@Bean(initMethod = "init")
+public SimpleExampleBean simpleExampleBean(){
+  return new SimpleExampleBean();
+}
+```
+
+> InitializingBean接口
+
+InitializingBean的用法基本与@PostConstruct一致，只不过相应的Bean需要实现afterPropertiesSet方法
+
+```java
+@Component
+public class SimpleExampleBean implements InitializingBean {
+  @Override
+  public void afterPropertiesSet(){
+    log.debug("Bean初始化完成，调用。。。。");
+  }
+}
+```
+
 ## 5、@Transcactional本地事务
 
 Spring 使用 @Transcactional注解管理事务，我们一起来看看它的源码：

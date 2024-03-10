@@ -37,6 +37,8 @@ MySQL 常用的存储引擎有 MyISAM 和 InnoDB ， InnoDB 会创建主键索�
 
 很显然，回表会产生时间损耗。
 
+普通索引、聚集索引、覆盖索引、回表查询等概念，参考文章：[https://blog.csdn.net/songjianlong/article/details/132352142](https://blog.csdn.net/songjianlong/article/details/132352142)
+
 ## 2、union all 代替union
 
 使用`union`关键字后，可以获取排重后的数据。

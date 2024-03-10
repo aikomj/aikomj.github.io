@@ -617,9 +617,7 @@ ThreadLocal为每个使用变量的线程提供了一个独立的变量副本，
 
 但在高并发的场景下，这段代码有问题，只往ThreadLocal存数据，数据用完之后并没有及时清理。
 
-ThreadLocal即使使用了`WeakReference`（弱引用）也可能会存在`内存泄露`问题，因为 entry对象中只把key(即threadLocal对象)设置成了弱引用，但是value值没有。
-
-**那么，如何解决这个问题呢？**
+ThreadLocal使用了`WeakReference`（弱引用）可能会存在`内存泄露`问题，因为 entry对象中只把key(即threadLocal对象)设置成了弱引用，但是value值没有。**那么，如何解决这个问题呢？**
 
 使用完后，调用remove清除线程变量的值
 

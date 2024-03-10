@@ -4,7 +4,7 @@ title: Mybatis-plus支持分库分表啦
 category: springcloud
 tags: [springcloud]
 keywords: spring cloud
-excerpt: 继shardingsphere后，mybatis-plus也支持客户端级别的分库分表了
+excerpt: 继shardingsphere后，mybatis-plus也支持客户端级别的分库分表了，
 lock: noneed
 ---
 

@@ -27,6 +27,8 @@ AOP是Spring框架面向切面的编程思想，它将涉及多业务流程的**
 
 ![](\assets\images\2020\java\spring-aop.png)
 
+![](..\..\..\assets\images\2020\java\spring-aop.png)
+
 ## 2、AOP术语
 
 AOP 领域中的特性术语：

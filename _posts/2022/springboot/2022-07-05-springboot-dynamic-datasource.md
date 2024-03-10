@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringBoot优雅动态切换多数据源
+title: SpringBoot动态切换多数据源
 category: springboot
 tags: [springboot]
 keywords: springboot
@@ -8,15 +8,13 @@ excerpt: 基于Spring的AbstractRoutingDataSource抽象类，使得能够在多�
 lock: noneed
 ---
 
-此前写过一篇文章介绍springboot整合多数据源，依赖`dynamic-datasource-spring-boot-starter`在业务层类或方法上添加@DS注解切换数据源，[/springboot/2021/02/25/one-app-two-datasource.html](/springboot/2021/02/25/one-app-two-datasource.html)
+前面写过一篇文章介绍springboot整合多数据源，依赖`dynamic-datasource-spring-boot-starter`在业务层类或方法上添加@DS注解切换数据源，[/springboot/2021/02/25/one-app-two-datasource.html](/springboot/2021/02/25/one-app-two-datasource.html)
 
 如果我的数据源是根据request传参appCode或租户参数动态切换数据源，怎么实现？
 
 最近看了一个项目，使用Spring的AbstractRoutingDataSource抽象类动态路由到物理数据源实现切换，我把它放到了自己的gitee仓库上了
 
 地址：https://gitee.com/jacobmj/study-demo/tree/master/bgy-auth
-
-通过下面文章，了解一下springboot 与mybatis整合多数据源动态切换的另外一种方式
 
 ## 1、什么是多数据源
 
@@ -208,13 +206,11 @@ mybatis.configuration.map-underscore-to-camel-case=true
 
 ## 4、整合多数据源
 
-可能大家会有一个误解，认为多数据源就是多个的`DataSource`并存的，当然这样说也不是不正确。
-
-> 多数据源的情况下并不是多个数据源并存的，Spring提供了`AbstractRoutingDataSource`这样一个抽象类，使得能够在多数据源的情况下任意切换，相当于一个**动态路由**的作用，作者称之为`动态数据源`。因此Mybatis只需要配置这个动态数据源即可。
+多数据源的情况下并不是多个数据源并存的，Spring提供了`AbstractRoutingDataSource`这样一个抽象类，使得能够在多数据源的情况下任意切换，相当于一个**动态路由**的作用，作者称之为`动态数据源`。因此Mybatis只需要配置这个动态数据源即可。
 
 ### 什么是动态数据源
 
-动态数据源简单的说就是能够自由切换的数据源，类似于一个动态路由的感觉，Spring 提供了一个抽象类`AbstractRoutingDataSource`，这个抽象类中的一个属性，如下：
+动态数据源简单的说就是能够自由切换的数据源，类似于一个动态路由，Spring 提供了一个抽象类`AbstractRoutingDataSource`，有一个属性targetDataSource
 
 ```java
 private Map<Object, Object> targetDataSources;
@@ -228,7 +224,7 @@ private Map<Object, Object> targetDataSources;
 protected abstract Object determineCurrentLookupKey();
 ```
 
-`determineCurrentLookupKey()`这个方法的返回值决定了需要切换的数据源的`KEY`，就是根据这个`KEY`从`targetDataSources`取值（数据源）。
+`determineCurrentLookupKey()`这个方法返回切换数据源的`KEY`，根据这个`KEY`从`targetDataSources`取值（数据源）。
 
 ### 数据源切换如何保证线程隔离
 
@@ -266,7 +262,7 @@ public class DataSourceHolder {
 
 **如何构造一个动态数据源？**
 
-上文说过只需继承一个抽象类`AbstractRoutingDataSource`，重写其中的一个方法`determineCurrentLookupKey()`即可。代码如下：
+继承抽象类`AbstractRoutingDataSource`，重写方法`determineCurrentLookupKey()`即可。代码如下：
 
 ```java
 /**
@@ -305,7 +301,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
 
 ### 定义一个注解
 
-为了操作方便且低耦合，不能每次需要切换的数据源的时候都要手动调一下接口吧，可以定义一个切换数据源的注解，如下：
+为了操作方便且低耦合，不能每次需要切换数据源的时候都要手动调一下接口，可以定义一个切换数据源的注解，如下：
 
 ```java
 /**
@@ -330,7 +326,7 @@ public @interface SwitchSource {
 
 注解中只有一个`value`属性，指定了需要切换数据源的`KEY`。
 
-有注解还不行，当然还要有切面，代码如下：
+当然还要有切面类，代码如下：
 
 ```java
 @Aspect
@@ -371,7 +367,7 @@ public class DataSourceAspect {
 
 这个`ASPECT`很容易理解，`beforeOpt()`在方法之前执行，取值`@SwitchSource`中value属性设置到`ThreadLocal`中;`afterOpt()`方法在方法执行之后执行，清除掉`ThreadLocal`中的`KEY`，保证了如果不切换数据源，则用默认的数据源。
 
-### 如何与Mybatis整合？
+### 与Mybatis整合
 
 单一数据源与Mybatis整合上文已经详细讲解了，数据源`DataSource`作为参数构建了`SqlSessionFactory`，同样的思想，只需要把这个数据源换成动态数据源即可。注入的代码如下：
 
@@ -462,7 +458,7 @@ public class DataSourceAspect {
 
 ## 5、实战项目
 
-gitee demo实践项目与上面的实现方式差不多，不同的是它使用了拦截器给线程变量set值的，下面是的数据源的配置与切换逻辑流程。
+gitee demo实践项目与上面的实现方式差不多，不同的是它使用了拦截器给线程变量set值的，下面是数据源的配置与切换逻辑流程。
 
 gitee地址：https://gitee.com/jacobmj/study-demo/tree/master/bgy-auth
 
@@ -532,7 +528,6 @@ datasource:
 @AutoConfigureAfter({MybatisPlusAutoConfiguration.class})
 public class DatasourceConfig extends AbsDataSourceConfig {
   ...
-    
     
     /**
      * +定义主数据源

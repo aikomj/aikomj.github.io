@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringBoot优雅实现异步线程间数据传递
+title: SpringBoot父子线程间传递ThreadLocal
 category: springboot
 tags: [springboot]
 keywords: springboot

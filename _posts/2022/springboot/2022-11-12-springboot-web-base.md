@@ -1086,4 +1086,4 @@ public class CsWebConfiguration implements WebMvcConfigurer {
 
 <img src="\assets\images\2023\springboot\after-filter-dict.png" style="zoom:60%;" />
 
-<img src="C:\jacob\code\aikomj.github.io\assets\images\2023\springboot\after-filter-dict.png" style="zoom:60%;" />
+<img src="\assets\images\2023\springboot\after-filter-dict.png" style="zoom:60%;" />

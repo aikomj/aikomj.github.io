@@ -4,7 +4,7 @@ title: 接口设计的36个小技巧
 category: springboot
 tags: [springboot]
 keywords: springboot
-excerpt: 接口参数校验，修改老接口时，注意兼容性，防重处理，重点接口考虑线程池隔离，接口功能具备单一性，考虑异步，并行调用场景，批量处理思想，恰当使用缓存，可变参数配置化，sql优化，代码锁的粒度控制好等 
+excerpt: 接口参数校验，修改老接口时，注意兼容性，防重处理，重点接口考虑线程池隔离，接口功能具备单一性，考虑异步，并行调用场景，批量处理思想，恰当使用缓存，可变参数配置化，sql优化，代码锁的粒度控制好等，考虑接口幂等性
 lock: noneed
 ---
 
@@ -231,7 +231,7 @@ if(duringChristmas){
 - 乐观锁
 - 分布式锁
 
-参考这篇文章： [聊聊幂等设计]()
+参考这篇文章： [聊聊幂等设计](/architect/2022/05/29/mideng.html)
 
 ### 17.读写分离，优先考虑从库
 
@@ -419,11 +419,72 @@ if(CollectionsUtil.isNotEmpty(list)&& list.size()>1){
 - 方法的访问权限必须是public，其他private等权限，事务失效
 - 方法被定义成了final的，这样会导致事务失效。
 - 在同一个类中的方法直接内部调用，会导致事务失效。
-- 一个方法如果没交给spring管理，就不会生成spring事务。
+- <mark>一个方法如果没交给spring管理，就不会生成spring事务。</mark>
 - 多线程调用，两个方法不在同一个线程中，获取到的数据库连接不一样的。
 - 表的存储引擎不支持事务
 - 如果自己try...catch误吞了异常，事务失效。
 - 错误的传播特性
+
+> 多线程调用
+
+```java
+@Slf4j
+@Service
+public class UserService {
+
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private RoleService roleService;
+
+    @Transactional
+    public void add(UserModel userModel) throws Exception {
+        userMapper.insertUser(userModel);
+        new Thread(() -> {
+            roleService.doOtherThing();
+        }).start();
+    }
+}
+
+@Service
+public class RoleService {
+
+    @Transactional
+    public void doOtherThing() {
+        System.out.println("保存role表数据");
+    }
+}
+```
+
+上面的例子中，我们可以看到事务方法add中，调用了事务方法doOtherThing，但是在另外一个线程中调用的，这样会导致两个方法不在同一个线程中，获取的数据库方法不一样，从而是两个不同的事务，如果doOtherThing方法抛了异常，add方法也回滚是不可能的。spring的事务是通过数据库连接实现的，当前线程中保存了一个map的线程变量
+
+```java
+private static final ThreadLocal<Map<Object, Object>> resources =
+
+  new NamedThreadLocal<>("Transactional resources");
+```
+
+> 手动抛了别的异常
+
+```java
+@Slf4j
+@Service
+public class UserService {
+    
+    @Transactional
+    public void add(UserModel userModel) throws Exception {
+        try {
+             saveData(userModel);
+             updateData(userModel);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new Exception(e);
+        }
+    }
+}
+```
+
+开发人员自己捕获了异常，又手动抛出了异常Exception，事务同样不会回滚，因为spring事务，默认情况下只会回滚`RuntimeException`和`Error`,非运行异常，它不会回滚。
 
 ### 30.掌握常用的设计模式
 

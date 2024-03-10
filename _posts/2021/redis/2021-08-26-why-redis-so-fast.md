@@ -4,25 +4,17 @@ title: Redis为什么这么快
 category: redis
 tags: [redis]
 keywords: redis
-excerpt: 我们从Redis不同数据类型底层的数据结构实现、完全基于内存、IO多路复用网络模型、读写单线程模型、全局hash字典、渐进式rehash去分析Redis的快，Redis的混合持久化，主从复制的实现，哨兵集群如何监控slave,Cluster集群16384个槽点通过CRC16算法映射Redis实例，本地缓存的哈希槽实例映射信息定位到数据所在实例。
+excerpt: Redis不同数据类型底层的数据结构实现、完全基于内存、IO多路复用网络模型、读写单线程模型、全局hash字典、渐进式rehash去分析Redis的快，Redis的混合持久化，主从复制的实现，哨兵集群如何监控slave,Cluster集群16384个槽点通过CRC16算法映射Redis实例，本地缓存的哈希槽实例映射信息定位到数据所在实例。
 lock: noneed
 ---
 
-Redis为什么这么快，有以下几方面的原因
-
-- Redis 不同数据类型底层的数据结构实现
-- 完全基于内存
-- IO 多路复用网络模型
-- Redis线程模型
-- 渐进式 rehash
-
-## 1、Redis有多快
+## 1、Redis高性能的原因
 
 看官网 [https://redis.io/topics/benchmarks](https://redis.io/topics/benchmarks) ,Redis 的 QPS 可以达到约 100000（每秒请求数)
 
 ![](/assets/images/2020/icoding/springboot/redis-qps-100000.jpg)
 
-横轴是连接数，纵轴是 QPS。
+横轴是连接数，纵轴是 QPS，从上图可见
 
 ### 基于内存实现
 
